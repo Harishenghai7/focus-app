@@ -1,0 +1,171 @@
+.user-search-result {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-radius: 8px;
+  margin: 2px 0;
+}
+
+.user-search-result:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.user-avatar-container {
+  margin-right: 12px;
+}
+
+.user-search-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.user-search-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-search-primary {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+
+.user-search-username {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.verified-badge {
+  color: var(--primary-color);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.user-search-secondary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.user-search-fullname {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.user-search-followers {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.user-search-bio {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.3;
+  margin-top: 2px;
+}
+
+.user-search-actions {
+  margin-left: 12px;
+}
+
+.follow-btn {
+  padding: 6px 16px;
+  border: 1px solid var(--primary-color);
+  background: var(--primary-color);
+  color: white;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.follow-btn:hover {
+  background: var(--primary-color-dark);
+  border-color: var(--primary-color-dark);
+}
+
+.follow-btn.following {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.follow-btn.following:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+.follow-btn.following:hover::after {
+  content: 'Unfollow';
+}
+
+.follow-btn.following:hover .follow-text {
+  display: none;
+}
+
+.follow-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.loading-spinner.small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Dark mode */
+[data-theme="dark"] .user-search-result:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .user-search-avatar {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .follow-btn.following {
+  color: var(--text-primary-dark);
+  border-color: var(--border-color-dark);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .user-search-result {
+    padding: 10px 12px;
+  }
+  
+  .user-search-avatar {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .follow-btn {
+    padding: 5px 12px;
+    font-size: 13px;
+    min-width: 70px;
+    height: 28px;
+  }
+}

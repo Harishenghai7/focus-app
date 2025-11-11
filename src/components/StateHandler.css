@@ -1,0 +1,117 @@
+.state-handler {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  min-height: 300px;
+}
+
+.state-handler.loading {
+  gap: 1rem;
+}
+
+.state-handler.error {
+  gap: 0.75rem;
+}
+
+.state-handler.empty {
+  gap: 1rem;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-color, #e5e5e5);
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.state-handler.loading p {
+  color: var(--text-secondary, #666);
+  font-size: 0.95rem;
+}
+
+/* Error state */
+.error-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  animation: shake 0.5s;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+.state-handler.error h3 {
+  color: #ef4444;
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.state-handler.error p {
+  color: var(--text-secondary, #666);
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+/* Empty state */
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
+}
+
+.state-handler.empty h3 {
+  color: var(--text-primary, #1a1a1a);
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Action button */
+.state-action-btn {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.state-action-btn:hover {
+  background: #5568d3;
+  transform: translateY(-1px);
+}
+
+.state-action-btn:active {
+  transform: translateY(0);
+}
+
+/* Dark mode support */
+.dark .state-handler.error h3 {
+  color: #f87171;
+}
+
+.dark .state-handler.empty h3,
+.dark .state-handler.loading p,
+.dark .state-handler.error p {
+  color: var(--text-secondary-dark, #a0a0a0);
+}
+
+.dark .loading-spinner {
+  border-color: var(--border-color-dark, #333);
+  border-top-color: #667eea;
+}

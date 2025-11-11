@@ -1,0 +1,127 @@
+.push-notification-prompt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  padding: 20px;
+}
+
+.push-notification-prompt {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 32px 24px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.prompt-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  animation: bell-ring 1s ease-in-out infinite;
+}
+
+@keyframes bell-ring {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  10%, 30% {
+    transform: rotate(-10deg);
+  }
+  20%, 40% {
+    transform: rotate(10deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+}
+
+.prompt-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 12px 0;
+}
+
+.prompt-message {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 24px 0;
+}
+
+.prompt-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.prompt-btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  width: 100%;
+}
+
+.prompt-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.prompt-btn-primary {
+  background: var(--primary-color);
+  color: white;
+}
+
+.prompt-btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
+}
+
+.prompt-btn-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.prompt-btn-secondary:hover:not(:disabled) {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .push-notification-prompt {
+    padding: 24px 20px;
+  }
+
+  .prompt-icon {
+    font-size: 40px;
+  }
+
+  .prompt-title {
+    font-size: 20px;
+  }
+
+  .prompt-message {
+    font-size: 14px;
+  }
+}
+
+/* Dark mode */
+[data-theme="dark"] .push-notification-prompt {
+  background: var(--card-bg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}

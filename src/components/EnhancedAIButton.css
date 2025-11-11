@@ -1,0 +1,84 @@
+.enhanced-ai-button {
+  position: fixed;
+  bottom: 160px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(231, 76, 60, 0.4);
+  z-index: 1000;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.enhanced-ai-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 25px rgba(231, 76, 60, 0.6);
+}
+
+.enhanced-ai-button:active {
+  transform: scale(0.95);
+}
+
+.enhanced-ai-button.blinking {
+  animation: criticalBlink 1s infinite;
+}
+
+@keyframes criticalBlink {
+  0%, 50% { 
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    box-shadow: 0 4px 20px rgba(231, 76, 60, 0.4);
+  }
+  51%, 100% { 
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+    box-shadow: 0 6px 30px rgba(255, 107, 107, 0.8);
+  }
+}
+
+.bug-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #fff;
+  color: #e74c3c;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #e74c3c;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@media (max-width: 768px) {
+  .enhanced-ai-button {
+    bottom: 140px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    font-size: 1.25rem;
+  }
+  
+  .bug-badge {
+    width: 18px;
+    height: 18px;
+    font-size: 0.6rem;
+  }
+}

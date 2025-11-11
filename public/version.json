@@ -1,0 +1,13 @@
+{
+  "version": "0.1.0",
+  "buildDate": "2025-11-08T12:22:46.483Z",
+  "forceUpdate": false,
+  "releaseNotes": [
+    "Initial production release",
+    "Complete authentication system",
+    "Post creation and feed",
+    "Messaging and calls",
+    "Performance optimizations"
+  ],
+  "environment": "production"
+}

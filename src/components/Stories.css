@@ -1,0 +1,99 @@
+.story-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 12px;
+  width: 72px;
+}
+.story-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 52px;
+  height: 52px;
+}
+.avatar-img {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff;
+}
+.add-icon {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  z-index: 2;
+}
+.story-username {
+  font-size: 0.78rem;
+  color: #fff;
+  max-width: 70px;
+  text-align: center;
+  margin-top: 7px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.stories-container {
+  width: 100%;
+  padding: 10px 0 10px 8px;
+  background: transparent;
+  overflow-x: auto;
+}
+
+.stories-scroll {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  gap: 12px;
+}
+
+.story-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 72px;
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: 4px;      /* adds breathing room under avatar */
+}
+
+.story-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 10px;     /* crucial! gives space under the avatar for label */
+}
+
+.avatar-img {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #1a1a1a;
+  transition: box-shadow 0.2s;
+  border: none;
+}
+
+.story-username {
+  font-size: 0.81rem;
+  color: #fff;
+  max-width: 72px;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  line-height: 1.21;
+  font-weight: 500;
+}
+
+

@@ -1,0 +1,39 @@
+.linkified-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.linkified-mention,
+.linkified-hashtag,
+.linkified-url {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.linkified-mention:hover,
+.linkified-hashtag:hover,
+.linkified-url:hover {
+  opacity: 0.7;
+}
+
+.linkified-mention {
+  color: #2196f3;
+  font-weight: 600;
+}
+
+.linkified-hashtag {
+  color: #2196f3;
+  font-weight: 500;
+}
+
+.linkified-url {
+  color: #2196f3;
+  text-decoration: underline;
+}
+
+/* Dark Mode */
+.dark-mode .linkified-mention,
+.dark-mode .linkified-hashtag,
+.dark-mode .linkified-url {
+  color: #64b5f6;
+}

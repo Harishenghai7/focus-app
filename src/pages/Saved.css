@@ -1,0 +1,113 @@
+.saved-page {
+  min-height: 100vh;
+  padding: 80px 20px 100px;
+  background: var(--bg-primary);
+}
+
+.saved-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.saved-header h1 {
+  flex: 1;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.saved-count {
+  padding: 4px 12px;
+  background: var(--primary);
+  color: white;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.empty-saved {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.empty-saved svg {
+  width: 80px;
+  height: 80px;
+  color: var(--text-tertiary);
+  margin-bottom: 24px;
+}
+
+.empty-saved h3 {
+  font-size: 20px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.empty-saved p {
+  color: var(--text-secondary);
+}
+
+.saved-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.saved-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.saved-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.saved-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.saved-item:hover .saved-overlay {
+  opacity: 1;
+}
+
+.saved-stats {
+  display: flex;
+  gap: 16px;
+  color: white;
+  font-weight: 600;
+}
+
+.unsave-btn {
+  align-self: flex-end;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s;
+}
+
+.unsave-btn:hover {
+  background: #ef4444;
+}

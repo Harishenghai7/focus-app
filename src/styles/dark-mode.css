@@ -1,0 +1,520 @@
+/* Focus App - Dark Mode Styles */
+
+/* Ensure all components support dark mode */
+
+/* Base Elements */
+.dark body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Containers */
+.dark .profile-container,
+.dark .login-container,
+.dark .messages-container,
+.dark .call-wrapper,
+.dark .home-container,
+.dark .create-container {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-md);
+}
+
+/* Headings */
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6 {
+  color: var(--text-primary);
+}
+
+/* Buttons - Maintain visibility in dark mode */
+.dark .btn-green {
+  background-color: #1da1f2;
+  color: white;
+}
+
+.dark .btn-green:hover:not(:disabled) {
+  background-color: #1a8cd8;
+}
+
+.dark .btn-blue {
+  background: #0084ff;
+  color: #fff;
+}
+
+.dark .btn-blue:hover:not(:disabled) {
+  background: #006edb;
+}
+
+.dark .btn-red {
+  background: #ff3b30;
+  color: white;
+}
+
+.dark .btn-red:hover:not(:disabled) {
+  background: #d32f2f;
+}
+
+.dark .btn-yellow {
+  background: #ffd60a;
+  color: #000;
+}
+
+.dark .btn-yellow:hover:not(:disabled) {
+  background: #e6c200;
+}
+
+/* Inputs and Textareas */
+.dark input[type='text'],
+.dark input[type='email'],
+.dark input[type='password'],
+.dark input[type='date'],
+.dark input[type='search'],
+.dark textarea,
+.dark select {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.dark input[type='text']:focus,
+.dark input[type='email']:focus,
+.dark input[type='password']:focus,
+.dark input[type='date']:focus,
+.dark input[type='search']:focus,
+.dark textarea:focus,
+.dark select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 8px rgba(74, 158, 255, 0.3);
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* Post Cards */
+.dark .post-card {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.dark .post-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Messages */
+.dark .messages-list {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+.dark .message.mine {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.dark .message.other {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+/* Video Containers */
+.dark .video-box {
+  background: #000;
+  border: 1px solid var(--border-color);
+}
+
+/* Error and Info Messages */
+.dark .error-msg {
+  color: var(--error-color);
+  background: rgba(255, 59, 48, 0.1);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-md);
+}
+
+.dark .login-message {
+  color: var(--primary-color);
+  background: rgba(74, 158, 255, 0.1);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-md);
+}
+
+/* Links */
+.dark a {
+  color: var(--primary-color);
+}
+
+.dark a:hover {
+  color: #6bb3ff;
+}
+
+/* Cards and Panels */
+.dark .card,
+.dark .panel {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+/* Modals */
+.dark .modal-content {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.dark .modal-overlay {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+/* Dropdowns */
+.dark .dropdown-menu {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-lg);
+}
+
+.dark .dropdown-item:hover {
+  background: var(--hover-bg);
+}
+
+/* Navigation */
+.dark .nav-link {
+  color: var(--text-secondary);
+}
+
+.dark .nav-link:hover,
+.dark .nav-link.active {
+  color: var(--text-primary);
+  background: var(--hover-bg);
+}
+
+/* Tabs */
+.dark .tab {
+  color: var(--text-secondary);
+  border-bottom: 2px solid transparent;
+}
+
+.dark .tab:hover {
+  color: var(--text-primary);
+}
+
+.dark .tab.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+/* Badges */
+.dark .badge {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.dark .badge-primary {
+  background: var(--primary-color);
+  color: white;
+}
+
+.dark .badge-success {
+  background: var(--success-color);
+  color: white;
+}
+
+.dark .badge-error {
+  background: var(--error-color);
+  color: white;
+}
+
+/* Tooltips */
+.dark .tooltip {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Loading Spinners */
+.dark .loading-spinner {
+  border-color: var(--border-color);
+  border-top-color: var(--primary-color);
+}
+
+/* Skeleton Screens */
+.dark .skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 0%,
+    var(--hover-bg) 50%,
+    var(--bg-secondary) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Code Blocks */
+.dark code,
+.dark pre {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+/* Tables */
+.dark table {
+  border-color: var(--border-color);
+}
+
+.dark th {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.dark td {
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.dark tr:hover {
+  background: var(--hover-bg);
+}
+
+/* Forms */
+.dark .form-group label {
+  color: var(--text-primary);
+}
+
+.dark .form-help-text {
+  color: var(--text-secondary);
+}
+
+.dark .form-error {
+  color: var(--error-color);
+}
+
+/* Dividers */
+.dark hr,
+.dark .divider {
+  border-color: var(--border-color);
+  background: var(--border-color);
+}
+
+/* Avatars */
+.dark .avatar {
+  border-color: var(--border-color);
+}
+
+/* Progress Bars */
+.dark .progress-bar {
+  background: var(--bg-secondary);
+}
+
+.dark .progress-fill {
+  background: var(--primary-color);
+}
+
+/* Switches/Toggles */
+.dark .toggle-switch {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+.dark .toggle-switch.active {
+  background: var(--primary-color);
+}
+
+/* Chips/Tags */
+.dark .chip,
+.dark .tag {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+/* Alerts */
+.dark .alert {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.dark .alert-info {
+  background: rgba(74, 158, 255, 0.1);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.dark .alert-success {
+  background: rgba(48, 209, 88, 0.1);
+  border-color: var(--success-color);
+  color: var(--success-color);
+}
+
+.dark .alert-warning {
+  background: rgba(255, 214, 10, 0.1);
+  border-color: var(--warning-color);
+  color: var(--warning-color);
+}
+
+.dark .alert-error {
+  background: rgba(255, 59, 48, 0.1);
+  border-color: var(--error-color);
+  color: var(--error-color);
+}
+
+/* Search Bar */
+.dark .search-bar {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.dark .search-bar:focus {
+  border-color: var(--primary-color);
+}
+
+/* Sidebar */
+.dark .sidebar {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+/* Header */
+.dark .header {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Footer */
+.dark .footer {
+  background: var(--card-bg);
+  border-top: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+/* Context Menus */
+.dark .context-menu {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-xl);
+}
+
+.dark .context-menu-item:hover {
+  background: var(--hover-bg);
+}
+
+/* Popovers */
+.dark .popover {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
+  color: var(--text-primary);
+}
+
+/* Ensure images don't get too bright in dark mode */
+.dark img {
+  opacity: 0.95;
+}
+
+.dark img:hover {
+  opacity: 1;
+}
+
+/* Video player controls in dark mode */
+.dark video::-webkit-media-controls-panel {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* Ensure proper contrast for accessibility */
+.dark .text-contrast {
+  color: var(--text-primary);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Dark mode specific utility classes */
+.dark-only {
+  display: none;
+}
+
+.dark .dark-only {
+  display: block;
+}
+
+.light-only {
+  display: block;
+}
+
+.dark .light-only {
+  display: none;
+}
+
+/* Ensure focus indicators are visible in dark mode */
+.dark *:focus-visible {
+  outline-color: var(--primary-color);
+  outline-width: 2px;
+  outline-offset: 2px;
+}
+
+/* Dark mode loading screen */
+.dark .loading-screen {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Dark mode for specific Focus components */
+.dark .focus-btn-icon {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.dark .focus-btn-icon:hover {
+  background: var(--hover-bg);
+}
+
+.dark .focus-card {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+.dark .focus-input {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+/* Ensure proper contrast ratios (WCAG AA compliance) */
+.dark {
+  /* Text on background: 7:1 ratio (AAA) */
+  --text-on-bg-contrast: 7;
+  
+  /* Text on cards: 4.5:1 ratio (AA) */
+  --text-on-card-contrast: 4.5;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .dark {
+    --bg-primary: #000000;
+    --bg-secondary: #0a0a0a;
+    --text-primary: #ffffff;
+    --text-secondary: #ffffff;
+    --border-color: #ffffff;
+  }
+}

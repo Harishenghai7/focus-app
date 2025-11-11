@@ -1,0 +1,248 @@
+.data-export-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--card-bg);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  z-index: 1001;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.export-info {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.info-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.export-info h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 16px 0;
+}
+
+.export-info p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0 0 16px 0;
+  line-height: 1.6;
+}
+
+.export-info ul {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  text-align: left;
+}
+
+.export-info li {
+  font-size: 14px;
+  color: var(--text-secondary);
+  padding: 8px 0;
+  padding-left: 28px;
+  position: relative;
+}
+
+.export-info li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.privacy-note {
+  background: rgba(255, 149, 0, 0.1);
+  border: 1px solid #ff9500;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.export-progress {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.progress-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.export-progress h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 24px 0;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), #1877f2);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-status {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 8px 0;
+}
+
+.progress-percentage {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 8px 0 0 0;
+}
+
+.export-complete {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.success-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.export-complete h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 12px 0;
+}
+
+.export-complete > p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0 0 24px 0;
+}
+
+.export-summary {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 24px 0;
+  text-align: left;
+}
+
+.export-summary h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 16px 0;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--card-bg);
+  border-radius: 8px;
+}
+
+.summary-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.summary-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.export-size {
+  font-size: 14px;
+  color: var(--text-secondary);
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+.export-size strong {
+  color: var(--text-primary);
+}
+
+.download-btn {
+  width: 100%;
+  padding: 14px 24px;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+/* Dark mode adjustments */
+.dark .data-export-modal {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.dark .privacy-note {
+  background: rgba(255, 149, 0, 0.15);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .data-export-modal {
+    width: 95%;
+    max-height: 95vh;
+  }
+
+  .info-icon,
+  .progress-icon,
+  .success-icon {
+    font-size: 48px;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+  }
+}

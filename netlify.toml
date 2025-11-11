@@ -1,0 +1,40 @@
+[build]
+  publish = "build"
+  command = "npm run build:prod"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build.environment]
+  REACT_APP_SUPABASE_URL = "https://kfvrzlollltgjzxaxcbs.supabase.co"
+  REACT_APP_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtmdnJ6bG9sbGx0Z2p6eGF4Y2JzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1MDAzNjUsImV4cCI6MjA3NTA3NjM2NX0.G0ZYbWQBU5q049R-MhCkYpXlswocHZFK24XgkAE-POY"
+  REACT_APP_ENV = "production"
+  GENERATE_SOURCEMAP = "false"
+  INLINE_RUNTIME_CHUNK = "false"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+
+[[headers]]
+  for = "/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

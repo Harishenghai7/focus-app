@@ -1,0 +1,99 @@
+{
+  "summary": {
+    "totalIssues": 8,
+    "totalFixes": 8,
+    "timestamp": "2025-11-08T16:01:25.218Z"
+  },
+  "issues": [
+    {
+      "category": "Navigation",
+      "issue": "Clicking post should open dedicated page like Instagram",
+      "severity": "High",
+      "fix": "Add proper routing to /post/:id and /boltz/:id"
+    },
+    {
+      "category": "UI Logic",
+      "issue": "Three dot menus need proper options based on ownership",
+      "severity": "High",
+      "fix": "Add conditional menu items like Instagram"
+    },
+    {
+      "category": "Search Logic",
+      "issue": "User search results need follow buttons and proper states",
+      "severity": "High",
+      "fix": "Add follow state management in search results"
+    },
+    {
+      "category": "Real-time Logic",
+      "issue": "Real-time updates not working properly for likes, comments, follows",
+      "severity": "Critical",
+      "fix": "Fix Supabase subscriptions and optimistic updates"
+    },
+    {
+      "category": "Notifications",
+      "issue": "Notifications not triggering properly on user actions",
+      "severity": "High",
+      "fix": "Add proper notification triggers and real-time delivery"
+    },
+    {
+      "category": "Feed Logic",
+      "issue": "Feed not updating properly when following/unfollowing users",
+      "severity": "High",
+      "fix": "Add proper feed refresh logic"
+    },
+    {
+      "category": "Modal Logic",
+      "issue": "Modals not handling navigation and state properly",
+      "severity": "Medium",
+      "fix": "Add proper modal state management and URL sync"
+    },
+    {
+      "category": "State Management",
+      "issue": "State not syncing properly between components",
+      "severity": "High",
+      "fix": "Add proper global state management"
+    }
+  ],
+  "fixes": [
+    {
+      "file": "src/components/PostCard.js",
+      "fix": "Add proper post click navigation",
+      "code": "\n// Fix in PostCard.js - Add proper click handlers\nconst handlePostClick = (e) => {\n  // Don't navigate if clicking on interactive elements\n  if (e.target.closest('button, a, .action-btn, .post-menu-btn')) {\n    return;\n  }\n  navigate(`/${contentType}/${postId}`);\n};\n\n// Update media container\n<div className=\"post-media-container\" onClick={handlePostClick}>\n  {/* Media content */}\n</div>"
+    },
+    {
+      "file": "src/components/PostCard.js",
+      "fix": "Enhanced three dot menu with proper options",
+      "code": "\n// Enhanced three dot menu logic\nconst getMenuOptions = () => {\n  const isOwner = postUser.id === user?.id;\n  const isFollowing = following;\n  \n  if (isOwner) {\n    return [\n      { icon: '📝', label: 'Edit', action: () => navigate(`/edit-${contentType}/${postId}`) },\n      { icon: '📊', label: 'View Insights', action: () => navigate(`/insights/${postId}`) },\n      { icon: '🔗', label: 'Copy Link', action: copyLink },\n      { icon: '📤', label: 'Share', action: () => setShowShareModal(true) },\n      { icon: '🗑️', label: 'Delete', action: handleDelete, className: 'delete-btn' }\n    ];\n  } else {\n    return [\n      { icon: isFollowing ? '👥' : '➕', label: isFollowing ? 'Unfollow' : 'Follow', action: handleFollow },\n      { icon: saved ? '📌' : '📌', label: saved ? 'Unsave' : 'Save', action: handleSave },\n      { icon: '📤', label: 'Share', action: () => setShowShareModal(true) },\n      { icon: '🔗', label: 'Copy Link', action: copyLink },\n      { icon: '🚫', label: 'Not Interested', action: handleNotInterested },\n      { icon: '⚠️', label: 'Report', action: handleReport, className: 'report-btn' }\n    ];\n  }\n};"
+    },
+    {
+      "file": "src/components/UserSearchResult.js",
+      "fix": "Add follow logic to search results",
+      "code": "\n// Enhanced user search with follow logic\nconst UserSearchResult = ({ user, currentUser }) => {\n  const [following, setFollowing] = useState(false);\n  const [loading, setLoading] = useState(false);\n  \n  useEffect(() => {\n    checkFollowStatus();\n  }, [user.id, currentUser?.id]);\n  \n  const checkFollowStatus = async () => {\n    if (!currentUser) return;\n    const { data } = await supabase\n      .from('follows')\n      .select('id')\n      .eq('follower_id', currentUser.id)\n      .eq('following_id', user.id)\n      .maybeSingle();\n    setFollowing(!!data);\n  };\n  \n  const handleFollow = async () => {\n    if (loading) return;\n    setLoading(true);\n    \n    try {\n      if (following) {\n        await supabase\n          .from('follows')\n          .delete()\n          .eq('follower_id', currentUser.id)\n          .eq('following_id', user.id);\n      } else {\n        await supabase\n          .from('follows')\n          .insert([{ follower_id: currentUser.id, following_id: user.id }]);\n      }\n      setFollowing(!following);\n    } catch (error) {\n      console.error('Follow error:', error);\n    } finally {\n      setLoading(false);\n    }\n  };\n  \n  return (\n    <div className=\"user-search-result\">\n      <img src={user.avatar_url} alt={user.username} />\n      <div className=\"user-info\">\n        <span className=\"username\">{user.username}</span>\n        <span className=\"full-name\">{user.full_name}</span>\n      </div>\n      {currentUser?.id !== user.id && (\n        <button \n          className={`follow-btn ${following ? 'following' : ''}`}\n          onClick={handleFollow}\n          disabled={loading}\n        >\n          {loading ? '...' : following ? 'Following' : 'Follow'}\n        </button>\n      )}\n    </div>\n  );\n};"
+    },
+    {
+      "file": "src/utils/realTimeManager.js",
+      "fix": "Enhanced real-time subscription system",
+      "code": "\n// Enhanced real-time subscription manager\nclass RealTimeManager {\n  constructor() {\n    this.subscriptions = new Map();\n  }\n  \n  subscribeToPost(postId, callback) {\n    const channel = supabase\n      .channel(`post-${postId}`)\n      .on('postgres_changes', \n        { event: 'UPDATE', schema: 'public', table: 'posts', filter: `id=eq.${postId}` },\n        callback\n      )\n      .on('postgres_changes',\n        { event: 'INSERT', schema: 'public', table: 'likes', filter: `content_id=eq.${postId}` },\n        (payload) => callback({ type: 'like_added', payload })\n      )\n      .on('postgres_changes',\n        { event: 'DELETE', schema: 'public', table: 'likes', filter: `content_id=eq.${postId}` },\n        (payload) => callback({ type: 'like_removed', payload })\n      )\n      .subscribe();\n      \n    this.subscriptions.set(`post-${postId}`, channel);\n  }\n  \n  unsubscribeFromPost(postId) {\n    const channel = this.subscriptions.get(`post-${postId}`);\n    if (channel) {\n      supabase.removeChannel(channel);\n      this.subscriptions.delete(`post-${postId}`);\n    }\n  }\n  \n  subscribeToUser(userId, callback) {\n    const channel = supabase\n      .channel(`user-${userId}`)\n      .on('postgres_changes',\n        { event: 'INSERT', schema: 'public', table: 'follows', filter: `following_id=eq.${userId}` },\n        (payload) => callback({ type: 'new_follower', payload })\n      )\n      .subscribe();\n      \n    this.subscriptions.set(`user-${userId}`, channel);\n  }\n}\n\nexport const realTimeManager = new RealTimeManager();"
+    },
+    {
+      "file": "src/utils/NotificationManager.js",
+      "fix": "Enhanced notification system with real-time delivery",
+      "code": "\n// Enhanced notification system\nclass NotificationManager {\n  static async createNotification(type, data) {\n    const { recipient_id, actor_id, content_id, content_type } = data;\n    \n    // Don't notify self\n    if (recipient_id === actor_id) return;\n    \n    try {\n      const { data: notification } = await supabase\n        .from('notifications')\n        .insert([{\n          user_id: recipient_id,\n          type,\n          actor_id,\n          content_id,\n          content_type,\n          created_at: new Date().toISOString()\n        }])\n        .select(`\n          *,\n          actor:profiles!notifications_actor_id_fkey(username, avatar_url)\n        `)\n        .single();\n        \n      // Send real-time notification\n      await supabase\n        .channel(`notifications-${recipient_id}`)\n        .send({\n          type: 'broadcast',\n          event: 'new_notification',\n          payload: notification\n        });\n        \n      // Send push notification if enabled\n      await this.sendPushNotification(recipient_id, notification);\n      \n    } catch (error) {\n      console.error('Notification error:', error);\n    }\n  }\n  \n  static async sendPushNotification(userId, notification) {\n    // Implementation for push notifications\n    if ('serviceWorker' in navigator && 'PushManager' in window) {\n      // Send push notification\n    }\n  }\n  \n  static getNotificationMessage(notification) {\n    const { type, actor } = notification;\n    const username = actor?.username || 'Someone';\n    \n    switch (type) {\n      case 'like':\n        return `${username} liked your post`;\n      case 'comment':\n        return `${username} commented on your post`;\n      case 'follow':\n        return `${username} started following you`;\n      case 'mention':\n        return `${username} mentioned you in a comment`;\n      default:\n        return 'New notification';\n    }\n  }\n}\n\nexport default NotificationManager;"
+    },
+    {
+      "file": "src/hooks/useFeedManager.js",
+      "fix": "Enhanced feed management with follow logic",
+      "code": "\n// Enhanced feed management\nconst useFeedManager = () => {\n  const [feedVersion, setFeedVersion] = useState(0);\n  \n  const refreshFeed = useCallback(() => {\n    setFeedVersion(prev => prev + 1);\n  }, []);\n  \n  const handleFollowChange = useCallback(async (userId, isFollowing) => {\n    // Optimistically update feed\n    if (isFollowing) {\n      // Add user's posts to feed\n      const { data: userPosts } = await supabase\n        .from('posts')\n        .select('*')\n        .eq('user_id', userId)\n        .order('created_at', { ascending: false })\n        .limit(10);\n        \n      // Insert posts into current feed\n      setPosts(prev => {\n        const combined = [...userPosts, ...prev];\n        return combined.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));\n      });\n    } else {\n      // Remove user's posts from feed\n      setPosts(prev => prev.filter(post => post.user_id !== userId));\n    }\n  }, []);\n  \n  return { feedVersion, refreshFeed, handleFollowChange };\n};"
+    },
+    {
+      "file": "src/hooks/useModalManager.js",
+      "fix": "Enhanced modal management with URL sync",
+      "code": "\n// Enhanced modal manager\nconst useModalManager = () => {\n  const [modals, setModals] = useState({});\n  const navigate = useNavigate();\n  const location = useLocation();\n  \n  const openModal = useCallback((modalId, data = {}) => {\n    setModals(prev => ({ ...prev, [modalId]: { open: true, data } }));\n    \n    // Update URL for certain modals\n    if (['post', 'boltz', 'profile'].includes(modalId)) {\n      navigate(`/${modalId}/${data.id}`, { state: { modal: true } });\n    }\n  }, [navigate]);\n  \n  const closeModal = useCallback((modalId) => {\n    setModals(prev => ({ ...prev, [modalId]: { open: false, data: {} } }));\n    \n    // Handle back navigation\n    if (location.state?.modal) {\n      navigate(-1);\n    }\n  }, [navigate, location]);\n  \n  const closeAllModals = useCallback(() => {\n    setModals({});\n  }, []);\n  \n  return { modals, openModal, closeModal, closeAllModals };\n};"
+    },
+    {
+      "file": "src/context/AppStateContext.js",
+      "fix": "Enhanced global state management",
+      "code": "\n// Enhanced global state manager\nconst AppStateContext = createContext();\n\nexport const AppStateProvider = ({ children }) => {\n  const [state, setState] = useState({\n    user: null,\n    posts: [],\n    notifications: [],\n    followingUsers: new Set(),\n    likedPosts: new Set(),\n    savedPosts: new Set()\n  });\n  \n  const updateUser = useCallback((userData) => {\n    setState(prev => ({ ...prev, user: userData }));\n  }, []);\n  \n  const updatePost = useCallback((postId, updates) => {\n    setState(prev => ({\n      ...prev,\n      posts: prev.posts.map(post => \n        post.id === postId ? { ...post, ...updates } : post\n      )\n    }));\n  }, []);\n  \n  const toggleLike = useCallback((postId, liked) => {\n    setState(prev => {\n      const newLikedPosts = new Set(prev.likedPosts);\n      if (liked) {\n        newLikedPosts.add(postId);\n      } else {\n        newLikedPosts.delete(postId);\n      }\n      return { ...prev, likedPosts: newLikedPosts };\n    });\n  }, []);\n  \n  const toggleFollow = useCallback((userId, following) => {\n    setState(prev => {\n      const newFollowingUsers = new Set(prev.followingUsers);\n      if (following) {\n        newFollowingUsers.add(userId);\n      } else {\n        newFollowingUsers.delete(userId);\n      }\n      return { ...prev, followingUsers: newFollowingUsers };\n    });\n  }, []);\n  \n  const value = {\n    state,\n    updateUser,\n    updatePost,\n    toggleLike,\n    toggleFollow\n  };\n  \n  return (\n    <AppStateContext.Provider value={value}>\n      {children}\n    </AppStateContext.Provider>\n  );\n};\n\nexport const useAppState = () => {\n  const context = useContext(AppStateContext);\n  if (!context) {\n    throw new Error('useAppState must be used within AppStateProvider');\n  }\n  return context;\n};"
+    }
+  ]
+}

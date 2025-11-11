@@ -1,0 +1,66 @@
+/* Follow Button Styles */
+.follow-button {
+  position: relative;
+  padding: 8px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  min-width: 80px;
+  text-align: center;
+}
+
+.follow-button:hover {
+  background: var(--bg-secondary);
+  border-color: var(--accent-color);
+}
+
+.follow-button.following {
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+}
+
+.follow-button.following:hover {
+  background: var(--error-color);
+  border-color: var(--error-color);
+}
+
+.follow-button.following:hover .button-text {
+  display: none;
+}
+
+.follow-button.following:hover .unfollow-text {
+  display: inline;
+}
+
+.follow-button.pending {
+  background: var(--warning-color);
+  color: white;
+  border-color: var(--warning-color);
+}
+
+.follow-button.loading {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.unfollow-text {
+  display: none;
+}
+
+/* Dark mode */
+.dark .follow-button {
+  border-color: var(--border-color-dark);
+  background: var(--bg-primary-dark);
+  color: var(--text-primary-dark);
+}
+
+.dark .follow-button:hover {
+  background: var(--bg-secondary-dark);
+}

@@ -1,0 +1,37 @@
+/* Theme Variables */
+:root {
+  /* Primary Colors */
+  --primary-color: #1877f2;
+  --secondary-color: #42a5f5;
+  --success-color: #34c759;
+  --warning-color: #ff9500;
+  --error-color: #ff3b30;
+  
+  /* Light Theme */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --card-bg: #ffffff;
+  --hover-bg: #f0f2f5;
+  
+  --text-primary: #1c1e21;
+  --text-secondary: #65676b;
+  --text-muted: #8a8d91;
+  
+  --border-color: #dadde1;
+  --border-light: #e4e6ea;
+}
+
+/* Dark Theme */
+.dark {
+  --bg-primary: #18191a;
+  --bg-secondary: #242526;
+  --card-bg: #242526;
+  --hover-bg: #3a3b3c;
+  
+  --text-primary: #e4e6ea;
+  --text-secondary: #b0b3b8;
+  --text-muted: #8a8d91;
+  
+  --border-color: #3e4042;
+  --border-light: #3a3b3c;
+}

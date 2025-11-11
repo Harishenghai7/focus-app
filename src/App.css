@@ -1,38 +1,364 @@
-.App {
+/* Focus App - Professional Instagram-Level Styling */
+
+.focus-app {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  transition: all var(--transition-normal);
+}
+
+/* Loading Screen */
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+}
+
+.loading-content {
   text-align: center;
+  padding: var(--space-8);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.loading-logo {
+  font-size: 4rem;
+  margin-bottom: var(--space-4);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+.loading-content h2 {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: var(--focus-primary);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.loading-content p {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-6) 0;
+}
+
+/* Page Loader for Code Splitting */
+.page-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: var(--space-8);
+}
+
+.page-loader .loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--focus-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: var(--space-4);
+}
+
+.page-loader p {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-bar {
+  height: 3px;
+  background: var(--focus-gradient);
+  border-radius: var(--radius-full);
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+/* Main App Layout */
+.app-main {
+  min-height: 100vh;
+  padding-top: 60px; /* Header height */
+  padding-bottom: 80px; /* Bottom nav height */
+  background: var(--bg-primary);
+}
+
+/* Page Container */
+.page {
+  min-height: calc(100vh - 140px);
+  background: var(--bg-primary);
+}
+
+.page-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .page-inner {
+    padding: 0 var(--space-3);
+  }
+  
+  .app-main {
+    padding-top: 56px;
+    padding-bottom: 70px;
   }
 }
 
-.App-header {
-  background-color: #282c34;
+@media (max-width: 480px) {
+  .page-inner {
+    padding: 0 var(--space-2);
+  }
+}
+
+/* Focus Animations */
+@keyframes focusSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes focusSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes focusSlideLeft {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes focusSlideRight {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Page Transitions */
+.page-transition-enter {
+  animation: focusSlideUp 0.3s ease-out;
+}
+
+.page-transition-exit {
+  animation: focusSlideDown 0.3s ease-out;
+}
+
+/* Utility Classes */
+.focus-fade-in {
+  animation: focusFadeIn 0.5s ease-out;
+}
+
+.focus-slide-up {
+  animation: focusSlideUp 0.3s ease-out;
+}
+
+.focus-slide-down {
+  animation: focusSlideDown 0.3s ease-out;
+}
+
+.focus-slide-left {
+  animation: focusSlideLeft 0.3s ease-out;
+}
+
+.focus-slide-right {
+  animation: focusSlideRight 0.3s ease-out;
+}
+
+/* Focus Button Styles */
+.focus-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.focus-btn-icon:hover {
+  background: var(--hover-bg);
+  transform: scale(1.05);
+}
+
+.focus-btn-icon:active {
+  transform: scale(0.95);
+}
+
+/* Focus Card Hover Effects */
+.focus-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Focus Input Focus States */
+.focus-input:focus {
+  border-color: var(--focus-primary);
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+/* Scrollbar Styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) var(--bg-secondary);
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-full);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: var(--radius-full);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Focus Selection */
+::selection {
+  background: var(--focus-primary);
+  color: var(--text-inverse);
+}
+
+::-moz-selection {
+  background: var(--focus-primary);
+  color: var(--text-inverse);
+}
+
+/* Focus Accessibility */
+.focus-app *:focus {
+  outline: 2px solid var(--focus-primary);
+  outline-offset: 2px;
+}
+
+.focus-app button:focus,
+.focus-app input:focus,
+.focus-app textarea:focus,
+.focus-app select:focus {
+  outline: 2px solid var(--focus-primary);
+  outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .focus-app {
+    --border-color: #000000;
+    --text-primary: #000000;
+    --bg-primary: #ffffff;
+  }
+  
+  .dark {
+    --border-color: #ffffff;
+    --text-primary: #ffffff;
+    --bg-primary: #000000;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .focus-app {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .loading-screen,
+  .app-main {
+    padding: 0 !important;
+  }
+}
+
+/* Loading Screen */
+.loading-screen {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
+  gap: 20px;
 }
 
-.App-link {
-  color: #61dafb;
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-screen p {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Ensure app takes full height */
+.focus-app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1;
+  overflow-y: auto;
 }

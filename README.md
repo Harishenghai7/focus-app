@@ -1,70 +1,241 @@
-# Getting Started with Create React App
+# Focus - Social Media Platform
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Focus is a modern, full-featured social media platform that combines photo sharing, short-form videos, ephemeral stories, messaging, and video calls into one seamless experience.
 
-## Available Scripts
+## ✨ Features
 
-In the project directory, you can run:
+- **Posts**: Share photos and videos with carousel support (up to 10 items)
+- **Boltz**: Create and watch short-form vertical videos
+- **Flash Stories**: Share 24-hour ephemeral content with highlights
+- **Direct Messaging**: One-on-one and group chats with voice messages
+- **Audio/Video Calls**: Built-in WebRTC calling
+- **Real-time Updates**: Instant notifications and live feed updates
+- **Search & Discovery**: Find users, hashtags, and trending content
+- **Privacy Controls**: Private accounts, blocking, close friends
+- **Accessibility**: Full screen reader support and keyboard navigation
+- **Dark Mode**: Beautiful light and dark themes
+- **PWA**: Install as a progressive web app
 
-### `npm start`
+## 🚀 Quick Start
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Prerequisites
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Node.js 16+ and npm
+- Supabase account and project
+- Git
 
-### `npm test`
+### Installation
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/focus-app.git
+   cd focus-app
+   ```
 
-### `npm run build`
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+3. **Set up environment variables**
+   
+   Create a `.env.local` file in the root directory:
+   ```env
+   REACT_APP_SUPABASE_URL=your_supabase_url
+   REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
+   REACT_APP_GOOGLE_CLIENT_ID=your_google_client_id
+   REACT_APP_GITHUB_CLIENT_ID=your_github_client_id
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+4. **Set up the database**
+   
+   Run the database migrations in your Supabase SQL editor:
+   ```bash
+   # Run migrations in order from migrations/ folder
+   ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+5. **Start the development server**
+   ```bash
+   npm start
+   ```
+   
+   Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-### `npm run eject`
+## 📚 Documentation
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- **[User Guide](docs/USER_GUIDE.md)** - Complete guide for using Focus
+- **[FAQ](docs/FAQ.md)** - Frequently asked questions
+- **[Code Documentation](docs/CODE_DOCUMENTATION.md)** - Developer documentation
+- **[Deployment Guide](docs/DEPLOYMENT_GUIDE.md)** - Production deployment instructions
+- **[Video Tutorials](docs/VIDEO_TUTORIALS.md)** - Video tutorial library
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 🛠️ Development
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Available Scripts
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+#### `npm start`
+Runs the app in development mode at [http://localhost:3000](http://localhost:3000).
 
-## Learn More
+#### `npm test`
+Launches the test runner in interactive watch mode.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+#### `npm run test:coverage`
+Runs tests with coverage report.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+#### `npm run build`
+Builds the app for production to the `build` folder.
 
-### Code Splitting
+#### `npm run build:analyze`
+Builds and analyzes the bundle size.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+#### `npm run e2e`
+Runs end-to-end tests with Playwright.
 
-### Analyzing the Bundle Size
+#### `npm run lint`
+Runs ESLint to check code quality.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+#### `npm run format`
+Formats code with Prettier.
 
-### Making a Progressive Web App
+### Project Structure
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```
+focus-app/
+├── public/              # Static assets
+├── src/
+│   ├── components/      # React components
+│   ├── pages/           # Page components
+│   ├── hooks/           # Custom React hooks
+│   ├── utils/           # Utility functions
+│   ├── context/         # React context providers
+│   ├── styles/          # CSS and styling
+│   └── __tests__/       # Test files
+├── docs/                # Documentation
+├── migrations/          # Database migrations
+├── e2e/                 # End-to-end tests
+└── scripts/             # Build scripts
+```
 
-### Advanced Configuration
+## 🧪 Testing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Focus has comprehensive test coverage:
 
-### Deployment
+- **Unit Tests**: Testing utility functions and hooks
+- **Integration Tests**: Testing component interactions
+- **E2E Tests**: Testing complete user flows
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Run tests:
+```bash
+# Unit and integration tests
+npm test
 
-### `npm run build` fails to minify
+# E2E tests
+npm run e2e
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+# Coverage report
+npm run test:coverage
+```
+
+## 🔒 Security
+
+Focus implements multiple security layers:
+
+- Row Level Security (RLS) policies on all database tables
+- Input validation and sanitization
+- CSRF protection
+- Rate limiting
+- Signed URLs for media files
+- Two-factor authentication
+- Session management
+
+See [Security Documentation](docs/CODE_DOCUMENTATION.md#security) for details.
+
+## 🎨 Customization
+
+### Theming
+
+Focus supports light and dark themes. Customize colors in `src/styles/theme.css`.
+
+### Configuration
+
+App configuration is in `src/config/`:
+- `constants.js` - App constants
+- `features.js` - Feature flags
+- `api.js` - API endpoints
+
+## 📱 Progressive Web App
+
+Focus is a PWA and can be installed on mobile devices and desktops:
+
+1. Open Focus in your browser
+2. Click the install prompt or browser menu
+3. Select "Install Focus" or "Add to Home Screen"
+
+## 🌐 Browser Support
+
+- Chrome 90+
+- Safari 14+
+- Firefox 88+
+- Edge 90+
+
+## 🚢 Deployment
+
+See the [Deployment Guide](docs/DEPLOYMENT_GUIDE.md) for detailed instructions.
+
+Quick deploy options:
+- **Netlify**: Connect your repo and deploy automatically
+- **Vercel**: Import project and deploy with one click
+- **Custom Server**: Build and serve the `build` folder
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Development Guidelines
+
+- Follow the existing code style
+- Write tests for new features
+- Update documentation as needed
+- Ensure all tests pass before submitting PR
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgments
+
+- Built with [React](https://react.dev)
+- Backend powered by [Supabase](https://supabase.com)
+- Icons from [Lucide React](https://lucide.dev)
+- Animations with [Framer Motion](https://www.framer.com/motion/)
+
+## 📞 Support
+
+- **Documentation**: Check the [docs](docs/) folder
+- **Issues**: Report bugs on [GitHub Issues](https://github.com/yourusername/focus-app/issues)
+- **Email**: support@focus.app
+- **Community**: Join our [Discord](https://discord.gg/focus)
+
+## 🗺️ Roadmap
+
+- [ ] Mobile apps (iOS and Android)
+- [ ] Live streaming
+- [ ] Advanced analytics
+- [ ] Monetization features
+- [ ] API for third-party integrations
+
+## 📊 Status
+
+- **Version**: 1.0.0
+- **Status**: Production Ready
+- **Last Updated**: November 2025
+
+---
+
+Made with ❤️ by the Focus Team

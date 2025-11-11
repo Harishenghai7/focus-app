@@ -1,0 +1,227 @@
+.page-calls {
+  padding: 0;
+  background: var(--bg-primary);
+}
+
+.calls-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+}
+
+.calls-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.calls-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.calls-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 1rem;
+}
+
+.calls-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  padding: 2rem;
+  text-align: center;
+}
+
+.calls-empty .empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.calls-empty h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+  font-size: 1.25rem;
+}
+
+.calls-empty p {
+  margin: 0 0 1.5rem 0;
+  color: var(--text-secondary);
+}
+
+.calls-list {
+  padding: 0;
+}
+
+.call-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.call-item:hover {
+  background: var(--bg-secondary);
+}
+
+.call-info {
+  flex: 1;
+}
+
+.call-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.call-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.call-avatar:hover {
+  transform: scale(1.05);
+}
+
+.call-details h4 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.call-details h4:hover {
+  color: var(--accent-color);
+}
+
+.call-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.call-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.call-icon.incoming {
+  color: var(--success-color);
+}
+
+.call-icon.outgoing {
+  color: var(--accent-color);
+}
+
+.call-icon.missed {
+  color: var(--error-color);
+}
+
+.call-status.missed {
+  color: var(--error-color);
+}
+
+.call-status.completed {
+  color: var(--success-color);
+}
+
+.call-status.declined {
+  color: var(--error-color);
+}
+
+.call-time {
+  margin-left: auto;
+}
+
+.call-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.call-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.call-btn.audio {
+  background: var(--success-color);
+  color: white;
+}
+
+.call-btn.audio:hover {
+  background: var(--success-hover);
+  transform: scale(1.05);
+}
+
+.call-btn.video {
+  background: var(--accent-color);
+  color: white;
+}
+
+.call-btn.video:hover {
+  background: var(--accent-hover);
+  transform: scale(1.05);
+}
+
+/* Dark mode adjustments */
+.dark .call-item {
+  border-bottom-color: var(--border-dark);
+}
+
+.dark .call-item:hover {
+  background: var(--bg-secondary-dark);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .calls-header {
+    padding: 0.75rem;
+  }
+  
+  .calls-header h1 {
+    font-size: 1.25rem;
+  }
+  
+  .call-item {
+    padding: 0.75rem;
+  }
+  
+  .call-avatar {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .call-btn {
+    width: 36px;
+    height: 36px;
+  }
+}

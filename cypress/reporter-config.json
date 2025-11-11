@@ -1,0 +1,18 @@
+{
+  "reporterEnabled": "spec, mocha-junit-reporter, cypress-mochawesome-reporter",
+  "mochaJunitReporterReporterOptions": {
+    "mochaFile": "cypress/results/junit-[hash].xml",
+    "toConsole": false
+  },
+  "cypressMochawesomeReporterReporterOptions": {
+    "reportDir": "cypress/results/mochawesome",
+    "charts": true,
+    "reportPageTitle": "Focus App - Supreme QA Report",
+    "embeddedScreenshots": true,
+    "inlineAssets": true,
+    "saveAllAttempts": false,
+    "overwrite": false,
+    "html": false,
+    "json": true
+  }
+}

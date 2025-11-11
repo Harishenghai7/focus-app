@@ -1,0 +1,6 @@
+{
+  "deno.enable": true,
+  "deno.unstable": true,
+  "kiroAgent.configureMCP": "Disabled",
+  "CodeGPT.apiKey": "CodeGPT Plus Beta"
+}

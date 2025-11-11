@@ -1,0 +1,153 @@
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: white;
+  border-top: 1px solid #e1e5e9;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 8px 16px;
+  z-index: 1000;
+  box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.1);
+}
+
+.nav-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  min-width: 64px;
+  outline: none;
+}
+
+.nav-btn svg {
+  width: 24px;
+  height: 24px;
+  stroke: #666666 !important;
+  fill: none !important;
+  stroke-width: 2 !important;
+}
+
+.nav-btn.active svg {
+  stroke: #667eea !important;
+  fill: #667eea !important;
+}
+
+.nav-btn:hover:not(.create-btn) {
+  background: rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+.nav-btn:hover:not(.create-btn) svg {
+  stroke: #333333 !important;
+}
+
+.nav-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #666666;
+  text-transform: capitalize;
+}
+
+.nav-btn.active .nav-label {
+  color: #667eea;
+}
+
+.nav-btn:hover:not(.create-btn) .nav-label {
+  color: #333333;
+}
+
+.create-btn {
+  background: #667eea !important;
+  color: white !important;
+  border-radius: 50% !important;
+  width: 56px !important;
+  height: 56px !important;
+  min-width: 56px !important;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+  margin: 0 8px;
+}
+
+.create-btn svg {
+  stroke: white !important;
+  fill: white !important;
+}
+
+.create-btn:hover {
+  background: #5a6fd8 !important;
+  transform: scale(1.05) !important;
+}
+
+.create-btn .nav-label {
+  display: none;
+}
+
+/* Dark mode */
+.dark .bottom-nav {
+  background: rgba(26, 26, 26, 0.95);
+  border-top-color: #333;
+}
+
+.dark .nav-btn svg {
+  stroke: #999999 !important;
+}
+
+.dark .nav-btn.active svg {
+  stroke: #667eea !important;
+  fill: #667eea !important;
+}
+
+.dark .nav-btn:hover:not(.create-btn) svg {
+  stroke: #ffffff !important;
+}
+
+.dark .nav-label {
+  color: #999999;
+}
+
+.dark .nav-btn.active .nav-label {
+  color: #667eea;
+}
+
+.dark .nav-btn:hover:not(.create-btn) .nav-label {
+  color: #ffffff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .bottom-nav {
+    height: 75px;
+    padding: 6px 12px;
+  }
+  
+  .nav-btn {
+    min-width: 56px;
+    padding: 8px 10px;
+    gap: 3px;
+  }
+  
+  .nav-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .nav-label {
+    font-size: 9px;
+  }
+  
+  .create-btn {
+    width: 52px !important;
+    height: 52px !important;
+    min-width: 52px !important;
+  }
+}

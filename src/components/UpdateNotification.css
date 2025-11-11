@@ -1,0 +1,246 @@
+.update-notification-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.update-notification-modal {
+  background: var(--bg-primary, #ffffff);
+  border-radius: 16px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.update-notification-header {
+  padding: 24px 24px 16px;
+  text-align: center;
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+  position: relative;
+}
+
+.update-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  animation: bounce 1s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.update-notification-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary, #000000);
+}
+
+.update-badge {
+  display: inline-block;
+  background: #ff4444;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.update-notification-content {
+  padding: 24px;
+}
+
+.update-version-info {
+  font-size: 16px;
+  color: var(--text-secondary, #666666);
+  margin: 0 0 16px;
+  text-align: center;
+}
+
+.update-versions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--bg-secondary, #f5f5f5);
+  border-radius: 12px;
+}
+
+.version-current,
+.version-new {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+.version-current {
+  background: var(--bg-tertiary, #e0e0e0);
+  color: var(--text-secondary, #666666);
+}
+
+.version-new {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.version-arrow {
+  font-size: 18px;
+  color: var(--text-secondary, #666666);
+}
+
+.update-release-notes {
+  margin-top: 16px;
+}
+
+.release-notes-toggle {
+  background: none;
+  border: none;
+  color: var(--primary-color, #667eea);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 0.2s;
+}
+
+.release-notes-toggle:hover {
+  opacity: 0.8;
+}
+
+.release-notes-list {
+  list-style: none;
+  padding: 12px 0 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.release-notes-list li {
+  padding: 8px 0 8px 24px;
+  position: relative;
+  font-size: 14px;
+  color: var(--text-secondary, #666666);
+  line-height: 1.5;
+}
+
+.release-notes-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.update-force-message {
+  margin-top: 16px;
+  padding: 12px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  color: #856404;
+  font-size: 14px;
+  text-align: center;
+}
+
+.update-notification-actions {
+  padding: 0 24px 24px;
+  display: flex;
+  gap: 12px;
+}
+
+.update-button {
+  flex: 1;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.update-button-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.update-button-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.update-button-secondary {
+  background: var(--bg-secondary, #f5f5f5);
+  color: var(--text-primary, #000000);
+}
+
+.update-button-secondary:hover {
+  background: var(--bg-tertiary, #e0e0e0);
+}
+
+.update-notification-footer {
+  padding: 0 24px 24px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-tertiary, #999999);
+  margin: 0;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .update-notification-modal {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2a2a2a;
+    --bg-tertiary: #3a3a3a;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --text-tertiary: #808080;
+    --border-color: #3a3a3a;
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .update-notification-modal {
+    max-width: 90%;
+  }
+
+  .update-notification-header h2 {
+    font-size: 20px;
+  }
+
+  .update-icon {
+    font-size: 40px;
+  }
+
+  .update-notification-actions {
+    flex-direction: column;
+  }
+
+  .update-button {
+    width: 100%;
+  }
+}

@@ -1,0 +1,376 @@
+.active-call-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #000;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Video Call Styles */
+.video-call-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
+
+.remote-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #1a1a1a;
+}
+
+.local-video-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 150px;
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  cursor: move;
+  z-index: 10;
+}
+
+.local-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1); /* Mirror effect */
+}
+
+.call-info-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+  z-index: 5;
+}
+
+.call-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.user-info h3 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.call-status-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.call-duration {
+  font-weight: 500;
+}
+
+.connection-quality {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.quality-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.quality-indicator.good {
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+}
+
+.quality-indicator.fair {
+  background: #f59e0b;
+  box-shadow: 0 0 8px #f59e0b;
+}
+
+.quality-indicator.poor {
+  background: #ef4444;
+  box-shadow: 0 0 8px #ef4444;
+}
+
+.pip-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.pip-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Audio Call Styles */
+.audio-call-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.audio-call-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.audio-call-content {
+  text-align: center;
+  z-index: 1;
+  padding: 40px;
+}
+
+.caller-avatar-large {
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 24px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.caller-avatar-large img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.caller-name {
+  margin: 0 0 8px 0;
+  font-size: 32px;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.caller-username {
+  margin: 0 0 32px 0;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.call-status-display {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.status-text {
+  font-size: 20px;
+  font-weight: 500;
+  color: white;
+}
+
+.status-text.calling,
+.status-text.ringing {
+  animation: blink 1.5s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.connection-quality-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.quality-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.quality-dot.good {
+  background: #10b981;
+}
+
+.quality-dot.fair {
+  background: #f59e0b;
+}
+
+.quality-dot.poor {
+  background: #ef4444;
+}
+
+/* Audio Visualizer */
+.audio-visualizer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 60px;
+  margin-top: 20px;
+}
+
+.visualizer-bar {
+  width: 4px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 2px;
+  min-height: 20%;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .local-video-container {
+    width: 120px;
+    height: 160px;
+    top: 15px;
+    right: 15px;
+  }
+
+  .call-info-overlay {
+    padding: 15px;
+  }
+
+  .user-info h3 {
+    font-size: 18px;
+  }
+
+  .call-status-info {
+    font-size: 13px;
+  }
+
+  .caller-avatar-large {
+    width: 120px;
+    height: 120px;
+  }
+
+  .caller-name {
+    font-size: 24px;
+  }
+
+  .caller-username {
+    font-size: 14px;
+  }
+
+  .status-text {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .local-video-container {
+    width: 100px;
+    height: 133px;
+    top: 10px;
+    right: 10px;
+  }
+
+  .audio-call-content {
+    padding: 20px;
+  }
+
+  .caller-avatar-large {
+    width: 100px;
+    height: 100px;
+  }
+
+  .caller-name {
+    font-size: 20px;
+  }
+
+  .status-text {
+    font-size: 16px;
+  }
+}
+
+/* Landscape mode adjustments */
+@media (max-height: 500px) and (orientation: landscape) {
+  .local-video-container {
+    width: 100px;
+    height: 133px;
+    top: 10px;
+    right: 10px;
+  }
+
+  .audio-call-content {
+    padding: 20px;
+  }
+
+  .caller-avatar-large {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 16px;
+  }
+
+  .caller-name {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+
+  .caller-username {
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  .call-status-display {
+    margin-bottom: 16px;
+  }
+
+  .audio-visualizer {
+    height: 40px;
+    margin-top: 10px;
+  }
+}

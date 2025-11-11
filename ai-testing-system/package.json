@@ -1,0 +1,23 @@
+{
+  "name": "ai-testing-system",
+  "version": "1.0.0",
+  "description": "AI-powered testing and analysis system for Focus App",
+  "main": "index.js",
+  "bin": {
+    "ai-test": "./index.js"
+  },
+  "scripts": {
+    "test": "node index.js",
+    "analyze": "node index.js",
+    "report": "node index.js"
+  },
+  "keywords": [
+    "testing",
+    "ai",
+    "analysis",
+    "quality",
+    "automation"
+  ],
+  "author": "Focus Team",
+  "license": "MIT"
+}
