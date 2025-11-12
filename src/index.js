@@ -3,7 +3,6 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import * as Sentry from '@sentry/react';
 import App from "./App";
-import { ThemeProvider } from "./context/ThemeContext";
 import { initializeErrorTracking } from "./utils/errorTracking";
 import { initializeSecurity } from "./config/security";
 import { initializeVersionManagement } from "./utils/versionManager";
@@ -15,74 +14,84 @@ import './styles/theme.css';
 import './styles/app-common.css';
 import "./styles/global.css";
 
-// Initialize Sentry for AI-powered error monitoring
-Sentry.init({
-  dsn: process.env.REACT_APP_SENTRY_DSN || 'https://990858c82f807d489aac2b2e0bb990b7@o4510329559449600.ingest.us.sentry.io/4510329573277696',
-  environment: process.env.NODE_ENV,
-  enabled: true, // Enable in development for testing
-  tracesSampleRate: 0.1,
-  integrations: [
-    new Sentry.BrowserTracing(),
-    new Sentry.Replay()
-  ],
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1.0,
-  beforeSend(event) {
-    // Filter out development noise
-    if (event.exception) {
-      const error = event.exception.values[0];
-      if (error.value?.includes('ResizeObserver loop limit exceeded')) {
-        return null;
+// ✅ SECURITY FIX: Only enable Sentry in production
+const isProduction = process.env.NODE_ENV === 'production';
+const isDevelopment = process.env.NODE_ENV === 'development';
+
+if (isProduction && process.env.REACT_APP_SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.REACT_APP_SENTRY_DSN, // ✅ FIX: Only from env var
+    environment: process.env.NODE_ENV,
+    enabled: true,
+    tracesSampleRate: 0.1,
+    integrations: [
+      new Sentry.BrowserTracing(),
+      new Sentry.Replay()
+    ],
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 0.2, // ✅ FIX: Reduced from 1.0 to protect privacy
+    beforeSend(event) {
+      // Filter out noise
+      if (event.exception) {
+        const error = event.exception.values[0];
+        if (error.value?.includes('ResizeObserver loop limit exceeded')) {
+          return null;
+        }
       }
+      return event;
     }
-    return event;
-  }
-});
+  });
+}
 
-// Initialize error tracking first
-initializeErrorTracking();
+// ✅ FIX: Wrap initialization in try-catch
+try {
+  initializeErrorTracking();
+} catch (error) {
+  console.error('Error tracking initialization failed:', error);
+}
 
-// Initialize security measures
-initializeSecurity();
+try {
+  initializeSecurity();
+} catch (error) {
+  console.error('Security initialization failed:', error);
+}
 
-// Initialize version management
-initializeVersionManagement();
+try {
+  initializeVersionManagement();
+} catch (error) {
+  console.error('Version management initialization failed:', error);
+}
 
-// Initialize analytics
-initializeAnalytics();
+try {
+  initializeAnalytics();
+  trackSessionStart();
+} catch (error) {
+  console.error('Analytics initialization failed:', error);
+}
 
-// Track session start
-trackSessionStart();
-
-// Initialize automated tester
-
-window.autoTester = autoTester;
-
-// Expose Supabase client for testing
-window.supabase = supabase;
+// ✅ SECURITY FIX: Only expose in development
+if (isDevelopment) {
+  window.autoTester = autoTester;
+  window.supabase = supabase;
+  console.log('🔧 Development mode: autoTester and supabase available on window');
+}
 
 // Remove any loading classes
 document.documentElement.classList.remove("app-loading", "app-booting");
 
-// Register service worker for push notifications
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then((registration) => {
-        console.log('SW registered: ', registration);
-        // Feature #384: Push on mobile and web both
-        // Feature #386: Install as PWA
-        if ('PushManager' in window) {
-          // Initialize push notifications
-          window.dispatchEvent(new CustomEvent('sw-registered', { detail: registration }));
-        }
-      })
-      .catch((registrationError) => {
-        console.error('SW registration failed: ', registrationError);
-        // Feature #388: Offline notification fallback
-        window.dispatchEvent(new CustomEvent('sw-registration-failed', { detail: registrationError }));
-      });
-  });
+// ✅ FIX: Register service worker immediately for faster PWA
+if ('serviceWorker' in navigator && isProduction) {
+  navigator.serviceWorker.register('/sw.js')
+    .then((registration) => {
+      console.log('SW registered: ', registration);
+      if ('PushManager' in window) {
+        window.dispatchEvent(new CustomEvent('sw-registered', { detail: registration }));
+      }
+    })
+    .catch((registrationError) => {
+      console.error('SW registration failed: ', registrationError);
+      window.dispatchEvent(new CustomEvent('sw-registration-failed', { detail: registrationError }));
+    });
 }
 
 try {
@@ -90,28 +99,40 @@ try {
   if (!container) {
     throw new Error('Root element not found');
   }
-  
+
   const root = ReactDOM.createRoot(container);
-  
+
   root.render(
-    <Sentry.ErrorBoundary fallback={({ error }) => (
-      <div style={{ padding: '2rem', textAlign: 'center', fontFamily: 'system-ui' }}>
-        <h2>Something went wrong</h2>
-        <p>We've been notified of this error.</p>
-        <button onClick={() => window.location.reload()}>Reload Page</button>
-      </div>
-    )}>
-      <ThemeProvider>
+    // ✅ FIX: Add StrictMode for development checks
+    <React.StrictMode>
+      <Sentry.ErrorBoundary fallback={({ error }) => (
+        <div style={{ padding: '2rem', textAlign: 'center', fontFamily: 'system-ui' }}>
+          <h2>Something went wrong</h2>
+          <p>We've been notified of this error.</p>
+          <button onClick={() => window.location.reload()}>Reload Page</button>
+        </div>
+      )}>
+        {/* ✅ FIX: Removed duplicate ThemeProvider (App.js has it) */}
         <App />
-      </ThemeProvider>
-    </Sentry.ErrorBoundary>
+      </Sentry.ErrorBoundary>
+    </React.StrictMode>
   );
-  
-  // Report web vitals
-  reportWebVitals();
+
+  // ✅ FIX: Report web vitals to console in dev, analytics in prod
+  reportWebVitals((metric) => {
+    if (isDevelopment) {
+      console.log(metric);
+    } else if (window.gtag) {
+      // Send to Google Analytics if available
+      window.gtag('event', metric.name, {
+        value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
+        event_label: metric.id,
+        non_interaction: true,
+      });
+    }
+  });
 } catch (error) {
   console.error('Critical app initialization error:', error);
-  // Feature #371: App crash reporting
   if (window.Sentry) {
     window.Sentry.captureException(error);
   }
@@ -127,4 +148,3 @@ try {
     `;
   }
 }
-
