@@ -1,17 +1,20 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Supabase configuration from environment variables
-const supabaseUrl = 'https://nmhrtllprmonqqocwzvf.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5taHJ0bGxwcm1vbnFxb2N3enZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExNDU4ODIsImV4cCI6MjA3NjcyMTg4Mn0.AEq7aerwktuCAvmQxf7G6XL-l0SyM48rw0ZeiQl3ZN8';
+// ✅ SECURITY FIX: Use environment variables only
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
 // Validate environment variables
 if (!supabaseUrl || !supabaseAnonKey) {
   const errorMessage = 'Missing required Supabase environment variables. Please check your .env file.';
-
+  console.error(errorMessage);
   throw new Error(errorMessage);
 }
 
-// Log environment status (remove in production)
+// ✅ FIX: Only log in development
+if (process.env.NODE_ENV === 'development') {
+  console.log('Supabase client initialized:', { url: supabaseUrl });
+}
 
 // Create Supabase client with advanced configuration
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -19,7 +22,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
-    flowType: 'pkce'
+    flowType: 'pkce' // ✅ PKCE is more secure
   },
   realtime: {
     params: {
@@ -89,14 +92,14 @@ export const supabaseUtils = {
         upsert: true,
         ...options
       });
-    
+
     if (error) throw error;
-    
+
     // Get public URL
     const { data: urlData } = supabase.storage
       .from(bucket)
       .getPublicUrl(path);
-    
+
     return {
       data: {
         ...data,
@@ -111,7 +114,7 @@ export const supabaseUtils = {
     const { data, error } = await supabase.storage
       .from(bucket)
       .remove([path]);
-    
+
     return { data, error };
   },
 
@@ -120,7 +123,7 @@ export const supabaseUtils = {
     const { data } = supabase.storage
       .from(bucket)
       .getPublicUrl(path);
-    
+
     return data.publicUrl;
   },
 
@@ -128,7 +131,7 @@ export const supabaseUtils = {
   subscribeToChannel(channel, callback) {
     try {
       if (!supabase?.channel) {
-
+        console.error('Supabase realtime not available');
         return null;
       }
       return supabase
@@ -136,7 +139,7 @@ export const supabaseUtils = {
         .on('postgres_changes', callback)
         .subscribe();
     } catch (error) {
-
+      console.error('Channel subscription error:', error);
       return null;
     }
   },
@@ -148,7 +151,7 @@ export const supabaseUtils = {
         return supabase.removeChannel(subscription);
       }
     } catch (error) {
-
+      console.error('Channel unsubscribe error:', error);
     }
   }
 };
