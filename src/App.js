@@ -1,4 +1,4 @@
-import React, { useEffect, useState, lazy, Suspense } from "react";
+import React, { useEffect, useState, lazy, Suspense, useRef, useCallback } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { supabase } from "./supabaseClient";
 import { ThemeProvider, useTheme } from "./context/ThemeContext";
@@ -28,21 +28,18 @@ import "./styles/focus-theme.css";
 import "./styles/accessibility.css";
 import "./App.css";
 
-// Make Supabase available for testing
-if (typeof window !== 'undefined') {
+// ✅ SECURITY FIX: Only expose in development
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
   window.supabase = supabase;
 }
 
-// Lazy load pages for code splitting with retry logic
-// Core pages - higher priority
+// Lazy load pages with retry logic
 const Auth = lazyWithRetry(() => import("./pages/Auth"));
 const Home = lazyWithRetry(() => import("./pages/Home"));
 const Explore = lazyWithRetry(() => import("./pages/Explore"));
 const Profile = lazyWithRetry(() => import("./pages/Profile"));
 const Messages = lazyWithRetry(() => import("./pages/Messages"));
 const Notifications = lazyWithRetry(() => import("./pages/Notifications"));
-
-// Feature pages - standard lazy loading
 const Create = lazy(() => import("./pages/CreateMultiType"));
 const GroupChat = lazy(() => import("./pages/GroupChat"));
 const Highlights = lazy(() => import("./pages/Highlights"));
@@ -62,13 +59,10 @@ const BlockedUsers = lazy(() => import("./pages/BlockedUsers"));
 const HashtagPage = lazy(() => import("./pages/HashtagPage"));
 const FollowersList = lazy(() => import("./pages/FollowersList"));
 const FollowingList = lazy(() => import("./pages/FollowingList"));
-
-// Heavy components - lazy load with retry (WebRTC, video processing)
 const Call = lazyWithRetry(() => import("./pages/Call"));
 const Analytics = lazy(() => import("./pages/Analytics"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 
-// Loading fallback component
 const PageLoader = () => (
   <div className="page-loader">
     <div className="loading-spinner"></div>
@@ -76,10 +70,21 @@ const PageLoader = () => (
   </div>
 );
 
-// Protected Route
 function ProtectedRoute({ user, children }) {
   if (!user) return <Navigate to="/auth" replace />;
   return children;
+}
+
+// ✅ FIX: Throttle function to limit activity updates
+function throttle(func, delay) {
+  let lastCall = 0;
+  return function(...args) {
+    const now = Date.now();
+    if (now - lastCall >= delay) {
+      lastCall = now;
+      return func.apply(this, args);
+    }
+  };
 }
 
 function AppContent() {
@@ -89,28 +94,27 @@ function AppContent() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showSessionExpired, setShowSessionExpired] = useState(false);
   const [browserWarning, setBrowserWarning] = useState(null);
-  const [showAIInsights, setShowAIInsights] = useState(false);
   const { darkMode } = useTheme();
+  
+  // ✅ FIX: Use ref to track mounted state
+  const isMountedRef = useRef(true);
+  const abortControllerRef = useRef(null);
 
-  // Initialize browser compatibility on mount
   useEffect(() => {
-    // Initialize polyfills for older browsers
     initializePolyfills();
-    
-    // Check browser support
     const support = checkBrowserSupport();
     if (!support.isSupported) {
       setBrowserWarning(support.message);
     }
   }, []);
 
-  // Setup session monitoring and automatic token refresh
   useEffect(() => {
     const subscription = setupAuthMonitoring(() => {
-      setShowSessionExpired(true);
+      if (isMountedRef.current) {
+        setShowSessionExpired(true);
+      }
     });
     
-    // Add to subscription manager
     if (subscription) {
       subscriptionManager.add('auth_monitoring', subscription, {
         component: 'App',
@@ -118,16 +122,15 @@ function AppContent() {
       });
     }
 
-    // Start automatic token refresh when user is logged in
     if (user) {
       startTokenRefresh(() => {
-        // Show warning when session is about to expire
-        setShowSessionExpired(true);
+        if (isMountedRef.current) {
+          setShowSessionExpired(true);
+        }
       });
 
-      // Record session
       supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session) {
+        if (session && isMountedRef.current) {
           recordSession(user.id, session);
         }
       });
@@ -139,21 +142,21 @@ function AppContent() {
     };
   }, [user]);
 
-  // Activity status tracking
+  // ✅ FIX: Throttled activity tracking (once per minute)
   useEffect(() => {
     if (!user?.id) return;
 
-    // Check if activity status is enabled
     const checkActivityStatus = () => {
       const settings = localStorage.getItem(`focus_settings_${user.id}`);
       if (settings) {
         const parsed = JSON.parse(settings);
         return parsed.show_activity_status !== false;
       }
-      return true; // Default to enabled
+      return true;
     };
 
     const updateActivity = async () => {
+      if (!isMountedRef.current) return;
       if (checkActivityStatus()) {
         try {
           await supabase
@@ -161,69 +164,61 @@ function AppContent() {
             .update({ last_active_at: new Date().toISOString() })
             .eq('id', user.id);
         } catch (error) {
-          // Silently handle activity status update errors
+          // Silently handle
         }
       }
     };
 
-    // Update activity on mount
     updateActivity();
-
-    // Update activity every 5 minutes
     const activityInterval = setInterval(updateActivity, 5 * 60 * 1000);
 
-    // Update activity on user interaction
-    const handleActivity = () => {
-      updateActivity();
-    };
+    // ✅ FIX: Throttle to once per minute
+    const throttledUpdate = throttle(updateActivity, 60 * 1000);
 
-    // Listen for user interactions
-    window.addEventListener('click', handleActivity);
-    window.addEventListener('keypress', handleActivity);
-    window.addEventListener('scroll', handleActivity);
+    window.addEventListener('click', throttledUpdate);
+    window.addEventListener('keypress', throttledUpdate);
+    window.addEventListener('scroll', throttledUpdate);
 
     return () => {
       clearInterval(activityInterval);
-      window.removeEventListener('click', handleActivity);
-      window.removeEventListener('keypress', handleActivity);
-      window.removeEventListener('scroll', handleActivity);
+      window.removeEventListener('click', throttledUpdate);
+      window.removeEventListener('keypress', throttledUpdate);
+      window.removeEventListener('scroll', throttledUpdate);
     };
   }, [user?.id]);
 
-  // Profile fetch with timeout and fallback
-  const fetchUserProfile = async (currentUser) => {
+  // ✅ FIX: Profile fetch with AbortController
+  const fetchUserProfile = useCallback(async (currentUser) => {
     if (!currentUser) {
-      setShowOnboarding(false);
-      setLoading(false);
+      if (isMountedRef.current) {
+        setShowOnboarding(false);
+        setLoading(false);
+      }
       return;
     }
 
-    // Set a maximum timeout of 5 seconds
-    const timeoutId = setTimeout(() => {
-      setShowOnboarding(false); // Don't show onboarding on timeout
-      setLoading(false);
-    }, 5000);
+    // ✅ FIX: Cancel previous request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    abortControllerRef.current = new AbortController();
+    const timeoutId = setTimeout(() => abortControllerRef.current.abort(), 5000);
 
     try {
-      
-      // Try to fetch profile with a race against timeout
-      const fetchPromise = supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', currentUser.id)
+        .abortSignal(abortControllerRef.current.signal)
         .maybeSingle();
-      
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Timeout')), 4000)
-      );
-      
-      const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
       
       clearTimeout(timeoutId);
       
+      if (!isMountedRef.current) return;
+      
       if (error) {
         console.error('Profile fetch error:', error);
-        // Database error - try to continue without profile for now
         setUserProfile(null);
         setShowOnboarding(false);
         setLoading(false);
@@ -231,84 +226,73 @@ function AppContent() {
       }
       
       if (data) {
-        
-        // Check localStorage cache first for faster response
         const cachedComplete = localStorage.getItem(`onboarding_complete_${currentUser.id}`) === 'true';
-        
-        // If profile has username and full_name, consider onboarding complete
-        // This handles cases where onboarding_completed flag wasn't set
         const hasRequiredFields = data.username && data.full_name;
         const isOnboardingComplete = data.onboarding_completed || hasRequiredFields || cachedComplete;
         
-        // Always set the profile first
         const completeProfile = { ...data, onboarding_completed: isOnboardingComplete };
         setUserProfile(completeProfile);
         
         if (!isOnboardingComplete) {
-          // Only show onboarding if profile exists but is incomplete
           setShowOnboarding(true);
         } else {
           setShowOnboarding(false);
-          
-          // Cache the completion status
           try {
             localStorage.setItem(`onboarding_complete_${currentUser.id}`, 'true');
           } catch (e) {
-            // Silently handle cache failure
+            // Silently handle
           }
           
-          // Update the database flag if it wasn't set
           if (!data.onboarding_completed && hasRequiredFields) {
             supabase
               .from('profiles')
               .update({ onboarding_completed: true })
               .eq('id', currentUser.id)
-              .then(({ error }) => {
-                // Silently handle update errors
-              });
+              .then(() => {});
           }
         }
         setLoading(false);
         return;
       }
       
-      // No profile found - this means the trigger didn't work or profile was deleted
-      // Show onboarding to create a new profile
       setUserProfile(null);
       setShowOnboarding(true);
       setLoading(false);
       
     } catch (error) {
       clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        console.log('Profile fetch aborted');
+        return;
+      }
       handleError(error, { context: 'fetchUserProfile', userId: currentUser?.id });
-      // On error, don't show onboarding - let user continue
-      setUserProfile(null);
-      setShowOnboarding(false);
-      setLoading(false);
+      if (isMountedRef.current) {
+        setUserProfile(null);
+        setShowOnboarding(false);
+        setLoading(false);
+      }
     }
-  };
+  }, []);
 
-  // Initialize app
+  // ✅ FIX: Auth listener with proper cleanup
   useEffect(() => {
-    let isMounted = true;
     let authSubscription;
 
     const initializeApp = async () => {
       try {
-        
-        const { data: { session } } = await supabase.auth.getSession().catch(err => {
+        const { data: { session } } = await supabase.auth.getSession().catch(() => {
           return { data: { session: null } };
         });
         const currentUser = session?.user ?? null;
         
-        if (isMounted) {
+        if (isMountedRef.current) {
           setUser(currentUser);
           
           if (currentUser) {
             try {
               await fetchUserProfile(currentUser);
             } finally {
-              if (isMounted) setLoading(false);
+              if (isMountedRef.current) setLoading(false);
             }
           } else {
             setLoading(false);
@@ -317,38 +301,20 @@ function AppContent() {
       } catch (error) {
         console.error("Init error:", error);
         handleError(error, { context: 'initializeApp' });
-        if (isMounted) setLoading(false);
+        if (isMountedRef.current) setLoading(false);
       }
     };
 
     initializeApp();
 
-    // Auth listener with error handling
     try {
       const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-        
-        if (!isMounted) return;
-
-        // Skip profile fetch for token refresh events if we already have a complete profile
-        if (event === 'TOKEN_REFRESHED') {
-          if (userProfile?.onboarding_completed) {
-            return;
-          }
-        }
-
-        // Skip profile fetch for initial session if we already have a complete profile
-        if (event === 'INITIAL_SESSION' && userProfile?.onboarding_completed) {
-          return;
-        }
+        if (!isMountedRef.current) return;
 
         const newUser = session?.user ?? null;
         setUser(newUser);
 
         if (newUser) {
-          // Only fetch profile if:
-          // 1. We don't have a profile yet, OR
-          // 2. It's a sign-in event, OR
-          // 3. The profile is incomplete
           const shouldFetchProfile = !userProfile || 
                                      event === 'SIGNED_IN' || 
                                      !userProfile.onboarding_completed;
@@ -357,11 +323,10 @@ function AppContent() {
             try {
               await fetchUserProfile(newUser);
             } finally {
-              if (isMounted) setLoading(false);
+              if (isMountedRef.current) setLoading(false);
             }
           }
         } else {
-          // User logged out - reset everything
           setUserProfile(null);
           setShowOnboarding(false);
           setLoading(false);
@@ -369,25 +334,34 @@ function AppContent() {
       });
 
       authSubscription = subscription;
+      
+      // ✅ FIX: Add to subscription manager
+      if (authSubscription) {
+        subscriptionManager.add('auth_state_change', authSubscription, {
+          component: 'App',
+          type: 'auth'
+        });
+      }
     } catch (error) {
-      if (isMounted) setLoading(false);
+      if (isMountedRef.current) setLoading(false);
     }
 
-    // Cleanup function
     return () => {
-      isMounted = false;
+      isMountedRef.current = false;
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
       subscriptionManager.remove('auth_state_change');
       if (authSubscription) {
         try {
           authSubscription.unsubscribe();
         } catch (error) {
-          // Silently handle unsubscribe errors
+          // Silently handle
         }
       }
     };
-  }, []);
+  }, [fetchUserProfile]); // ✅ FIX: Added dependency
 
-  // Apply theme
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
@@ -396,14 +370,13 @@ function AppContent() {
     }
   }, [darkMode]);
 
-  // Loading screen with timeout
   const [showRetry, setShowRetry] = useState(false);
   
   useEffect(() => {
     if (loading) {
       const timer = setTimeout(() => {
         setShowRetry(true);
-      }, 5000); // Show retry option after 5 seconds
+      }, 5000);
       
       return () => clearTimeout(timer);
     } else {
@@ -417,7 +390,6 @@ function AppContent() {
   };
   
   const handleOnboardingComplete = (profileData) => {
-    // Ensure onboarding_completed is true
     const completeProfile = {
       ...profileData,
       onboarding_completed: true
@@ -426,11 +398,10 @@ function AppContent() {
     setShowOnboarding(false);
     setLoading(false);
     
-    // Cache the completion status to prevent re-showing onboarding
     try {
       localStorage.setItem(`onboarding_complete_${user.id}`, 'true');
     } catch (e) {
-      // Silently handle cache failure
+      // Silently handle
     }
   };
   
@@ -451,7 +422,6 @@ function AppContent() {
     );
   }
 
-  // CRITICAL: Check authentication status first
   if (!loading && !user) {
     return (
       <div className={`focus-app ${darkMode ? "dark" : ""}`}>
@@ -465,13 +435,8 @@ function AppContent() {
     );
   }
 
-  // Show onboarding ONLY if user is authenticated AND profile is incomplete
-  // CRITICAL: Also check that we don't already have a complete profile in state
   if (!loading && user && showOnboarding && !userProfile?.onboarding_completed) {
-    // Double-check user has required properties
     if (!user.id || !user.email) {
-      
-      // Show error with reset option
       return (
         <div className={`focus-app ${darkMode ? "dark" : ""}`}>
           <div style={{
@@ -489,7 +454,11 @@ function AppContent() {
               Invalid session detected. Please reset the app.
             </p>
             <button
-              onClick={() => window.location.href = '/force-reset.html'}
+              onClick={() => {
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = '/auth';
+              }}
               style={{
                 background: '#667eea',
                 color: 'white',
@@ -497,29 +466,10 @@ function AppContent() {
                 padding: '1rem 2rem',
                 borderRadius: '8px',
                 fontSize: '1rem',
-                cursor: 'pointer',
-                marginBottom: '1rem'
-              }}
-            >
-              🔧 Reset App Now
-            </button>
-            <button
-              onClick={() => {
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.href = '/auth';
-              }}
-              style={{
-                background: '#6b7280',
-                color: 'white',
-                border: 'none',
-                padding: '0.75rem 1.5rem',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
                 cursor: 'pointer'
               }}
             >
-              Quick Clear & Retry
+              Reset & Sign In
             </button>
           </div>
         </div>
@@ -538,7 +488,6 @@ function AppContent() {
 
   return (
     <div className={`focus-app ${darkMode ? "dark" : ""}`}>
-      {/* Skip to main content link for keyboard navigation */}
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
@@ -569,15 +518,9 @@ function AppContent() {
   );
 }
 
-// Component that uses Router context
 function RouterContent({ user, userProfile }) {
-  const [showAIInsights, setShowAIInsights] = useState(false);
-  const [showEnhancedAI, setShowEnhancedAI] = useState(false);
-  
-  // Enable keyboard shortcuts (must be inside Router)
   useKeyboardShortcuts(!!user);
   
-  // Test runner keyboard shortcut
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.ctrlKey && e.shiftKey && e.key === 'T') {
@@ -596,8 +539,6 @@ function RouterContent({ user, userProfile }) {
       {user && <IncomingCallListener user={user} />}
       {user && <TestButton />}
       
-      {/* AI dashboards disabled */}
-      
       <main id="main-content" className="app-main" role="main">
         <Suspense fallback={<PageLoader />}>
           <Routes>
@@ -605,300 +546,39 @@ function RouterContent({ user, userProfile }) {
               path="/auth" 
               element={!user ? <Auth /> : <Navigate to="/home" replace />} 
             />
-            
-            <Route 
-              path="/" 
-              element={<Navigate to={user ? "/home" : "/auth"} replace />} 
-            />
-            
-            <Route 
-              path="/home" 
-              element={
-                <ProtectedRoute user={user}>
-                  <Home user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              } 
-            />
-            
-            <Route 
-              path="/explore" 
-              element={
-                <ProtectedRoute user={user}>
-                  <Explore user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              } 
-            />
-            
-            <Route 
-              path="/create" 
-              element={
-                <ProtectedRoute user={user}>
-                  <Create user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              } 
-            />
-            
-            <Route 
-              path="/profile" 
-              element={
-                <ProtectedRoute user={user}>
-                  <Profile user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              } 
-            />
-            
-            <Route
-              path="/messages"
-              element={
-                <ProtectedRoute user={user}>
-                  <Messages user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/messages/:chatId"
-              element={
-                <ProtectedRoute user={user}>
-                  <Messages user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/group/:groupId"
-              element={
-                <ProtectedRoute user={user}>
-                  <GroupChat user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/highlights"
-              element={
-                <ProtectedRoute user={user}>
-                  <Highlights user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/highlight/:highlightId"
-              element={
-                <ProtectedRoute user={user}>
-                  <HighlightViewer user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/settings"
-              element={
-                <ProtectedRoute user={user}>
-                  <Settings user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/follow-requests"
-              element={
-                <ProtectedRoute user={user}>
-                  <FollowRequests user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/blocked-users"
-              element={
-                <ProtectedRoute user={user}>
-                  <BlockedUsers user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/close-friends"
-              element={
-                <ProtectedRoute user={user}>
-                  <CloseFriends user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/boltz"
-              element={
-                <ProtectedRoute user={user}>
-                  <Boltz user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/flash"
-              element={
-                <ProtectedRoute user={user}>
-                  <Flash user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/flash/:userId"
-              element={
-                <ProtectedRoute user={user}>
-                  <Flash user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/post/:postId"
-              element={
-                <ProtectedRoute user={user}>
-                  <PostDetail user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/notifications"
-              element={
-                <ProtectedRoute user={user}>
-                  <Notifications user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/edit-profile"
-              element={
-                <ProtectedRoute user={user}>
-                  <EditProfile user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/archive"
-              element={
-                <ProtectedRoute user={user}>
-                  <Archive user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/profile/:username"
-              element={
-                <ProtectedRoute user={user}>
-                  <Profile user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/chat/:userId"
-              element={
-                <ProtectedRoute user={user}>
-                  <ChatThread user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/calls"
-              element={
-                <ProtectedRoute user={user}>
-                  <Calls user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/saved"
-              element={
-                <ProtectedRoute user={user}>
-                  <Saved user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/follow-requests"
-              element={
-                <ProtectedRoute user={user}>
-                  <FollowRequests user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/analytics"
-              element={
-                <ProtectedRoute user={user}>
-                  <Analytics user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute user={user}>
-                  <AdminDashboard user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/hashtag/:hashtag"
-              element={
-                <ProtectedRoute user={user}>
-                  <HashtagPage user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/profile/:username/followers"
-              element={
-                <ProtectedRoute user={user}>
-                  <FollowersList user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/profile/:username/following"
-              element={
-                <ProtectedRoute user={user}>
-                  <FollowingList user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/call/:userId"
-              element={
-                <ProtectedRoute user={user}>
-                  <Call user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/call"
-              element={
-                <ProtectedRoute user={user}>
-                  <Calls user={user} userProfile={userProfile} />
-                </ProtectedRoute>
-              }
-            />
-
+            <Route path="/" element={<Navigate to={user ? "/home" : "/auth"} replace />} />
+            <Route path="/home" element={<ProtectedRoute user={user}><Home user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/explore" element={<ProtectedRoute user={user}><Explore user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/create" element={<ProtectedRoute user={user}><Create user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute user={user}><Profile user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/messages" element={<ProtectedRoute user={user}><Messages user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/messages/:chatId" element={<ProtectedRoute user={user}><Messages user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/group/:groupId" element={<ProtectedRoute user={user}><GroupChat user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/highlights" element={<ProtectedRoute user={user}><Highlights user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/highlight/:highlightId" element={<ProtectedRoute user={user}><HighlightViewer user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute user={user}><Settings user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/follow-requests" element={<ProtectedRoute user={user}><FollowRequests user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            {/* ✅ FIX: Removed duplicate /follow-requests route */}
+            <Route path="/blocked-users" element={<ProtectedRoute user={user}><BlockedUsers user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/close-friends" element={<ProtectedRoute user={user}><CloseFriends user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/boltz" element={<ProtectedRoute user={user}><Boltz user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/flash" element={<ProtectedRoute user={user}><Flash user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/flash/:userId" element={<ProtectedRoute user={user}><Flash user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/post/:postId" element={<ProtectedRoute user={user}><PostDetail user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/notifications" element={<ProtectedRoute user={user}><Notifications user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/edit-profile" element={<ProtectedRoute user={user}><EditProfile user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/archive" element={<ProtectedRoute user={user}><Archive user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/profile/:username" element={<ProtectedRoute user={user}><Profile user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/chat/:userId" element={<ProtectedRoute user={user}><ChatThread user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/calls" element={<ProtectedRoute user={user}><Calls user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/saved" element={<ProtectedRoute user={user}><Saved user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/analytics" element={<ProtectedRoute user={user}><Analytics user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute user={user}><AdminDashboard user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/hashtag/:hashtag" element={<ProtectedRoute user={user}><HashtagPage user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/profile/:username/followers" element={<ProtectedRoute user={user}><FollowersList user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/profile/:username/following" element={<ProtectedRoute user={user}><FollowingList user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/call/:userId" element={<ProtectedRoute user={user}><Call user={user} userProfile={userProfile} /></ProtectedRoute>} />
+            <Route path="/call" element={<ProtectedRoute user={user}><Calls user={user} userProfile={userProfile} /></ProtectedRoute>} />
             <Route path="*" element={<Navigate to={user ? "/home" : "/auth"} replace />} />
           </Routes>
         </Suspense>
