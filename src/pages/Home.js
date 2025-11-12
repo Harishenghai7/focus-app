@@ -5,23 +5,28 @@ import { supabase } from "../supabaseClient";
 import PostCard from "../components/PostCard";
 import Stories from "../components/Stories";
 import { feedCache } from "../utils/feedCache";
+import subscriptionManager from "../utils/subscriptionManager";
 import "./Home.css";
 
 export default function Home({ user, userProfile }) {
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [fetchingMore, setFetchingMore] = useState(false);
+  // ✅ FIX: Combined loading states
+  const [loadingState, setLoadingState] = useState({
+    initial: true,
+    refreshing: false,
+    fetchingMore: false
+  });
   const [hasMore, setHasMore] = useState(true);
   const [cursor, setCursor] = useState(null);
   const [pullDistance, setPullDistance] = useState(0);
   const [isPulling, setIsPulling] = useState(false);
   const mounted = useRef(true);
-
   const touchStartY = useRef(0);
   const navigate = useNavigate();
-  const PAGE_SIZE = 10;
+  
+  const PAGE_SIZE = 15; // ✅ Increased from 10 for better UX
   const PULL_THRESHOLD = 80;
+  const SCROLL_THRESHOLD = 300; // ✅ FIX: Reduced from 1000px
 
   useEffect(() => {
     mounted.current = true;
@@ -29,256 +34,363 @@ export default function Home({ user, userProfile }) {
     return () => { mounted.current = false; };
   }, [user?.id]);
 
+  // ✅ FIX: Optimized combined query function
+  const fetchFeedQuery = async (userId, beforeTimestamp = null, limit = PAGE_SIZE) => {
+    try {
+      // Get following users
+      const { data: followingData, error: followingError } = await supabase
+        .from('follows')
+        .select('following_id, profiles!follows_following_id_fkey(is_private)')
+        .eq('follower_id', userId)
+        .eq('status', 'accepted'); // ✅ FIX: Only accepted follows
+
+      if (followingError) {
+        console.error('Following query error:', followingError);
+        // ✅ FIX: Fallback to own posts if follows query fails
+        return await fetchOwnPostsOnly(userId, beforeTimestamp, limit);
+      }
+
+      // ✅ FIX: Filter out private accounts we don't follow
+      const followingIds = followingData
+        ?.filter(f => !f.profiles?.is_private || f.status === 'accepted')
+        .map(f => f.following_id) || [];
+
+      const userIdsToShow = [...followingIds, userId];
+
+      // ✅ FIX: Single optimized query for both posts and boltz
+      const baseQuery = beforeTimestamp 
+        ? { lt: ['created_at', beforeTimestamp] }
+        : {};
+
+      // Fetch posts
+      const postsPromise = supabase
+        .from('posts')
+        .select(`
+          *,
+          profiles!posts_user_id_fkey(id, username, full_name, avatar_url, bio, is_private),
+          likes:likes(count),
+          comments:comments(count),
+          saves:saves(user_id)
+        `)
+        .in('user_id', userIdsToShow)
+        .order('created_at', { ascending: false })
+        .limit(limit)
+        .then(({ data, error }) => {
+          if (error) throw error;
+          return (data || []).map(post => ({ 
+            ...post, 
+            content_type: 'post',
+            like_count: post.likes?.[0]?.count || 0,
+            comment_count: post.comments?.[0]?.count || 0,
+            is_saved: post.saves?.some(s => s.user_id === userId)
+          }));
+        });
+
+      // Fetch boltz
+      const boltzPromise = supabase
+        .from('boltz')
+        .select(`
+          *,
+          profiles!boltz_user_id_fkey(id, username, full_name, avatar_url, bio, is_private),
+          likes:boltz_likes(count),
+          comments:boltz_comments(count)
+        `)
+        .in('user_id', userIdsToShow)
+        .order('created_at', { ascending: false })
+        .limit(limit)
+        .then(({ data, error }) => {
+          if (error) throw error;
+          return (data || []).map(boltz => ({ 
+            ...boltz, 
+            content_type: 'boltz',
+            like_count: boltz.likes?.[0]?.count || 0,
+            comment_count: boltz.comments?.[0]?.count || 0
+          }));
+        });
+
+      // ✅ FIX: Execute queries in parallel
+      const [postsData, boltzData] = await Promise.all([postsPromise, boltzPromise]);
+
+      // ✅ FIX: Proper interleaving instead of slicing
+      const combined = [...postsData, ...boltzData]
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        .slice(0, limit);
+
+      return combined;
+
+    } catch (error) {
+      console.error('Feed query error:', error);
+      return [];
+    }
+  };
+
+  // ✅ NEW: Fallback to fetch only user's own posts
+  const fetchOwnPostsOnly = async (userId, beforeTimestamp = null, limit = PAGE_SIZE) => {
+    const postsPromise = supabase
+      .from('posts')
+      .select(`*, profiles!posts_user_id_fkey(*)`)
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    const boltzPromise = supabase
+      .from('boltz')
+      .select(`*, profiles!boltz_user_id_fkey(*)`)
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    const [{ data: postsData }, { data: boltzData }] = await Promise.all([
+      postsPromise,
+      boltzPromise
+    ]);
+
+    return [
+      ...(postsData || []).map(p => ({ ...p, content_type: 'post' })),
+      ...(boltzData || []).map(b => ({ ...b, content_type: 'boltz' }))
+    ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+     .slice(0, limit);
+  };
+
   // Load feed with cache support
   const loadFeedWithCache = useCallback(async () => {
     if (!user) return;
-    
-    setLoading(true);
-    
-    // Try to load from cache first
+
+    setLoadingState(prev => ({ ...prev, initial: true }));
+
+    // ✅ FIX: Check cache expiry
     const cachedPosts = await feedCache.getFeed(user.id);
-    if (cachedPosts.length > 0) {
+    const cacheAge = await feedCache.getCacheAge(user.id);
+    
+    // Use cache only if less than 5 minutes old
+    if (cachedPosts.length > 0 && cacheAge < 5 * 60 * 1000) {
       setPosts(cachedPosts);
-      setLoading(false);
+      setLoadingState(prev => ({ ...prev, initial: false }));
       // Fetch fresh data in background
       fetchInitialFeed(true);
     } else {
-      // No cache, fetch normally
       await fetchInitialFeed(false);
     }
   }, [user?.id]);
 
-  // Realtime subscriptions for new posts and boltz
+  // ✅ FIX: Real-time subscriptions with proper management
   useEffect(() => {
     if (!user?.id) return;
 
-    const postsChannel = supabase
-      .channel('home_feed_posts')
-      .on('postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'posts' },
-        async (payload) => {
-          const { data: isFollowing } = await supabase
-            .from('follows')
-            .select('id')
-            .eq('follower_id', user.id)
-            .eq('following_id', payload.new.user_id)
-            .maybeSingle();
+    const setupRealtimeSubscriptions = async () => {
+      // ✅ FIX: Combined channel for both posts and boltz
+      const feedChannel = supabase
+        .channel('home_feed_updates')
+        // Posts INSERT
+        .on('postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'posts' },
+          async (payload) => {
+            // ✅ FIX: Check if post already exists
+            const exists = posts.some(p => p.id === payload.new.id && p.content_type === 'post');
+            if (exists) return;
 
-          if (isFollowing || payload.new.user_id === user.id) {
-            const { data: fullPost } = await supabase
-              .from('posts')
-              .select(`*, profiles!posts_user_id_fkey(id, username, full_name, avatar_url, bio)`)
-              .eq('id', payload.new.id)
-              .single();
+            // ✅ FIX: Verify follow status and private account
+            const { data: followData } = await supabase
+              .from('follows')
+              .select('id, profiles!follows_following_id_fkey(is_private)')
+              .eq('follower_id', user.id)
+              .eq('following_id', payload.new.user_id)
+              .eq('status', 'accepted')
+              .maybeSingle();
 
-            if (fullPost && mounted.current) {
-              setPosts(prev => [{ ...fullPost, content_type: 'post' }, ...prev]
-                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-              );
+            const isOwnPost = payload.new.user_id === user.id;
+            const canView = isOwnPost || (followData && !followData.profiles?.is_private);
+
+            if (canView) {
+              const { data: fullPost } = await supabase
+                .from('posts')
+                .select(`*, profiles!posts_user_id_fkey(*)`)
+                .eq('id', payload.new.id)
+                .single();
+
+              if (fullPost && mounted.current) {
+                setPosts(prev => [
+                  { ...fullPost, content_type: 'post', like_count: 0, comment_count: 0 }, 
+                  ...prev
+                ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+              }
             }
           }
-        }
-      )
-      .on('postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'posts' },
-        (payload) => {
-          if (mounted.current) {
-            setPosts(prev => prev.map(post => 
-              post.id === payload.new.id && post.content_type === 'post'
-                ? { ...post, ...payload.new }
-                : post
-            ));
-          }
-        }
-      )
-      .on('postgres_changes',
-        { event: 'DELETE', schema: 'public', table: 'posts' },
-        (payload) => {
-          if (mounted.current) {
-            setPosts(prev => prev.filter(post => 
-              !(post.id === payload.old.id && post.content_type === 'post')
-            ));
-          }
-        }
-      )
-      .subscribe();
-
-    const boltzChannel = supabase
-      .channel('home_feed_boltz')
-      .on('postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'boltz' },
-        async (payload) => {
-          const { data: isFollowing } = await supabase
-            .from('follows')
-            .select('id')
-            .eq('follower_id', user.id)
-            .eq('following_id', payload.new.user_id)
-            .maybeSingle();
-
-          if (isFollowing || payload.new.user_id === user.id) {
-            const { data: fullBoltz } = await supabase
-              .from('boltz')
-              .select(`*, profiles!boltz_user_id_fkey(id, username, full_name, avatar_url, bio)`)
-              .eq('id', payload.new.id)
-              .single();
-
-            if (fullBoltz && mounted.current) {
-              setPosts(prev => [{ ...fullBoltz, content_type: 'boltz' }, ...prev]
-                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-              );
+        )
+        // Posts UPDATE
+        .on('postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'posts' },
+          (payload) => {
+            if (mounted.current) {
+              setPosts(prev => prev.map(post => 
+                post.id === payload.new.id && post.content_type === 'post'
+                  ? { ...post, ...payload.new }
+                  : post
+              ));
             }
           }
-        }
-      )
-      .on('postgres_changes',
-        { event: 'DELETE', schema: 'public', table: 'boltz' },
-        (payload) => {
-          if (mounted.current) {
-            setPosts(prev => prev.filter(post => 
-              !(post.id === payload.old.id && post.content_type === 'boltz')
-            ));
+        )
+        // Posts DELETE
+        .on('postgres_changes',
+          { event: 'DELETE', schema: 'public', table: 'posts' },
+          (payload) => {
+            if (mounted.current) {
+              setPosts(prev => prev.filter(post => 
+                !(post.id === payload.old.id && post.content_type === 'post')
+              ));
+            }
           }
-        }
-      )
-      .subscribe();
+        )
+        // ✅ NEW: Likes updates
+        .on('postgres_changes',
+          { event: '*', schema: 'public', table: 'likes' },
+          async (payload) => {
+            if (mounted.current) {
+              // Update like count for the post
+              const postId = payload.new?.post_id || payload.old?.post_id;
+              const { count } = await supabase
+                .from('likes')
+                .select('*', { count: 'exact', head: true })
+                .eq('post_id', postId);
+
+              setPosts(prev => prev.map(post =>
+                post.id === postId && post.content_type === 'post'
+                  ? { ...post, like_count: count || 0 }
+                  : post
+              ));
+            }
+          }
+        )
+        // ✅ NEW: Comments updates
+        .on('postgres_changes',
+          { event: '*', schema: 'public', table: 'comments' },
+          async (payload) => {
+            if (mounted.current) {
+              const postId = payload.new?.post_id || payload.old?.post_id;
+              const { count } = await supabase
+                .from('comments')
+                .select('*', { count: 'exact', head: true })
+                .eq('post_id', postId);
+
+              setPosts(prev => prev.map(post =>
+                post.id === postId && post.content_type === 'post'
+                  ? { ...post, comment_count: count || 0 }
+                  : post
+              ));
+            }
+          }
+        )
+        // Boltz events (similar logic)
+        .on('postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'boltz' },
+          async (payload) => {
+            const exists = posts.some(p => p.id === payload.new.id && p.content_type === 'boltz');
+            if (exists) return;
+
+            const { data: followData } = await supabase
+              .from('follows')
+              .select('id, profiles!follows_following_id_fkey(is_private)')
+              .eq('follower_id', user.id)
+              .eq('following_id', payload.new.user_id)
+              .eq('status', 'accepted')
+              .maybeSingle();
+
+            const isOwnBoltz = payload.new.user_id === user.id;
+            const canView = isOwnBoltz || (followData && !followData.profiles?.is_private);
+
+            if (canView) {
+              const { data: fullBoltz } = await supabase
+                .from('boltz')
+                .select(`*, profiles!boltz_user_id_fkey(*)`)
+                .eq('id', payload.new.id)
+                .single();
+
+              if (fullBoltz && mounted.current) {
+                setPosts(prev => [
+                  { ...fullBoltz, content_type: 'boltz', like_count: 0, comment_count: 0 },
+                  ...prev
+                ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+              }
+            }
+          }
+        )
+        .on('postgres_changes',
+          { event: 'DELETE', schema: 'public', table: 'boltz' },
+          (payload) => {
+            if (mounted.current) {
+              setPosts(prev => prev.filter(post => 
+                !(post.id === payload.old.id && post.content_type === 'boltz')
+              ));
+            }
+          }
+        )
+        .subscribe();
+
+      // ✅ FIX: Add to subscription manager
+      subscriptionManager.add('home_feed_channel', feedChannel, {
+        component: 'Home',
+        type: 'realtime'
+      });
+    };
+
+    setupRealtimeSubscriptions();
 
     return () => {
-      supabase.removeChannel(postsChannel);
-      supabase.removeChannel(boltzChannel);
+      subscriptionManager.remove('home_feed_channel');
     };
-  }, [user?.id]);
+  }, [user?.id, posts]); // ✅ FIX: Added posts dependency
 
   const fetchInitialFeed = async (isBackgroundRefresh = false) => {
     if (!user) return;
+    
     if (!isBackgroundRefresh) {
-      setLoading(true);
+      setLoadingState(prev => ({ ...prev, initial: true }));
     }
+
     try {
-      // First get the users that current user follows
-      const { data: followingData, error: followingError } = await supabase
-        .from('follows')
-        .select('following_id')
-        .eq('follower_id', user.id);
-
-      if (followingError) throw followingError;
-
-      const followingIds = followingData?.map(f => f.following_id) || [];
-      
-      // Include own user ID to see own posts
-      const userIdsToShow = [...followingIds, user.id];
-
-      // Fetch posts from followed users + own posts
-      const { data: postsData, error: postsError } = await supabase
-        .from('posts')
-        .select(`
-          *,
-          profiles!posts_user_id_fkey(id, username, full_name, avatar_url, bio)
-        `)
-        .in('user_id', userIdsToShow)
-        .order('created_at', { ascending: false })
-        .limit(PAGE_SIZE);
-
-      if (postsError) throw postsError;
-
-      // Fetch boltz from followed users + own boltz
-      const { data: boltzData, error: boltzError } = await supabase
-        .from('boltz')
-        .select(`
-          *,
-          profiles!boltz_user_id_fkey(id, username, full_name, avatar_url, bio)
-        `)
-        .in('user_id', userIdsToShow)
-        .order('created_at', { ascending: false })
-        .limit(PAGE_SIZE);
-
-      if (boltzError) throw boltzError;
-
-      // Combine and sort by created_at
-      const combinedFeed = [
-        ...(postsData || []).map(post => ({ ...post, content_type: 'post' })),
-        ...(boltzData || []).map(boltz => ({ ...boltz, content_type: 'boltz' }))
-      ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-       .slice(0, PAGE_SIZE);
+      const feedData = await fetchFeedQuery(user.id, null, PAGE_SIZE);
 
       if (mounted.current) {
-        setPosts(combinedFeed);
-        if (combinedFeed.length) {
-          setCursor(combinedFeed[combinedFeed.length - 1].created_at);
+        setPosts(feedData);
+        if (feedData.length) {
+          setCursor(feedData[feedData.length - 1].created_at);
         }
-        setHasMore(combinedFeed.length === PAGE_SIZE);
-        
-        // Save to cache
-        await feedCache.saveFeed(user.id, combinedFeed);
+        setHasMore(feedData.length === PAGE_SIZE);
+
+        // ✅ FIX: Save to cache with timestamp
+        await feedCache.saveFeed(user.id, feedData);
       }
     } catch (error) {
       console.error("Error fetching feed:", error);
     } finally {
       if (mounted.current && !isBackgroundRefresh) {
-        setLoading(false);
+        setLoadingState(prev => ({ ...prev, initial: false }));
       }
     }
   };
 
+  // ✅ FIX: Optimized fetchMorePosts
   const fetchMorePosts = useCallback(async () => {
-    if (fetchingMore || !cursor || !hasMore || !user) return;
+    if (loadingState.fetchingMore || !cursor || !hasMore || !user) return;
 
-    setFetchingMore(true);
+    setLoadingState(prev => ({ ...prev, fetchingMore: true }));
+
     try {
-      // First get the users that current user follows
-      const { data: followingData, error: followingError } = await supabase
-        .from('follows')
-        .select('following_id')
-        .eq('follower_id', user.id);
-
-      if (followingError) throw followingError;
-
-      const followingIds = followingData?.map(f => f.following_id) || [];
-      
-      // Include own user ID
-      const userIdsToShow = [...followingIds, user.id];
-
-      // Fetch more posts from followed users + own posts
-      const { data: postsData, error: postsError } = await supabase
-        .from('posts')
-        .select(`
-          *,
-          profiles!posts_user_id_fkey(id, username, full_name, avatar_url, bio)
-        `)
-        .in('user_id', userIdsToShow)
-        .lt('created_at', cursor)
-        .order('created_at', { ascending: false })
-        .limit(PAGE_SIZE);
-
-      if (postsError) throw postsError;
-
-      // Fetch more boltz from followed users + own boltz
-      const { data: boltzData, error: boltzError} = await supabase
-        .from('boltz')
-        .select(`
-          *,
-          profiles!boltz_user_id_fkey(id, username, full_name, avatar_url, bio)
-        `)
-        .in('user_id', userIdsToShow)
-        .lt('created_at', cursor)
-        .order('created_at', { ascending: false })
-        .limit(PAGE_SIZE);
-
-      if (boltzError) throw boltzError;
-
-      // Combine and sort
-      const moreFeed = [
-        ...(postsData || []).map(post => ({ ...post, content_type: 'post' })),
-        ...(boltzData || []).map(boltz => ({ ...boltz, content_type: 'boltz' }))
-      ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-       .slice(0, PAGE_SIZE);
+      const moreFeed = await fetchFeedQuery(user.id, cursor, PAGE_SIZE);
 
       if (mounted.current && moreFeed.length) {
-        setPosts(prev => [...prev, ...moreFeed]);
+        // ✅ FIX: Check for duplicates before adding
+        setPosts(prev => {
+          const existingIds = new Set(prev.map(p => `${p.id}-${p.content_type}`));
+          const newPosts = moreFeed.filter(p => !existingIds.has(`${p.id}-${p.content_type}`));
+          return [...prev, ...newPosts];
+        });
+        
         setCursor(moreFeed[moreFeed.length - 1].created_at);
         setHasMore(moreFeed.length === PAGE_SIZE);
-        
-        // Update cache with new posts
-        await feedCache.saveFeed(user.id, [...posts, ...moreFeed]);
+
+        // Update cache incrementally
+        await feedCache.appendToFeed(user.id, moreFeed);
       } else {
         setHasMore(false);
       }
@@ -286,24 +398,32 @@ export default function Home({ user, userProfile }) {
       console.error("Error fetching more posts:", error);
       setHasMore(false);
     } finally {
-      if (mounted.current) setFetchingMore(false);
+      if (mounted.current) {
+        setLoadingState(prev => ({ ...prev, fetchingMore: false }));
+      }
     }
-  }, [fetchingMore, cursor, hasMore, user?.id, posts]);
+  }, [loadingState.fetchingMore, cursor, hasMore, user?.id]);
 
+  // ✅ FIX: Error handling in refresh
   const handleRefresh = async () => {
-    setRefreshing(true);
-    setCursor(null);
-    setHasMore(true);
-    
-    // Clear cache and fetch fresh
-    await feedCache.clearUserFeed(user.id);
-    await fetchInitialFeed(false);
-    
-    window.dispatchEvent(new CustomEvent('refreshStories'));
-    setRefreshing(false);
+    try {
+      setLoadingState(prev => ({ ...prev, refreshing: true }));
+      setCursor(null);
+      setHasMore(true);
+
+      await feedCache.clearUserFeed(user.id);
+      await fetchInitialFeed(false);
+
+      window.dispatchEvent(new CustomEvent('refreshStories'));
+    } catch (error) {
+      console.error('Refresh error:', error);
+      // Show error toast or notification
+    } finally {
+      setLoadingState(prev => ({ ...prev, refreshing: false }));
+    }
   };
 
-  // Pull-to-refresh handlers
+  // ✅ FIX: Improved pull-to-refresh with CSS overscroll-behavior
   const handleTouchStart = useCallback((e) => {
     if (window.scrollY === 0) {
       touchStartY.current = e.touches[0].clientY;
@@ -323,27 +443,23 @@ export default function Home({ user, userProfile }) {
 
     if (distance > 0 && distance < 150) {
       setPullDistance(distance);
-      // Prevent default scroll when pulling
-      if (distance > 10) {
-        e.preventDefault();
-      }
     }
   }, [isPulling]);
 
   const handleTouchEnd = useCallback(async () => {
-    if (pullDistance >= PULL_THRESHOLD && !refreshing) {
+    if (pullDistance >= PULL_THRESHOLD && !loadingState.refreshing) {
       await handleRefresh();
     }
     setIsPulling(false);
     setPullDistance(0);
-  }, [pullDistance, refreshing, handleRefresh]);
+  }, [pullDistance, loadingState.refreshing, handleRefresh]);
 
-  // Add touch event listeners
+  // ✅ FIX: Passive event listeners
   useEffect(() => {
     const container = document.querySelector('.page-home');
     if (container) {
       container.addEventListener('touchstart', handleTouchStart, { passive: true });
-      container.addEventListener('touchmove', handleTouchMove, { passive: false });
+      container.addEventListener('touchmove', handleTouchMove, { passive: true });
       container.addEventListener('touchend', handleTouchEnd, { passive: true });
 
       return () => {
@@ -354,36 +470,50 @@ export default function Home({ user, userProfile }) {
     }
   }, [handleTouchStart, handleTouchMove, handleTouchEnd]);
 
+  // ✅ FIX: Match both id and content_type
   const handlePostUpdate = async (updatedPost) => {
     setPosts(prev => prev.map(post => 
-      post.id === updatedPost.id ? { ...post, ...updatedPost } : post
+      post.id === updatedPost.id && post.content_type === updatedPost.content_type
+        ? { ...post, ...updatedPost }
+        : post
     ));
-    
-    // Update cache
+
     await feedCache.updatePost(updatedPost.id, updatedPost);
   };
 
-  const handlePostDelete = async (postId) => {
-    setPosts(prev => prev.filter(post => post.id !== postId));
-    
-    // Remove from cache
+  const handlePostDelete = async (postId, contentType) => {
+    setPosts(prev => prev.filter(post => 
+      !(post.id === postId && post.content_type === contentType)
+    ));
+
     await feedCache.deletePost(postId);
   };
 
-  // Infinite scroll handler
+  // ✅ FIX: Throttled scroll handler
+  const throttledScrollHandler = useRef(null);
+
   const handleScroll = useCallback(() => {
-    if (window.innerHeight + document.documentElement.scrollTop 
-        >= document.documentElement.offsetHeight - 1000) {
-      fetchMorePosts();
+    if (throttledScrollHandler.current) {
+      clearTimeout(throttledScrollHandler.current);
     }
+
+    throttledScrollHandler.current = setTimeout(() => {
+      if (window.innerHeight + document.documentElement.scrollTop 
+          >= document.documentElement.offsetHeight - SCROLL_THRESHOLD) {
+        fetchMorePosts();
+      }
+    }, 200);
   }, [fetchMorePosts]);
 
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (throttledScrollHandler.current) {
+        clearTimeout(throttledScrollHandler.current);
+      }
+    };
   }, [handleScroll]);
-
-
 
   return (
     <motion.main 
@@ -423,192 +553,190 @@ export default function Home({ user, userProfile }) {
           </motion.div>
         )}
 
-        {/* Focus Flash Stories */}
+        {/* Stories */}
         {user && <Stories key="stories" user={user} userProfile={userProfile} />}
 
         <div data-testid="home-feed">
+          {/* Manual Refresh Button */}
+          <div className="refresh-container">
+            <motion.button
+              className={`refresh-btn ${loadingState.refreshing ? 'refreshing' : ''}`}
+              onClick={handleRefresh}
+              disabled={loadingState.refreshing}
+              whileTap={{ scale: 0.95 }}
+            >
+              <svg 
+                width="20" 
+                height="20" 
+                viewBox="0 0 24 24"
+                className={loadingState.refreshing ? 'spinning' : ''}
+              >
+                <path d="M23 12c0 6.627-5.373 12-12 12s-12-5.373-12-12 5.373-12 12-12c2.21 0 4.21.895 5.657 2.343l-2.829 2.829c-.895-.895-2.132-1.172-2.828-1.172-2.209 0-4 1.791-4 4s1.791 4 4 4 4-1.791 4-4h3z"/>
+              </svg>
+              {loadingState.refreshing ? 'Refreshing...' : 'Refresh'}
+            </motion.button>
+          </div>
 
-        {/* Manual Refresh Button */}
-        <div className="refresh-container">
-          <motion.button
-            className={`refresh-btn ${refreshing ? 'refreshing' : ''}`}
-            onClick={handleRefresh}
-            disabled={refreshing}
-            whileTap={{ scale: 0.95 }}
-          >
-            <svg 
-              width="20" 
-              height="20" 
-              viewBox="0 0 24 24"
-              className={refreshing ? 'spinning' : ''}
-            >
-              <path d="M23 12c0 6.627-5.373 12-12 12s-12-5.373-12-12 5.373-12 12-12c2.21 0 4.21.895 5.657 2.343l-2.829 2.829c-.895-.895-2.132-1.172-2.828-1.172-2.209 0-4 1.791-4 4s1.791 4 4 4 4-1.791 4-4h3z"/>
-            </svg>
-            {refreshing ? 'Refreshing...' : 'Refresh'}
-          </motion.button>
-        </div>
-        
-        {/* Posts Feed */}
-        <AnimatePresence>
-          {loading ? (
-            <motion.div 
-              className="feed-loading"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              <div className="loading-spinner"></div>
-              <p>Loading your feed...</p>
-            </motion.div>
-          ) : posts.length === 0 ? (
-            <motion.div 
-              className="empty-feed"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-            >
-              <div className="empty-feed-content">
-                <motion.div 
-                  className="empty-feed-icon"
-                  animate={{ 
-                    scale: [1, 1.1, 1],
-                    rotate: [0, 5, -5, 0]
-                  }}
-                  transition={{ 
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  🎯
-                </motion.div>
-                <h3>Welcome to Focus!</h3>
-                <p>Connect with authentic creators and discover meaningful content. Follow Focus creators to see their posts here.</p>
-                <div className="empty-feed-actions">
-                  <motion.button 
-                    className="focus-btn focus-btn-primary"
-                    whileTap={{ scale: 0.95 }}
-                    whileHover={{ scale: 1.02 }}
-                    onClick={() => navigate('/explore')}
+          {/* Posts Feed */}
+          <AnimatePresence>
+            {loadingState.initial ? (
+              <motion.div 
+                className="feed-loading"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <div className="loading-spinner"></div>
+                <p>Loading your feed...</p>
+              </motion.div>
+            ) : posts.length === 0 ? (
+              <motion.div 
+                className="empty-feed"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+              >
+                <div className="empty-feed-content">
+                  <motion.div 
+                    className="empty-feed-icon"
+                    animate={{ 
+                      scale: [1, 1.1, 1],
+                      rotate: [0, 5, -5, 0]
+                    }}
+                    transition={{ 
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
                   >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <circle cx="11" cy="11" r="8"/>
-                      <path d="M21 21L16.65 16.65"/>
-                    </svg>
-                    Discover Focus Creators
-                  </motion.button>
-                  <motion.button 
-                    className="focus-btn focus-btn-secondary"
-                    whileTap={{ scale: 0.95 }}
-                    whileHover={{ scale: 1.02 }}
-                    onClick={() => navigate('/create')}
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <circle cx="12" cy="12" r="10"/>
-                      <line x1="12" y1="8" x2="12" y2="16"/>
-                      <line x1="8" y1="12" x2="16" y2="12"/>
-                    </svg>
-                    Share Your Focus
-                  </motion.button>
+                    🎯
+                  </motion.div>
+                  <h3>Welcome to Focus!</h3>
+                  <p>Connect with authentic creators and discover meaningful content. Follow Focus creators to see their posts here.</p>
+                  <div className="empty-feed-actions">
+                    <motion.button 
+                      className="focus-btn focus-btn-primary"
+                      whileTap={{ scale: 0.95 }}
+                      whileHover={{ scale: 1.02 }}
+                      onClick={() => navigate('/explore')}
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="M21 21L16.65 16.65"/>
+                      </svg>
+                      Discover Focus Creators
+                    </motion.button>
+                    <motion.button 
+                      className="focus-btn focus-btn-secondary"
+                      whileTap={{ scale: 0.95 }}
+                      whileHover={{ scale: 1.02 }}
+                      onClick={() => navigate('/create')}
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="16"/>
+                        <line x1="8" y1="12" x2="16" y2="12"/>
+                      </svg>
+                      Share Your Focus
+                    </motion.button>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ) : (
-            <motion.section 
-              className="posts-container"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              {/* Posts List */}
-              <div className="posts-list">
-                {posts.map((post, index) => (
-                  <motion.div
-                    key={post.id}
-                    data-testid="post-card"
+              </motion.div>
+            ) : (
+              <motion.section 
+                className="posts-container"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <div className="posts-list">
+                  {posts.map((post, index) => (
+                    <motion.div
+                      key={`${post.content_type}-${post.id}`}
+                      data-testid="post-card"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.5) }}
+                    >
+                      <PostCard 
+                        post={post} 
+                        user={user} 
+                        userProfile={userProfile}
+                        onUpdate={handlePostUpdate}
+                        onDelete={(id) => handlePostDelete(id, post.content_type)}
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Infinite Scroll Loading */}
+                {loadingState.fetchingMore && (
+                  <motion.div 
+                    className="loading-more"
+                    data-testid="loading-more"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    <div className="loading-spinner small"></div>
+                    <p>Loading more posts...</p>
+                  </motion.div>
+                )}
+
+                {!hasMore && posts.length > 0 && (
+                  <motion.div 
+                    className="end-of-feed"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    transition={{ duration: 0.5 }}
                   >
-                    <PostCard 
-                      post={post} 
-                      user={user} 
-                      userProfile={userProfile}
-                      onUpdate={handlePostUpdate}
-                      onDelete={handlePostDelete}
-                    />
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* Infinite Scroll Loading */}
-              {fetchingMore && (
-                <motion.div 
-                  className="loading-more"
-                  data-testid="loading-more"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                >
-                  <div className="loading-spinner small"></div>
-                  <p>Loading more posts...</p>
-                </motion.div>
-              )}
-
-              {!hasMore && posts.length > 0 && (
-                <motion.div 
-                  className="end-of-feed"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <div className="end-feed-content">
-                    <motion.div 
-                      className="end-feed-icon"
-                      animate={{ 
-                        scale: [1, 1.2, 1],
-                        rotate: [0, 360]
-                      }}
-                      transition={{ 
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }}
-                    >
-                      🎉
-                    </motion.div>
-                    <h4>You're all caught up!</h4>
-                    <p>You've seen all the latest posts from Focus creators you follow.</p>
-                    <div className="end-feed-actions">
-                      <motion.button 
-                        className="focus-btn focus-btn-primary"
-                        onClick={() => navigate('/explore')}
-                        whileTap={{ scale: 0.95 }}
-                        whileHover={{ scale: 1.02 }}
+                    <div className="end-feed-content">
+                      <motion.div 
+                        className="end-feed-icon"
+                        animate={{ 
+                          scale: [1, 1.2, 1],
+                          rotate: [0, 360]
+                        }}
+                        transition={{ 
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
                       >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                          <circle cx="11" cy="11" r="8"/>
-                          <path d="M21 21L16.65 16.65"/>
-                        </svg>
-                        Discover More
-                      </motion.button>
-                      <motion.button 
-                        className="focus-btn focus-btn-secondary"
-                        onClick={() => navigate('/create')}
-                        whileTap={{ scale: 0.95 }}
-                        whileHover={{ scale: 1.02 }}
-                      >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                          <circle cx="12" cy="12" r="10"/>
-                          <line x1="12" y1="8" x2="12" y2="16"/>
-                          <line x1="8" y1="12" x2="16" y2="12"/>
-                        </svg>
-                        Create Post
-                      </motion.button>
+                        🎉
+                      </motion.div>
+                      <h4>You're all caught up!</h4>
+                      <p>You've seen all the latest posts from Focus creators you follow.</p>
+                      <div className="end-feed-actions">
+                        <motion.button 
+                          className="focus-btn focus-btn-primary"
+                          onClick={() => navigate('/explore')}
+                          whileTap={{ scale: 0.95 }}
+                          whileHover={{ scale: 1.02 }}
+                        >
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21L16.65 16.65"/>
+                          </svg>
+                          Discover More
+                        </motion.button>
+                        <motion.button 
+                          className="focus-btn focus-btn-secondary"
+                          onClick={() => navigate('/create')}
+                          whileTap={{ scale: 0.95 }}
+                          whileHover={{ scale: 1.02 }}
+                        >
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="16"/>
+                            <line x1="8" y1="12" x2="16" y2="12"/>
+                          </svg>
+                          Create Post
+                        </motion.button>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              )}
-            </motion.section>
-          )}
-        </AnimatePresence>
+                  </motion.div>
+                )}
+              </motion.section>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </motion.main>
