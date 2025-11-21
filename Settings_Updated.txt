@@ -1,0 +1,177 @@
+Build a fully functional, polished, production-ready Settings.js page for the Focus app with all the following requirements. No placeholders—every logic path, state, and detail included:
+
+═══════════════════════════════════════════════════════════════════════
+⚙️ MAIN SETTINGS DASHBOARD
+═══════════════════════════════════════════════════════════════════════
+
+1. PAGE STRUCTURE & NAVIGATION
+   - Centered settings dashboard with glassmorphic/gradient background, max-width 620px, edge-to-edge on mobile.
+   - Modular section-based navigation with sticky left tabbar/sheet or top accordions (for mobile).
+   - Quick jump to each settings section (Account, Privacy, Notifications, Theme, Language, Help/About).
+
+2. ACCOUNT SETTINGS
+   - Profile: View/update avatar (live crop/resize), username, display name, email, password, phone
+   - Change email/password: password confirmation, login validation, inline error/validation, animated progress
+   - Delete account: explicit two-step with inline warning and undo timer
+   - Export/download account data (Supabase export, show download progress/complete/error banners)
+
+3. PRIVACY SETTINGS
+   - Make account private/public, toggle discoverability, who can follow/message/call/tag/mention
+   - Blocked users: list with unblock buttons, paged if >15 entries
+   - Social connections: show/toggle OAuth linkages (Google, GitHub, Discord, etc.)
+
+4. NOTIFICATIONS SETTINGS
+   - Custom toggles for likes, comments, messages, tags, followers, call invites, story/Boltz/Flash
+   - System/browser push toggle (Prompt subscribe/unsubscribe to push provider)
+   - Realtime: Auto-update switches on backend change (websockets/Supabase RTC)
+
+5. THEME & APPEARANCE
+   - Theme switcher: Light/Dark/Auto (follows OS or custom)
+   - Font size/contrast adjust (a11y settings)
+   - Live preview of theme with instant app color shift
+
+6. LANGUAGE & REGION
+   - Dropdown of supported languages, changes labels/RTL/LTR instantly
+   - Region picker (for features like night mode, local time/date option)
+
+7. HELP, ABOUT, LOGOUT
+   - App info: version, team, credits, link to docs/feedback/report bug, privacy & terms
+   - Session & device info (on request/click)
+   - Logout button: instant, clears session, redirects safely with loading overlay
+
+═══════════════════════════════════════════════════════════════════════
+🎨 DESIGN, LAYOUT & VISUALS
+═══════════════════════════════════════════════════════════════════════
+
+* Each section clear glass card, large radius, deep shadow, spacing between cards
+* Section headers bold, sticky, with icon, clear divide between items
+* Switches: animated pill-toggle (modern, keyboard/touch, ARIA)
+* Dropdowns/selects: glassy with gradient border, animated options
+* Forms: every input labeled, error/warning/valid state, help tooltip on hover/focus
+* Primary buttons: strong brand color, hover/tap glow, full-width mobile, sticky at footer on mobile
+* "Danger zone" (delete/export/logout): distinct styling (red/yellow accent, hover/focus shake)
+
+═══════════════════════════════════════════════════════════════════════
+🛠️ COMPONENTS TO CREATE/IMPORT
+═══════════════════════════════════════════════════════════════════════
+
+Organize as atomically as possible—each as a modular import:
+
+- SettingsSections.js: main section container/accordion
+- AccountSettings.js: user info, update/delete, export
+- PrivacySettings.js: privacy toggles, group visibility, blocked list
+- NotificationSettings.js: switches/grid, instant save, push/test notification
+- ThemeSelector.js: pill/toggle/preview, prefers-color-scheme
+- LanguageSelector.js: dropdown, RTL/LTR support
+- HelpAbout.js: info, report links, about
+- LogoutButton.js: sticky/log out logic
+- LoadingFallback.js, ErrorMessage.js, SuccessBanner.js, ConfirmationModal.js: all with glassy styling
+
+═══════════════════════════════════════════════════════════════════════
+🛠️ UTILITIES & HOOKS
+═══════════════════════════════════════════════════════════════════════
+
+- useSettings: fetch, subscribe, update all settings, manages dirty states & revert
+- useTheme: manages dark/light/auto, updates app shell
+- useLanguage: swaps app language/labels instantly on change
+- validateEmail, validatePassword, validateUsername: standard best-practice logic
+- formatTimestamp: for account timestamps/log
+
+═══════════════════════════════════════════════════════════════════════
+⚡ ACCESSIBILITY, REALTIME & PERFORMANCE
+═══════════════════════════════════════════════════════════════════════
+
+* Fully accessible: tab/keyboard support, ARIA, focus rings, high contrast themes
+* Animations opt-out with prefers-reduced-motion
+* All updates use optimistic UI (settings update instantly, confirmation/undo/snackbar)
+* Live subscription to settings (show changes in realtime if made in another session)
+* No leaks/memory bloat: clean up all listeners on unmount
+
+═══════════════════════════════════════════════════════════════════════
+⚠️ BE STRICT: EVERYTHING DETAILED ABOVE MUST BE IMPLEMENTED—NO SAMPLE, NO "logic here," NO INCOMPLETE
+═══════════════════════════════════════════════════════════════════════
+
+All logic, UI, error paths, real backend actions, and validation must be present and production-worthy.  
+CSS should be in a separate Settings.css with professional, glassmorphic, responsive, animated brand visuals.
+
+═══════════════════════════════════════════════════════════════════════
+
+
+Create a complete, professional Settings.css for the Focus app’s Settings page, implementing ALL details here—no placeholders, no skipped features.
+
+═══════════════════════════════════════════════════════════════════════
+📐 LAYOUT & STRUCTURE
+═══════════════════════════════════════════════════════════════════════
+
+* .settings-page: max-width 620px, centered, full-viewport height, glass/gradient background (#241A45 → #351F81), edge-to-edge on mobile.
+* .settings-sections: spaced cards, big rounded radius (18–26px), heavy backdrop blur, deep brand shadow set off from background.
+* .settings-header: sticky or fixed, semi-glassy with brand accent border, bold section icon and title, z-index 9.
+
+═══════════════════════════════════════════════════════════════════════
+🔑 ACCOUNT, PRIVACY, NOTIFICATIONS
+═══════════════════════════════════════════════════════════════════════
+
+* .settings-card: glassmorphic, big rounded corners, heavy drop-shadow, spacing above/below
+* Section headers: uppercase/bold, left-aligned, colored brand accent underline, sticky/fixed mobile when possible
+* .account-settings, .privacy-settings, .notification-settings—divide content: title, subtle divider, then fields
+* .blocked-users-list: horizontal or scrollable card list, avatar/name, Unblock animated button
+
+═══════════════════════════════════════════════════════════════════════
+🟣 FORM FIELDS, INPUTS & SWITCHES
+═══════════════════════════════════════════════════════════════════════
+
+* All inputs: glassy, pill-shaped if possible, branded border on focus, smooth fill animate on input
+* Text fields: high-contrast, large clickable area, floating label on focus
+* Toggles/switches: animated modern pill, 44x28px min, thumb slides with spring animation, thumb-brand when on, neutral/gray when off, focus ring
+* Dropdowns: animated open, glass background with brand-shadow, colored border highlight active
+
+═══════════════════════════════════════════════════════════════════════
+🎨 BUTTONS & DANGER ZONE
+═══════════════════════════════════════════════════════════════════════
+
+* Primary actions: pill, brand-gradient, animated shadow/glow on hover/active, sticky footer (mobile), full-width
+* “Danger zone” (delete, export): strong accent (red/yellow), shake/glow on focus/hover/tap, brand-dim shadow
+
+═══════════════════════════════════════════════════════════════════════
+🖼️ MODALS, LOADING, ERROR STATES
+═══════════════════════════════════════════════════════════════════════
+
+* .confirmation-modal, .loading-fallback, .error-message, .success-banner: center/overlay, glass fade-in/fade-out, animated, brand accent focus
+* Loading spinners: lavender/brand colored, glassy circular, 1s infinite spin
+* Error: shake and glow, red border/accents, high contrast, Retry button (branded), visible outline
+
+═══════════════════════════════════════════════════════════════════════
+📱 RESPONSIVE DESIGN & ACCESSIBILITY
+═══════════════════════════════════════════════════════════════════════
+
+* Mobile: all cards and buttons stack, full-bleed cards, sticky headers/footers for nav/actions
+* Touch: tap targets ≥44x44px, large switch & select, focus/active ring
+* Keyboard: tab & arrow key navigation, 2px #8B7FD7 focus ring, visibly distinct :focus/:active
+* ARIA: visually hidden labels if needed, always clear for screen readers
+
+═══════════════════════════════════════════════════════════════════════
+✨ ANIMATION, GLASSMORPHISM, BRAND POLISH
+═══════════════════════════════════════════════════════════════════════
+
+* All cards and controls: glassy, backdrop-filter: blur(22px+), semi-transparent with color accent overlays
+* Buttons and switches: transition box-shadow, border-color, fill, and transform (0.16–0.32s cubic)
+* Form input and section transitions: fade/slide in, responsive
+* Brand accent colors: #8B7FD7 (lavender), #FFD600 (yellow), #FF5378 (danger-red), #EE7BFA (accent pink)
+* Varied z-index for overlays and sticky mobile controls
+* All color/spacing as CSS variables (root: --settings-accent, --danger, etc)
+
+═══════════════════════════════════════════════════════════════════════
+🖌️ CLASS NAMES REQUIRED
+═══════════════════════════════════════════════════════════════════════
+
+.settings-page, .settings-header, .settings-sections, .settings-card, .account-settings, .privacy-settings, .notification-settings, .theme-selector, .language-selector, .danger-zone, .blocked-users-list, .confirmation-modal, .loading-fallback, .error-message, .success-banner, .settings-input, .settings-switch, etc.
+
+═══════════════════════════════════════════════════════════════════════
+✍️ EVERYTHING ABOVE MUST BE IMPLEMENTED IN THE FINAL CSS—NO PARTIALS, NO PLACEHOLDERS
+═══════════════════════════════════════════════════════════════════════
+
+All UX, visual, responsive, and accessibility details must be present.  
+You must follow all modern web/app best-practices.  
+The output must be ready for production and look “premium” on all screens and input types.
+
+═══════════════════════════════════════════════════════════════════════

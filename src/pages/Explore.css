@@ -1,0 +1,95 @@
+﻿/* ========================================
+   🌐 EXPLORE PAGE - MASTER STYLES
+   Lavender Theme, Glass Morphism, Responsive
+   ======================================== */
+
+:root {
+  --lavender-primary: #8B7FD7;
+  --lavender-secondary: #241c57;
+  --lavender-accent: #EE7BFA;
+  --lavender-light: #b9b3ed;
+  --lavender-pink: #FF6EC7;
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-blur: blur(18px);
+  --shadow-lavender: 0 8px 32px rgba(238, 123, 250, 0.25);
+  --shadow-pink: 0 8px 32px rgba(238, 123, 250, 0.35);
+  --shadow-card: 0 4px 16px rgba(36, 28, 87, 0.2);
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --radius-pill: 9999px;
+  --radius-card: 18px;
+  --radius-button: 12px;
+}
+
+.explore-page {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(120deg, var(--lavender-primary) 0%, var(--lavender-secondary) 100%);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.explore-main-container {
+  flex: 1;
+  margin-left: 280px;
+  padding: var(--spacing-lg);
+  max-width: 1400px;
+  width: 100%;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.explore-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.explore-search-section {
+  margin-bottom: var(--spacing-lg);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(36, 28, 87, 0.7);
+  backdrop-filter: var(--glass-blur);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-card);
+  border: 1px solid var(--glass-border);
+}
+
+.explore-sidebar-section {
+  margin: var(--spacing-lg) 0;
+}
+
+.explore-sidebar-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--lavender-accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 1024px) {
+  .explore-main-container {
+    margin-left: 0;
+    padding: var(--spacing-md);
+  }
+  .explore-sidebar-row {
+    grid-template-columns: 1fr;
+  }
+}

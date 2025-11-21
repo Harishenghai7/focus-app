@@ -1,0 +1,187 @@
+/* ErrorBoundary CSS Module */
+
+.errorBoundary {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  z-index: 9999;
+}
+
+.errorContent {
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+.errorTitle {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+.errorMessage {
+  font-size: var(--font-size-md);
+  color: var(--text-secondary);
+  margin: 0 0 var(--spacing-lg) 0;
+  line-height: 1.6;
+}
+
+.errorDetails {
+  background: var(--bg-hover);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  margin: var(--spacing-lg) 0;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.errorActions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+.tryAgainBtn,
+.clearCacheBtn,
+.copyReportBtn {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}
+
+.tryAgainBtn {
+  background: var(--primary-color);
+  color: white;
+}
+
+.tryAgainBtn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.clearCacheBtn {
+  background: var(--warning-color);
+  color: white;
+}
+
+.clearCacheBtn:hover {
+  background: var(--warning-hover);
+  transform: translateY(-1px);
+}
+
+.copyReportBtn {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.copyReportBtn:hover {
+  background: var(--secondary-hover);
+  transform: translateY(-1px);
+}
+
+.devDetails {
+  margin-top: var(--spacing-lg);
+  text-align: left;
+}
+
+.devDetails summary {
+  cursor: pointer;
+  padding: var(--spacing-sm);
+  background: var(--bg-hover);
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.devDetails summary:hover {
+  background: var(--border-color);
+}
+
+.forceResetLink {
+  display: inline-block;
+  margin-top: var(--spacing-lg);
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.forceResetLink:hover {
+  text-decoration: underline;
+}
+
+/* Dark mode styles */
+:global(.dark) .errorBoundary {
+  background: #0a0a0a;
+}
+
+:global(.dark) .errorContent {
+  background: #1a1a1a;
+  border-color: #333;
+}
+
+:global(.dark) .errorDetails {
+  background: #111;
+  border-color: #333;
+}
+
+:global(.dark) .devDetails summary {
+  background: #222;
+}
+
+:global(.dark) .devDetails summary:hover {
+  background: #333;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .errorBoundary {
+    padding: var(--spacing-lg);
+  }
+  
+  .errorContent {
+    padding: var(--spacing-lg);
+  }
+  
+  .errorTitle {
+    font-size: var(--font-size-xl);
+  }
+  
+  .errorActions {
+    flex-direction: column;
+  }
+  
+  .tryAgainBtn,
+  .clearCacheBtn,
+  .copyReportBtn {
+    width: 100%;
+  }
+}

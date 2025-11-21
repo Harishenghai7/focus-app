@@ -1,0 +1,197 @@
+/**
+ * FocuslyButton Styles
+ * 
+ * Floating button with lavender gradient, shine effect, and animations
+ */
+
+.focusly-button {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #9b87f5 0%, #7E69AB 100%);
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 8px 24px rgba(155, 135, 245, 0.5),
+    0 4px 12px rgba(126, 105, 171, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  z-index: 1000;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  position: relative;
+}
+
+.focusly-button::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 70%
+  );
+  animation: shine 3s infinite;
+  pointer-events: none;
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  50% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+.focusly-button:hover {
+  box-shadow: 
+    0 12px 32px rgba(155, 135, 245, 0.6),
+    0 6px 16px rgba(126, 105, 171, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.focusly-button:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.focusly-button-pulse {
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  width: calc(100% + 6px);
+  height: calc(100% + 6px);
+  border-radius: 50%;
+  background: linear-gradient(135deg, #9b87f5 0%, #7E69AB 100%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.focusly-icon-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  object-position: center 30%; /* Focus on the face area (top 30% of image) */
+  border-radius: 50%;
+  z-index: 2;
+  position: relative;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+  pointer-events: none;
+  /* Slight zoom to fill the circle better */
+  transform: scale(1.1);
+}
+
+.focusly-tooltip {
+  position: absolute;
+  right: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.focusly-tooltip::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left: 6px solid rgba(0, 0, 0, 0.9);
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .focusly-button {
+    bottom: 80px; /* Above bottom nav */
+    right: 16px;
+    width: 60px;
+    height: 60px;
+  }
+
+  .focusly-icon-image {
+    width: 44px;
+    height: 44px;
+  }
+
+  .focusly-tooltip {
+    display: none; /* Hide tooltip on mobile */
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .focusly-button {
+    bottom: 20px;
+    right: 20px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .focusly-button {
+    box-shadow: 
+      0 8px 24px rgba(155, 135, 245, 0.6),
+      0 4px 12px rgba(126, 105, 171, 0.4);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .focusly-button:hover {
+    box-shadow: 
+      0 12px 32px rgba(155, 135, 245, 0.7),
+      0 6px 16px rgba(126, 105, 171, 0.5);
+  }
+}
+
+/* Accessibility */
+.focusly-button:focus {
+  outline: 3px solid #9b87f5;
+  outline-offset: 4px;
+}
+
+.focusly-button:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.focusly-button:focus-visible {
+  outline: 3px solid #9b87f5;
+  outline-offset: 4px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .focusly-button,
+  .focusly-button-pulse {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .focusly-button {
+    border: 2px solid white;
+  }
+}

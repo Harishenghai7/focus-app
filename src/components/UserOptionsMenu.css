@@ -1,0 +1,50 @@
+.user-options-menu {
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+  overflow: hidden;
+}
+
+.option-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  border: none;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.option-btn:last-child {
+  border-bottom: none;
+}
+
+.option-btn:hover:not(:disabled) {
+  background: var(--bg-tertiary);
+}
+
+.option-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.option-btn.danger {
+  color: #ef4444;
+}
+
+.option-btn.cancel {
+  font-weight: 400;
+}
+
+.option-btn svg {
+  width: 20px;
+  height: 20px;
+}

@@ -1,0 +1,204 @@
+.container {
+  overflow-x: auto;
+  margin-top: 8px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-bg, #fff);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table thead {
+  background: var(--color-bg-secondary, #f7f9fa);
+}
+
+.table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-secondary, #657786);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table td {
+  padding: 12px 16px;
+  border-top: 1px solid var(--color-border, #e1e8ed);
+}
+
+.rankColumn {
+  width: 80px;
+}
+
+.userColumn {
+  flex: 1;
+}
+
+.statusColumn {
+  width: 120px;
+  text-align: center;
+}
+
+.rank {
+  text-align: center;
+}
+
+.rankBadge {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatarPlaceholder {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-primary, #1da1f2);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.username {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text, #14171a);
+}
+
+.status {
+  text-align: center;
+}
+
+.correctBadge,
+.incorrectBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.correctBadge {
+  background: #e6f7ed;
+  color: #17bf63;
+}
+
+.incorrectBadge {
+  background: #fef3f0;
+  color: #f45d22;
+}
+
+.correctRow {
+  background: rgba(23, 191, 99, 0.03);
+}
+
+.incorrectRow {
+  background: rgba(244, 93, 34, 0.03);
+}
+
+.empty {
+  text-align: center;
+  padding: 24px;
+  color: var(--color-text-secondary, #657786);
+  font-size: 14px;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .table {
+    background: var(--color-bg-dark, #253341);
+  }
+
+  .table thead {
+    background: var(--color-bg-dark, #192734);
+  }
+
+  .table td {
+    border-top-color: var(--color-border-dark, #38444d);
+  }
+
+  .username {
+    color: var(--color-text-dark, #fff);
+  }
+
+  .correctBadge {
+    background: rgba(23, 191, 99, 0.2);
+  }
+
+  .incorrectBadge {
+    background: rgba(244, 93, 34, 0.2);
+  }
+
+  .correctRow {
+    background: rgba(23, 191, 99, 0.05);
+  }
+
+  .incorrectRow {
+    background: rgba(244, 93, 34, 0.05);
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .table th,
+  .table td {
+    padding: 8px 12px;
+  }
+
+  .table th {
+    font-size: 11px;
+  }
+
+  .rankColumn {
+    width: 60px;
+  }
+
+  .statusColumn {
+    width: 100px;
+  }
+
+  .rankBadge {
+    font-size: 16px;
+  }
+
+  .avatar,
+  .avatarPlaceholder {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .username {
+    font-size: 13px;
+  }
+
+  .correctBadge,
+  .incorrectBadge {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+}

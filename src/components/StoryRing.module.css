@@ -1,0 +1,38 @@
+.container {
+  position: relative;
+  width: 48px;
+  height: 48px;
+}
+.ring {
+  position: absolute;
+  top: 0; left: 0;
+  width: 48px;
+  height: 48px;
+}
+.bg {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 4;
+}
+.fg {
+  fill: none;
+  stroke: var(--color-primary, #007bff);
+  stroke-width: 4;
+  transition: stroke-dashoffset 0.5s;
+}
+.avatar {
+  position: absolute;
+  top: 4px; left: 4px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+@media (prefers-color-scheme: dark) {
+  .bg {
+    stroke: #222;
+  }
+  .fg {
+    stroke: #90caf9;
+  }
+}

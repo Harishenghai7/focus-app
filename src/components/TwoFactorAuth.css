@@ -1,0 +1,259 @@
+.tfa-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.tfa-modal {
+  background: var(--bg-primary);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color);
+}
+
+.tfa-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.tfa-close:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.tfa-error {
+  background: var(--error-light);
+  color: var(--error-color);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  border: 1px solid var(--error-color);
+}
+
+.tfa-step {
+  text-align: center;
+}
+
+.tfa-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.tfa-step h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.tfa-step p {
+  margin: 0 0 1.5rem 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.tfa-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.benefit-icon {
+  font-size: 1.125rem;
+  color: var(--success-color);
+}
+
+.qr-container {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.qr-code {
+  width: 200px;
+  height: 200px;
+  border-radius: 8px;
+}
+
+.manual-entry {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.manual-entry p {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.secret-code {
+  display: block;
+  background: var(--bg-primary);
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  word-break: break-all;
+}
+
+.verification-input {
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.verification-input label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.code-input {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  text-align: center;
+  letter-spacing: 0.5rem;
+  font-family: 'Courier New', monospace;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.code-input:focus {
+  border-color: var(--accent-color);
+}
+
+.tfa-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.tfa-actions .btn-secondary,
+.tfa-actions .btn-primary {
+  flex: 1;
+  padding: 0.875rem 1.5rem;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.success-animation {
+  margin-bottom: 1rem;
+}
+
+.success-icon {
+  font-size: 4rem;
+  color: var(--success-color);
+}
+
+.success-note {
+  background: var(--warning-light);
+  border: 1px solid var(--warning-color);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1.5rem;
+  text-align: left;
+}
+
+.success-note p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--warning-dark);
+  line-height: 1.4;
+}
+
+/* Dark mode */
+.dark .tfa-modal {
+  background: var(--bg-primary-dark);
+  border-color: var(--border-dark);
+}
+
+.dark .benefit-item {
+  background: var(--bg-secondary-dark);
+  border-color: var(--border-dark);
+}
+
+.dark .manual-entry {
+  background: var(--bg-secondary-dark);
+  border-color: var(--border-dark);
+}
+
+.dark .secret-code {
+  background: var(--bg-primary-dark);
+  border-color: var(--border-dark);
+}
+
+.dark .code-input {
+  background: var(--bg-secondary-dark);
+  border-color: var(--border-dark);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .tfa-modal {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+  
+  .qr-code {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .tfa-actions {
+    flex-direction: column;
+  }
+}

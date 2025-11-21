@@ -1,0 +1,55 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+}
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+.filters {
+  display: flex;
+  gap: 8px;
+}
+.filter {
+  background: var(--color-bg-secondary, #eee);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  cursor: pointer;
+  color: #222;
+}
+.selected {
+  background: var(--color-primary, #007bff);
+  color: #fff;
+}
+.saveBtn {
+  background: var(--color-primary, #007bff);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 24px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.saveBtn:hover {
+  background: var(--color-primary-dark, #0056b3);
+}
+/* Example filter classes */
+.Normal {}
+.Sepia { filter: sepia(1); }
+.Mono { filter: grayscale(1); }
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: var(--color-bg-dark, #181818);
+  }
+  .filter {
+    background: #333;
+    color: #fff;
+  }
+}

@@ -1,0 +1,141 @@
+.explore-tile {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  transition: box-shadow 0.3s ease;
+}
+
+.explore-tile img.explore-tile-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  aspect-ratio: 1 / 1;
+}
+
+.explore-tile-user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-3);
+  gap: var(--space-2);
+}
+
+.explore-tile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--focus-primary);
+}
+
+.username-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  font-size: var(--text-base);
+}
+
+.follow-btn {
+  background: var(--focus-primary);
+  border: none;
+  border-radius: var(--radius-full);
+  color: white;
+  padding: var(--space-2) var(--space-5);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.3s ease;
+}
+
+.follow-btn.following {
+  background: var(--text-muted);
+  color: var(--text-secondary);
+}
+
+.follow-btn:hover:not(.following) {
+  background: var(--focus-primary-dark);
+}
+
+.follow-btn:focus-visible {
+  outline: 2px solid var(--focus-primary);
+  outline-offset: 2px;
+}
+
+.explore-tile-hashtag {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-4);
+  gap: var(--space-1);
+  color: var(--focus-primary);
+  font-weight: var(--font-bold);
+  font-size: var(--text-lg);
+}
+
+.hashtag-symbol {
+  font-size: 2rem;
+}
+
+.hashtag-text {
+  font-weight: var(--font-bold);
+  text-transform: lowercase;
+}
+
+.post-count {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.like-btn {
+  position: absolute;
+  bottom: var(--space-3);
+  right: var(--space-3);
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-full);
+  padding: var(--space-1);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  cursor: pointer;
+  border: none;
+  color: var(--text-muted);
+  font-weight: var(--font-semibold);
+  box-shadow: var(--shadow-sm);
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.like-btn.liked {
+  color: #e0245e;
+  background: rgba(224, 36, 94, 0.15);
+}
+
+.like-btn:hover {
+  color: #e0245e;
+  background: rgba(224, 36, 94, 0.25);
+}
+
+.like-count {
+  font-size: var(--text-xs);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .explore-tile-avatar {
+    width: 56px;
+    height: 56px;
+  }
+  .follow-btn {
+    padding: var(--space-1) var(--space-3);
+  }
+}
+

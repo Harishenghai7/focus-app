@@ -1,0 +1,142 @@
+/* Bottom Navigation - Mobile Only */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 56px;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0;
+  z-index: var(--z-fixed);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Hide on desktop */
+@media (min-width: 768px) {
+  .bottom-nav {
+    display: none;
+  }
+}
+
+/* Navigation Items */
+.bottom-nav-item {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  flex: 1;
+  max-width: 80px;
+  transition: all var(--transition-fast);
+  outline: none;
+  color: var(--text-secondary);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bottom-nav-item:hover {
+  background: var(--bg-hover);
+}
+
+.bottom-nav-item:active {
+  transform: scale(0.95);
+}
+
+.bottom-nav-item:focus-visible {
+  outline: 2px solid var(--focus-lavender);
+  outline-offset: -2px;
+  border-radius: var(--radius-md);
+}
+
+/* Active State */
+.bottom-nav-item.active {
+  color: var(--focus-lavender);
+}
+
+.bottom-nav-item.active .bottom-nav-icon svg {
+  fill: currentColor;
+}
+
+/* Icon */
+.bottom-nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.bottom-nav-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: all 0.2s ease;
+}
+
+/* Label */
+.bottom-nav-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  color: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .bottom-nav {
+    background: var(--bg-primary);
+    border-top-color: var(--border-color);
+  }
+  
+  .bottom-nav-item {
+    color: var(--text-secondary);
+  }
+  
+  .bottom-nav-item:hover {
+    background: var(--bg-hover);
+  }
+  
+  .bottom-nav-item.active {
+    color: var(--focus-lavender);
+  }
+}
+
+/* Small Mobile Optimization */
+@media (max-width: 380px) {
+  .bottom-nav {
+    height: 52px;
+  }
+  
+  .bottom-nav-item {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    gap: 1px;
+  }
+  
+  .bottom-nav-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .bottom-nav-label {
+    font-size: 9px;
+  }
+}
+

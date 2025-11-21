@@ -1,0 +1,327 @@
+/* ==========================================
+   UNIVERSAL LAYOUT COMPONENT
+   ========================================== */
+
+.layout {
+  min-height: 100vh;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  transition: var(--transition-all);
+  position: relative;
+}
+
+/* ==========================================
+   CONTAINER SYSTEM
+   ========================================== */
+
+.container {
+  width: 100%;
+  max-width: 100vw;
+  margin: 0 auto;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.main {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* ==========================================
+   LAYOUT TYPES - RESPONSIVE CONTAINERS
+   ========================================== */
+
+/* Feed Layout - 614px max width */
+.feed .container {
+  max-width: 614px;
+  padding: 0 var(--space-4);
+}
+
+.feed .main {
+  padding: var(--space-6) 0;
+}
+
+/* Profile Layout - 935px max width */
+.profile .container {
+  max-width: 935px;
+  padding: 0 var(--space-6);
+}
+
+.profile .main {
+  padding: var(--space-8) 0;
+}
+
+/* Wide Layout - For messages, explore, etc. */
+.wide .container {
+  max-width: 1200px;
+  padding: 0 var(--space-6);
+}
+
+.wide .main {
+  padding: var(--space-6) 0;
+}
+
+/* ==========================================
+   DEVICE-SPECIFIC STYLES
+   ========================================== */
+
+/* Mobile Styles */
+.mobile .container {
+  padding: 0 var(--space-3);
+}
+
+.mobile .main {
+  padding: var(--space-4) 0;
+}
+
+.mobile.feed .container,
+.mobile.profile .container,
+.mobile.wide .container {
+  max-width: 100%;
+  padding: 0 var(--space-3);
+}
+
+/* Tablet Styles */
+.tablet .container {
+  padding: 0 var(--space-4);
+}
+
+.tablet .main {
+  padding: var(--space-5) 0;
+}
+
+.tablet.feed .container {
+  max-width: 100%;
+  padding: 0 var(--space-4);
+}
+
+.tablet.profile .container {
+  max-width: 700px;
+  padding: 0 var(--space-4);
+}
+
+.tablet.wide .container {
+  max-width: 100%;
+  padding: 0 var(--space-4);
+}
+
+/* Desktop Styles */
+.desktop .container {
+  padding: 0 var(--space-6);
+}
+
+.desktop .main {
+  padding: var(--space-8) 0;
+}
+
+
+
+/* ==========================================
+   RESPONSIVE BREAKPOINTS
+   ========================================== */
+
+/* Tablet Portrait */
+@media (max-width: 768px) {
+  .layout {
+    font-size: 14px;
+  }
+  
+  .container {
+    padding: 0 var(--space-4);
+  }
+  
+  .main {
+    padding: var(--space-5) 0;
+  }
+  
+  .feed .container,
+  .profile .container,
+  .wide .container {
+    max-width: 100%;
+    padding: 0 var(--space-4);
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .layout {
+    font-size: 13px;
+  }
+  
+  .container {
+    padding: 0 var(--space-3);
+  }
+  
+  .main {
+    padding: var(--space-4) 0;
+  }
+  
+  .feed .main,
+  .profile .main,
+  .wide .main {
+    padding: var(--space-4) 0;
+  }
+}
+
+/* Large Desktop */
+@media (min-width: 1440px) {
+  .feed .container {
+    max-width: 614px;
+  }
+  
+  .profile .container {
+    max-width: 975px;
+  }
+  
+  .wide .container {
+    max-width: 1400px;
+  }
+}
+
+/* ==========================================
+   DARK MODE SUPPORT
+   ========================================== */
+
+[data-theme="dark"] .layout {
+  background: var(--color-background-dark);
+  color: var(--color-text-primary-dark);
+}
+
+/* Auto dark mode based on system preference */
+@media (prefers-color-scheme: dark) {
+  .layout {
+    background: var(--color-background-dark, var(--color-secondary-900));
+    color: var(--color-text-primary-dark, var(--color-secondary-100));
+  }
+}
+
+/* ==========================================
+   FOCUS & ACCESSIBILITY
+   ========================================== */
+
+.layout:focus-within {
+  outline: none;
+}
+
+.main:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--border-radius-md);
+}
+
+/* ==========================================
+   PRINT STYLES
+   ========================================== */
+
+@media print {
+  .layout {
+    background: white;
+    color: black;
+    font-size: 12pt;
+  }
+  
+  .container {
+    max-width: 100%;
+    padding: 0;
+  }
+  
+  .main {
+    padding: 0;
+  }
+}
+
+/* ==========================================
+   HIGH CONTRAST MODE
+   ========================================== */
+
+@media (prefers-contrast: high) {
+  .layout {
+    background: var(--color-white);
+    color: var(--color-black);
+  }
+  
+  .main {
+    border: 2px solid var(--color-black);
+  }
+}
+
+/* ==========================================
+   REDUCED MOTION
+   ========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .layout {
+    transition: none;
+  }
+  
+  .layout *,
+  .layout *::before,
+  .layout *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================
+   FLEX/GRID UTILITIES
+   ========================================== */
+
+.layout.flex {
+  display: flex;
+}
+
+.layout.grid {
+  display: grid;
+}
+
+.layout.flex .main {
+  flex: 1;
+}
+
+.layout.grid .main {
+  grid-area: main;
+}
+
+/* Common flex patterns */
+.layout.flex-column {
+  flex-direction: column;
+}
+
+.layout.flex-row {
+  flex-direction: row;
+}
+
+.layout.justify-center {
+  justify-content: center;
+}
+
+.layout.align-center {
+  align-items: center;
+}
+
+/* Common grid patterns */
+.layout.grid-center {
+  place-items: center;
+}
+
+.layout.grid-full {
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr;
+}
+
+/* ==========================================
+   SAFE AREAS (for mobile devices with notches)
+   ========================================== */
+
+@supports (padding-top: env(safe-area-inset-top)) {
+  .mobile .main {
+    padding-top: max(var(--space-4), env(safe-area-inset-top));
+    padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+    padding-left: max(var(--space-3), env(safe-area-inset-left));
+    padding-right: max(var(--space-3), env(safe-area-inset-right));
+  }
+}

@@ -1,0 +1,304 @@
+/**
+ * Focus App - Custom Icon Styles
+ * Animations, transitions, and styling for all SVG icons
+ */
+
+/* ============================================================================
+   GLOBAL ICON STYLES
+   ============================================================================ */
+
+.focus-icon {
+  display: inline-block;
+  vertical-align: -0.125em;
+  transition: all 0.2s ease-in-out;
+  color: inherit;
+}
+
+.focus-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ============================================================================
+   ICON ANIMATIONS
+   ============================================================================ */
+
+/* Like Icon - Pop Animation */
+@keyframes like-pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.like-icon.like-pop {
+  animation: like-pop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Boltz Icon - Pulse Animation */
+@keyframes boltz-pulse {
+  0% {
+    opacity: 1;
+    filter: drop-shadow(0 0 0px rgba(102, 126, 234, 0.6));
+  }
+  50% {
+    opacity: 0.8;
+    filter: drop-shadow(0 0 8px rgba(102, 126, 234, 0.8));
+  }
+  100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 0px rgba(102, 126, 234, 0.6));
+  }
+}
+
+.boltz-icon.boltz-pulse {
+  animation: boltz-pulse 1.5s ease-in-out infinite;
+}
+
+/* Focusly AI Icon - Thinking Animation */
+@keyframes focusly-thinking {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-3px);
+  }
+  50% {
+    transform: translateY(0);
+  }
+  75% {
+    transform: translateY(-3px);
+  }
+}
+
+.focusly-icon.focusly-thinking {
+  animation: focusly-thinking 1.2s ease-in-out infinite;
+}
+
+/* Notification Icon - Shake Animation */
+@keyframes notification-shake {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(15deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(-15deg);
+  }
+}
+
+.notifications-icon.notification-shake {
+  animation: notification-shake 0.5s ease-in-out;
+  transform-origin: center top;
+}
+
+/* Settings Icon - Spin Animation */
+@keyframes settings-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.settings-icon.settings-spin {
+  animation: settings-spin 2s linear infinite;
+}
+
+/* ============================================================================
+   INTERACTIVE STATES
+   ============================================================================ */
+
+/* Hover Effects */
+.focus-icon:hover {
+  opacity: 0.8;
+}
+
+/* Active/Selected State */
+.focus-icon.active,
+.focus-icon[data-active="true"] {
+  opacity: 1;
+}
+
+/* Disabled State */
+.focus-icon:disabled,
+.focus-icon.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================================================
+   ICON SIZE UTILITIES
+   ============================================================================ */
+
+.icon-xs {
+  width: 16px;
+  height: 16px;
+}
+
+.icon-sm {
+  width: 18px;
+  height: 18px;
+}
+
+.icon-md {
+  width: 24px;
+  height: 24px;
+}
+
+.icon-lg {
+  width: 32px;
+  height: 32px;
+}
+
+.icon-xl {
+  width: 40px;
+  height: 40px;
+}
+
+.icon-2xl {
+  width: 48px;
+  height: 48px;
+}
+
+/* ============================================================================
+   BRAND COLOR UTILITIES
+   ============================================================================ */
+
+.icon-primary {
+  color: #0095F6;
+}
+
+.icon-purple {
+  color: #7B68EE;
+}
+
+.icon-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ============================================================================
+   ICON PLACEMENT UTILITIES
+   ============================================================================ */
+
+/* Inline Icon */
+.icon-inline {
+  display: inline;
+  margin: 0 0.25em;
+}
+
+/* Icon Button */
+.icon-button {
+  background: transparent;
+  border: none;
+  padding: 0.5em;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.icon-button:hover {
+  background-color: rgba(0, 149, 246, 0.1);
+}
+
+.icon-button:active {
+  background-color: rgba(0, 149, 246, 0.2);
+}
+
+/* Icon with Badge */
+.icon-badge {
+  position: relative;
+  display: inline-block;
+}
+
+.icon-badge::after {
+  content: attr(data-badge);
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #FF4757;
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* ============================================================================
+   RESPONSIVE ICON SIZING
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .icon-responsive {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .icon-responsive {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* ============================================================================
+   DARK MODE SUPPORT
+   ============================================================================ */
+
+@media (prefers-color-scheme: dark) {
+  .focus-icon {
+    color: #ffffff;
+  }
+  
+  .icon-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .icon-button:active {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* ============================================================================
+   LOADING/SKELETON ICON
+   ============================================================================ */
+
+@keyframes icon-skeleton {
+  0% {
+    background-position: 0%;
+  }
+  100% {
+    background-position: 100%;
+  }
+}
+
+.icon-skeleton {
+  animation: icon-skeleton 1.5s ease-in-out infinite;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  background-size: 200%;
+}
+

@@ -1,0 +1,292 @@
+﻿
+> focus-app@0.1.0 test
+> react-app-rewired test --watchAll=false src/utils/data/linkify.test.js
+
+node.exe : ΓùÅ Validation 
+Warning:
+At C:\Program 
+Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS 
+$args
++   
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : N 
+   otSpecified: (ΓùÅ Validatio  
+  n Warning::String) [], Remo   
+ teException
+    + FullyQualifiedErrorId : N 
+   ativeCommandError
+ 
+
+  Unknown option 
+"moduleNameMapping" with value 
+{"\\.(css|less|scss|sass)$": 
+"identity-obj-proxy", 
+"^@/(.*)$": "<rootDir>/src/$1", 
+"^@components/(.*)$": 
+"<rootDir>/src/components/$1", 
+"^@hooks/(.*)$": 
+"<rootDir>/src/hooks/$1", 
+"^@lib/(.*)$": 
+"<rootDir>/src/lib/$1", 
+"^@pages/(.*)$": 
+"<rootDir>/src/pages/$1", 
+"^@styles/(.*)$": 
+"<rowDir>/src/styles/$1", 
+"^@utils/(.*)$": 
+"<rootDir>/src/utils/$1"} was 
+found.
+  This is probably a typing 
+mistake. Fixing it will remove 
+this message.
+
+  Configuration Documentation:
+  https://jestjs.io/docs/configu
+ration
+
+ΓùÅ Validation Warning:
+
+  Unknown option 
+"moduleNameMapping" with value 
+{"\\.(css|less|scss|sass)$": 
+"identity-obj-proxy", 
+"^@/(.*)$": "<rootDir>/src/$1", 
+"^@components/(.*)$": 
+"<rootDir>/src/components/$1", 
+"^@hooks/(.*)$": 
+"<rootDir>/src/hooks/$1", 
+"^@lib/(.*)$": 
+"<rootDir>/src/lib/$1", 
+"^@pages/(.*)$": 
+"<rootDir>/src/pages/$1", 
+"^@styles/(.*)$": 
+"<rowDir>/src/styles/$1", 
+"^@utils/(.*)$": 
+"<rootDir>/src/utils/$1"} was 
+found.
+  This is probably a typing 
+mistake. Fixing it will remove 
+this message.
+
+  Configuration Documentation:
+  https://jestjs.io/docs/configu
+ration
+
+  console.log
+    ≡ƒº¬ Focus App Test Suite - Setup Complete
+
+      at Object.<anonymous> (src/__tests__/setup.js:254:9)
+
+FAIL 
+src/utils/data/linkify.test.js
+  linkify
+    URL linking
+      ΓêÜ should linkify HTTP 
+URLs (6 ms)
+      ΓêÜ should linkify HTTPS 
+URLs (1 ms)
+      ΓêÜ should handle URLs 
+with paths
+      ΓêÜ should handle URLs 
+with query parameters
+      ΓêÜ should handle URLs 
+with fragments (1 ms)
+      ΓêÜ should handle URLs 
+with ports (1 ms)
+      ΓêÜ should handle 
+trailing punctuation correctly 
+(1 ms)
+      ΓêÜ should handle 
+multiple URLs (1 ms)
+      ΓêÜ should not linkify 
+URLs when disabled (1 ms)
+      ├ù should escape HTML in 
+URLs (3 ms)
+    Mention linking
+      ΓêÜ should linkify 
+mentions (6 ms)
+      ΓêÜ should linkify 
+multiple mentions (2 ms)
+      ΓêÜ should linkify 
+mention at start of string (2 
+ms)
+      ΓêÜ should handle 
+mentions with underscores (1 ms)
+      ΓêÜ should handle 
+mentions with numbers (1 ms)
+      ΓêÜ should use custom 
+mention path (1 ms)
+      ΓêÜ should not linkify 
+mentions when disabled (1 ms)
+      ΓêÜ should add data 
+attributes to mentions (1 ms)
+      ΓêÜ should escape HTML in 
+usernames (1 ms)
+    Hashtag linking
+      ΓêÜ should linkify 
+hashtags (3 ms)
+      ΓêÜ should linkify 
+multiple hashtags (1 ms)
+      ΓêÜ should linkify 
+hashtag at start of string (1 
+ms)
+      ΓêÜ should handle 
+hashtags with underscores
+      ΓêÜ should handle 
+hashtags with numbers (1 ms)
+      ΓêÜ should use custom 
+hashtag path (1 ms)
+      ΓêÜ should not linkify 
+hashtags when disabled (1 ms)
+      ΓêÜ should add data 
+attributes to hashtags (1 ms)
+    Combined linking
+      ΓêÜ should linkify URLs, 
+mentions, and hashtags together 
+(3 ms)
+      ΓêÜ should preserve text 
+formatting (2 ms)
+      ΓêÜ should handle complex 
+mixed content (3 ms)
+      ΓêÜ should not open links 
+in new tab when disabled (2 ms)
+    Edge cases
+      ΓêÜ should handle empty 
+string (1 ms)
+      ΓêÜ should handle null (1 
+ms)
+      ΓêÜ should handle 
+undefined (1 ms)
+      ΓêÜ should handle 
+non-string input (1 ms)
+      ΓêÜ should handle text 
+with no linkable content (1 ms)
+      ΓêÜ should not linkify 
+email addresses as mentions (1 
+ms)
+      ΓêÜ should handle 
+mentions in parentheses (1 ms)
+  extractMentions
+    ΓêÜ should extract single 
+mention (4 ms)
+    ΓêÜ should extract multiple 
+mentions (1 ms)
+    ΓêÜ should extract mentions 
+with underscores (1 ms)
+    ΓêÜ should return empty 
+array for no mentions (1 ms)
+    ΓêÜ should handle null 
+input (1 ms)
+    ΓêÜ should handle empty 
+string (1 ms)
+  extractHashtags
+    ΓêÜ should extract single 
+hashtag (2 ms)
+    ΓêÜ should extract multiple 
+hashtags (6 ms)
+    ΓêÜ should extract hashtags 
+with underscores (2 ms)
+    ΓêÜ should return empty 
+array for no hashtags (1 ms)
+    ΓêÜ should handle null 
+input (1 ms)
+  extractUrls
+    ΓêÜ should extract single 
+URL (1 ms)
+    ΓêÜ should extract multiple 
+URLs (1 ms)
+    ΓêÜ should extract URLs 
+with paths (1 ms)
+    ΓêÜ should return empty 
+array for no URLs (1 ms)
+    ΓêÜ should handle null 
+input (2 ms)
+  stripHtml
+    ΓêÜ should strip HTML tags 
+(2 ms)
+    ΓêÜ should strip multiple 
+HTML tags (1 ms)
+    ΓêÜ should handle text 
+without HTML (1 ms)
+    ΓêÜ should handle null 
+input (1 ms)
+  hasLinkableContent
+    ΓêÜ should return true for 
+URLs
+    ΓêÜ should return true for 
+mentions (1 ms)
+    ΓêÜ should return true for 
+hashtags (1 ms)
+    ΓêÜ should return true for 
+mixed content (1 ms)
+    ΓêÜ should return false for 
+plain text (1 ms)
+    ΓêÜ should return false for 
+null (1 ms)
+    ΓêÜ should return false for 
+empty string (1 ms)
+
+  ΓùÅ linkify ΓÇ║ URL linking 
+ΓÇ║ should escape HTML in URLs
+
+    expect(received).toContain(e
+xpected) // indexOf
+
+    Expected substring: 
+"href=\"https://example.com/\""
+    Received string:    "Visit 
+<a href=\"https://example.com/&l
+t;script&gt;alert(&quot;xss&quot
+;)&lt;/script&gt\" 
+class=\"link-url\" 
+target=\"_blank\" 
+rel=\"noopener noreferrer\">http
+s://example.com/&lt;script&gt;al
+ert(&quot;xss&quot;)&lt;/script&
+gt</a>;"
+
+    [0m [90m 84 |[39m       
+[90m// URL regex stops at < 
+character, so script tag is 
+left as-is in text[39m
+     [90m 85 |[39m       
+[90m// The URL itself will be 
+https://example.com/ only[39m
+    [31m[1m>[22m[39m[90m 
+86 |[39m       expect(output)[
+33m.[39mtoContain([32m'href="h
+ttps://example.com/"'[39m)[33m
+;[39m
+     [90m    |[39m            
+          [31m[1m^[22m[39m
+     [90m 87 |[39m     
+})[33m;[39m
+     [90m 88 |[39m   
+})[33m;[39m
+     [90m 89 |[39m[0m
+
+      at Object.<anonymous> (src
+/utils/data/linkify.test.js:86:2
+2)
+      at 
+TestScheduler.scheduleTests (nod
+e_modules/@jest/core/build/TestS
+cheduler.js:333:13)
+      at runJest (node_modules/@
+jest/core/build/runJest.js:404:1
+9)
+      at _run10000 (node_modules
+/@jest/core/build/cli/index.js:3
+20:7)
+      at runCLI (node_modules/@j
+est/core/build/cli/index.js:173:
+3)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 64 
+passed, 65 total
+Snapshots:   0 total
+Time:        3.548 s
+Ran all test suites matching /sr
+c\\utils\\data\\linkify.test.js/
+i.

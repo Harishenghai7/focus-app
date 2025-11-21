@@ -1,0 +1,41 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+}
+.recordBtn {
+  background: var(--color-primary, #007bff);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  transition: background 0.2s;
+}
+.recordBtn:active {
+  background: var(--color-primary-dark, #0056b3);
+}
+.audio {
+  width: 100%;
+  max-width: 320px;
+}
+.waveform {
+  width: 100%;
+  height: 40px;
+  background: linear-gradient(90deg, #eee 25%, #007bff 50%, #eee 75%);
+  border-radius: 8px;
+  margin-top: 8px;
+}
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: var(--color-bg-dark, #181818);
+  }
+  .waveform {
+    background: linear-gradient(90deg, #222 25%, #90caf9 50%, #222 75%);
+  }
+}

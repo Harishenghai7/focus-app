@@ -1,0 +1,75 @@
+/* HeartAnimation.css */
+
+.heart-animation-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.floating-heart {
+  position: absolute;
+  bottom: 20%;
+  font-size: 30px;
+  color: #e74c3c;
+  animation: floatUp 3s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(-20px) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-150px) scale(1.2) rotate(15deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-300px) scale(0.8) rotate(-15deg);
+  }
+}
+
+.floating-heart i {
+  filter: drop-shadow(0 0 5px rgba(231, 76, 60, 0.8));
+  animation: heartPulse 1s ease-in-out infinite;
+}
+
+@keyframes heartPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Add some variation */
+.floating-heart:nth-child(odd) {
+  animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.floating-heart:nth-child(even) {
+  animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+}
+
+.floating-heart:nth-child(3n) i {
+  color: #ff6b9d;
+}
+
+.floating-heart:nth-child(4n) i {
+  color: #c0392b;
+}
+
+.floating-heart:nth-child(5n) i {
+  font-size: 40px;
+}

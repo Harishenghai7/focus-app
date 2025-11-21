@@ -1,0 +1,812 @@
+================================================================================
+🚨 FOCUS APP - COMPLETE CSS CLEANUP & REDESIGN
+================================================================================
+
+CRITICAL MISSION: Remove ALL old conflicting CSS and implement the new design system.
+
+CURRENT PROBLEM:
+- Multiple conflicting CSS files causing broken layout
+- Old styles overriding new styles
+- Components not properly styled
+- Layout is completely broken
+
+SOLUTION:
+1. Remove ALL old CSS files
+2. Create new unified design system
+3. Implement proper CSS architecture
+4. Apply styles to all components
+5. Ensure mobile + desktop responsiveness
+
+================================================================================
+PHASE 1: DELETE ALL OLD CSS FILES
+================================================================================
+
+Delete these files (they're causing conflicts):
+
+src/App.css (DELETE - we'll recreate)
+src/index.css (DELETE - we'll recreate)
+
+Delete ALL old component CSS files:
+src/components/*.css (DELETE ALL .css files, NOT .js files)
+src/pages/*.css (DELETE ALL .css files, NOT .js files)
+src/components/mobile/*.css (DELETE if exists)
+src/components/desktop/*.css (DELETE if exists)
+
+IMPORTANT: Only delete .css files, KEEP all .js/.jsx files!
+
+================================================================================
+PHASE 2: CREATE NEW CSS FOUNDATION
+================================================================================
+
+FILE: src/styles/variables.css
+
+Create this NEW file with complete design system:
+
+:root {
+  /* ========================================
+     BRAND COLORS
+     ======================================== */
+  
+  --focus-blue: #0095F6;
+  --focus-cyan: #00D9FF;
+  --focus-purple: #7B68EE;
+  --focus-violet: #A78BFA;
+  --focus-magenta: #FF006E;
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #00D9FF 0%, #7B68EE 100%);
+  --gradient-accent: linear-gradient(135deg, #0095F6 0%, #FF006E 100%);
+  
+  /* ========================================
+     LIGHT MODE COLORS
+     ======================================== */
+  
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F7F9FC;
+  --bg-tertiary: #E8EEF7;
+  --bg-hover: #F3F4F6;
+  
+  --text-primary: #1A1A2E;
+  --text-secondary: #6B7280;
+  --text-tertiary: #9CA3AF;
+  
+  --border-color: #E5E7EB;
+  
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  
+  /* ========================================
+     DARK MODE COLORS
+     ======================================== */
+  
+  --dark-bg-primary: #0F0F23;
+  --dark-bg-secondary: #1A1A2E;
+  --dark-bg-tertiary: #252538;
+  --dark-bg-hover: #2D2D44;
+  
+  --dark-text-primary: #F8F9FA;
+  --dark-text-secondary: #B8B9BE;
+  --dark-text-tertiary: #6B6C7E;
+  
+  --dark-border-color: #2D2D44;
+  
+  /* ========================================
+     SPACING SYSTEM
+     ======================================== */
+  
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  
+  /* ========================================
+     BORDER RADIUS
+     ======================================== */
+  
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+  
+  /* ========================================
+     TYPOGRAPHY
+     ======================================== */
+  
+  --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  
+  /* ========================================
+     LAYOUT DIMENSIONS
+     ======================================== */
+  
+  --header-height: 56px;
+  --bottom-nav-height: 60px;
+  --sidebar-width: 245px;
+  --content-max-width: 935px;
+  
+  /* ========================================
+     Z-INDEX SCALE
+     ======================================== */
+  
+  --z-base: 1;
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-fixed: 1200;
+  --z-modal: 1400;
+  
+  /* ========================================
+     TRANSITIONS
+     ======================================== */
+  
+  --transition-fast: 150ms ease-out;
+  --transition-normal: 250ms ease-out;
+  --transition-slow: 350ms ease-out;
+}
+
+/* Dark mode class toggle */
+.dark {
+  --bg-primary: var(--dark-bg-primary);
+  --bg-secondary: var(--dark-bg-secondary);
+  --bg-tertiary: var(--dark-bg-tertiary);
+  --bg-hover: var(--dark-bg-hover);
+  
+  --text-primary: var(--dark-text-primary);
+  --text-secondary: var(--dark-text-secondary);
+  --text-tertiary: var(--dark-text-tertiary);
+  
+  --border-color: var(--dark-border-color);
+}
+
+================================================================================
+PHASE 3: CREATE NEW GLOBAL STYLES
+================================================================================
+
+FILE: src/index.css
+
+Create this NEW file (replaces old one):
+
+@import './styles/variables.css';
+
+/* ========================================
+   CSS RESET
+   ======================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--focus-blue);
+  outline-offset: 2px;
+}
+
+/* ========================================
+   BASE STYLES
+   ======================================== */
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  overflow-x: hidden;
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-tertiary);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* ========================================
+   TYPOGRAPHY
+   ======================================== */
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: var(--font-bold);
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+h1 { font-size: var(--text-3xl); }
+h2 { font-size: var(--text-2xl); }
+h3 { font-size: var(--text-xl); }
+h4 { font-size: var(--text-lg); }
+h5 { font-size: var(--text-base); }
+h6 { font-size: var(--text-sm); }
+
+p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+/* ========================================
+   LINKS
+   ======================================== */
+
+a {
+  color: var(--focus-blue);
+  text-decoration: none;
+  transition: opacity var(--transition-fast);
+}
+
+a:hover {
+  opacity: 0.8;
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+
+button {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   INPUTS
+   ======================================== */
+
+input,
+textarea,
+select {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* ========================================
+   IMAGES
+   ======================================== */
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+
+/* ========================================
+   APP CONTAINER
+   ======================================== */
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+================================================================================
+PHASE 4: CREATE MOBILE LAYOUT STYLES
+================================================================================
+
+FILE: src/components/mobile/MobileLayout.css
+
+Create this NEW file:
+
+.mobile-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg-secondary);
+}
+
+/* ========================================
+   MOBILE HEADER
+   ======================================== */
+
+.mobile-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-4);
+  z-index: var(--z-sticky);
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.dark .mobile-header {
+  background: rgba(15, 15, 35, 0.8);
+  border-bottom-color: var(--dark-border-color);
+}
+
+.header-left,
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.header-left .logo {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+}
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  color: var(--text-primary);
+  font-size: 20px;
+  transition: background var(--transition-fast);
+}
+
+.icon-btn:hover,
+.icon-btn:active {
+  background: var(--bg-hover);
+}
+
+/* ========================================
+   MOBILE CONTENT
+   ======================================== */
+
+.mobile-content {
+  flex: 1;
+  margin-top: var(--header-height);
+  margin-bottom: var(--bottom-nav-height);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ========================================
+   BOTTOM NAVIGATION
+   ======================================== */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--bottom-nav-height);
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 var(--spacing-2);
+  z-index: var(--z-fixed);
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.dark .bottom-nav {
+  background: rgba(15, 15, 35, 0.8);
+  border-top-color: var(--dark-border-color);
+}
+
+.nav-btn {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  height: 100%;
+  color: var(--text-secondary);
+  font-size: 24px;
+  transition: all var(--transition-fast);
+}
+
+.nav-btn span {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+}
+
+.nav-btn.active {
+  color: var(--focus-blue);
+}
+
+.nav-btn.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 3px;
+  background: var(--gradient-primary);
+  border-radius: 0 0 var(--radius-full) var(--radius-full);
+}
+
+.nav-btn.create {
+  position: relative;
+  transform: scale(1.15);
+}
+
+.nav-btn:active {
+  transform: scale(0.95);
+}
+
+.nav-btn.create:active {
+  transform: scale(1.1);
+}
+
+/* ========================================
+   MOBILE RESPONSIVE
+   ======================================== */
+
+@media (min-width: 768px) {
+  .mobile-layout {
+    display: none;
+  }
+}
+
+================================================================================
+PHASE 5: CREATE DESKTOP LAYOUT STYLES
+================================================================================
+
+FILE: src/components/desktop/DesktopLayout.css
+
+Create this NEW file:
+
+.desktop-layout {
+  display: none;
+  min-height: 100vh;
+  background: var(--bg-secondary);
+}
+
+@media (min-width: 768px) {
+  .desktop-layout {
+    display: flex;
+  }
+}
+
+/* ========================================
+   SIDEBAR
+   ======================================== */
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--sidebar-width);
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border-color);
+  padding: var(--spacing-6) 0;
+  overflow-y: auto;
+  z-index: var(--z-fixed);
+}
+
+.dark .sidebar {
+  background: var(--dark-bg-secondary);
+  border-right-color: var(--dark-border-color);
+}
+
+.sidebar-header {
+  padding: 0 var(--spacing-6);
+  margin-bottom: var(--spacing-8);
+}
+
+.sidebar-header .logo {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: 0 var(--spacing-4);
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  text-align: left;
+  transition: all var(--transition-normal);
+}
+
+.sidebar-item:hover {
+  background: var(--bg-hover);
+}
+
+.dark .sidebar-item:hover {
+  background: var(--dark-bg-hover);
+}
+
+.sidebar-item.active {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.item-icon {
+  font-size: 24px;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.item-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ========================================
+   MAIN CONTENT
+   ======================================== */
+
+.main-content {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  min-height: 100vh;
+  padding: var(--spacing-6);
+}
+
+.content-wrapper {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+}
+
+================================================================================
+PHASE 6: UPDATE APP.JS TO IMPORT NEW STYLES
+================================================================================
+
+FILE: src/App.js
+
+Update imports at the top:
+
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+
+// IMPORT NEW STYLES (CRITICAL!)
+import './index.css';
+
+// Remove old App.css import if it exists
+// import './App.css'; // DELETE THIS LINE
+
+// Rest of your App.js code...
+
+================================================================================
+PHASE 7: CREATE COMPONENT BASE STYLES
+================================================================================
+
+For EVERY component, create a CSS file with this structure:
+
+FILE: src/components/[ComponentName].css
+
+/* Component Container */
+.[component-name] {
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+}
+
+/* Component Elements */
+.[component-name]__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-3);
+}
+
+.[component-name]__title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.[component-name]__content {
+  color: var(--text-secondary);
+}
+
+/* Hover Effects */
+.[component-name]:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Dark Mode */
+.dark .[component-name] {
+  background: var(--dark-bg-tertiary);
+}
+
+================================================================================
+PHASE 8: CREATE PAGE STYLES
+================================================================================
+
+For EVERY page, create a CSS file:
+
+FILE: src/pages/[PageName].css
+
+.page-[name] {
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: var(--spacing-4);
+}
+
+.page-[name]__header {
+  margin-bottom: var(--spacing-6);
+}
+
+.page-[name]__title {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-2);
+}
+
+.page-[name]__content {
+  /* Page-specific styles */
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .page-[name] {
+    padding: var(--spacing-3);
+  }
+}
+
+================================================================================
+PHASE 9: ENSURE EVERY COMPONENT IMPORTS ITS CSS
+================================================================================
+
+Update EVERY component file to import its CSS:
+
+Example:
+// src/components/PostCard.js
+import React from 'react';
+import './PostCard.css'; // MUST HAVE THIS!
+
+const PostCard = ({ post }) => {
+  return (
+    <div className="post-card">
+      {/* Component content */}
+    </div>
+  );
+};
+
+export default PostCard;
+
+Do this for ALL components and pages!
+
+================================================================================
+PHASE 10: CLEAR CACHE AND REBUILD
+================================================================================
+
+After all changes, run:
+
+1. Stop dev server (Ctrl+C)
+2. Clear cache:
+   - rm -rf node_modules/.cache
+   - rm -rf build
+3. Restart:
+   - npm start
+
+================================================================================
+FINAL CHECKLIST
+================================================================================
+
+✅ Deleted all old CSS files
+✅ Created new src/styles/variables.css
+✅ Created new src/index.css
+✅ Created MobileLayout.css
+✅ Created DesktopLayout.css
+✅ Updated App.js imports
+✅ Created CSS for all components
+✅ Created CSS for all pages
+✅ Every component imports its CSS
+✅ Cleared cache and restarted
+
+================================================================================
+🎨 GENERATE ALL MISSING CSS FILES
+================================================================================
+
+For any component or page that still looks broken:
+
+1. Identify the component/page name
+2. Create [ComponentName].css in the same directory
+3. Use the base template above
+4. Add component-specific styles
+5. Import the CSS in the .js file
+
+MAKE FOCUS BEAUTIFUL! 🎨✨

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus App - Comprehensive QA Test Suite</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .test-controls {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-output {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+            height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-bottom: 20px;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+        .btn.success {
+            background: #48bb78;
+        }
+        .btn.danger {
+            background: #f56565;
+        }
+        .btn.warning {
+            background: #ed8936;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .status.running {
+            background: #bee3f8;
+            color: #2b6cb0;
+        }
+        .status.success {
+            background: #c6f6d5;
+            color: #2f855a;
+        }
+        .status.error {
+            background: #fed7d7;
+            color: #c53030;
+        }
+        .test-section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧪 Focus App - Comprehensive QA Test Suite</h1>
+        <p>Automated User A & User B Scenario Testing</p>
+    </div>
+
+    <div class="test-controls">
+        <h3>Test Controls</h3>
+        <p><strong>Instructions:</strong> 
+            1. Ensure Focus app is running at <a href="http://localhost:3000" target="_blank">http://localhost:3000</a><br>
+            2. Open browser console (F12) to see detailed logs<br>
+            3. Click "Run Comprehensive QA Tests" to start testing
+        </p>
+        
+        <button class="btn" onclick="runFullQATest()">🚀 Run Comprehensive QA Tests</button>
+        <button class="btn success" onclick="checkAppStatus()">✅ Check App Status</button>
+        <button class="btn warning" onclick="runQuickTest()">⚡ Quick UI Test</button>
+        <button class="btn danger" onclick="clearOutput()">🗑️ Clear Output</button>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Status</h3>
+        <div id="testStatus" class="status">
+            Ready to run tests. Click "Run Comprehensive QA Tests" to begin.
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Output</h3>
+        <div id="testOutput" class="test-output">
+Welcome to Focus App QA Test Suite!
+
+This automated testing suite will:
+✅ Test User A complete workflow (registration → content creation → social interactions)
+✅ Simulate User B interactions and responses  
+✅ Verify real-time functionality and cross-user features
+✅ Test WebRTC calling capabilities (recently fixed!)
+✅ Validate security, permissions, and privacy controls
+✅ Generate comprehensive QA report with recommendations
+
+Click "Run Comprehensive QA Tests" to start...
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Results Summary</h3>
+        <div id="testSummary">
+            <p><em>Test results will appear here after running the QA suite...</em></p>
+        </div>
+    </div>
+
+    <script src="focus-app-qa-suite.js"></script>
+    <script>
+        let currentTest = null;
+        
+        function updateStatus(message, type = 'running') {
+            const statusEl = document.getElementById('testStatus');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+        
+        function appendOutput(message) {
+            const outputEl = document.getElementById('testOutput');
+            outputEl.textContent += message + '\n';
+            outputEl.scrollTop = outputEl.scrollHeight;
+        }
+        
+        function clearOutput() {
+            document.getElementById('testOutput').textContent = 'Output cleared. Ready for new test run...\n';
+            document.getElementById('testSummary').innerHTML = '<p><em>Test results will appear here after running the QA suite...</em></p>';
+            updateStatus('Ready to run tests.');
+        }
+        
+        async function runFullQATest() {
+            updateStatus('Running comprehensive QA tests...', 'running');
+            appendOutput('🚀 Starting Focus App Comprehensive QA Test Suite...\n');
+            
+            try {
+                // Check if we're on the Focus app
+                if (!window.location.href.includes('localhost:3000')) {
+                    throw new Error('Please run this test from the Focus app at http://localhost:3000');
+                }
+                
+                // Load and run QA test suite
+                if (typeof window.runFocusAppQA === 'function') {
+                    appendOutput('✅ QA Test Suite loaded successfully\n');
+                    
+                    currentTest = await window.runFocusAppQA();
+                    
+                    // Get results from localStorage
+                    const report = localStorage.getItem('focusAppQAReport');
+                    const errorReport = localStorage.getItem('focusAppQAErrorReport');
+                    
+                    if (report) {
+                        document.getElementById('testSummary').innerHTML = 
+                            '<h4>📊 QA Test Report</h4><pre style="background: #f8f9fa; padding: 15px; border-radius: 6px; overflow-x: auto;">' + 
+                            report + '</pre>';
+                        updateStatus('QA tests completed successfully!', 'success');
+                        appendOutput('✅ QA test suite completed. Check Test Results Summary below.\n');
+                    } else if (errorReport) {
+                        document.getElementById('testSummary').innerHTML = 
+                            '<h4>❌ QA Test Errors</h4><pre style="background: #fed7d7; padding: 15px; border-radius: 6px; overflow-x: auto;">' + 
+                            errorReport + '</pre>';
+                        updateStatus('QA tests completed with errors', 'error');
+                        appendOutput('⚠️ QA test suite completed with errors. Check Test Results Summary below.\n');
+                    }
+                } else {
+                    throw new Error('QA Test Suite not loaded. Please refresh the page and try again.');
+                }
+                
+            } catch (error) {
+                updateStatus(`Test failed: ${error.message}`, 'error');
+                appendOutput(`❌ Error: ${error.message}\n`);
+                
+                document.getElementById('testSummary').innerHTML = 
+                    `<h4>❌ Test Execution Error</h4>
+                     <p><strong>Error:</strong> ${error.message}</p>
+                     <p><strong>Solution:</strong> Make sure you're running this from the Focus app at http://localhost:3000</p>`;
+            }
+        }
+        
+        async function checkAppStatus() {
+            updateStatus('Checking app status...', 'running');
+            appendOutput('🔍 Checking Focus app status...\n');
+            
+            try {
+                // Check current URL
+                appendOutput(`📍 Current URL: ${window.location.href}\n`);
+                
+                // Check if Focus app elements exist
+                const appElements = [
+                    'React app root',
+                    'Navigation elements', 
+                    'Authentication system',
+                    'Supabase client'
+                ];
+                
+                let checks = 0;
+                
+                if (document.getElementById('root')) {
+                    appendOutput('✅ React app root found\n');
+                    checks++;
+                }
+                
+                if (document.querySelector('nav, .navbar, .header, .navigation')) {
+                    appendOutput('✅ Navigation elements found\n');
+                    checks++;
+                }
+                
+                if (document.querySelector('button, .btn, a[href]')) {
+                    appendOutput('✅ Interactive elements found\n');
+                    checks++;
+                }
+                
+                if (typeof window.supabase !== 'undefined') {
+                    appendOutput('✅ Supabase client available\n');
+                    checks++;
+                } else {
+                    appendOutput('⚠️ Supabase client not in global scope\n');
+                }
+                
+                const score = Math.round((checks / 4) * 100);
+                appendOutput(`📊 App readiness score: ${score}%\n`);
+                
+                if (score >= 75) {
+                    updateStatus('App is ready for QA testing!', 'success');
+                } else {
+                    updateStatus('App may not be fully loaded', 'error');
+                }
+                
+            } catch (error) {
+                updateStatus(`Status check failed: ${error.message}`, 'error');
+                appendOutput(`❌ Status check error: ${error.message}\n`);
+            }
+        }
+        
+        async function runQuickTest() {
+            updateStatus('Running quick UI test...', 'running');
+            appendOutput('⚡ Running quick UI element test...\n');
+            
+            try {
+                const elements = [
+                    'input',
+                    'button', 
+                    'a[href]',
+                    'form',
+                    '.btn, .button',
+                    '[data-testid]'
+                ];
+                
+                let foundElements = 0;
+                
+                elements.forEach(selector => {
+                    const found = document.querySelectorAll(selector);
+                    if (found.length > 0) {
+                        appendOutput(`✅ Found ${found.length} ${selector} elements\n`);
+                        foundElements++;
+                    } else {
+                        appendOutput(`⚠️ No ${selector} elements found\n`);
+                    }
+                });
+                
+                const score = Math.round((foundElements / elements.length) * 100);
+                appendOutput(`📊 UI elements score: ${score}%\n`);
+                
+                if (score >= 80) {
+                    updateStatus('Quick test passed!', 'success');
+                } else {
+                    updateStatus('Some UI elements missing', 'error');
+                }
+                
+            } catch (error) {
+                updateStatus(`Quick test failed: ${error.message}`, 'error');
+                appendOutput(`❌ Quick test error: ${error.message}\n`);
+            }
+        }
+        
+        // Auto-check app status on page load
+        window.addEventListener('load', () => {
+            setTimeout(checkAppStatus, 1000);
+        });
+    </script>
+</body>
+</html>

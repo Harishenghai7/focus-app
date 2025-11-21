@@ -1,0 +1,86 @@
+/**
+ * ============================================================================
+ * ⚠️ ERROR MESSAGE STYLES
+ * ============================================================================
+ */
+
+.error-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-12) var(--spacing-6);
+  text-align: center;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.error-icon-wrapper {
+  margin-bottom: var(--spacing-6);
+}
+
+.error-icon {
+  font-size: 80px;
+  line-height: 1;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.error-title {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-3);
+}
+
+.error-description {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0 0 var(--spacing-6);
+}
+
+.error-retry-button {
+  padding: var(--spacing-3) var(--spacing-8);
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-fast);
+}
+
+.error-retry-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.error-retry-button:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.error-retry-button:focus-visible {
+  outline: 2px solid var(--focus-lavender);
+  outline-offset: 4px;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .error-icon {
+    filter: drop-shadow(0 4px 8px rgba(255, 255, 255, 0.1));
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .error-message {
+    animation: none;
+  }
+  
+  .error-icon {
+    animation: none;
+  }
+}

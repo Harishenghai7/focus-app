@@ -1,0 +1,51 @@
+@import '../styles/variables.css';
+
+/* Base ExploreGrid styles */
+.exploreGrid {
+  display: grid;
+  gap: 3px;
+  width: 100%;
+}
+
+/* Default masonry grid - 3 columns for posts/boltz */
+.masonryGrid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* People grid - larger tiles for user profiles */
+.peopleGrid {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+/* Tags grid - full width for hashtag tiles */
+.tagsGrid {
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .masonryGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .peopleGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .masonryGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .peopleGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tagsGrid {
+    grid-template-columns: 1fr;
+  }
+}

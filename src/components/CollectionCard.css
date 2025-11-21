@@ -1,0 +1,106 @@
+.collection-card {
+  position: relative;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid var(--border-color);
+}
+
+.collection-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.collection-preview {
+  width: 100%;
+  padding-top: 100%; /* 1:1 Aspect Ratio */
+  background: var(--bg-tertiary);
+  position: relative;
+  overflow: hidden;
+}
+
+.collection-grid-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+}
+
+.preview-item {
+  overflow: hidden;
+}
+
+.preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.collection-empty-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.collection-empty-preview svg {
+  width: 48px;
+  height: 48px;
+  color: var(--text-tertiary);
+}
+
+.collection-info {
+  padding: 16px;
+}
+
+.collection-info h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.collection-count {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.collection-delete-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.collection-card:hover .collection-delete-btn {
+  opacity: 1;
+}
+
+.collection-delete-btn:hover {
+  background: #ef4444;
+  transform: scale(1.1);
+}

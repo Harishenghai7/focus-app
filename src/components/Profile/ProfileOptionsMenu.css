@@ -1,0 +1,71 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   PROFILE OPTIONS MENU STYLES
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.profile-options-menu {
+  max-width: 400px;
+  padding: 0.5rem;
+}
+
+.option-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 0.5rem;
+  min-height: 52px;
+}
+
+.option-btn:hover,
+.option-btn:focus {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(4px);
+}
+
+.option-btn.danger {
+  color: #ff6b6b;
+}
+
+.option-btn.danger:hover {
+  background: rgba(255, 76, 76, 0.1);
+}
+
+.option-icon {
+  font-size: 1.25rem;
+}
+
+.option-label {
+  flex: 1;
+  text-align: left;
+}
+
+.cancel-btn {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+}
+
+.cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .option-btn {
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .option-icon {
+    font-size: 1.125rem;
+  }
+}

@@ -1,0 +1,170 @@
+/* ===== PROFESSIONAL MOBILE HEADER ===== */
+.mobile-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(139, 127, 215, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 1100;
+  box-shadow: 0 2px 8px rgba(139, 127, 215, 0.08);
+  transition: all 0.3s ease;
+}
+
+.dark .mobile-header {
+  background: rgba(26, 22, 37, 0.95);
+  border-bottom-color: rgba(139, 127, 215, 0.2);
+}
+
+/* Header Sections */
+.header-left {
+  display: flex;
+  align-items: center;
+  min-width: 80px;
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 80px;
+  justify-content: flex-end;
+}
+
+/* Logo */
+.logo-text {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #8B7FD7 0%, #E91E63 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.logo-text:active {
+  transform: scale(0.95);
+}
+
+/* Back Button */
+.header-back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.header-back-btn:hover {
+  background: rgba(139, 127, 215, 0.1);
+}
+
+.header-back-btn:active {
+  transform: scale(0.9);
+  background: rgba(139, 127, 215, 0.15);
+}
+
+/* Page Title */
+.page-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+/* Header Icon Buttons */
+.header-icon-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.header-icon-btn:hover {
+  background: rgba(139, 127, 215, 0.1);
+  transform: scale(1.05);
+}
+
+.header-icon-btn:active {
+  transform: scale(0.95);
+}
+
+.header-icon-btn svg {
+  transition: all 0.2s ease;
+}
+
+.header-icon-btn:hover svg {
+  stroke: #8B7FD7;
+}
+
+/* Notification Badge */
+.notification-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #E91E63 0%, #FF6B9D 100%);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 9px;
+  box-shadow: 0 2px 8px rgba(233, 30, 99, 0.4);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    transform: scale(1); 
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.1); 
+    opacity: 0.9;
+  }
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .mobile-header {
+    display: none;
+  }
+}

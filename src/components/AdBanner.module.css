@@ -1,0 +1,19 @@
+.banner {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  margin: 16px 0;
+}
+.image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+@media (prefers-color-scheme: dark) {
+  .banner {
+    background: var(--color-bg-dark, #181818);
+  }
+}

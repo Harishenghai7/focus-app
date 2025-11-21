@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Focus App Cache</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            max-width: 500px;
+        }
+        h1 {
+            margin: 0 0 1rem 0;
+            font-size: 2rem;
+        }
+        p {
+            margin: 0 0 2rem 0;
+            opacity: 0.9;
+        }
+        button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .success {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 8px;
+            display: none;
+        }
+        .success.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Clear Focus App Cache</h1>
+        <p>Click the button below to clear all cached data and start fresh.</p>
+        <button onclick="clearCache()">Clear Cache & Reload</button>
+        <div class="success" id="success">
+            ✅ Cache cleared! Redirecting to app...
+        </div>
+    </div>
+
+    <script>
+        function clearCache() {
+            // Clear localStorage
+            localStorage.clear();
+            
+            // Clear sessionStorage
+            sessionStorage.clear();
+            
+            // Clear IndexedDB (Supabase auth)
+            if (window.indexedDB) {
+                indexedDB.databases().then(databases => {
+                    databases.forEach(db => {
+                        indexedDB.deleteDatabase(db.name);
+                    });
+                });
+            }
+            
+            // Show success message
+            document.getElementById('success').classList.add('show');
+            
+            // Redirect to app after 2 seconds
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+.focusly-floating-btn {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 64px;
+  height: 64px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8B7FD7 0%, #E91E63 100%);
+  box-shadow: 0 8px 24px rgba(139, 127, 215, 0.4);
+  cursor: pointer;
+  z-index: 1000;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  padding: 4px;
+}
+
+.focusly-floating-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 32px rgba(139, 127, 215, 0.6);
+}
+
+.focusly-floating-btn:active {
+  transform: scale(0.95);
+}
+
+.btn-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: white;
+}
+
+.btn-pulse {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8B7FD7 0%, #E91E63 100%);
+  opacity: 0.5;
+  animation: pulseAnimation 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulseAnimation {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0;
+  }
+}
+
+.btn-tooltip {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 12px;
+  padding: 8px 16px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.focusly-floating-btn:hover .btn-tooltip {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .focusly-floating-btn {
+    bottom: 70px;
+    right: 16px;
+    width: 56px;
+    height: 56px;
+  }
+}

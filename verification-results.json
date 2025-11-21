@@ -1,0 +1,501 @@
+{
+  "passed": 91,
+  "failed": 0,
+  "warnings": 2,
+  "checks": [
+    {
+      "type": "file",
+      "path": "src/pages/Home.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/pages/Explore.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/pages/Boltz.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/pages/Flash.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/pages/Profile.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/pages/Messages.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/pages/Create.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/pages/Settings.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/pages/Notifications.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/pages/Calls.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/pages/EditProfile.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/pages/PostDetail.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/pages/Search.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/pages/Saved.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/pages/Archive.js",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/pages/Home.js",
+      "check": "Home: Focusly AI Button import",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/pages/Home.js",
+      "check": "Home: Stories Carousel import",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/pages/Home.js",
+      "check": "Home: PostCard import",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/pages/Home.js",
+      "check": "Home: Infinite Scroll",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/pages/Home.js",
+      "check": "Home: Pull to Refresh",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/pages/Home.js",
+      "check": "Home: Analytics tracking",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/pages/Explore.js",
+      "check": "Explore: Search Bar",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/pages/Explore.js",
+      "check": "Explore: Tabs",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/pages/Explore.js",
+      "check": "Explore: Trending Hashtags",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/pages/Explore.js",
+      "check": "Explore: Grid Layout",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/pages/Boltz.js",
+      "check": "Boltz: Video Player",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/pages/Boltz.js",
+      "check": "Boltz: Interactions",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/pages/Boltz.js",
+      "check": "Boltz: Real-time",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/pages/Messages.js",
+      "check": "Messages: Messages Hook",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/pages/Messages.js",
+      "check": "Messages: Presence Hook",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/pages/Messages.js",
+      "check": "Messages: Online Status",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/components/PostCard.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/components/StoriesCarousel.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/components/FocuslyAI/FocuslyButton.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/components/FocuslyAI/FocuslyChatModal.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/components/InteractionBar.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/components/SearchBar.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/components/MediaSelector.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/components/PhotoEditor.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/components/VideoEditor.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/components/MusicSelector.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/components/MusicPlayer/MusicPlayer.js",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/components/PostCard.js",
+      "check": "PostCard: Real-time interactions",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/components/PostCard.js",
+      "check": "PostCard: Comments Modal",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/components/PostCard.js",
+      "check": "PostCard: Share Modal",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/components/PostCard.js",
+      "check": "PostCard: Mentions linkify",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/components/PostCard.js",
+      "check": "PostCard: Hashtags linkify",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/components/FocuslyAI/FocuslyButton.js",
+      "check": "FocuslyButton: Export",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/components/FocuslyAI/FocuslyChatModal.js",
+      "check": "FocuslyChatModal: Export",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/hooks/useRealtimePosts.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/hooks/useInfiniteScroll.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/hooks/useRealtimeMessages.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/hooks/useTypingIndicator.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/hooks/useWebRTCCall.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/hooks/useRealtimeInteractions.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/hooks/usePresence.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/hooks/useDebounce.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/hooks/useMessages.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/hooks/useNotifications.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/hooks/usePullToRefresh.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/hooks/useMediaPermissions.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/supabaseClient.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/utils/formatters/formatDate.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/utils/imageCompression.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/utils/uploadFile.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/utils/analytics/trackEvent.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/utils/analytics/trackPageView.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/utils/feedCache.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/utils/subscriptionManager.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/utils/notificationService.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/utils/searchService.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/utils/trendingService.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/utils/callSignaling.js",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/index.css",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/App.css",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/pages/Home.css",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/pages/Explore.css",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/pages/Boltz.css",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/pages/Flash.css",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/pages/Profile.css",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/pages/Messages.css",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/components/PostCard.css",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/components/FocuslyAI/FocuslyButton.css",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "src/components/FocuslyAI/FocuslyChatModal.css",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "src/index.css",
+      "check": "Theme: Primary color variable",
+      "status": "warning"
+    },
+    {
+      "type": "content",
+      "path": "src/index.css",
+      "check": "Theme: Lavender color variable",
+      "status": "warning"
+    },
+    {
+      "type": "file",
+      "path": "package.json",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": ".env.example",
+      "status": "passed"
+    },
+    {
+      "type": "file",
+      "path": "README.md",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "package.json",
+      "check": "Dependency: React",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "package.json",
+      "check": "Dependency: React Router",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "package.json",
+      "check": "Dependency: Supabase",
+      "status": "passed"
+    },
+    {
+      "type": "content",
+      "path": "package.json",
+      "check": "Dependency: Framer Motion",
+      "status": "passed"
+    }
+  ]
+}

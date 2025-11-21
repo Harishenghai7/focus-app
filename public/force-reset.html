@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Force Reset Focus App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #1a1a1a;
+            color: white;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: #2a2a2a;
+            border-radius: 12px;
+            max-width: 500px;
+        }
+        h1 { color: #667eea; margin-bottom: 1rem; }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+        button:hover { background: #5568d3; }
+        .status { margin-top: 1rem; padding: 1rem; background: #1a1a1a; border-radius: 8px; }
+        .success { color: #10b981; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Force Reset Focus App</h1>
+        <p>This will completely clear all cached data and reset the app.</p>
+        <button onclick="forceReset()">FORCE RESET NOW</button>
+        <div class="status" id="status"></div>
+    </div>
+
+    <script>
+        function log(msg) {
+            document.getElementById('status').innerHTML += msg + '<br>';
+        }
+
+        async function forceReset() {
+            log('🧹 Starting force reset...');
+            
+            // 1. Clear localStorage
+            try {
+                localStorage.clear();
+                log('✅ Cleared localStorage');
+            } catch (e) {
+                log('❌ Error clearing localStorage: ' + e.message);
+            }
+            
+            // 2. Clear sessionStorage
+            try {
+                sessionStorage.clear();
+                log('✅ Cleared sessionStorage');
+            } catch (e) {
+                log('❌ Error clearing sessionStorage: ' + e.message);
+            }
+            
+            // 3. Clear all cookies
+            try {
+                document.cookie.split(";").forEach(c => {
+                    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+                });
+                log('✅ Cleared cookies');
+            } catch (e) {
+                log('❌ Error clearing cookies: ' + e.message);
+            }
+            
+            // 4. Clear IndexedDB
+            try {
+                if (window.indexedDB) {
+                    const dbs = await indexedDB.databases();
+                    for (const db of dbs) {
+                        indexedDB.deleteDatabase(db.name);
+                        log('✅ Deleted database: ' + db.name);
+                    }
+                }
+            } catch (e) {
+                log('❌ Error clearing IndexedDB: ' + e.message);
+            }
+            
+            // 5. Clear Cache Storage
+            try {
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    for (const name of cacheNames) {
+                        await caches.delete(name);
+                        log('✅ Deleted cache: ' + name);
+                    }
+                }
+            } catch (e) {
+                log('❌ Error clearing cache: ' + e.message);
+            }
+            
+            log('<span class="success">🎉 RESET COMPLETE!</span>');
+            log('Redirecting to app in 2 seconds...');
+            
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

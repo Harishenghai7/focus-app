@@ -1,0 +1,43 @@
+/* Focus App Design Tokens */
+:root {
+  --color-primary: #007AFF;
+  --color-error: #FF3B30;
+  --color-bg: #FFFFFF;
+  --color-bg-dark: #181818;
+  --color-text: #222;
+  --color-text-light: #FAFAFA;
+  --card-bg: #FFF;
+  --border-light: #E5E5EA;
+  --radius-xl: 16px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.10);
+  --font-size-lg: 18px;
+  --transition-fast: 0.2s cubic-bezier(0.4,0,0.2,1);
+  /* Add more tokens as needed for dark mode, high contrast, reduced motion */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: var(--color-bg-dark);
+    --color-text: var(--color-text-light);
+    --card-bg: #222;
+    --border-light: #333;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --color-primary: #0051A8;
+    --color-error: #B80000;
+    --border-light: #000;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: none;
+  }
+}

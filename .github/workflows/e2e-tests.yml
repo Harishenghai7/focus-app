@@ -1,0 +1,92 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        browser: [chromium, firefox, webkit]
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci --legacy-peer-deps
+    
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps ${{ matrix.browser }}
+    
+    - name: Setup environment
+      run: |
+        cp .env.example .env
+        echo "REACT_APP_SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env
+        echo "REACT_APP_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
+    
+    - name: Run E2E tests
+      run: npm run test:e2e -- --project=${{ matrix.browser }}
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playwright-report-${{ matrix.browser }}
+        path: playwright-report/
+        retention-days: 30
+    
+    - name: Upload screenshots
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: screenshots-${{ matrix.browser }}
+        path: test-results/
+        retention-days: 7
+
+  mobile-test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci --legacy-peer-deps
+    
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps chromium webkit
+    
+    - name: Setup environment
+      run: |
+        cp .env.example .env
+        echo "REACT_APP_SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env
+        echo "REACT_APP_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
+    
+    - name: Run Mobile E2E tests
+      run: npm run test:e2e:mobile
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playwright-report-mobile
+        path: playwright-report/
+        retention-days: 30

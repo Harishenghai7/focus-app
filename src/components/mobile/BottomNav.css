@@ -1,0 +1,172 @@
+/* ===== PROFESSIONAL BOTTOM NAVIGATION ===== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-top: 1px solid rgba(139, 127, 215, 0.1);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 8px;
+  z-index: 1200;
+  box-shadow: 0 -2px 12px rgba(139, 127, 215, 0.08);
+}
+
+.dark .bottom-nav {
+  background: rgba(26, 22, 37, 0.95);
+  border-top-color: rgba(139, 127, 215, 0.2);
+}
+
+/* Navigation Items */
+.nav-item {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 100%;
+  padding: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+
+.nav-icon svg {
+  transition: all 0.3s ease;
+}
+
+.nav-label {
+  color: inherit;
+  transition: all 0.2s ease;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* Active State - Determined by React Router NavLink */
+.nav-item:global(.active) {
+  color: #8B7FD7;
+}
+
+.nav-item:global(.active) svg {
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 8px rgba(139, 127, 215, 0.5));
+  animation: iconPop 0.3s ease;
+}
+
+@keyframes iconPop {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.nav-item:global(.active)::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 3px;
+  background: linear-gradient(135deg, #8B7FD7 0%, #E91E63 100%);
+  border-radius: 0 0 3px 3px;
+  box-shadow: 0 2px 8px rgba(139, 127, 215, 0.5);
+}
+
+.nav-item:global(.active) .nav-label {
+  font-weight: 600;
+}
+
+/* Create Button (Special) */
+.nav-item-create {
+  transform: scale(1);
+}
+
+.create-button {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #8B7FD7 0%, #E91E63 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(139, 127, 215, 0.4);
+  transition: all 0.3s ease;
+}
+
+.create-button svg {
+  stroke: white;
+  filter: none;
+}
+
+.nav-item-create:hover .create-button {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(139, 127, 215, 0.6);
+}
+
+.nav-item-create:active .create-button {
+  transform: scale(0.95);
+}
+
+/* Avatar in Nav */
+.nav-icon img,
+.nav-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.nav-item.active .nav-icon img,
+.nav-item.active .nav-avatar {
+  border-color: #8B7FD7;
+  box-shadow: 0 0 0 2px rgba(139, 127, 215, 0.2);
+}
+
+/* Hover Effects (Desktop/Tablet) */
+@media (hover: hover) {
+  .nav-item:hover:not(:global(.active)) {
+    color: #B5ACDE;
+  }
+  
+  .nav-item:hover .create-button {
+    transform: scale(1.05);
+  }
+}
+
+/* Active Press Effect */
+.nav-item:active {
+  transform: scale(0.92);
+  opacity: 0.7;
+}
+
+.nav-item-create:active {
+  transform: scale(1);
+}
+
+/* Hide on Desktop */
+@media (min-width: 768px) {
+  .bottom-nav {
+    display: none;
+  }
+}

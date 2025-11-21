@@ -1,0 +1,353 @@
+.highlights-page {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+.highlights-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.highlights-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.highlights-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.view-toggle {
+  display: flex;
+  gap: 4px;
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 4px;
+  border: 1px solid var(--border);
+}
+
+.view-toggle button {
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.view-toggle button:hover {
+  background: var(--hover);
+  color: var(--text-primary);
+}
+
+.view-toggle button.active {
+  background: var(--primary);
+  color: white;
+}
+
+.create-highlight-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.create-highlight-btn:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.highlights-container {
+  margin-top: 24px;
+}
+
+.highlights-container.grid-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+}
+
+.highlights-container.list-view {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.highlight-card {
+  cursor: pointer;
+  position: relative;
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  transition: all 0.3s;
+}
+
+.grid-view .highlight-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.list-view .highlight-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+}
+
+.highlight-cover {
+  width: 100%;
+  position: relative;
+  padding-bottom: 100%; /* Aspect ratio 1:1 */
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.grid-view .highlight-cover {
+  width: 100px;
+  padding-bottom: 100px;
+  height: 100px;
+}
+
+.list-view .highlight-cover {
+  width: 80px;
+  padding-bottom: 80px;
+  height: 80px;
+  flex-shrink: 0;
+}
+
+.highlight-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.highlight-info {
+  padding: 8px 0;
+  text-align: center;
+}
+
+.highlight-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.grid-view .highlight-info {
+  margin-top: 12px;
+  width: 100%;
+}
+
+.list-view .highlight-info {
+  align-items: flex-start;
+}
+
+.highlight-info h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.story-count {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.created-date {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.highlight-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.grid-view .highlight-actions {
+  justify-content: center;
+}
+
+.action-btn {
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.action-btn:hover {
+  background: var(--hover);
+  transform: scale(1.1);
+}
+
+.edit-btn:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.add-btn:hover {
+  color: #10b981;
+  border-color: #10b981;
+}
+
+.delete-btn:hover {
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+.empty-highlights {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+}
+
+.empty-highlights p {
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.empty-highlights button {
+  padding: 10px 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.empty-highlights button:hover {
+  background: var(--primary-dark);
+}
+
+/* Delete Confirmation Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.delete-confirm-modal {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.delete-confirm-modal h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 12px 0;
+}
+
+.delete-confirm-modal p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.modal-actions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancel {
+  background: var(--surface-dark);
+  color: var(--text-primary);
+}
+
+.btn-cancel:hover {
+  background: var(--hover);
+}
+
+.btn-delete {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-delete:hover {
+  background: #dc2626;
+}
+
+.highlights-page.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .highlights-header h1 {
+    font-size: 24px;
+  }
+
+  .highlights-container.grid-view {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+  }
+
+  .create-highlight-btn span {
+    display: none;
+  }
+}

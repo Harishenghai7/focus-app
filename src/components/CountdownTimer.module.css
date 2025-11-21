@@ -1,0 +1,124 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+
+
+.container.warning {
+  /* Warning state */
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.container.critical {
+  /* Critical state */
+  animation: pulse 0.5s ease-in-out infinite;
+}
+
+.timeDisplay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--color-bg-secondary, #f7f9fa);
+  border-radius: 8px;
+}
+
+.icon {
+  font-size: 18px;
+}
+
+.time {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text, #14171a);
+  min-width: 50px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.container.warning .time {
+  color: #f5a623;
+}
+
+.container.critical .time {
+  color: #f45d22;
+}
+
+.progressContainer {
+  width: 100%;
+  height: 8px;
+  background: var(--color-border, #e1e8ed);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background: linear-gradient(90deg, #1da1f2 0%, #0d7bc4 100%);
+  transition: width 1s linear;
+  border-radius: 4px;
+}
+
+.container.warning .progressBar {
+  background: linear-gradient(90deg, #f5a623 0%, #d68910 100%);
+}
+
+.container.critical .progressBar {
+  background: linear-gradient(90deg, #f45d22 0%, #d63d0f 100%);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .timeDisplay {
+    background: var(--color-bg-dark, #253341);
+  }
+
+  .time {
+    color: var(--color-text-dark, #fff);
+  }
+
+  .container.warning .time {
+    color: #f5a623;
+  }
+
+  .container.critical .time {
+    color: #f45d22;
+  }
+
+  .progressContainer {
+    background: var(--color-border-dark, #38444d);
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .timeDisplay {
+    padding: 6px 12px;
+  }
+
+  .icon {
+    font-size: 16px;
+  }
+
+  .time {
+    font-size: 16px;
+    min-width: 45px;
+  }
+
+  .progressContainer {
+    height: 6px;
+  }
+}

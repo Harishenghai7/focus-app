@@ -1,0 +1,196 @@
+/* src/components/FlashStories.css */
+
+.flash-stories-container {
+  width: 100%;
+  margin-bottom: 16px;
+  background: rgba(29, 18, 56, 0.6);
+  border-radius: 18px;
+  padding: 16px 12px;
+  box-shadow: 0 8px 40px rgba(139, 127, 215, 0.15);
+}
+
+.flash-stories-scroll {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 4px 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 127, 215, 0.4) transparent;
+}
+
+.flash-stories-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.flash-stories-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.flash-stories-scroll::-webkit-scrollbar-thumb {
+  background: rgba(139, 127, 215, 0.4);
+  border-radius: 3px;
+}
+
+.flash-stories-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 127, 215, 0.6);
+}
+
+.flash-story {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 72px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  transition: transform 0.2s ease;
+}
+
+.flash-story:hover {
+  transform: translateY(-4px);
+}
+
+.flash-story:focus {
+  outline: 2px solid #EE7BFA;
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+
+/* Your Story (Add Story) */
+.flash-add-story .flash-story-avatar-wrapper {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 8px;
+}
+
+.flash-add-story .flash-story-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #8B7FD7;
+  background: rgba(34, 34, 63, 0.8);
+  box-shadow: 0 4px 20px rgba(139, 127, 215, 0.3);
+}
+
+.flash-add-icon {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #8B7FD7, #EE7BFA);
+  color: #fff;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 18px;
+  border: 3px solid #1D1238;
+  box-shadow: 0 0 12px rgba(238, 123, 250, 0.6);
+  transition: all 0.2s ease;
+}
+
+.flash-add-story:hover .flash-add-icon {
+  transform: rotate(90deg) scale(1.1);
+}
+
+/* Story Ring */
+.flash-story-ring {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  padding: 3px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.flash-story-ring.unviewed {
+  background: linear-gradient(135deg, #EE7BFA, #8B7FD7, #38C2E5);
+  box-shadow: 0 4px 20px rgba(238, 123, 250, 0.5);
+  animation: pulse-ring 2s infinite;
+}
+
+.flash-story-ring.viewed {
+  background: linear-gradient(135deg, #6b6b8b, #4a4a6a);
+  opacity: 0.6;
+  box-shadow: 0 2px 10px rgba(107, 107, 139, 0.3);
+}
+
+@keyframes pulse-ring {
+  0%, 100% {
+    box-shadow: 0 4px 20px rgba(238, 123, 250, 0.5);
+  }
+  50% {
+    box-shadow: 0 4px 30px rgba(238, 123, 250, 0.8);
+  }
+}
+
+.flash-story-ring .flash-story-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #1D1238;
+  background: rgba(34, 34, 63, 0.8);
+}
+
+/* Story Name */
+.flash-story-name {
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-align: center;
+  width: 72px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .flash-stories-container {
+    padding: 12px 8px;
+    margin-bottom: 12px;
+  }
+
+  .flash-stories-scroll {
+    gap: 12px;
+  }
+
+  .flash-story {
+    min-width: 64px;
+  }
+
+  .flash-add-story .flash-story-avatar-wrapper,
+  .flash-story-ring {
+    width: 56px;
+    height: 56px;
+  }
+
+  .flash-add-story .flash-story-avatar,
+  .flash-story-ring .flash-story-avatar {
+    width: 50px;
+    height: 50px;
+  }
+
+  .flash-add-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 16px;
+  }
+
+  .flash-story-name {
+    font-size: 0.75rem;
+    width: 64px;
+  }
+}

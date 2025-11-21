@@ -1,0 +1,735 @@
+# 🎨 **FOCUS APP - COMPLETE PAGE ARCHITECTURE WITH VISUAL DIAGRAMS**
+
+***
+
+## **📊 PAGE 1: HOME (Main Feed)**
+
+### **VISUAL DIAGRAM:**
+
+```
+┌─────────────────────────────────────────────────────┐
+│ HEADER: Focus 💬 📞 🔔 🌙 ⚙️ │
+├─────────────────────────────────────────────────────┤
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ 📱 FOCUSLY AI ASSISTANT (Floating Button) │ │
+│ │ 💜 "Hey! Need help?" (Bottom-right corner) │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ FLASH STORIES (Horizontal Scroll) │ │
+│ │ ⭕ Your ⭕ User1 ⭕ User2 ⭕ User3 → │ │
+│ │ Story Story Story Story │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ 📸 POST CARD 1 │ │
+│ │ ┌─────────────────────────────────────────┐ │ │
+│ │ │ @username • Follow ••• │ │ │
+│ │ ├─────────────────────────────────────────┤ │ │
+│ │ │ │ │ │
+│ │ │ [Post Image/Video] │ │ │
+│ │ │ │ │ │
+│ │ ├─────────────────────────────────────────┤ │ │
+│ │ │ ❤️ 1.2K 💬 89 ↗️ Share 🔖 Save │ │ │
+│ │ │ Caption text here... │ │ │
+│ │ │ View all 89 comments │ │ │
+│ │ │ 2 hours ago │ │ │
+│ │ └─────────────────────────────────────────┘ │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ 📸 POST CARD 2 │ │
+│ │ [Same structure as above] │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ [Infinite scroll - loads more posts] │
+│ │
+├─────────────────────────────────────────────────────┤
+│ [🏠] [🔍] [➕] [⚡] [👤] │
+└─────────────────────────────────────────────────────┘
+```
+
+### **FEATURES:**
+1. **Focusly AI Button** (floating, bottom-right)
+2. **Flash Stories** (horizontal carousel at top)
+3. **Post Feed** (infinite scroll)
+4. **Real-time updates** (new posts notification)
+5. **Pull-to-refresh**
+6. **Double-tap to like**
+7. **Long-press for quick actions**
+
+***
+
+## **📊 PAGE 2: EXPLORE**
+
+### **VISUAL DIAGRAM:**
+
+```
+┌─────────────────────────────────────────────────────┐
+│ HEADER: Search Focus... 🔔 ⚙️ │
+├─────────────────────────────────────────────────────┤
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ 🔍 SEARCH BAR │ │
+│ │ [Search users, hashtags, places...] │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ CATEGORY TABS (Horizontal Scroll) │ │
+│ │ [All] [Photos] [Videos] [Boltz] [Reels] │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ TRENDING SECTION │ │
+│ │ 🔥 Trending Now │ │
+│ │ #TechNews #Fashion #Food #Travel │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ EXPLORE GRID (3 columns) │ │
+│ │ ┌─────┬─────┬─────┐ │ │
+│ │ │ IMG │ IMG │ IMG │ │ │
+│ │ ├─────┼─────┼─────┤ │ │
+│ │ │ IMG │ VID │ IMG │ ← (VID = Video icon) │ │
+│ │ ├─────┼─────┼─────┤ │ │
+│ │ │ IMG │ IMG │ IMG │ │ │
+│ │ ├─────┼─────┼─────┤ │ │
+│ │ │ IMG │ VID │ IMG │ │ │
+│ │ └─────┴─────┴─────┘ │ │
+│ │ [Infinite scroll - masonry grid] │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ SUGGESTED USERS │ │
+│ │ 👤 @user1 [Follow] │ │
+│ │ 👤 @user2 [Follow] │ │
+│ │ 👤 @user3 [Follow] │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+├─────────────────────────────────────────────────────┤
+│ [🏠] [🔍] [➕] [⚡] [👤] │
+└─────────────────────────────────────────────────────┘
+```
+
+### **FEATURES:**
+1. **Search bar** (users, hashtags, places)
+2. **Category filters** (All, Photos, Videos, Boltz, Reels)
+3. **Trending hashtags**
+4. **Grid layout** (3 columns, responsive)
+5. **Video indicators** (play icon overlay)
+6. **Like count overlay** on hover
+7. **Suggested users carousel**
+
+***
+
+## **📊 PAGE 3: CREATE (Multi-Step Modal)**
+
+### **VISUAL DIAGRAM:**
+
+```
+┌─────────────────────────────────────────────────────┐
+│ ✖️ CREATE & SHARE [Next/Post] → │
+├─────────────────────────────────────────────────────┤
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ 📸 POST - Share photos, videos or moments │ │
+│ │ ⚡ BOLTZ - Short-form video content │ │
+│ │ ✨ FLASH - 24-hour stories │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ ═══════════════════════════════════════════════════│
+│ STEP 1: SELECT MEDIA │
+│ ═══════════════════════════════════════════════════│
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ 📁 MEDIA SELECTOR │ │
+│ │ ┌─────┬─────┬─────┬─────┬─────┐ │ │
+│ │ │ ✓IMG│ IMG │ IMG │ IMG │ VID │ │ │
+│ │ ├─────┼─────┼─────┼─────┼─────┤ │ │
+│ │ │ IMG │ VID │ IMG │ IMG │ IMG │ │ │
+│ │ ├─────┼─────┼─────┼─────┼─────┤ │ │
+│ │ │ IMG │ IMG │ VID │ IMG │ IMG │ │ │
+│ │ └─────┴─────┴─────┴─────┴─────┘ │ │
+│ │ 📷 Take Photo 📹 Record Video │ │
+│ │ Selected: 1/10 │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ ═══════════════════════════════════════════════════│
+│ STEP 2: EDIT MEDIA │
+│ ═══════════════════════════════════════════════════│
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ 🎨 MEDIA EDITOR │ │
+│ │ ┌───────────────────────────────────────┐ │ │
+│ │ │ │ │ │
+│ │ │ [Selected Media Preview] │ │ │
+│ │ │ │ │ │
+│ │ └───────────────────────────────────────┘ │ │
+│ │ │ │
+│ │ ┌─────────────────────────────────────────┐ │ │
+│ │ │ 🎨 PHOTO EDITOR TOOLS │ │ │
+│ │ │ [Crop] [Filters] [Adjust] [Text] │ │ │
+│ │ │ [Stickers] [Draw] [Blur] [Effects] │ │ │
+│ │ │ │ │ │
+│ │ │ Filters: Original, Vintage, BW, Vibrant │ │ │
+│ │ │ Adjust: Brightness, Contrast, Saturation│ │ │
+│ │ │ Effects: Vignette, Grain, Sharpen │ │ │
+│ │ └─────────────────────────────────────────┘ │ │
+│ │ │ │
+│ │ ┌─────────────────────────────────────────┐ │ │
+│ │ │ 🎬 VIDEO EDITOR TOOLS │ │ │
+│ │ │ [Trim] [Speed] [Filters] [Music] │ │ │
+│ │ │ [Text] [Stickers] [Transitions] │ │ │
+│ │ │ │ │ │
+│ │ │ Timeline: ━━━━━━━━━━━━━━━━━━━━ 0:15 │ │ │
+│ │ │ Speed: 0.5x 0.75x [1x] 1.5x 2x │ │ │
+│ │ │ Transitions: Fade, Slide, Zoom │ │ │
+│ │ └─────────────────────────────────────────┘ │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ ═══════════════════════════════════════════════════│
+│ STEP 3: ADD MUSIC │
+│ ═══════════════════════════════════════════════════│
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ 🎵 MUSIC LIBRARY │ │
+│ │ ┌─────────────────────────────────────────┐ │ │
+│ │ │ 🔍 Search music... │ │ │
+│ │ ├─────────────────────────────────────────┤ │ │
+│ │ │ CATEGORIES │ │ │
+│ │ │ [Trending] [Pop] [Rock] [Electronic] │ │ │
+│ │ │ [Hip-Hop] [Classical] [Jazz] [More...] │ │ │
+│ │ ├─────────────────────────────────────────┤ │ │
+│ │ │ 🎵 Song Title 1 ▶️ 3:45│ │ │
+│ │ │ Artist Name │ │ │
+│ │ ├─────────────────────────────────────────┤ │ │
+│ │ │ 🎵 Song Title 2 ▶️ 4:12│ │ │
+│ │ │ Artist Name │ │ │
+│ │ ├─────────────────────────────────────────┤ │ │
+│ │ │ 🎵 Song Title 3 ▶️ 2:58│ │ │
+│ │ │ Artist Name │ │ │
+│ │ └─────────────────────────────────────────┘ │ │
+│ │ │ │
+│ │ ┌─────────────────────────────────────────┐ │ │
+│ │ │ TRIM MUSIC │ │ │
+│ │ │ ━━●━━━━━━━━━━━━━━━━━━ 0:15 / 3:45 │ │ │
+│ │ │ [Set Start] [Set End] │ │ │
+│ │ └─────────────────────────────────────────┘ │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ ═══════════════════════════════════════════════════│
+│ STEP 4: WRITE CAPTION │
+│ ═══════════════════════════════════════════════════│
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ ✍️ CAPTION EDITOR │ │
+│ │ ┌─────────────────────────────────────────┐ │ │
+│ │ │ Write a caption... │ │ │
+│ │ │ │ │ │
+│ │ │ @mention #hashtag 😊emoji │ │ │
+│ │ │ (0/2000) │ │ │
+│ │ └─────────────────────────────────────────┘ │ │
+│ │ │ │
+│ │ 📍 Add Location │ │
+│ │ 👥 Tag People │ │
+│ │ 🔒 Audience: Everyone ▼ │ │
+│ │ ⚙️ Advanced Options │ │
+│ │ ☐ Turn off commenting │ │
+│ │ ☐ Hide like count │ │
+│ │ 📅 Schedule post (optional) │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ [Cancel] [POST] 💜 │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+└─────────────────────────────────────────────────────┘
+```
+
+### **FEATURES:**
+1. **3 creation types**: Post, Boltz, Flash
+2. **Multi-media selector** (up to 10 items)
+3. **Advanced photo editor**: Crop, filters, adjustments, text, stickers, draw, blur, effects
+4. **Advanced video editor**: Trim, speed control, filters, music, text, stickers, transitions
+5. **Music library**: Search, categories, preview, trim
+6. **Caption editor**: @mentions, #hashtags, emojis
+7. **Location tagging**
+8. **People tagging**
+9. **Audience selector**: Everyone, Followers, Close Friends
+10. **Advanced options**: Comments, likes, scheduling
+11. **AI-powered suggestions** (via Focusly)
+
+***
+
+## **📊 PAGE 4: BOLTZ (Short Videos)**
+
+### **VISUAL DIAGRAM:**
+
+```
+┌─────────────────────────────────────────────────────┐
+│ ⚡ BOLTZ 🔍 Search │
+├─────────────────────────────────────────────────────┤
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ │ │
+│ │ │ │
+│ │ │ │
+│ │ [FULL-SCREEN VIDEO] │ │
+│ │ │ │
+│ │ Swipe ↑ for next │ │
+│ │ Swipe ↓ for previous │ │
+│ │ Tap to pause/play │ │
+│ │ │ │
+│ │ │ │
+│ │ ┌────────────────────────┐ ┌────────────┐ │ │
+│ │ │ @username │ │ ❤️ 12.5K │ │ │
+│ │ │ Caption text here... │ │ │ │ │
+│ │ │ 🎵 Song Name - Artist │ │ 💬 1.2K │ │ │
+│ │ │ │ │ │ │ │
+│ │ │ [+ Follow] │ │ ↗️ Share │ │ │
+│ │ └────────────────────────┘ │ │ │ │
+│ │ │ 🔖 Save │ │ │
+│ │ │ │ │ │
+│ │ │ •••More │ │ │
+│ │ └────────────┘ │ │
+│ │ │ │
+│ │ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 0:12 / 0:30│ │
+│ │ │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ FEATURES: │
+│ • Vertical scroll (infinite) │
+│ • Auto-play with sound │
+│ • Double-tap to like │
+│ • Long-press for options │
+│ • Swipe left for creator profile │
+│ • Video progress indicator │
+│ • Mute/Unmute toggle │
+│ │
+└─────────────────────────────────────────────────────┘
+```
+
+### **FEATURES:**
+1. **Full-screen vertical video**
+2. **Swipe gestures** (up/down navigation)
+3. **Auto-play**
+4. **Double-tap to like** with heart animation
+5. **Comment drawer**
+6. **Share options**
+7. **Follow creator**
+8. **View creator profile**
+9. **Music attribution**
+10. **Video progress bar**
+11. **Mute/unmute**
+12. **Speed control** (hidden menu)
+
+***
+
+## **📊 PAGE 5: PROFILE**
+
+### **VISUAL DIAGRAM:**
+
+```
+┌─────────────────────────────────────────────────────┐
+│ ← @username 🔔 ••• │
+├─────────────────────────────────────────────────────┤
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ ┌──────────────────────────────────────┐ │ │
+│ │ │ [Cover Photo Background] │ │ │
+│ │ └──────────────────────────────────────┘ │ │
+│ │ ┌───────────┐ │ │
+│ │ │ Avatar │ ✓ (Verified Badge) │ │
+│ │ │ Photo │ │ │
+│ │ └───────────┘ │ │
+│ │ │ │
+│ │ Username Display │ │
+│ │ @username │ │
+│ │ Bio text here... 💜✨ │ │
+│ │ 🔗 website.com │ │
+│ │ │ │
+│ │ ┌─────────┬─────────┬─────────┐ │ │
+│ │ │ 1.2K │ 5.6K │ 890 │ │ │
+│ │ │ Posts │Followers│Following │ │ │
+│ │ └─────────┴─────────┴─────────┘ │ │
+│ │ │ │
+│ │ [📝 Edit Profile] [📤 Share] [👤 Tag] │ │
+│ │ (or [💜 Follow] [💬 Message] if other user) │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ HIGHLIGHTS (Horizontal Scroll) │ │
+│ │ ⭕ Travel ⭕ Food ⭕ Work ⭕ Fun → │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ TABS │ │
+│ │ [Posts] [Saved] [Tagged] [Reels] [Boltz] │ │
+│ ├───────────────────────────────────────────────┤ │
+│ │ POSTS GRID (3 columns) │ │
+│ │ ┌─────┬─────┬─────┐ │ │
+│ │ │ IMG │ IMG │ IMG │ │ │
+│ │ ├─────┼─────┼─────┤ │ │
+│ │ │ VID │ IMG │ IMG │ │ │
+│ │ ├─────┼─────┼─────┤ │ │
+│ │ │ IMG │ IMG │ VID │ │ │
+│ │ └─────┴─────┴─────┘ │ │
+│ │ [Load more...] │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+├─────────────────────────────────────────────────────┤
+│ [🏠] [🔍] [➕] [⚡] [👤] │
+└─────────────────────────────────────────────────────┘
+```
+
+### **FEATURES:**
+1. **Cover photo** (customizable)
+2. **Avatar** with verified badge
+3. **Bio** (clickable links)
+4. **Stats** (posts, followers, following)
+5. **Action buttons**: Edit Profile, Share, Tag (or Follow, Message)
+6. **Story highlights**
+7. **Tab navigation**: Posts, Saved, Tagged, Reels, Boltz
+8. **Grid layout** (3 columns)
+9. **Long-press for quick actions**
+10. **Pull-to-refresh**
+
+***
+
+## **📊 PAGE 6: MESSAGES**
+
+### **VISUAL DIAGRAM:**
+
+```
+┌─────────────────────────────────────────────────────┐
+│ Messages ✏️ New 🔍 Search │
+├─────────────────────────────────────────────────────┤
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ CONVERSATION LIST │ │
+│ │ ┌─────────────────────────────────────────┐ │ │
+│ │ │ 👤 @user1 • Active now 🟢 │ │ │
+│ │ │ You: Hey! How are you? │ │ │
+│ │ │ 2m ago (2) │ │ │
+│ │ ├─────────────────────────────────────────┤ │ │
+│ │ │ 👤 @user2 │ │ │
+│ │ │ Photo │ │ │
+│ │ │ 1h ago │ │ │
+│ │ ├─────────────────────────────────────────┤ │ │
+│ │ │ 👤 @user3 • Active 5h ago │ │ │
+│ │ │ You liked a message │ │ │
+│ │ │ 3h ago │ │ │
+│ │ ├─────────────────────────────────────────┤ │ │
+│ │ │ 👥 Group Chat (5) │ │ │
+│ │ │ @user4: Sounds good! │ │ │
+│ │ │ 1d ago │ │ │
+│ │ └─────────────────────────────────────────┘ │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ FEATURES: │
+│ • Real-time online status │
+│ • Unread message badges │
+│ • Last message preview │
+│ • Swipe to delete/archive │
+│ • Long-press for options │
+│ │
+├─────────────────────────────────────────────────────┤
+│ │
+│ CHAT THREAD VIEW (when conversation selected): │
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ ← @username 🟢 Active 📞 📹 ℹ️ │ │
+│ ├───────────────────────────────────────────────┤ │
+│ │ ┌───────────────────────────────┐ │ │
+│ │ │ Hey! How are you? │ 10:30 AM │ │
+│ │ └───────────────────────────────┘ │ │
+│ │ │ │
+│ │ ┌───────────────────────────────┐ │ │
+│ │ │ I'm doing great! Thanks! 😊 │ │ │
+│ │ 10:31 AM │ │ │ │
+│ │ └───────────────────────────────┘ │ │
+│ │ │ │
+│ │ ┌───────────────────────────────┐ │ │
+│ │ │ [Photo attachment] │ 10:32 AM │ │
+│ │ └───────────────────────────────┘ │ │
+│ │ │ │
+│ │ ┌───────────────────────────────┐ │ │
+│ │ │ Typing... │ │ │
+│ │ └───────────────────────────────┘ │ │
+│ ├───────────────────────────────────────────────┤ │
+│ │ 📎 📷 🎤 😊 | Type a message... [Send] → │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ MESSAGE FEATURES: │
+│ • Real-time messaging │
+│ • Typing indicators │
+│ • Read receipts (✓✓) │
+│ • Send photos/videos │
+│ • Voice messages │
+│ • Emoji picker │
+│ • GIF picker │
+│ • Sticker picker │
+│ • React to messages │
+│ • Reply to specific messages │
+│ • Forward messages │
+│ • Delete messages │
+│ • Search in conversation │
+│ │
+└─────────────────────────────────────────────────────┘
+```
+
+### **FEATURES:**
+1. **Conversation list** with online status
+2. **Real-time messaging**
+3. **Typing indicators**
+4. **Read receipts**
+5. **Voice/Audio/Video calls**
+6. **Media sharing** (photos, videos, files)
+7. **Voice messages**
+8. **Emoji, GIF, sticker pickers**
+9. **Message reactions**
+10. **Reply/forward/delete**
+11. **Search conversations**
+12. **Group chats**
+
+***
+
+## **📊 PAGE 7: FLASH (Stories)**
+
+### **VISUAL DIAGRAM:**
+
+```
+┌─────────────────────────────────────────────────────┐
+│ ← Flash Stories │
+├─────────────────────────────────────────────────────┤
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ STORY RINGS GRID │ │
+│ │ ┌─────────┬─────────┬─────────┬─────────┐ │ │
+│ │ │ ⭕ │ ⭕ │ ⭕ │ ⭕ │ │ │
+│ │ │ YOUR │ @user1 │ @user2 │ @user3 │ │ │
+│ │ │ STORY │ Story │ Story │ Story │ │ │
+│ │ │ + Add │ 5m ago │ 2h ago │ 8h ago │ │ │
+│ │ ├─────────┼─────────┼─────────┼─────────┤ │ │
+│ │ │ ⭕ │ ⭕ │ ⭕ │ ⭕ │ │ │
+│ │ │ @user4 │ @user5 │ @user6 │ @user7 │ │ │
+│ │ │ 12h │ 15h │ 18h │ 20h │ │ │
+│ │ └─────────┴─────────┴─────────┴─────────┘ │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ ═══════════════════════════════════════════════════│
+│ STORY VIEWER (Full Screen) │
+│ ═══════════════════════════════════════════════════│
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ ━━━●━━━━━━━━━━━━━━━━━ (Progress bars) │ │
+│ │ │ │
+│ │ 👤 @username • 2h ago ✕ │ │
+│ │ │ │
+│ │ │ │
+│ │ │ │
+│ │ [Full-Screen Story Content] │ │
+│ │ (Photo or Video) │ │
+│ │ │ │
+│ │ Tap left ← previous │ │
+│ │ Tap right → next │ │
+│ │ Hold to pause │ │
+│ │ Swipe down to close │ │
+│ │ │ │
+│ │ │ │
+│ │ 💬 Reply to @username... ❤️ 👍 │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ STORY FEATURES: │
+│ • 24-hour expiration │
+│ • Multiple stories per user │
+│ • Progress indicators (top) │
+│ • Quick reactions (emoji) │
+│ • Reply with message │
+│ • View count (for own stories) │
+│ • Viewer list (for own stories) │
+│ • Add to highlights │
+│ • Delete story │
+│ • Share story │
+│ • Close friends option │
+│ │
+│ ═══════════════════════════════════════════════════│
+│ CREATE FLASH STORY │
+│ ═══════════════════════════════════════════════════│
+│ │
+│ Same editor as Create page but: │
+│ • Camera-first interface │
+│ • Quick filters/effects │
+│ • Text overlays │
+│ • Stickers/GIFs │
+│ • Drawing tools │
+│ • Music addition │
+│ • Poll/Quiz/Question stickers │
+│ • Countdown stickers │
+│ • Location stickers │
+│ • Mention stickers │
+│ │
+└─────────────────────────────────────────────────────┘
+```
+
+### **FEATURES:**
+1. **Story rings** (colored = new, gray = seen)
+2. **24-hour expiration**
+3. **Story viewer** (full-screen, tap navigation)
+4. **Progress bars**
+5. **Quick reactions**
+6. **Reply messages**
+7. **View count & viewer list**
+8. **Highlights** (save stories permanently)
+9. **Close friends** (private stories)
+10. **Interactive stickers**: Polls, Quiz, Questions, Countdown
+11. **Camera-first creation**
+
+***
+
+## **📊 PAGE 8: FOCUSLY AI ASSISTANT**
+
+### **VISUAL DIAGRAM:**
+
+```
+┌─────────────────────────────────────────────────────┐
+│ ✖️ Focusly AI Assistant 💜 Powered by AI │
+├─────────────────────────────────────────────────────┤
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ 🤖 FOCUSLY CHAT INTERFACE │ │
+│ │ │ │
+│ │ ┌─────────────────────────────────────────┐ │ │
+│ │ │ 💜 Focusly: Hey! I'm Focusly, your AI │ │ │
+│ │ │ assistant. How can I help you today? │ │ │
+│ │ │ 10:30 AM │ │ │
+│ │ └─────────────────────────────────────────┘ │ │
+│ │ │ │
+│ │ ┌─────────────────────────────────┐ │ │
+│ │ │ 👤 You: Help me create a post │ │ │
+│ │ │ 10:31 AM │ │ │
+│ │ └─────────────────────────────────┘ │ │
+│ │ │ │
+│ │ ┌─────────────────────────────────────────┐ │ │
+│ │ │ 💜 Focusly: Great! I can help with that.│ │ │
+│ │ │ What kind of post would you like to │ │ │
+│ │ │ create? Here are some options: │ │ │
+│ │ │ │ │ │
+│ │ │ 📸 Photo Post │ │ │
+│ │ │ 📹 Video Post │ │ │
+│ │ │ ⚡ Boltz (Short Video) │ │ │
+│ │ │ ✨ Flash Story │ │ │
+│ │ │ 📝 Text Post │ │ │
+│ │ │ 10:31 AM │ │ │
+│ │ └─────────────────────────────────────────┘ │ │
+│ │ │ │
+│ │ ┌─────────────────────────────────┐ │ │
+│ │ │ 👤 You: Photo post │ │ │
+│ │ │ 10:32 AM │ │ │
+│ │ └─────────────────────────────────┘ │ │
+│ │ │ │
+│ │ ┌─────────────────────────────────────────┐ │ │
+│ │ │ 💜 Focusly: Perfect! Let me open the │ │ │
+│ │ │ photo selector for you... │ │ │
+│ │ │ ✓ Opening Create Photo Post │ │ │
+│ │ │ 10:32 AM │ │ │
+│ │ └─────────────────────────────────────────┘ │ │
+│ │ │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ QUICK ACTIONS │ │
+│ │ [📸 Create Post] [👥 Find Friends] │ │
+│ │ [🎨 Edit Profile] [⚙️ Settings] │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ ┌───────────────────────────────────────────────┐ │
+│ │ 💬 | Type your question... [Send] → │ │
+│ │ 🎤 Voice Input │ │
+│ └───────────────────────────────────────────────┘ │
+│ │
+│ ═══════════════════════════════════════════════════│
+│ FOCUSLY CAPABILITIES │
+│ ═══════════════════════════════════════════════════│
+│ │
+│ ✅ Create content (posts, stories, boltz) │
+│ ✅ Edit photos/videos │
+│ ✅ Suggest captions │
+│ ✅ Suggest hashtags │
+│ ✅ Find friends/users │
+│ ✅ Analyze engagement │
+│ ✅ Schedule posts │
+│ ✅ Manage account settings │
+│ ✅ Answer questions about Focus │
+│ ✅ Provide tips and tricks │
+│ ✅ Troubleshoot issues │
+│ ✅ Generate creative ideas │
+│ ✅ Moderate content │
+│ ✅ Translate messages │
+│ ✅ Summarize conversations │
+│ ✅ Voice commands │
+│ │
+│ ═══════════════════════════════════════════════════│
+│ SUGGESTED PROMPTS │
+│ ═══════════════════════════════════════════════════│
+│ │
+│ • "Help me create an engaging post" │
+│ • "Suggest hashtags for my photo" │
+│ • "Write a creative caption about travel" │
+│ • "Find users interested in photography" │
+│ • "How do I enable two-factor authentication?" │
+│ • "What's trending on Focus right now?" │
+│ • "Analyze my recent post performance" │
+│ • "Schedule a post for tomorrow at 9 AM" │
+│ • "Edit this photo to look more vibrant" │
+│ • "Create a Boltz from my video" │
+│ │
+└─────────────────────────────────────────────────────┘
+```
+
+### **FEATURES:**
+1. **Conversational AI** (natural language)
+2. **Quick actions** (buttons for common tasks)
+3. **Voice input** (speech-to-text)
+4. **Context awareness** (knows your account)
+5. **Proactive suggestions**
+6. **Task automation** (create posts, schedule, edit)
+7. **Content generation** (captions, hashtags)
+8. **User search** (find friends)
+9. **Analytics** (engagement insights)
+10. **Troubleshooting** (help center)
+11. **Multilingual** (translate)
+12. **Floating button** (accessible from any page)
+
+***
+
+## **📊 REMAINING PAGES (Summary)**
+
+### **9. NOTIFICATIONS**
+- Like notifications
+- Comment notifications
+- Follow notifications
+- Mention notifications
+- Story views
+- Tags
+- Live notifications
+
+### **10. CALLS**
+- Call history
+- Missed calls indicator
+- Audio call button
+- Video call button
+- WebRTC integration
+
+### **11. SETTINGS**
+- Account settings
+- Privacy & Security
+- Notifications preferences
+- Theme toggle (Light/Dark/Auto)
+- Language
+- Data usage
+- Help & Support
+- About
+
+***

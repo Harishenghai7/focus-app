@@ -1,0 +1,156 @@
+.stat-card {
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  cursor: default;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color, #e5e7eb);
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.stat-card[role="button"] {
+  cursor: pointer;
+}
+
+.stat-card-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+}
+
+.stat-card-icon {
+  font-size: 32px;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--icon-bg, #f3f4f6);
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.stat-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.stat-card-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.stat-card-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.stat-card-change {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 18px;
+  font-weight: 600;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.stat-card-change .change-value {
+  font-size: 12px;
+}
+
+.trend-up {
+  color: #10b981;
+}
+
+.trend-down {
+  color: #ef4444;
+}
+
+.trend-neutral {
+  color: #6b7280;
+}
+
+/* Color Variants */
+.stat-card-primary .stat-card-icon {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.stat-card-success .stat-card-icon {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.stat-card-warning .stat-card-icon {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+}
+
+.stat-card-danger .stat-card-icon {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+.stat-card-info-color .stat-card-icon {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .stat-card {
+    background: var(--card-bg-dark, #1f2937);
+    border-color: var(--border-color-dark, #374151);
+  }
+
+  .stat-card-icon {
+    background: var(--icon-bg-dark, #374151);
+  }
+
+  .stat-card-value {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .stat-card-label {
+    color: var(--text-secondary-dark, #9ca3af);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stat-card {
+    padding: 16px;
+  }
+
+  .stat-card-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+  }
+
+  .stat-card-value {
+    font-size: 24px;
+  }
+
+  .stat-card-label {
+    font-size: 13px;
+  }
+
+  .stat-card-change {
+    font-size: 16px;
+  }
+}
+
+

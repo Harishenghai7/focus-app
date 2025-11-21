@@ -1,0 +1,44 @@
+.realtime-error-boundary {
+  padding: 16px;
+  margin: 16px 0;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.realtime-error-boundary h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.realtime-error-boundary p {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  color: #991b1b;
+}
+
+.realtime-error-retry {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.realtime-error-retry:hover {
+  background: #b91c1c;
+}
+
+.realtime-error-boundary-dark {
+  background: #1f2937;
+  border-color: #374151;
+  color: #ef4444;
+}
+
+.realtime-error-boundary-dark p {
+  color: #fca5a5;
+}

@@ -1,0 +1,138 @@
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: var(--desktop-topbar-height);
+  bottom: 0;
+  width: var(--desktop-sidebar-width);
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border-medium);
+  padding: var(--spacing-4) 0;
+  transition: width var(--duration-normal) var(--ease-out);
+  z-index: var(--z-fixed);
+  overflow-y: auto;
+}
+
+.dark .sidebar {
+  background: var(--dark-bg-secondary);
+  border-right-color: var(--dark-border-medium);
+}
+
+.sidebar.collapsed {
+  width: var(--desktop-sidebar-collapsed-width);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: 0 var(--spacing-3);
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  transition: var(--transition-all);
+  position: relative;
+  cursor: pointer;
+}
+
+.navItem:hover {
+  background: var(--bg-hover);
+}
+
+.dark .navItem:hover {
+  background: var(--dark-bg-hover);
+}
+
+.navItem.active {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: var(--shadow-md), var(--glow-cyan);
+}
+
+.iconWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.navAvatar {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+}
+
+.label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.collapsed .label {
+  display: none;
+}
+
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-accent);
+  color: white;
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 0 2px var(--bg-primary);
+}
+
+.dark .badge {
+  box-shadow: 0 0 0 2px var(--dark-bg-secondary);
+}
+
+.toggleButton {
+  position: absolute;
+  bottom: var(--spacing-4);
+  right: var(--spacing-4);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-full);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.dark .toggleButton {
+  background: var(--dark-bg-tertiary);
+  border-color: var(--dark-border-medium);
+}
+
+.toggleButton:hover {
+  background: var(--bg-hover);
+  transform: scale(1.05);
+}
+
+.collapsed .toggleButton svg {
+  transform: rotate(180deg);
+}

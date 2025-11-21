@@ -1,0 +1,171 @@
+@import '../styles/variables.css';
+
+.interactionBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  background: transparent;
+  position: relative;
+}
+
+.leftActions,
+.rightActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.leftActions {
+  flex: 1;
+}
+
+.rightActions {
+  gap: 12px;
+}
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  position: relative;
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.actionBtn:hover {
+  opacity: 0.7;
+  transform: scale(1.05);
+}
+
+.actionBtn:active {
+  transform: scale(0.95);
+}
+
+.actionBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.actionBtn.liked {
+  animation: likePress 0.3s ease;
+}
+
+.actionBtn.saved {
+  color: #000;
+}
+
+.actionBtn svg {
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.countBtn {
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.countBtn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.count {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-left: 4px;
+}
+
+.timestamp {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.likeBurst {
+  position: absolute;
+  top: 0;
+  left: 20px;
+  font-size: 32px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+@keyframes likePress {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .interactionBar {
+    padding: 10px 0;
+  }
+
+  .leftActions,
+  .rightActions {
+    gap: 6px;
+  }
+
+  .actionBtn {
+    padding: 6px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .actionBtn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .count,
+  .countBtn {
+    font-size: 13px;
+  }
+
+  .timestamp {
+    font-size: 11px;
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .actionBtn {
+    color: #f5f5f5;
+  }
+
+  .actionBtn.saved {
+    color: #fff;
+  }
+
+  .count,
+  .countBtn {
+    color: #a8a8a8;
+  }
+
+  .timestamp {
+    color: #a8a8a8;
+  }
+
+  .countBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+

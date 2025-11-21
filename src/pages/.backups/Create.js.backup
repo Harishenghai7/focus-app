@@ -1,0 +1,1646 @@
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "../supabaseClient";
+import { useNavigate } from "react-router-dom";
+import { components, hooks, utils } from '@/importMap';
+import { MusicIcon } from '../components/icons';
+import MusicSelector from '../components/MusicSelector';
+import "./Create.css";
+
+const { 
+  MediaSelector, 
+  SchedulePicker, 
+  ImageCropper, 
+  FilterSelector, 
+  MentionInput, 
+  HashtagInput, 
+  LocationPicker, 
+  ProgressBar 
+} = components;
+const { useDebounce, useImageUpload, useMediaPermissions } = hooks;
+const {
+  saveDraftToLocal,
+  saveDraftToDatabase,
+  loadDraftsFromDatabase,
+  deleteDraftFromDatabase,
+  deleteLocalDraft,
+  mergeDrafts,
+  createAutoSaveManager,
+  compressImage,
+  resizeImage,
+  validateImageDimensions,
+  extractMentions,
+  extractHashtags,
+} = utils;
+
+export default function Create({ user, userProfile }) {
+  const navigate = useNavigate();
+  
+  // Animation variants for modals
+  const modalVariants = {
+    hidden: { 
+      opacity: 0, 
+      scale: 0.9,
+      y: 50
+    },
+    visible: { 
+      opacity: 1, 
+      scale: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        damping: 25,
+        stiffness: 300,
+        duration: 0.4
+      }
+    },
+    exit: { 
+      opacity: 0, 
+      scale: 0.9,
+      y: 30,
+      transition: {
+        duration: 0.25,
+        ease: "easeInOut"
+      }
+    }
+  };
+
+  const slideUpVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 100,
+      scale: 0.95
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        damping: 30,
+        stiffness: 400,
+        mass: 0.8
+      }
+    },
+    exit: { 
+      opacity: 0, 
+      y: 50,
+      scale: 0.98,
+      transition: {
+        duration: 0.2
+      }
+    }
+  };
+
+  const overlayVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { duration: 0.3 }
+    },
+    exit: { 
+      opacity: 0,
+      transition: { duration: 0.2 }
+    }
+  };
+
+  const contentTypes = [
+    { id: "post", label: "Post", icon: "📷", description: "Share photos, videos or moments", color: "#3B82F6" },
+    { id: "boltz", label: "Boltz", icon: "⚡", description: "Short-form video content", color: "#EF4444" },
+    { id: "flash", label: "Flash", icon: "✨", description: "24-hour stories", color: "#8B5CF6" }
+  ];
+
+  // Main state and refs
+  const [contentType, setContentType] = useState("post");
+  const [content, setContent] = useState("");
+  const [media, setMedia] = useState(null);
+  const [mediaPreview, setMediaPreview] = useState(null);
+  const [selectedMedia, setSelectedMedia] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [step, setStep] = useState(1);
+
+  // Drafts management
+  const [drafts, setDrafts] = useState([]);
+  const [showDrafts, setShowDrafts] = useState(false);
+  const [currentDraftId, setCurrentDraftId] = useState(null);
+  const [autoSaveStatus, setAutoSaveStatus] = useState("");
+  const autoSaveManagerRef = useRef(null);
+
+  // Schedule
+  const [showSchedulePicker, setShowSchedulePicker] = useState(false);
+  const [scheduledFor, setScheduledFor] = useState(null);
+
+  // Flash
+  const [isCloseFriends, setIsCloseFriends] = useState(false);
+
+  // Mentions & Hashtags
+  const [showMentions, setShowMentions] = useState(false);
+  const [mentionSuggestions, setMentionSuggestions] = useState([]);
+  const [mentionedUsers, setMentionedUsers] = useState([]);
+  const [cursorPosition, setCursorPosition] = useState(0);
+  const [showHashtags, setShowHashtags] = useState(false);
+  const [hashtagSuggestions, setHashtagSuggestions] = useState([]);
+  const textareaRef = useRef(null);
+
+  // Image editing & filtering
+  const [showImageCropper, setShowImageCropper] = useState(false);
+  const [showFilterSelector, setShowFilterSelector] = useState(false);
+  const [currentImageForEdit, setCurrentImageForEdit] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [selectedFilter, setSelectedFilter] = useState(null);
+
+  // Location
+  const [showLocationPicker, setShowLocationPicker] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+
+  // Advanced options
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
+  const [disableComments, setDisableComments] = useState(false);
+  const [hideLikes, setHideLikes] = useState(false);
+
+  // Upload progress
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [showProgress, setShowProgress] = useState(false);
+
+  // Music selection
+  const [showMusicSelector, setShowMusicSelector] = useState(false);
+  const [selectedMusic, setSelectedMusic] = useState(null);
+
+  // Hooks
+  const { uploadImage, progress: imageUploadProgress, error: uploadError } = useImageUpload();
+  const { hasPermission, requestPermission } = useMediaPermissions();
+
+  // Debounced search queries
+  const [mentionQuery, setMentionQuery] = useState("");
+  const [hashtagQuery, setHashtagQuery] = useState("");
+  const debouncedMentionQuery = useDebounce(mentionQuery, 300);
+  const debouncedHashtagQuery = useDebounce(hashtagQuery, 300);
+
+  // Compression (boltz)
+  const [compressionProgress, setCompressionProgress] = useState(0);
+  const [isCompressing, setIsCompressing] = useState(false);
+
+  // Drafts/autosave
+  useEffect(() => {
+    if (user && step === 2) loadDrafts();
+  }, [user, step]);
+
+  useEffect(() => {
+    if (step === 2 && contentType === "post") {
+      autoSaveManagerRef.current = createAutoSaveManager(handleAutoSave, 30000);
+      autoSaveManagerRef.current.start();
+      return () => autoSaveManagerRef.current?.stop();
+    }
+  }, [step, contentType]);
+
+  useEffect(() => {
+    if (autoSaveManagerRef.current && (content || selectedMedia.length > 0)) {
+      autoSaveManagerRef.current.markDirty();
+    }
+  }, [content, selectedMedia, mentionedUsers]);
+
+  // Debounced search effects
+  useEffect(() => {
+    if (debouncedMentionQuery) {
+      searchUsers(debouncedMentionQuery);
+    } else {
+      setMentionSuggestions([]);
+    }
+  }, [debouncedMentionQuery]);
+
+  useEffect(() => {
+    if (debouncedHashtagQuery) {
+      searchHashtags(debouncedHashtagQuery);
+    } else {
+      setHashtagSuggestions([]);
+    }
+  }, [debouncedHashtagQuery]);
+
+  // --- Draft/AutoSave helpers ---
+  async function loadDrafts() {
+    try {
+      const dbDrafts = await loadDraftsFromDatabase(supabase, user.id);
+      const merged = mergeDrafts(dbDrafts);
+      setDrafts(merged);
+    } catch (err) {
+      console.error("Load drafts error:", err);
+    }
+  }
+
+  async function handleAutoSave() {
+    if (!content.trim() && selectedMedia.length === 0) return;
+    try {
+      setAutoSaveStatus("Saving...");
+      const draftData = {
+        id: currentDraftId,
+        caption: content,
+        mediaUrls: selectedMedia.map((m) => m.url),
+        mediaTypes: selectedMedia.map((m) => m.type),
+        isCarousel: selectedMedia.length > 1,
+        mentionedUsers,
+        hashtags: extractHashtags.extractHashtags ? extractHashtags.extractHashtags(content) : [],
+        scheduledFor,
+        selectedLocation,
+        selectedFilter,
+        disableComments,
+        hideLikes,
+      };
+      const draftId = saveDraftToLocal(draftData);
+      setCurrentDraftId(draftId);
+      try {
+        await saveDraftToDatabase(supabase, user.id, { ...draftData, id: draftId });
+        setAutoSaveStatus("Saved ✓");
+      } catch {
+        setAutoSaveStatus("Saved locally");
+      }
+      setTimeout(() => setAutoSaveStatus(""), 2000);
+    } catch {
+      setAutoSaveStatus("Save failed");
+      setTimeout(() => setAutoSaveStatus(""), 2000);
+    }
+  }
+
+  async function saveDraftManually() {
+    await handleAutoSave();
+  }
+
+  function loadDraft(draft) {
+    setContent(draft.caption || "");
+    setCurrentDraftId(draft.id);
+    setMentionedUsers(draft.mentionedUsers || []);
+    if (draft.scheduledFor) setScheduledFor(draft.scheduledFor);
+    if (draft.selectedLocation) setSelectedLocation(draft.selectedLocation);
+    if (draft.selectedFilter) setSelectedFilter(draft.selectedFilter);
+    if (draft.disableComments !== undefined) setDisableComments(draft.disableComments);
+    if (draft.hideLikes !== undefined) setHideLikes(draft.hideLikes);
+    setShowDrafts(false);
+  }
+
+  async function deleteDraft(draft) {
+    try {
+      if (draft.dbId) {
+        await deleteDraftFromDatabase(supabase, user.id, draft.dbId);
+      }
+      deleteLocalDraft(draft.id);
+      await loadDrafts();
+    } catch (err) {
+      console.error("Delete draft error:", err);
+    }
+  }
+
+  function handleSchedule(date) {
+    setScheduledFor(date);
+    setShowSchedulePicker(false);
+  }
+
+  // --- FIXED: CONTENT CHANGE WITH PROPER DEBOUNCING ---
+  const handleContentChange = useCallback((e) => {
+    const text = e.target.value;
+    const cursorPos = e.target.selectionStart;
+    
+    // Update content immediately for smooth typing
+    setContent(text);
+    setCursorPosition(cursorPos);
+
+    // Extract the word at cursor
+    const textBeforeCursor = text.slice(0, cursorPos);
+    const words = textBeforeCursor.split(/s/);
+    const currentWord = words[words.length - 1];
+
+    // Check for mentions
+    if (currentWord.startsWith("@") && currentWord.length > 1) {
+      const query = currentWord.slice(1);
+      setMentionQuery(query);
+      setShowMentions(true);
+      setShowHashtags(false);
+      setHashtagQuery("");
+    }
+    // Check for hashtags
+    else if (currentWord.startsWith("#") && currentWord.length > 1) {
+      const query = currentWord.slice(1);
+      setHashtagQuery(query);
+      setShowHashtags(true);
+      setShowMentions(false);
+      setMentionQuery("");
+    }
+    // Hide both
+    else {
+      setShowMentions(false);
+      setShowHashtags(false);
+      setMentionQuery("");
+      setHashtagQuery("");
+    }
+  }, []);
+
+  async function searchUsers(query) {
+    try {
+      const { data, error } = await supabase
+        .rpc("search_users", { search_query: query, page_size: 5 });
+      if (error) throw error;
+      setMentionSuggestions(data || []);
+    } catch (err) {
+      console.error("Search users error:", err);
+      setMentionSuggestions([]);
+    }
+  }
+
+  async function searchHashtags(query) {
+    try {
+      const { data, error } = await supabase
+        .from("hashtags")
+        .select("name, posts_count")
+        .ilike("name", `${query}%`)
+        .order("posts_count", { ascending: false })
+        .limit(5);
+      if (error) throw error;
+      setHashtagSuggestions(data || []);
+    } catch (err) {
+      console.error("Search hashtags error:", err);
+      setHashtagSuggestions([]);
+    }
+  }
+
+  function selectMention(username, userId) {
+    const beforeCursor = content.slice(0, cursorPosition);
+    const afterCursor = content.slice(cursorPosition);
+    const beforeWords = beforeCursor.split(/s/);
+    beforeWords[beforeWords.length - 1] = `@${username}`;
+    const newText = beforeWords.join(" ") + " " + afterCursor;
+
+    setContent(newText);
+    setShowMentions(false);
+    setMentionQuery("");
+    
+    if (!mentionedUsers.find((u) => u.id === userId)) {
+      setMentionedUsers([...mentionedUsers, { id: userId, username }]);
+    }
+    
+    setTimeout(() => textareaRef.current?.focus(), 0);
+  }
+
+  function selectHashtag(hashtag) {
+    const beforeCursor = content.slice(0, cursorPosition);
+    const afterCursor = content.slice(cursorPosition);
+    const beforeWords = beforeCursor.split(/s/);
+    beforeWords[beforeWords.length - 1] = `#${hashtag}`;
+    const newText = beforeWords.join(" ") + " " + afterCursor;
+
+    setContent(newText);
+    setShowHashtags(false);
+    setHashtagQuery("");
+    
+    setTimeout(() => textareaRef.current?.focus(), 0);
+  }
+
+  // Use imported extractHashtags from utils
+  // function extractHashtags(text) {
+  //   const hashtagRegex = /#[w]+/g;
+  //   return text.match(hashtagRegex) || [];
+  // }
+
+  // Image editing functions
+  function handleEditImage(imageFile, index) {
+    setCurrentImageForEdit(imageFile);
+    setCurrentImageIndex(index);
+    setShowImageCropper(true);
+  }
+
+  function handleCroppedImage(croppedFile) {
+    const updatedMedia = [...selectedMedia];
+    updatedMedia[currentImageIndex] = {
+      ...updatedMedia[currentImageIndex],
+      file: croppedFile,
+      url: URL.createObjectURL(croppedFile)
+    };
+    setSelectedMedia(updatedMedia);
+    setShowImageCropper(false);
+    setCurrentImageForEdit(null);
+  }
+
+  function handleApplyFilter(filterName) {
+    setSelectedFilter(filterName);
+    setShowFilterSelector(false);
+    // Apply filter to current image or all selected images
+    // This would typically involve image processing
+  }
+
+  function handleLocationSelect(location) {
+    setSelectedLocation(location);
+    setShowLocationPicker(false);
+  }
+
+  // Validate image dimensions and compress if needed
+  async function processImage(file) {
+    try {
+      // Validate dimensions
+      const isValid = await validateImageDimensions(file, {
+        maxWidth: 2048,
+        maxHeight: 2048,
+        minWidth: 100,
+        minHeight: 100
+      });
+
+      if (!isValid) {
+        throw new Error('Image dimensions are not valid');
+      }
+
+      // Compress if file is too large
+      if (file.size > 5 * 1024 * 1024) { // 5MB
+        return await compressImage(file, {
+          maxSizeMB: 5,
+          maxWidthOrHeight: 2048,
+          useWebWorker: true
+        });
+      }
+
+      return file;
+    } catch (error) {
+      console.error('Error processing image:', error);
+      throw error;
+    }
+  }
+
+  async function saveHashtags(postId, text) {
+    const hashtags = extractHashtags.extractHashtags ? extractHashtags.extractHashtags(text) : [];
+    for (const hashtag of hashtags) {
+      try {
+        const hashtagName = hashtag.slice(1).toLowerCase();
+        const { data: existingHashtag } = await supabase
+          .from("hashtags")
+          .select("id")
+          .eq("name", hashtagName)
+          .single();
+
+        let hashtagId = existingHashtag?.id;
+
+        if (!hashtagId) {
+          const { data: newHashtag } = await supabase
+            .from("hashtags")
+            .insert({ name: hashtagName, posts_count: 1 })
+            .select()
+            .single();
+          hashtagId = newHashtag?.id;
+        } else {
+          await supabase.rpc("increment_hashtag_count", { hashtag_id: hashtagId });
+        }
+
+        if (hashtagId) {
+          await supabase.from("post_hashtags").insert({ post_id: postId, hashtag_id: hashtagId });
+        }
+      } catch (error) {
+        console.error("Error saving hashtag:", error);
+      }
+    }
+  }
+
+  async function saveMentions(contentId, contentType) {
+    for (const mention of mentionedUsers) {
+      try {
+        await supabase.from("mentions").insert({
+          content_type: contentType,
+          content_id: contentId,
+          mentioned_user_id: mention.id,
+          mentioned_by_user_id: user.id,
+        });
+      } catch (error) {
+        console.error("Error saving mention:", error);
+      }
+    }
+  }
+
+// ✅ FIXED: Use Blob URL instead of Data URL to avoid CSP error
+function handleMediaChange(e) {
+  const file = e.target.files[0];
+  if (file) {
+    setMedia(file);
+    
+    // Clean up previous blob URL
+    if (mediaPreview && mediaPreview.startsWith('blob:')) {
+      URL.revokeObjectURL(mediaPreview);
+    }
+    
+    // Create blob URL (fixes CSP error)
+    const blobUrl = URL.createObjectURL(file);
+    setMediaPreview(blobUrl);
+  }
+}
+
+// ✅ FIXED: Clean up blob URL
+function removeMedia() {
+  // Clean up blob URL to prevent memory leaks
+  if (mediaPreview && mediaPreview.startsWith('blob:')) {
+    URL.revokeObjectURL(mediaPreview);
+  }
+  setMedia(null);
+  setMediaPreview(null);
+}
+
+  const handleMusicSelect = (musicData) => {
+    setSelectedMusic(musicData);
+    setShowMusicSelector(false);
+    console.log('Music selected:', musicData);
+  };
+  const handleRemoveMusic = () => { setSelectedMusic(null); };
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    if (!content.trim() && !media && selectedMedia.length === 0) {
+      setMessage("⚠️ Please add some content or media");
+      setTimeout(() => setMessage(""), 3000);
+      return;
+    }
+
+    setLoading(true);
+    setMessage("");
+
+    try {
+      let createdContent;
+
+      if (contentType === "post") {
+        const isCarousel = selectedMedia.length > 1;
+        if (selectedMedia.length > 0) {
+          const mediaUrls = [];
+          const mediaTypes = [];
+          const thumbnailUrls = [];
+          setMessage("📤 Uploading your media...");
+
+          setShowProgress(true);
+          const uploadPromises = selectedMedia.map(async (mediaItem, index) => {
+            const file = await processImage(mediaItem.file);
+            const fileExt = file.name.split(".").pop();
+            const fileName = `${user.id}/${Date.now()}_${index}.${fileExt}`;
+            
+            setUploadProgress((index / selectedMedia.length) * 100);
+            
+            const { error: uploadError } = await supabase.storage
+              .from("posts")
+              .upload(fileName, file);
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+              .from("posts")
+              .getPublicUrl(fileName);
+
+            let thumbnailUrl = null;
+            if (mediaItem.thumbnails && mediaItem.thumbnails["640x640"]) {
+              const thumbFileName = `${user.id}/thumbs/${Date.now()}_${index}_640.jpg`;
+              const { error: thumbError } = await supabase.storage
+                .from("posts")
+                .upload(thumbFileName, mediaItem.thumbnails["640x640"]);
+              if (!thumbError) {
+                const { data: { publicUrl: thumbPublicUrl } } = supabase.storage
+                  .from("posts")
+                  .getPublicUrl(thumbFileName);
+                thumbnailUrl = thumbPublicUrl;
+              }
+            }
+            return { url: publicUrl, type: mediaItem.type, thumbnailUrl };
+          });
+
+          const uploadedMedia = await Promise.all(uploadPromises);
+          uploadedMedia.forEach((item) => {
+            mediaUrls.push(item.url);
+            mediaTypes.push(item.type);
+            if (item.thumbnailUrl) thumbnailUrls.push(item.thumbnailUrl);
+          });
+
+          setMessage("✨ Creating your post...");
+          const postData = {
+            user_id: user.id,
+            caption: content.trim() || null,
+            is_carousel: isCarousel,
+            media_urls: mediaUrls,
+            media_types: mediaTypes,
+            image_url: mediaUrls[0],
+            media_type: isCarousel ? "carousel" : mediaTypes[0],
+            disable_comments: disableComments,
+            hide_likes: hideLikes,
+            location: selectedLocation ? JSON.stringify(selectedLocation) : null,
+            filter_applied: selectedFilter,
+            // music fields
+            music_id: selectedMusic?.id || null,
+            music_title: selectedMusic?.title || null,
+            music_artist: selectedMusic?.artist || null,
+            music_url: selectedMusic?.url || null,
+            music_duration: selectedMusic?.duration || null,
+            music_license: selectedMusic?.license || null,
+          };
+          if (scheduledFor) {
+            postData.is_draft = true;
+            postData.scheduled_for = scheduledFor;
+          }
+
+          const { data: post, error: postError } = await supabase
+            .from("posts")
+            .insert([postData])
+            .select()
+            .single();
+          if (postError) throw postError;
+          createdContent = post;
+        } else if (media) {
+          setMessage("📤 Uploading your media...");
+          const fileExt = media.name.split(".").pop();
+          const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+          const { error: uploadError } = await supabase.storage.from("posts").upload(fileName, media);
+          if (uploadError) throw uploadError;
+
+          const { data: { publicUrl } } = supabase.storage.from("posts").getPublicUrl(fileName);
+          setMessage("✨ Creating your post...");
+          const postData = {
+            user_id: user.id,
+            caption: content.trim() || null,
+            image_url: publicUrl,
+            media_type: "image",
+            is_carousel: false,
+            // music fields
+            music_id: selectedMusic?.id || null,
+            music_title: selectedMusic?.title || null,
+            music_artist: selectedMusic?.artist || null,
+            music_url: selectedMusic?.url || null,
+            music_duration: selectedMusic?.duration || null,
+            music_license: selectedMusic?.license || null,
+          };
+          if (scheduledFor) {
+            postData.is_draft = true;
+            postData.scheduled_for = scheduledFor;
+          }
+
+          const { data: post, error: postError } = await supabase
+            .from("posts")
+            .insert([postData])
+            .select()
+            .single();
+          if (postError) throw postError;
+          createdContent = post;
+        } else {
+          setMessage("✨ Creating your post...");
+          const postData = {
+            user_id: user.id,
+            caption: content.trim(),
+            media_type: "text",
+            is_carousel: false,
+            // music fields
+            music_id: selectedMusic?.id || null,
+            music_title: selectedMusic?.title || null,
+            music_artist: selectedMusic?.artist || null,
+            music_url: selectedMusic?.url || null,
+            music_duration: selectedMusic?.duration || null,
+            music_license: selectedMusic?.license || null,
+          };
+          if (scheduledFor) {
+            postData.is_draft = true;
+            postData.scheduled_for = scheduledFor;
+          }
+
+          const { data: post, error: postError } = await supabase
+            .from("posts")
+            .insert([postData])
+            .select()
+            .single();
+          if (postError) throw postError;
+          createdContent = post;
+        }
+
+        if (content.trim()) await saveHashtags(createdContent.id, content);
+        if (mentionedUsers.length > 0) await saveMentions(createdContent.id, "post");
+      } else if (contentType === "boltz") {
+        let videoUrl = null;
+        let thumbnailUrl = null;
+
+        if (media) {
+          setIsCompressing(true);
+          setMessage("🎬 Compressing video...");
+          const compressedVideo = await compressVideo(
+            media,
+            { maxSizeMB: 50, maxWidthOrHeight: 1920 },
+            (progress) => setCompressionProgress(progress)
+          );
+          setIsCompressing(false);
+
+          setMessage("📤 Uploading video...");
+          const fileExt = media.name.split(".").pop();
+          const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+          const { error: uploadError } = await supabase.storage
+            .from("boltz")
+            .upload(fileName, compressedVideo);
+          if (uploadError) throw uploadError;
+
+          const { data: { publicUrl } } = supabase.storage.from("boltz").getPublicUrl(fileName);
+          videoUrl = publicUrl;
+
+          setMessage("🖼️ Generating thumbnail...");
+          try {
+            const thumbnailBlob = await generateThumbnail(media, 1, { width: 640, height: 1138 });
+            const thumbnailFileName = `${user.id}/${Date.now()}_thumb.jpg`;
+            const { error: thumbUploadError } = await supabase.storage
+              .from("boltz")
+              .upload(thumbnailFileName, thumbnailBlob);
+            if (!thumbUploadError) {
+              const { data: { publicUrl: thumbPublicUrl } } = supabase.storage
+                .from("boltz")
+                .getPublicUrl(thumbnailFileName);
+              thumbnailUrl = thumbPublicUrl;
+            }
+          } catch (thumbErr) {
+            console.warn("Failed to generate thumbnail:", thumbErr);
+          }
+        }
+
+        setMessage("✨ Creating Boltz...");
+        const { data, error } = await supabase
+          .from("boltz")
+          .insert([
+            {
+              user_id: user.id,
+              description: content.trim() || null,
+              video_url: videoUrl,
+              thumbnail_url: thumbnailUrl || mediaPreview,
+            },
+          ])
+          .select()
+          .single();
+        if (error) throw error;
+        createdContent = data;
+        if (mentionedUsers.length > 0) await saveMentions(createdContent.id, "boltz");
+      } else if (contentType === "flash") {
+        let flashMediaUrl = null;
+        if (media) {
+          setMessage("📤 Uploading your Flash...");
+          const fileExt = media.name.split(".").pop();
+          const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+          const { error: uploadError } = await supabase.storage.from("flashes").upload(fileName, media);
+          if (uploadError) throw uploadError;
+
+          const { data: { publicUrl } } = supabase.storage.from("flashes").getPublicUrl(fileName);
+          flashMediaUrl = publicUrl;
+        }
+
+        setMessage("✨ Creating Flash...");
+        const { data, error } = await supabase
+          .from("flash")
+          .insert([
+            {
+              user_id: user.id,
+              caption: content.trim() || null,
+              media_url: flashMediaUrl,
+              media_type: media?.type.startsWith("video/") ? "video" : "image",
+              expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+              is_close_friends: isCloseFriends,
+            },
+          ])
+          .select()
+          .single();
+        if (error) throw error;
+        createdContent = data;
+      }
+
+      if (scheduledFor) {
+        setMessage("✅ Post scheduled successfully! 📅");
+      } else {
+        setMessage("🎉 Content created successfully!");
+      }
+
+      // Clear draft after successful post
+      if (currentDraftId) {
+        try {
+          const draft = drafts.find((d) => d.id === currentDraftId);
+          if (draft) {
+            if (draft.dbId) await deleteDraftFromDatabase(supabase, user.id, draft.dbId);
+            deleteLocalDraft(currentDraftId);
+          }
+        } catch (err) {
+          console.error("Failed to clear draft:", err);
+        }
+      }
+
+      setTimeout(() => {
+        setContent("");
+        setMedia(null);
+        setMediaPreview(null);
+        setSelectedMedia([]);
+        setMentionedUsers([]);
+        setCurrentDraftId(null);
+        setScheduledFor(null);
+        setIsCloseFriends(false);
+        setSelectedLocation(null);
+        setSelectedFilter(null);
+        setDisableComments(false);
+        setHideLikes(false);
+        setShowProgress(false);
+        setUploadProgress(0);
+        setStep(1);
+        setMessage("");
+        if (contentType === "post") navigate("/home");
+        else if (contentType === "boltz") navigate("/boltz");
+        else navigate("/");
+      }, 1500);
+    } catch (error) {
+      setMessage("❌ An error occurred. Please try again.");
+      console.error("Create error:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const getMediaAccept = () => {
+    switch (contentType) {
+      case "post":
+        return "image/*,video/*";
+      case "boltz":
+        return "video/*";
+      case "flash":
+        return "image/*,video/*";
+      default:
+        return "*";
+    }
+  };
+
+  const getMediaLabel = () => {
+    switch (contentType) {
+      case "post":
+        return "Add Photos";
+      case "boltz":
+        return "Add Video";
+      case "flash":
+        return "Add Media";
+      default:
+        return "Media";
+    }
+  };
+
+  // Step 1: Select content type
+  if (step === 1) {
+    return (
+      <motion.div
+        className="page page-create"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        <div className="page-inner">
+          <motion.div
+            className="create-container card-surface"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+          >
+            <div className="create-header">
+              <h1>✨ Create & Share</h1>
+              <p>Share photos, videos, or moments that inspire</p>
+            </div>
+
+            <div className="content-type-selector">
+              {contentTypes.map((type, index) => (
+                <motion.button
+                  key={type.id}
+                  className={`content-type-card ${
+                    contentType === type.id ? "selected" : ""
+                  }`}
+                  onClick={() => {
+                    setContentType(type.id);
+                    setStep(2);
+                  }}
+                  initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                  animate={{ 
+                    opacity: 1, 
+                    y: 0, 
+                    scale: 1,
+                    transition: {
+                      delay: index * 0.1,
+                      type: "spring",
+                      damping: 20,
+                      stiffness: 300
+                    }
+                  }}
+                  whileHover={{ 
+                    scale: 1.05, 
+                    y: -8,
+                    transition: {
+                      type: "spring",
+                      damping: 15,
+                      stiffness: 400
+                    }
+                  }}
+                  whileTap={{ scale: 0.97 }}
+                  style={{ "--accent-color": type.color }}
+                >
+                  <div className="content-type-icon">{type.icon}</div>
+                  <h3>{type.label}</h3>
+                  <p>{type.description}</p>
+                  <div className="card-shimmer"></div>
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </motion.div>
+    );
+  }
+
+  // Step 2: Create form
+  return (
+    <motion.div className="page page-create" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <div className="page-inner">
+        <motion.div className="create-container card-surface" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
+          <div className="create-header">
+            <button className="back-btn" onClick={() => setStep(1)}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+              Back
+            </button>
+            <h1>Create {contentTypes.find(t => t.id === contentType)?.label}</h1>
+            <p>{contentTypes.find(t => t.id === contentType)?.description}</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="create-form">
+            {/* Drafts Section */}
+            {contentType === "post" && drafts.length > 0 && (
+              <div className="drafts-section">
+                <button
+                  type="button"
+                  className="drafts-toggle-btn"
+                  onClick={() => setShowDrafts(!showDrafts)}
+                >
+                  <span>📝 Drafts ({drafts.length})</span>
+                  <span className="toggle-icon">{showDrafts ? "▼" : "▶"}</span>
+                </button>
+
+                <AnimatePresence>
+                  {showDrafts && (
+                    <motion.div
+                      className="drafts-list"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ 
+                        height: "auto", 
+                        opacity: 1,
+                        transition: {
+                          height: { duration: 0.3, ease: "easeOut" },
+                          opacity: { duration: 0.4, delay: 0.1 }
+                        }
+                      }}
+                      exit={{ 
+                        height: 0, 
+                        opacity: 0,
+                        transition: {
+                          height: { duration: 0.3, ease: "easeIn" },
+                          opacity: { duration: 0.2 }
+                        }
+                      }}
+                    >
+                      {drafts.map((draft, index) => (
+                        <motion.div 
+                          key={draft.id} 
+                          className="draft-item"
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ 
+                            opacity: 1, 
+                            x: 0,
+                            transition: {
+                              delay: index * 0.05,
+                              duration: 0.3
+                            }
+                          }}
+                        >
+                          <div className="draft-content" onClick={() => loadDraft(draft)}>
+                            <p className="draft-caption">
+                              {draft.caption?.substring(0, 60) || "Untitled draft"}
+                              {draft.caption?.length > 60 && "..."}
+                            </p>
+                            <div className="draft-meta">
+                              <span className="draft-date">
+                                {new Date(draft.lastSaved).toLocaleDateString()}
+                              </span>
+                              {draft.mediaUrls && draft.mediaUrls.length > 0 && (
+                                <span className="draft-media-count">📷 {draft.mediaUrls.length}</span>
+                              )}
+                              <span className={`draft-status ${draft.savedTo}`}>
+                                {draft.savedTo === "both"
+                                  ? "☁️"
+                                  : draft.savedTo === "database"
+                                  ? "☁️"
+                                  : "💾"}
+                              </span>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            className="draft-delete-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (window.confirm("Delete this draft?")) {
+                                deleteDraft(draft);
+                              }
+                            }}
+                          >
+                            🗑️
+                          </button>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
+
+            <div className="content-section">
+              <div className="textarea-wrapper">
+                <div className="textarea-header">
+                  <label className="textarea-label">Caption</label>
+                  {contentType === "post" && autoSaveStatus && (
+                    <span className="auto-save-status">{autoSaveStatus}</span>
+                  )}
+                </div>
+                <textarea
+                  ref={textareaRef}
+                  value={content}
+                  onChange={handleContentChange}
+                  placeholder="Write a caption... Use @ to mention and # for hashtags"
+                  className="content-textarea"
+                  rows={4}
+                  maxLength={2200}
+                />
+
+                <AnimatePresence>
+                  {showMentions && mentionSuggestions.length > 0 && (
+                    <motion.div
+                      className="mention-suggestions"
+                      initial={{ opacity: 0, y: -15, scale: 0.95 }}
+                      animate={{ 
+                        opacity: 1, 
+                        y: 0, 
+                        scale: 1,
+                        transition: {
+                          type: "spring",
+                          damping: 25,
+                          stiffness: 400
+                        }
+                      }}
+                      exit={{ 
+                        opacity: 0, 
+                        y: -10, 
+                        scale: 0.97,
+                        transition: {
+                          duration: 0.15
+                        }
+                      }}
+                    >
+                      {mentionSuggestions.map((u, index) => (
+                        <motion.div
+                          key={u.id}
+                          className="mention-suggestion-item"
+                          onClick={() => selectMention(u.username, u.id)}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ 
+                            opacity: 1, 
+                            x: 0,
+                            transition: {
+                              delay: index * 0.05
+                            }
+                          }}
+                        >
+                          <img
+                            src={
+                              u.avatar_url ||
+                              `https://ui-avatars.com/api/?name=${u.username}&background=667eea&color=fff`
+                            }
+                            alt={u.username}
+                          />
+                          <div className="mention-user-info">
+                            <span className="mention-username">@{u.username}</span>
+                            {u.full_name && (
+                              <span className="mention-fullname">{u.full_name}</span>
+                            )}
+                          </div>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  )}
+
+                  {showHashtags && hashtagSuggestions.length > 0 && (
+                    <motion.div
+                      className="hashtag-suggestions"
+                      initial={{ opacity: 0, y: -15, scale: 0.95 }}
+                      animate={{ 
+                        opacity: 1, 
+                        y: 0, 
+                        scale: 1,
+                        transition: {
+                          type: "spring",
+                          damping: 25,
+                          stiffness: 400
+                        }
+                      }}
+                      exit={{ 
+                        opacity: 0, 
+                        y: -10, 
+                        scale: 0.97,
+                        transition: {
+                          duration: 0.15
+                        }
+                      }}
+                    >
+                      {hashtagSuggestions.map((tag, index) => (
+                        <motion.div
+                          key={index}
+                          className="hashtag-suggestion-item"
+                          onClick={() => selectHashtag(tag.name)}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ 
+                            opacity: 1, 
+                            x: 0,
+                            transition: {
+                              delay: index * 0.05
+                            }
+                          }}
+                        >
+                          <span className="hashtag-icon">#</span>
+                          <div className="hashtag-info">
+                            <span className="hashtag-name">{tag.name}</span>
+                            <span className="hashtag-count">
+                              {tag.posts_count} post
+                              {tag.posts_count !== 1 ? "s" : ""}
+                            </span>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <div className="character-count-wrapper">
+                <div
+                  className={`character-count ${
+                    content.length > 2000 ? "warning" : ""
+                  } ${content.length >= 2200 ? "error" : ""}`}
+                >
+                  {content.length}/2200
+                </div>
+                {content.length > 2000 && (
+                  <span className="character-warning">
+                    {content.length >= 2200
+                      ? "⚠️ Maximum length reached"
+                      : `${2200 - content.length} characters remaining`}
+                  </span>
+                )}
+              </div>
+
+              {mentionedUsers.length > 0 && (
+                <div className="mentioned-users">
+                  <span className="mentioned-label">Mentioned:</span>
+                  {mentionedUsers.map((u, i) => (
+                    <span key={i} className="mentioned-user-tag">
+                      @{u.username}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {(extractHashtags.extractHashtags ? extractHashtags.extractHashtags(content) : []).length > 0 && (
+                <div className="hashtags-preview">
+                  <span className="hashtags-label">Hashtags:</span>
+                  {(extractHashtags.extractHashtags ? extractHashtags.extractHashtags(content) : []).map((tag, i) => (
+                    <span key={i} className="hashtag-tag">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {/* Location Display */}
+              {selectedLocation && (
+                <div className="location-preview">
+                  <span className="location-label">📍 Location:</span>
+                  <span className="location-name">{selectedLocation.name}</span>
+                  <button 
+                    type="button" 
+                    className="remove-location-btn"
+                    onClick={() => setSelectedLocation(null)}
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* MEDIA SELECTOR FOR POSTS (Carousel Support) */}
+            {contentType === "post" && (
+              <div className="media-section">
+                <MediaSelector
+                  selectedMedia={selectedMedia}
+                  onMediaChange={setSelectedMedia}
+                  maxItems={10}
+                />
+                
+                {/* Image Editing Options */}
+                {selectedMedia.length > 0 && selectedMedia.some(m => m.type.startsWith('image/')) && (
+                  <div className="image-editing-options">
+                    <button
+                      type="button"
+                      className="edit-btn"
+                      onClick={() => setShowFilterSelector(true)}
+                    >
+                      🎨 Filters
+                    </button>
+                    {selectedMedia.map((media, index) => 
+                      media.type.startsWith('image/') && (
+                        <button
+                          key={index}
+                          type="button"
+                          className="edit-btn"
+                          onClick={() => handleEditImage(media.file, index)}
+                        >
+                          ✂️ Edit Image {index + 1}
+                        </button>
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* SINGLE MEDIA PREVIEW FOR BOLTZ/FLASH */}
+            {contentType !== "post" && mediaPreview && (
+              <motion.div
+                className="media-preview-container"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+              >
+                {contentType === "boltz" || media?.type.startsWith("video/") ? (
+                  <video src={mediaPreview} controls className="media-preview video-preview" />
+                ) : (
+                  <img src={mediaPreview} alt="Preview" className="media-preview image-preview" />
+                )}
+                <button type="button" onClick={removeMedia} className="remove-media-btn">
+                  ✕
+                </button>
+              </motion.div>
+            )}
+
+            {/* ADVANCED OPTIONS (Post only) */}
+            {contentType === "post" && (
+              <div className="advanced-options-section">
+                <button
+                  type="button"
+                  className="advanced-options-toggle"
+                  onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
+                >
+                  <span>⚙️ Advanced Options</span>
+                  <span className="toggle-icon">{showAdvancedOptions ? "▼" : "▶"}</span>
+                </button>
+
+                <AnimatePresence>
+                  {showAdvancedOptions && (
+                    <motion.div
+                      className="advanced-options-content"
+                      initial={{ height: 0, opacity: 0, y: -10 }}
+                      animate={{ 
+                        height: "auto", 
+                        opacity: 1, 
+                        y: 0,
+                        transition: {
+                          height: { duration: 0.3, ease: "easeOut" },
+                          opacity: { duration: 0.4, delay: 0.1 },
+                          y: { duration: 0.3, ease: "easeOut" }
+                        }
+                      }}
+                      exit={{ 
+                        height: 0, 
+                        opacity: 0, 
+                        y: -10,
+                        transition: {
+                          height: { duration: 0.3, ease: "easeIn" },
+                          opacity: { duration: 0.2 },
+                          y: { duration: 0.2, ease: "easeIn" }
+                        }
+                      }}
+                    >
+                      <div className="option-toggle">
+                        <div className="toggle-info">
+                          <span className="toggle-label">💬 Allow Comments</span>
+                          <span className="toggle-description">Let people comment on your post</span>
+                        </div>
+                        <label className="switch">
+                          <input
+                            type="checkbox"
+                            checked={!disableComments}
+                            onChange={(e) => setDisableComments(!e.target.checked)}
+                          />
+                          <span className="slider"></span>
+                        </label>
+                      </div>
+
+                      <div className="option-toggle">
+                        <div className="toggle-info">
+                          <span className="toggle-label">❤️ Show Likes</span>
+                          <span className="toggle-description">Display like count publicly</span>
+                        </div>
+                        <label className="switch">
+                          <input
+                            type="checkbox"
+                            checked={!hideLikes}
+                            onChange={(e) => setHideLikes(!e.target.checked)}
+                          />
+                          <span className="slider"></span>
+                        </label>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
+
+            {/* CLOSE FRIENDS TOGGLE (Flash only) */}
+            {contentType === "flash" && (
+              <div className="close-friends-section">
+                <div className="close-friends-toggle">
+                  <div className="toggle-info">
+                    <span className="toggle-label">⭐ Close Friends</span>
+                    <span className="toggle-description">Share with close friends only</span>
+                  </div>
+                  <label className="switch">
+                    <input
+                      type="checkbox"
+                      checked={isCloseFriends}
+                      onChange={(e) => setIsCloseFriends(e.target.checked)}
+                    />
+                    <span className="slider"></span>
+                  </label>
+                </div>
+                {isCloseFriends && (
+                  <motion.div
+                    className="close-friends-notice"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                    </svg>
+                    <span>Only your close friends will see this flash</span>
+                  </motion.div>
+                )}
+              </div>
+            )}
+
+            <div className="create-actions">
+              <div className="media-options">
+                {contentType !== "post" && (
+                  <label className="media-btn">
+                    {contentType === "boltz" ? "🎥" : "📱"} {getMediaLabel()}
+                    <input
+                      type="file"
+                      accept={getMediaAccept()}
+                      onChange={handleMediaChange}
+                      style={{ display: "none" }}
+                    />
+                  </label>
+                )}
+                {contentType === "post" && (
+                  <>
+                    <button
+                      type="button"
+                      className="media-btn location-btn"
+                      onClick={() => setShowLocationPicker(true)}
+                    >
+                      📍 Add Location
+                    </button>
+                    <button
+                      type="button"
+                      className="media-btn save-draft-btn"
+                      onClick={saveDraftManually}
+                      disabled={!content.trim() && selectedMedia.length === 0}
+                    >
+                      💾 Save Draft
+                    </button>
+                    <button
+                      type="button"
+                      className="media-btn schedule-btn"
+                      onClick={() => setShowSchedulePicker(true)}
+                    >
+                      📅 Schedule
+                    </button>
+                    <button
+                      type="button"
+                      className="add-music-btn"
+                      onClick={() => setShowMusicSelector(true)}
+                    >
+                      <MusicIcon size={18} /> {selectedMusic ? 'Change Music' : 'Add Music'}
+                    </button>
+                  </>
+                )}
+              </div>
+
+              <motion.button
+                type="submit"
+                disabled={loading || (!content.trim() && !media && selectedMedia.length === 0)}
+                className="btn-primary post-btn"
+                whileHover={!loading && content.trim() || media || selectedMedia.length > 0 ? { 
+                  scale: 1.03, 
+                  y: -3,
+                  transition: {
+                    type: "spring",
+                    damping: 15,
+                    stiffness: 400
+                  }
+                } : {}}
+                whileTap={{ scale: 0.97 }}
+                initial={{ opacity: 0.9 }}
+                animate={{ 
+                  opacity: 1,
+                  transition: {
+                    duration: 0.3
+                  }
+                }}
+              >
+                {loading ? (
+                  <>
+                    <div className="loading-spinner-sm"></div>
+                    {isCompressing ? "Processing..." : "Creating..."}
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                    </svg>
+                    Share {contentTypes.find((t) => t.id === contentType)?.label}
+                  </>
+                )}
+              </motion.button>
+            </div>
+          </form>
+
+          <AnimatePresence>
+            {message && (
+              <motion.div
+                className={`message ${
+                  message.includes("success") ||
+                  message.includes("scheduled") ||
+                  message.includes("🎉") ||
+                  message.includes("✅")
+                    ? "success-msg"
+                    : message.includes("❌") || message.includes("⚠️")
+                    ? "error-msg"
+                    : "info-msg"
+                }`}
+                initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                animate={{ 
+                  opacity: 1, 
+                  y: 0, 
+                  scale: 1,
+                  transition: {
+                    type: "spring",
+                    damping: 20,
+                    stiffness: 300
+                  }
+                }}
+                exit={{ 
+                  opacity: 0, 
+                  y: -20, 
+                  scale: 0.95,
+                  transition: {
+                    duration: 0.2
+                  }
+                }}
+              >
+                {message}
+                {isCompressing && compressionProgress > 0 && (
+                  <div className="compression-progress">
+                    <div
+                      className="progress-bar-container"
+                      style={{ flex: 1, background: "rgba(0,0,0,0.1)", borderRadius: "9999px", overflow: "hidden" }}
+                    >
+                      <div
+                        className="progress-bar-fill"
+                        style={{ width: `${compressionProgress}%`, height: "100%", background: "var(--primary-color)", borderRadius: "9999px" }}
+                      />
+                    </div>
+                    <span className="progress-text">{Math.round(compressionProgress)}%</span>
+                  </div>
+                )}
+                {showProgress && uploadProgress > 0 && (
+                  <ProgressBar 
+                    progress={uploadProgress} 
+                    showPercentage={true}
+                    className="upload-progress"
+                  />
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </div>
+
+      {/* Schedule Picker Modal */}
+      <AnimatePresence>
+        {showSchedulePicker && (
+          <motion.div
+            className="modal-overlay"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={overlayVariants}
+          >
+            <SchedulePicker
+              onSchedule={handleSchedule}
+              onCancel={() => setShowSchedulePicker(false)}
+              initialDate={scheduledFor}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Image Cropper Modal */}
+      <AnimatePresence>
+        {showImageCropper && currentImageForEdit && (
+          <motion.div
+            className="modal-overlay"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={overlayVariants}
+          >
+            <ImageCropper
+              image={currentImageForEdit}
+              onCrop={handleCroppedImage}
+              onCancel={() => {
+                setShowImageCropper(false);
+                setCurrentImageForEdit(null);
+              }}
+              aspectRatio={1} // Square crop by default
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Filter Selector Modal */}
+      <AnimatePresence>
+        {showFilterSelector && (
+          <motion.div
+            className="modal-overlay"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={overlayVariants}
+          >
+            <FilterSelector
+              images={selectedMedia.filter(m => m.type.startsWith('image/')).map(m => m.url)}
+              onApplyFilter={handleApplyFilter}
+              onCancel={() => setShowFilterSelector(false)}
+              currentFilter={selectedFilter}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Location Picker Modal */}
+      <AnimatePresence>
+        {showLocationPicker && (
+          <motion.div
+            className="modal-overlay"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={overlayVariants}
+          >
+            <LocationPicker
+              isOpen={showLocationPicker}
+              onClose={() => setShowLocationPicker(false)}
+              onLocationSelect={handleLocationSelect}
+              currentLocation={selectedLocation}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Music Selector Modal */}
+      <AnimatePresence>
+        {showMusicSelector && (
+          <motion.div
+            className="modal-overlay music-selector-overlay"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={overlayVariants}
+            onClick={(e)=>{ if(e.target.classList.contains('music-selector-overlay')) setShowMusicSelector(false); }}
+          >
+            <MusicSelector onSelect={handleMusicSelect} onClose={()=>setShowMusicSelector(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}

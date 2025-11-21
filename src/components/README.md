@@ -1,0 +1,1 @@
+/* JSDoc comments and PropTypes included in JS files */

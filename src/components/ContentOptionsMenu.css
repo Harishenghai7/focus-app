@@ -1,0 +1,63 @@
+.content-options-menu {
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  padding: 8px;
+  min-width: 280px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  max-width: 90vw;
+}
+
+.option-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.option-btn:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.option-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.option-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+.option-btn.danger {
+  color: var(--error-color);
+}
+
+.option-btn.cancel {
+  margin-top: 4px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 12px;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .content-options-menu {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 16px 16px 0 0;
+    max-width: 100%;
+  }
+}
+

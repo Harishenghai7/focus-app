@@ -1,0 +1,196 @@
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  padding: var(--spacing-3) var(--spacing-4);
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  border: 2px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-all);
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.input:hover {
+  border-color: var(--border-dark);
+}
+
+.input:focus {
+  border-color: var(--focus-blue-primary);
+  box-shadow: 0 0 0 3px rgba(0, 149, 246, 0.1);
+}
+
+.dark .input {
+  background: var(--dark-bg-tertiary);
+  border-color: var(--dark-border-medium);
+}
+
+.dark .input:hover {
+  border-color: var(--dark-border-dark);
+}
+
+.dark .input:focus {
+  border-color: var(--focus-blue-primary);
+  box-shadow: 0 0 0 3px rgba(0, 149, 246, 0.2);
+}
+
+/* Disabled State */
+.input:disabled {
+  background: var(--bg-tertiary);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.dark .input:disabled {
+  background: var(--dark-bg-hover);
+}
+
+/* Error State */
+.input-error {
+  border-color: var(--error);
+}
+
+.input-error:focus {
+  border-color: var(--error);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Success State */
+.input-success {
+  border-color: var(--success);
+}
+
+.input-success:focus {
+  border-color: var(--success);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Sizes */
+.input-sm {
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--text-sm);
+}
+
+.input-lg {
+  padding: var(--spacing-4) var(--spacing-5);
+  font-size: var(--text-lg);
+}
+
+/* With Icon */
+.input-with-icon {
+  padding-left: var(--spacing-12);
+}
+
+.input-with-icon-right {
+  padding-right: var(--spacing-12);
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+
+.input-icon-left {
+  left: var(--spacing-4);
+}
+
+.input-icon-right {
+  right: var(--spacing-4);
+}
+
+/* Label */
+.input-label {
+  display: block;
+  margin-bottom: var(--spacing-2);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+}
+
+.input-label-required::after {
+  content: ' *';
+  color: var(--error);
+}
+
+/* Helper Text */
+.input-helper {
+  margin-top: var(--spacing-2);
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+}
+
+.input-error-message {
+  margin-top: var(--spacing-2);
+  font-size: var(--text-sm);
+  color: var(--error);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+}
+
+.input-success-message {
+  margin-top: var(--spacing-2);
+  font-size: var(--text-sm);
+  color: var(--success);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+}
+
+/* Textarea */
+.textarea {
+  min-height: 120px;
+  resize: vertical;
+  font-family: var(--font-primary);
+}
+
+/* Search Input */
+.input-search {
+  padding-left: var(--spacing-12);
+  border-radius: var(--radius-full);
+}
+
+.input-search-icon {
+  left: var(--spacing-4);
+}
+
+/* Password Toggle */
+.password-toggle {
+  position: absolute;
+  right: var(--spacing-3);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.password-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.dark .password-toggle:hover {
+  background: var(--dark-bg-hover);
+}

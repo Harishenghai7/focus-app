@@ -1,0 +1,235 @@
+/* ===== PROFESSIONAL DESKTOP SIDEBAR ===== */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 245px;
+  background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-right: 1px solid rgba(139, 127, 215, 0.1);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 12px;
+  z-index: 1200;
+  box-shadow: 2px 0 12px rgba(139, 127, 215, 0.08);
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: width 0.3s ease;
+}
+
+.dark .sidebar {
+  background: rgba(26, 22, 37, 0.95);
+  border-right-color: rgba(139, 127, 215, 0.2);
+}
+
+/* Sidebar Header */
+.sidebar-header {
+  padding: 12px 16px 24px;
+}
+
+.sidebar-logo {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #8B7FD7 0%, #E91E63 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -1px;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.sidebar-logo:hover {
+  transform: scale(1.05);
+}
+
+.sidebar-logo:active {
+  transform: scale(0.95);
+}
+
+/* Sidebar Navigation */
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Sidebar Items */
+.sidebar-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  width: 100%;
+}
+
+.sidebar-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%) scaleY(0);
+  width: 4px;
+  height: 70%;
+  background: linear-gradient(135deg, #8B7FD7 0%, #E91E63 100%);
+  border-radius: 0 4px 4px 0;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-item:hover {
+  background: rgba(139, 127, 215, 0.08);
+  transform: translateX(4px);
+}
+
+.sidebar-item:active {
+  transform: translateX(2px) scale(0.98);
+}
+
+/* Active State (via NavLink or JS) */
+.sidebar-item:global(.active) {
+  background: linear-gradient(135deg, rgba(139, 127, 215, 0.15) 0%, rgba(233, 30, 99, 0.1) 100%);
+  color: #8B7FD7;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(139, 127, 215, 0.15);
+}
+
+.sidebar-item:global(.active)::before {
+  transform: translateY(-50%) scaleY(1);
+}
+
+.sidebar-item:global(.active) .sidebar-icon svg {
+  stroke-width: 2.5;
+  stroke: #8B7FD7;
+  filter: drop-shadow(0 0 6px rgba(139, 127, 215, 0.4));
+}
+
+/* Icons */
+.sidebar-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.sidebar-icon svg {
+  transition: all 0.3s ease;
+}
+
+.sidebar-item:hover .sidebar-icon svg {
+  stroke: #8B7FD7;
+  transform: scale(1.1);
+}
+
+/* Avatar */
+.sidebar-icon img,
+.sidebar-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.sidebar-item.active .sidebar-icon img,
+.sidebar-item.active .sidebar-avatar {
+  border-color: #8B7FD7;
+  box-shadow: 0 0 0 3px rgba(139, 127, 215, 0.2);
+}
+
+/* Label */
+.sidebar-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Badge */
+.sidebar-badge {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #E91E63 0%, #FF6B9D 100%);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(233, 30, 99, 0.3);
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+  padding-top: 16px;
+  border-top: 1px solid rgba(139, 127, 215, 0.1);
+  margin-top: 16px;
+}
+
+/* Collapsed State */
+.sidebar.collapsed {
+  width: 72px;
+}
+
+.sidebar.collapsed .sidebar-logo {
+  font-size: 20px;
+  text-align: center;
+}
+
+.sidebar.collapsed .sidebar-label,
+.sidebar.collapsed .sidebar-badge {
+  display: none;
+}
+
+.sidebar.collapsed .sidebar-item {
+  justify-content: center;
+  padding: 12px;
+}
+
+.sidebar.collapsed .sidebar-item:hover {
+  transform: scale(1.05);
+}
+
+/* Hide on Mobile */
+@media (max-width: 767px) {
+  .sidebar {
+    display: none;
+  }
+}
+
+/* Responsive tablet */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .sidebar {
+    width: 72px;
+  }
+
+  .sidebar-label,
+  .sidebar-badge {
+    display: none;
+  }
+
+  .sidebar-item {
+    justify-content: center;
+    padding: 12px;
+  }
+}

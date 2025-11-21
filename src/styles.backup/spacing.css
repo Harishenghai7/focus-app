@@ -1,0 +1,108 @@
+:root {
+  /* ============================================
+     SPACING SCALE (8px base system)
+     ============================================ */
+  
+  --spacing-0: 0;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-7: 28px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-14: 56px;
+  --spacing-16: 64px;
+  --spacing-20: 80px;
+  --spacing-24: 96px;
+  --spacing-32: 128px;
+  
+  /* ============================================
+     BORDER RADIUS
+     ============================================ */
+  
+  --radius-none: 0;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-3xl: 32px;
+  --radius-full: 9999px;
+  
+  /* ============================================
+     CONTAINER WIDTHS
+     ============================================ */
+  
+  --container-xs: 480px;
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
+  
+  /* ============================================
+     BREAKPOINTS
+     ============================================ */
+  
+  --breakpoint-xs: 480px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+  
+  /* ============================================
+     Z-INDEX SCALE
+     ============================================ */
+  
+  --z-0: 0;
+  --z-10: 10;
+  --z-20: 20;
+  --z-30: 30;
+  --z-40: 40;
+  --z-50: 50;
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-fixed: 1200;
+  --z-modal-backdrop: 1300;
+  --z-modal: 1400;
+  --z-popover: 1500;
+  --z-tooltip: 1600;
+  --z-notification: 1700;
+  
+  /* ============================================
+     COMPONENT SIZES
+     ============================================ */
+  
+  /* Mobile Bottom Nav */
+  --bottom-nav-height: 60px;
+  
+  /* Mobile Header */
+  --mobile-header-height: 56px;
+  
+  /* Desktop Sidebar */
+  --desktop-sidebar-width: 245px;
+  --desktop-sidebar-collapsed-width: 72px;
+  
+  /* Desktop Top Bar */
+  --desktop-topbar-height: 60px;
+  
+  /* Post Card */
+  --post-card-max-width: 614px;
+  
+  /* Story Ring */
+  --story-ring-size: 66px;
+  --story-ring-size-sm: 56px;
+  
+  /* Avatar Sizes */
+  --avatar-xs: 24px;
+  --avatar-sm: 32px;
+  --avatar-md: 40px;
+  --avatar-lg: 56px;
+  --avatar-xl: 80px;
+  --avatar-2xl: 150px;
+}

@@ -1,0 +1,110 @@
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* EXPLORE TABS COMPONENT */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+.explore-tabs-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.explore-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 4px;
+  background: rgba(32, 25, 74, 0.6);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(139, 127, 215, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.explore-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.explore-tab-btn {
+  position: relative;
+  background: transparent;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 600;
+  color: #B4A7FF;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.explore-tab-btn:hover {
+  background: rgba(139, 127, 215, 0.15);
+  color: #FFFFFF;
+  transform: translateY(-2px);
+}
+
+.explore-tab-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(139, 127, 215, 0.4);
+}
+
+.explore-tab-btn.active {
+  background: linear-gradient(135deg, #8B7FD7, #EE7BFA);
+  color: #FFFFFF;
+  box-shadow: 0 6px 20px rgba(139, 127, 215, 0.4);
+  transform: translateY(-2px);
+}
+
+.explore-tab-btn.active:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 28px rgba(139, 127, 215, 0.5);
+}
+
+.tab-label {
+  position: relative;
+  z-index: 1;
+}
+
+.tab-indicator {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 3px;
+  background: #FFFFFF;
+  border-radius: 2px;
+  animation: indicatorSlide 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes indicatorSlide {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 24px;
+    opacity: 1;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* RESPONSIVE */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+  .explore-tabs {
+    gap: 6px;
+    padding: 3px;
+    border-radius: 16px;
+  }
+
+  .explore-tab-btn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}

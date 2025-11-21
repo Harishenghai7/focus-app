@@ -1,0 +1,298 @@
+/* ================================================
+   TYPE SELECT - LAVENDER THEME
+   ================================================ */
+
+.type-select-container {
+  width: 100%;
+  animation: fadeSlideIn 0.5s ease;
+}
+
+.type-select-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.type-select-header h2 {
+  font-size: 26px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #8B7FD7 0%, #EE7BFA 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.type-select-header p {
+  font-size: 15px;
+  color: rgba(139, 127, 215, 0.8);
+  font-weight: 500;
+}
+
+/* Type Options Grid */
+.type-options-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+/* Type Option Card */
+.type-option-card {
+  position: relative;
+  background: rgba(139, 127, 215, 0.08);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(139, 127, 215, 0.2);
+  border-radius: 20px;
+  padding: 28px 20px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  min-height: 280px;
+}
+
+.type-option-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--type-color), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.type-option-card:hover::before {
+  opacity: 0.6;
+}
+
+/* Glow Effect */
+.type-card-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, var(--type-color) 0%, transparent 70%);
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.type-option-card:hover .type-card-glow {
+  opacity: 0.15;
+}
+
+.type-option-card.selected .type-card-glow {
+  opacity: 0.25;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Card Header */
+.type-card-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  z-index: 1;
+}
+
+.type-icon {
+  font-size: 56px;
+  transition: all 0.4s ease;
+  filter: drop-shadow(0 4px 12px rgba(139, 127, 215, 0.3));
+}
+
+.type-emoji {
+  font-size: 28px;
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  opacity: 0;
+  transform: scale(0) rotate(-30deg);
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.type-option-card:hover .type-emoji,
+.type-option-card.selected .type-emoji {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+/* Card Content */
+.type-card-content {
+  text-align: center;
+  z-index: 1;
+}
+
+.type-card-content h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  transition: all 0.3s ease;
+}
+
+.type-option-card.selected .type-card-content h3 {
+  color: var(--type-color);
+  text-shadow: 0 0 20px rgba(139, 127, 215, 0.3);
+}
+
+.type-card-content p {
+  font-size: 14px;
+  color: rgba(139, 127, 215, 0.7);
+  font-weight: 500;
+}
+
+/* Features List */
+.type-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  z-index: 1;
+}
+
+.type-features li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: rgba(139, 127, 215, 0.6);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.feature-dot {
+  color: var(--type-color);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.type-option-card:hover .type-features li,
+.type-option-card.selected .type-features li {
+  color: rgba(139, 127, 215, 0.9);
+}
+
+/* Selected State */
+.type-option-card.selected {
+  background: rgba(139, 127, 215, 0.15);
+  border-color: var(--type-color);
+  box-shadow: 
+    0 8px 32px rgba(139, 127, 215, 0.3),
+    0 0 0 4px rgba(139, 127, 215, 0.1);
+  transform: translateY(-4px);
+}
+
+.selected-indicator {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--type-color), #EE7BFA);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(139, 127, 215, 0.4);
+  animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  z-index: 2;
+}
+
+.check-icon {
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Hover States */
+.type-option-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(139, 127, 215, 0.4);
+  box-shadow: 0 12px 40px rgba(139, 127, 215, 0.25);
+}
+
+.type-option-card:hover .type-icon {
+  transform: scale(1.1);
+}
+
+.type-option-card:active {
+  transform: translateY(-2px);
+}
+
+/* Animations */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .type-options-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .type-option-card {
+    min-height: auto;
+    padding: 24px;
+  }
+
+  .type-icon {
+    font-size: 48px;
+  }
+
+  .type-select-header h2 {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .type-select-header h2 {
+    font-size: 20px;
+  }
+
+  .type-card-content h3 {
+    font-size: 20px;
+  }
+}

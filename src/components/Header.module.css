@@ -1,0 +1,251 @@
+/* Header CSS Module - imports from global Header.css */
+@import './Header.css';
+
+/* Override height to match design system */
+.header {
+  height: var(--space-16); /* 64px */
+  z-index: 1000;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Logo */
+.headerLeft {
+  display: flex;
+  align-items: center;
+}
+
+.appLogo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.appLogo:hover {
+  background: var(--bg-hover);
+}
+
+.logoImage {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+}
+
+.logoText {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Header Actions */
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.headerBtn {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  color: var(--text-secondary);
+}
+
+.headerBtn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.headerBtn svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.headerBtn svg path,
+.headerBtn svg circle,
+.headerBtn svg line,
+.headerBtn svg polygon,
+.headerBtn svg polyline,
+.headerBtn svg rect {
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+
+/* Special cases for filled icons */
+.headerBtn svg path[d*="M21 12.79"] {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* Notification Badge */
+.notificationBtn {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  color: var(--text-secondary);
+}
+
+.notificationBtn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.notificationBadge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: #ff3b30;
+  color: white;
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-shadow: 0 2px 4px rgba(255, 59, 48, 0.3);
+}
+
+/* Dark Mode */
+:global(.dark) .header {
+  background: rgba(26, 26, 26, 0.95);
+  border-bottom-color: #333;
+}
+
+:global(.dark) .logoText {
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+:global(.dark) .headerBtn,
+:global(.dark) .notificationBtn {
+  color: #999;
+}
+
+:global(.dark) .headerBtn:hover,
+:global(.dark) .notificationBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .headerContent {
+    padding: 0 var(--spacing-md);
+  }
+  
+  .appLogo {
+    padding: var(--spacing-xs);
+  }
+  
+  .logoImage {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .logoText {
+    font-size: var(--font-size-lg);
+  }
+  
+  .headerActions {
+    gap: var(--spacing-xs);
+  }
+  
+  .headerBtn,
+  .notificationBtn {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .headerBtn svg,
+  .notificationBtn svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    height: 56px;
+  }
+  
+  .headerContent {
+    padding: 0 var(--spacing-sm);
+  }
+  
+  .logoImage {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .logoText {
+    font-size: var(--font-size-md);
+  }
+  
+  .headerBtn,
+  .notificationBtn {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .headerBtn svg,
+  .notificationBtn svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .notificationBadge {
+    top: 4px;
+    right: 4px;
+    font-size: 9px;
+    min-width: 16px;
+    height: 16px;
+    padding: 1px 4px;
+  }
+}
+

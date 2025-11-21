@@ -1,0 +1,25 @@
+.layout {
+  min-height: 100vh;
+  background: var(--bg-secondary);
+}
+
+.dark .layout {
+  background: var(--dark-bg-primary);
+}
+
+.container {
+  display: flex;
+  padding-top: var(--desktop-topbar-height);
+}
+
+.mainContent {
+  flex: 1;
+  min-height: calc(100vh - var(--desktop-topbar-height));
+  padding: var(--spacing-6);
+  overflow-y: auto;
+}
+
+.contentWrapper {
+  max-width: 935px;
+  margin: 0 auto;
+}

@@ -1,0 +1,174 @@
+/* Create Post Prompt Styles */
+
+.create-post-prompt {
+  position: relative;
+  background: linear-gradient(135deg, #f5f3ff 0%, #faf5ff 100%);
+  border: 2px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  margin: 16px 0;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.1);
+  overflow: hidden;
+}
+
+.create-post-prompt::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #8b5cf6, #a78bfa, #c4b5fd);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.create-post-prompt-dismiss {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.create-post-prompt-dismiss:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: scale(1.1);
+}
+
+.create-post-prompt-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.create-post-prompt-icon {
+  font-size: 48px;
+  line-height: 1;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.create-post-prompt-text h3 {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.create-post-prompt-text p {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.create-post-prompt-button {
+  width: 100%;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.create-post-prompt-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+.create-post-prompt-button:active {
+  transform: translateY(0);
+}
+
+.create-post-prompt-button-icon {
+  font-size: 20px;
+  animation: sparkle 1.5s infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.2); }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .create-post-prompt {
+    background: linear-gradient(135deg, #1f1b2e 0%, #2d1b3d 100%);
+    border-color: rgba(139, 92, 246, 0.3);
+  }
+
+  .create-post-prompt-text h3 {
+    color: #f9fafb;
+  }
+
+  .create-post-prompt-text p {
+    color: #d1d5db;
+  }
+
+  .create-post-prompt-dismiss {
+    background: rgba(255, 255, 255, 0.05);
+    color: #d1d5db;
+  }
+
+  .create-post-prompt-dismiss:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .create-post-prompt {
+    padding: 20px;
+    margin: 12px 0;
+  }
+
+  .create-post-prompt-content {
+    gap: 12px;
+  }
+
+  .create-post-prompt-icon {
+    font-size: 40px;
+  }
+
+  .create-post-prompt-text h3 {
+    font-size: 16px;
+  }
+
+  .create-post-prompt-text p {
+    font-size: 13px;
+  }
+
+  .create-post-prompt-button {
+    padding: 12px 20px;
+    font-size: 15px;
+  }
+}

@@ -1,0 +1,132 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--mobile-header-height);
+  background: var(--glass-light);
+  backdrop-filter: var(--blur-lg);
+  border-bottom: 1px solid var(--border-medium);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-4);
+  z-index: var(--z-sticky);
+  box-shadow: var(--shadow-sm);
+}
+
+.dark .header {
+  background: var(--glass-dark-light);
+  border-bottom-color: var(--dark-border-medium);
+}
+
+.left,
+.center,
+.right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.left {
+  flex: 1;
+  min-width: 0;
+}
+
+.center {
+  flex: 2;
+  justify-content: center;
+}
+
+.right {
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  letter-spacing: var(--tracking-tight);
+}
+
+.logoDot {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.backButton:hover {
+  background: var(--bg-hover);
+}
+
+.backButton:active {
+  transform: scale(0.95);
+}
+
+.pageTitle {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.iconButton {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.iconButton:hover {
+  background: var(--bg-hover);
+  color: var(--focus-blue-primary);
+}
+
+.iconButton:active {
+  transform: scale(0.95);
+}
+
+.badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-accent);
+  color: white;
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 0 2px var(--bg-primary);
+}

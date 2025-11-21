@@ -1,0 +1,413 @@
+/* =====================================
+   BOLTZ PAGE STYLES - LAVENDER THEME ⚡💜
+   ===================================== */
+
+.page-boltz {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #000;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+/* ===================================
+   HEADER
+   =================================== */
+
+.boltz-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-4);
+  background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, transparent 100%);
+  z-index: 10;
+}
+
+.boltz-header h1 {
+  color: white;
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+}
+
+.back-button,
+.search-button {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.back-button:hover,
+.search-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ===================================
+   VIDEO CONTAINER
+   =================================== */
+
+.boltz-video-container {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  cursor: pointer;
+}
+
+.boltz-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ===================================
+   PLAY/PAUSE INDICATOR
+   =================================== */
+
+.play-pause-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-full);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: white;
+  pointer-events: none;
+}
+
+/* ===================================
+   HEART ANIMATION (DOUBLE TAP)
+   =================================== */
+
+.heart-animation {
+  position: absolute;
+  font-size: 80px;
+  pointer-events: none;
+  animation: heartBurst 1s ease-out forwards;
+  z-index: 100;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes heartBurst {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.5) translateY(-50px);
+  }
+}
+
+/* ===================================
+   CREATOR INFO (LEFT BOTTOM)
+   =================================== */
+
+.creator-info {
+  position: absolute;
+  bottom: 80px;
+  left: var(--spacing-4);
+  right: 80px;
+  z-index: 5;
+  color: white;
+}
+
+.creator-details {
+  display: flex;
+  gap: var(--spacing-3);
+  align-items: flex-start;
+  cursor: pointer;
+  margin-bottom: var(--spacing-2);
+}
+
+.creator-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  border: 2px solid white;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.creator-username {
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  margin-bottom: 4px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.verified {
+  color: var(--focus-lavender);
+  font-size: 16px;
+}
+
+.video-caption {
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  margin-bottom: 8px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  max-width: 300px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.music-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-size: var(--text-xs);
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-full);
+  width: fit-content;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.follow-button-inline {
+  padding: 8px 24px;
+  border-radius: var(--radius-full);
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  transition: var(--transition-fast);
+}
+
+.follow-button-inline:hover {
+  transform: scale(1.05);
+}
+
+/* ===================================
+   ACTION BUTTONS (RIGHT SIDE)
+   =================================== */
+
+.action-buttons {
+  position: absolute;
+  right: var(--spacing-4);
+  bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  z-index: 5;
+}
+
+.action-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  padding: var(--spacing-2);
+}
+
+.action-button:hover {
+  transform: scale(1.1);
+}
+
+.action-button:active {
+  transform: scale(0.9);
+}
+
+.action-icon {
+  font-size: 28px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+.action-button.liked .action-icon {
+  animation: likePulse 0.3s ease-out;
+}
+
+@keyframes likePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+}
+
+.action-count,
+.action-label {
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+/* ===================================
+   VIDEO PROGRESS
+   =================================== */
+
+.video-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--spacing-2);
+  z-index: 5;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--gradient-primary);
+  transition: width 0.1s linear;
+}
+
+/* ===================================
+   SWIPE HINTS
+   =================================== */
+
+.swipe-hint {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  padding: 8px 16px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-full);
+  animation: fadeInOut 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.swipe-up {
+  top: 80px;
+}
+
+.swipe-down {
+  bottom: 140px;
+}
+
+@keyframes fadeInOut {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ===================================
+   LOADING & EMPTY STATES
+   =================================== */
+
+.boltz-loading,
+.boltz-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  color: white;
+  text-align: center;
+  padding: var(--spacing-6);
+}
+
+.loading-spinner {
+  font-size: var(--text-lg);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: var(--spacing-4);
+}
+
+.boltz-empty h3 {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  margin-bottom: var(--spacing-2);
+}
+
+.boltz-empty p {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ===================================
+   RESPONSIVE DESIGN
+   =================================== */
+
+@media (max-width: 768px) {
+  .creator-info {
+    right: 70px;
+  }
+
+  .action-buttons {
+    gap: var(--spacing-3);
+  }
+
+  .action-icon {
+    font-size: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .boltz-video-container {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .page-boltz {
+    background: #1a1a1a;
+  }
+}

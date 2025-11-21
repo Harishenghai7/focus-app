@@ -1,0 +1,1672 @@
+﻿[
+    {
+        "Page":  "AdminDashboard.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \u0027@/importMap\u0027"
+    },
+    {
+        "Page":  "AdminDashboard.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "AdminDashboard.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "AdminDashboard.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "AdminDashboard.js",
+        "Import":  "../components/Layout",
+        "Line":  "import Layout from \u0027../components/Layout\u0027"
+    },
+    {
+        "Page":  "AdminDashboard.js",
+        "Import":  "../components/StatCard",
+        "Line":  "import StatCard from \u0027../components/StatCard\u0027"
+    },
+    {
+        "Page":  "AdminDashboard.js",
+        "Import":  "../components/ModerationQueue",
+        "Line":  "import ModerationQueue from \u0027../components/ModerationQueue\u0027"
+    },
+    {
+        "Page":  "AdminDashboard.js",
+        "Import":  "../utils/formatters/formatNumber",
+        "Line":  "import { formatNumber } from \u0027../utils/formatters/formatNumber\u0027"
+    },
+    {
+        "Page":  "Analytics.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \u0027@/importMap\u0027"
+    },
+    {
+        "Page":  "Analytics.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "Analytics.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "Analytics.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "Analytics.js",
+        "Import":  "../components/Layout/Layout",
+        "Line":  "import Layout from \u0027../components/Layout/Layout\u0027"
+    },
+    {
+        "Page":  "Analytics.js",
+        "Import":  "../components/StatCard",
+        "Line":  "import StatCard from \u0027../components/StatCard\u0027"
+    },
+    {
+        "Page":  "Analytics.js",
+        "Import":  "../components/ChartComponent",
+        "Line":  "import ChartComponent from \u0027../components/ChartComponent\u0027"
+    },
+    {
+        "Page":  "Analytics.js",
+        "Import":  "../utils/formatters/formatPercentage",
+        "Line":  "import { formatCompactNumber, formatPercentage, calculatePercentageChange } from \u0027../utils/formatters/formatPercentage\u0027"
+    },
+    {
+        "Page":  "Archive.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "Archive.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \u0027@/importMap\u0027"
+    },
+    {
+        "Page":  "Archive.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "Archive.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "Auth.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \"framer-motion\""
+    },
+    {
+        "Page":  "Auth.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \"react-router-dom\""
+    },
+    {
+        "Page":  "Auth.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \"../supabaseClient\""
+    },
+    {
+        "Page":  "Auth.js",
+        "Import":  "react-icons/fa",
+        "Line":  "import { FaGoogle, FaMicrosoft, FaGithub, FaDiscord, FaTwitter } from \u0027react-icons/fa\u0027"
+    },
+    {
+        "Page":  "Auth.js",
+        "Import":  "../assets/focus-logo.png",
+        "Line":  "import focusLogo from \"../assets/focus-logo.png\""
+    },
+    {
+        "Page":  "Auth.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \u0027@/importMap\u0027"
+    },
+    {
+        "Page":  "AuthCallback.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "AuthCallback.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \u0027@/importMap\u0027"
+    },
+    {
+        "Page":  "AuthCallback.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "AuthNew.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "AuthNew.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \u0027@/importMap\u0027"
+    },
+    {
+        "Page":  "AuthNew.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "AuthNew.js",
+        "Import":  "../assets/focus-logo.png",
+        "Line":  "import focusLogo from \u0027../assets/focus-logo.png\u0027"
+    },
+    {
+        "Page":  "BlockedUsers.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion } from \"framer-motion\""
+    },
+    {
+        "Page":  "BlockedUsers.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \"../supabaseClient\""
+    },
+    {
+        "Page":  "BlockedUsers.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \"react-router-dom\""
+    },
+    {
+        "Page":  "BlockedUsers.js",
+        "Import":  "../components/Layout/Layout",
+        "Line":  "import Layout from \"../components/Layout/Layout\""
+    },
+    {
+        "Page":  "BlockedUsers.js",
+        "Import":  "../components/SearchBar",
+        "Line":  "import SearchBar from \"../components/SearchBar\""
+    },
+    {
+        "Page":  "BlockedUsers.js",
+        "Import":  "../components/ConfirmDialog",
+        "Line":  "import ConfirmDialog from \"../components/ConfirmDialog\""
+    },
+    {
+        "Page":  "BlockedUsers.js",
+        "Import":  "../hooks/useDebounce",
+        "Line":  "import useDebounce from \"../hooks/useDebounce\""
+    },
+    {
+        "Page":  "Boltz.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \"framer-motion\""
+    },
+    {
+        "Page":  "Boltz.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \"../supabaseClient\""
+    },
+    {
+        "Page":  "Boltz.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \"react-router-dom\""
+    },
+    {
+        "Page":  "Boltz.js",
+        "Import":  "../components/InteractionBar",
+        "Line":  "import InteractionBar from \"../components/InteractionBar\""
+    },
+    {
+        "Page":  "Boltz.js",
+        "Import":  "../components/ReelPlayer",
+        "Line":  "import ReelPlayer from \"../components/ReelPlayer\""
+    },
+    {
+        "Page":  "Boltz.js",
+        "Import":  "../components/CommentSection",
+        "Line":  "import CommentSection from \"../components/CommentSection\""
+    },
+    {
+        "Page":  "Boltz.js",
+        "Import":  "../components/ShareModal",
+        "Line":  "import ShareModal from \"../components/ShareModal\""
+    },
+    {
+        "Page":  "Boltz.js",
+        "Import":  "../components/FollowButton",
+        "Line":  "import FollowButton from \"../components/FollowButton\""
+    },
+    {
+        "Page":  "Boltz.js",
+        "Import":  "../utils/videoUtils",
+        "Line":  "import { setupAutoPlay, trackVideoView } from \"../utils/videoUtils\""
+    },
+    {
+        "Page":  "Boltz.js",
+        "Import":  "../hooks/useRealtimeInteractions",
+        "Line":  "import { useRealtimeInteractions } from \"../hooks/useRealtimeInteractions\""
+    },
+    {
+        "Page":  "Boltz.js",
+        "Import":  "../hooks/useInfiniteScroll",
+        "Line":  "import { useInfiniteScroll } from \"../hooks/useInfiniteScroll\""
+    },
+    {
+        "Page":  "Boltz.js",
+        "Import":  "../utils/mediaUtils",
+        "Line":  "import { getVideoDuration, formatDuration, trackEvent } from \"../utils/mediaUtils\""
+    },
+    {
+        "Page":  "Boltz.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \u0027@/importMap\u0027"
+    },
+    {
+        "Page":  "BoltzDetail.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useParams, useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "BoltzDetail.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "BoltzDetail.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "BoltzDetail.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \u0027@/importMap\u0027"
+    },
+    {
+        "Page":  "BoltzDetail.js",
+        "Import":  "../components/ReelPlayer",
+        "Line":  "import ReelPlayer from \u0027../components/ReelPlayer\u0027"
+    },
+    {
+        "Page":  "BoltzDetail.js",
+        "Import":  "../components/CommentSection",
+        "Line":  "import CommentSection from \u0027../components/CommentSection\u0027"
+    },
+    {
+        "Page":  "BoltzDetail.js",
+        "Import":  "../components/ShareModal",
+        "Line":  "import ShareModal from \u0027../components/ShareModal\u0027"
+    },
+    {
+        "Page":  "BoltzNew.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate, useParams } from \"react-router-dom\""
+    },
+    {
+        "Page":  "BoltzNew.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \"framer-motion\""
+    },
+    {
+        "Page":  "BoltzNew.js",
+        "Import":  "../importMap",
+        "Line":  "import { components, hooks, utils } from \u0027../importMap\u0027"
+    },
+    {
+        "Page":  "BoltzNew.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "Call.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "Call.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate, useParams, useSearchParams } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "Call.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \u0027@/importMap\u0027"
+    },
+    {
+        "Page":  "Calls.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \u0027@/importMap\u0027"
+    },
+    {
+        "Page":  "Calls.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "Calls.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "Calls.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "CallsNew.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \u0027@/importMap\u0027"
+    },
+    {
+        "Page":  "CallsNew.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "CallsNew.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "ChatThread.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "ChatThread.js",
+        "Import":  "../components/MessageInput",
+        "Line":  "import MessageInput from \u0027../components/MessageInput\u0027"
+    },
+    {
+        "Page":  "ChatThread.js",
+        "Import":  "../components/EmojiPicker",
+        "Line":  "import EmojiPicker from \u0027../components/EmojiPicker\u0027"
+    },
+    {
+        "Page":  "ChatThread.js",
+        "Import":  "../components/VoiceRecorder",
+        "Line":  "import VoiceRecorder from \u0027../components/VoiceRecorder\u0027"
+    },
+    {
+        "Page":  "ChatThread.js",
+        "Import":  "../components/TypingIndicator",
+        "Line":  "import TypingIndicator from \u0027../components/TypingIndicator\u0027"
+    },
+    {
+        "Page":  "ChatThread.js",
+        "Import":  "../hooks/useMessages",
+        "Line":  "import { useMessages } from \u0027../hooks/useMessages\u0027"
+    },
+    {
+        "Page":  "ChatThread.js",
+        "Import":  "../hooks/useTypingIndicator",
+        "Line":  "import useTypingIndicator from \u0027../hooks/useTypingIndicator\u0027"
+    },
+    {
+        "Page":  "ChatThread.js",
+        "Import":  "../hooks/useReadReceipts",
+        "Line":  "import useReadReceipts from \u0027../hooks/useReadReceipts\u0027"
+    },
+    {
+        "Page":  "ChatThread.js",
+        "Import":  "../utils/dateFormatter",
+        "Line":  "import { formatTime } from \u0027../utils/dateFormatter\u0027"
+    },
+    {
+        "Page":  "ChatThread.js",
+        "Import":  "../utils/data/linkify",
+        "Line":  "import linkify from \u0027../utils/data/linkify\u0027"
+    },
+    {
+        "Page":  "CloseFriends.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "CloseFriends.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "CloseFriends.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "Comments.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \"../supabaseClient\""
+    },
+    {
+        "Page":  "Comments.js",
+        "Import":  "../components/CommentCard",
+        "Line":  "import CommentCard from \"../components/CommentCard\""
+    },
+    {
+        "Page":  "Comments.js",
+        "Import":  "../components/MessageInput",
+        "Line":  "import MessageInput from \"../components/MessageInput\""
+    },
+    {
+        "Page":  "Comments.js",
+        "Import":  "../hooks/useRealtimeInteractions",
+        "Line":  "import { useRealtimeInteractions } from \"../hooks/useRealtimeInteractions\""
+    },
+    {
+        "Page":  "Comments.js",
+        "Import":  "../utils/dateFormatter",
+        "Line":  "import { formatDate } from \"../utils/dateFormatter\""
+    },
+    {
+        "Page":  "Comments.js",
+        "Import":  "../utils/linkifiedText",
+        "Line":  "import { linkifyAll } from \"../utils/linkifiedText\""
+    },
+    {
+        "Page":  "CommentsNew.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "CommentsNew.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \u0027@/importMap\u0027"
+    },
+    {
+        "Page":  "CommentsNew.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "CommentsNew.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useParams, useLocation } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "Create.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \"framer-motion\""
+    },
+    {
+        "Page":  "Create.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \"../supabaseClient\""
+    },
+    {
+        "Page":  "Create.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \"react-router-dom\""
+    },
+    {
+        "Page":  "Create.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \u0027@/importMap\u0027"
+    },
+    {
+        "Page":  "CreateMultiType.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \"framer-motion\""
+    },
+    {
+        "Page":  "CreateMultiType.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \"../supabaseClient\""
+    },
+    {
+        "Page":  "CreateMultiType.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \"react-router-dom\""
+    },
+    {
+        "Page":  "CreateMultiType.js",
+        "Import":  "../components/MediaSelector",
+        "Line":  "import MediaSelector from \"../components/MediaSelector\""
+    },
+    {
+        "Page":  "CreateMultiType.js",
+        "Import":  "../components/SchedulePicker",
+        "Line":  "import SchedulePicker from \"../components/SchedulePicker\""
+    },
+    {
+        "Page":  "CreateMultiType.js",
+        "Import":  "../hooks/useDebounce",
+        "Line":  "import useDebounce from \"../hooks/useDebounce\""
+    },
+    {
+        "Page":  "CreateMultiType.js",
+        "Import":  "../utils/draftManager",
+        "Line":  "import {\n  saveDraftToLocal,\n  saveDraftToDatabase,\n  loadDraftsFromDatabase,\n  deleteDraftFromDatabase,\n  deleteLocalDraft,\n  mergeDrafts,\n  createAutoSaveManager,\n} from \"../utils/draftManager\""
+    },
+    {
+        "Page":  "CreateMultiType.js",
+        "Import":  "../utils/videoUtils",
+        "Line":  "import { compressVideo, generateThumbnail } from \"../utils/videoUtils\""
+    },
+    {
+        "Page":  "CreateNew.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate, useSearchParams } from \"react-router-dom\""
+    },
+    {
+        "Page":  "CreateNew.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \"framer-motion\""
+    },
+    {
+        "Page":  "CreateNew.js",
+        "Import":  "../importMap",
+        "Line":  "import { components, hooks, utils } from \u0027../importMap\u0027"
+    },
+    {
+        "Page":  "CreateNew.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "DebugAuth.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \"../supabaseClient\""
+    },
+    {
+        "Page":  "EditProfile.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \"../supabaseClient\""
+    },
+    {
+        "Page":  "EditProfile.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \"react-router-dom\""
+    },
+    {
+        "Page":  "EditProfile.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \"framer-motion\""
+    },
+    {
+        "Page":  "EditProfile.js",
+        "Import":  "../components/ImageCropper",
+        "Line":  "import ImageCropper from \"../components/ImageCropper\""
+    },
+    {
+        "Page":  "EditProfile.js",
+        "Import":  "../components/ProgressBar",
+        "Line":  "import ProgressBar from \"../components/ProgressBar\""
+    },
+    {
+        "Page":  "EditProfile.js",
+        "Import":  "../hooks/useImageUpload",
+        "Line":  "import useImageUpload from \"../hooks/useImageUpload\""
+    },
+    {
+        "Page":  "EditProfile.js",
+        "Import":  "../utils/validation",
+        "Line":  "import { validateUsername, validateUrl, validateEmail } from \"../utils/validation\""
+    },
+    {
+        "Page":  "EditProfile.js",
+        "Import":  "../utils/media/compressImage",
+        "Line":  "import compressImage from \"../utils/media/compressImage\""
+    },
+    {
+        "Page":  "Explore.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \"react-router-dom\""
+    },
+    {
+        "Page":  "Explore.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \"framer-motion\""
+    },
+    {
+        "Page":  "Explore.js",
+        "Import":  "../importMap",
+        "Line":  "import { components, hooks, utils } from \u0027../importMap\u0027"
+    },
+    {
+        "Page":  "Explore.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "Flash.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \"framer-motion\""
+    },
+    {
+        "Page":  "Flash.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \"../supabaseClient\""
+    },
+    {
+        "Page":  "Flash.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate, useParams, useSearchParams } from \"react-router-dom\""
+    },
+    {
+        "Page":  "Flash.js",
+        "Import":  "../components/ViewersModal",
+        "Line":  "import ViewersModal from \"../components/ViewersModal\""
+    },
+    {
+        "Page":  "Flash.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \u0027@/importMap\u0027"
+    },
+    {
+        "Page":  "FollowButton.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \"framer-motion\""
+    },
+    {
+        "Page":  "FollowButton.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \"../supabaseClient\""
+    },
+    {
+        "Page":  "FollowButton.js",
+        "Import":  "../utils/haptics",
+        "Line":  "import { triggerHaptic } from \"../utils/haptics\""
+    },
+    {
+        "Page":  "FollowButton.js",
+        "Import":  "../utils/notificationService",
+        "Line":  "import { notifyFollow, notifyFollowRequest, deleteNotification } from \"../utils/notificationService\""
+    },
+    {
+        "Page":  "FollowersList.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useParams, useNavigate } from \"react-router-dom\""
+    },
+    {
+        "Page":  "FollowersList.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \"../supabaseClient\""
+    },
+    {
+        "Page":  "FollowersList.js",
+        "Import":  "../components/Layout/Layout",
+        "Line":  "import Layout from \"../components/Layout/Layout\""
+    },
+    {
+        "Page":  "FollowersList.js",
+        "Import":  "../components/SearchBar",
+        "Line":  "import SearchBar from \"../components/SearchBar\""
+    },
+    {
+        "Page":  "FollowersList.js",
+        "Import":  "./FollowButton",
+        "Line":  "import FollowButton from \"./FollowButton\""
+    },
+    {
+        "Page":  "FollowersList.js",
+        "Import":  "../hooks/useDebounce",
+        "Line":  "import useDebounce from \"../hooks/useDebounce\""
+    },
+    {
+        "Page":  "FollowersList.js",
+        "Import":  "../utils/formatters/formatNumber",
+        "Line":  "import { formatNumber } from \"../utils/formatters/formatNumber\""
+    },
+    {
+        "Page":  "FollowingList.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useParams, useNavigate } from \"react-router-dom\""
+    },
+    {
+        "Page":  "FollowingList.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \"../supabaseClient\""
+    },
+    {
+        "Page":  "FollowingList.js",
+        "Import":  "../components/Layout/Layout",
+        "Line":  "import Layout from \"../components/Layout/Layout\""
+    },
+    {
+        "Page":  "FollowingList.js",
+        "Import":  "../components/SearchBar",
+        "Line":  "import SearchBar from \"../components/SearchBar\""
+    },
+    {
+        "Page":  "FollowingList.js",
+        "Import":  "./FollowButton",
+        "Line":  "import FollowButton from \"./FollowButton\""
+    },
+    {
+        "Page":  "FollowingList.js",
+        "Import":  "../hooks/useDebounce",
+        "Line":  "import useDebounce from \"../hooks/useDebounce\""
+    },
+    {
+        "Page":  "FollowingList.js",
+        "Import":  "../utils/formatters/formatNumber",
+        "Line":  "import { formatNumber } from \"../utils/formatters/formatNumber\""
+    },
+    {
+        "Page":  "FollowRequests.js",
+        "Import":  "react",
+        "Line":  "import { useState, useEffect, useCallback } from \u0027react\u0027"
+    },
+    {
+        "Page":  "FollowRequests.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "FollowRequests.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "FollowRequests.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "FollowRequests.js",
+        "Import":  "../components/Layout/Layout",
+        "Line":  "import Layout from \u0027../components/Layout/Layout\u0027"
+    },
+    {
+        "Page":  "FollowRequests.js",
+        "Import":  "../components/ConfirmDialog",
+        "Line":  "import ConfirmDialog from \u0027../components/ConfirmDialog\u0027"
+    },
+    {
+        "Page":  "FollowRequests.js",
+        "Import":  "../utils/dateFormatter",
+        "Line":  "import { formatDate } from \u0027../utils/dateFormatter\u0027"
+    },
+    {
+        "Page":  "GroupChat.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "GroupChat.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useParams, useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "GroupChat.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "GroupChat.js",
+        "Import":  "../components/MediaViewer",
+        "Line":  "import MediaViewer from \u0027../components/MediaViewer\u0027"
+    },
+    {
+        "Page":  "GroupChat.js",
+        "Import":  "../components/MessageInput",
+        "Line":  "import MessageInput from \u0027../components/MessageInput\u0027"
+    },
+    {
+        "Page":  "GroupChat.js",
+        "Import":  "../components/MemberCard",
+        "Line":  "import MemberCard from \u0027../components/MemberCard\u0027"
+    },
+    {
+        "Page":  "GroupChat.js",
+        "Import":  "../components/Layout/Layout",
+        "Line":  "import Layout from \u0027../components/Layout/Layout\u0027"
+    },
+    {
+        "Page":  "GroupChat.js",
+        "Import":  "../hooks/useMessages",
+        "Line":  "import { useMessages } from \u0027../hooks/useMessages\u0027"
+    },
+    {
+        "Page":  "GroupChat.js",
+        "Import":  "../utils/dateFormatter",
+        "Line":  "import { formatDate, formatTime } from \u0027../utils/dateFormatter\u0027"
+    },
+    {
+        "Page":  "GroupSettings.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "GroupSettings.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useParams, useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "GroupSettings.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "GroupSettings.js",
+        "Import":  "../components/Layout/Layout",
+        "Line":  "import Layout from \u0027../components/Layout/Layout\u0027"
+    },
+    {
+        "Page":  "GroupSettings.js",
+        "Import":  "../components/MemberCard",
+        "Line":  "import MemberCard from \u0027../components/MemberCard\u0027"
+    },
+    {
+        "Page":  "GroupSettings.js",
+        "Import":  "../components/ImageCropper",
+        "Line":  "import ImageCropper from \u0027../components/ImageCropper\u0027"
+    },
+    {
+        "Page":  "GroupSettings.js",
+        "Import":  "../utils/dateFormatter",
+        "Line":  "import { formatDate } from \u0027../utils/dateFormatter\u0027"
+    },
+    {
+        "Page":  "GuardianPending.js",
+        "Import":  "react",
+        "Line":  "import React from \"react\""
+    },
+    {
+        "Page":  "GuardianPending.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \"react-router-dom\""
+    },
+    {
+        "Page":  "HashtagPage.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useParams, useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "HashtagPage.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "HashtagPage.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "HashtagPage.js",
+        "Import":  "../utils/formatters/formatNumber",
+        "Line":  "import { formatNumber } from \u0027../utils/formatters/formatNumber\u0027"
+    },
+    {
+        "Page":  "HashtagPage.js",
+        "Import":  "../hooks/useInfiniteScroll",
+        "Line":  "import useInfiniteScroll from \u0027../hooks/useInfiniteScroll\u0027"
+    },
+    {
+        "Page":  "HashtagPage.js",
+        "Import":  "../components/Layout/Layout",
+        "Line":  "import Layout from \u0027../components/Layout/Layout\u0027"
+    },
+    {
+        "Page":  "Highlights.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "Highlights.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "Highlights.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "Highlights.js",
+        "Import":  "../components/CreateHighlightModal",
+        "Line":  "import CreateHighlightModal from \u0027../components/CreateHighlightModal\u0027"
+    },
+    {
+        "Page":  "Highlights.js",
+        "Import":  "../components/AddStoryModal",
+        "Line":  "import AddStoryModal from \u0027../components/AddStoryModal\u0027"
+    },
+    {
+        "Page":  "Highlights.js",
+        "Import":  "../components/StoryRing",
+        "Line":  "import StoryRing from \u0027../components/StoryRing\u0027"
+    },
+    {
+        "Page":  "Highlights.js",
+        "Import":  "../utils/dateFormatter",
+        "Line":  "import { formatDate } from \u0027../utils/dateFormatter\u0027"
+    },
+    {
+        "Page":  "HighlightViewer.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useParams, useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "HighlightViewer.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "HighlightViewer.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "HighlightViewer.js",
+        "Import":  "../components/StoryViewer",
+        "Line":  "import StoryViewer from \u0027../components/StoryViewer\u0027"
+    },
+    {
+        "Page":  "HighlightViewer.js",
+        "Import":  "../utils/dateFormatter",
+        "Line":  "import { formatDate } from \u0027../utils/dateFormatter\u0027"
+    },
+    {
+        "Page":  "Home.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \"react-router-dom\""
+    },
+    {
+        "Page":  "Home.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \"framer-motion\""
+    },
+    {
+        "Page":  "Home.js",
+        "Import":  "../components/Layout/Layout",
+        "Line":  "import Layout from \u0027../components/Layout/Layout\u0027"
+    },
+    {
+        "Page":  "Home.js",
+        "Import":  "../components/StoriesCarousel",
+        "Line":  "import StoriesCarousel from \u0027../components/StoriesCarousel\u0027"
+    },
+    {
+        "Page":  "Home.js",
+        "Import":  "../components/PostCard",
+        "Line":  "import PostCard from \u0027../components/PostCard\u0027"
+    },
+    {
+        "Page":  "Home.js",
+        "Import":  "../components/InteractionBar",
+        "Line":  "import InteractionBar from \u0027../components/InteractionBar\u0027"
+    },
+    {
+        "Page":  "Home.js",
+        "Import":  "../components/InfiniteScrollLoader",
+        "Line":  "import InfiniteScrollLoader from \u0027../components/InfiniteScrollLoader\u0027"
+    },
+    {
+        "Page":  "Home.js",
+        "Import":  "../components/SkeletonLoader",
+        "Line":  "import SkeletonLoader from \u0027../components/SkeletonLoader\u0027"
+    },
+    {
+        "Page":  "Home.js",
+        "Import":  "../components/SuggestedUsers",
+        "Line":  "import SuggestedUsers from \u0027../components/SuggestedUsers\u0027"
+    },
+    {
+        "Page":  "Home.js",
+        "Import":  "../components/FloatingActionButton",
+        "Line":  "import FloatingActionButton from \u0027../components/FloatingActionButton\u0027"
+    },
+    {
+        "Page":  "Home.js",
+        "Import":  "../hooks/usePullToRefresh",
+        "Line":  "import usePullToRefresh from \u0027../hooks/usePullToRefresh\u0027"
+    },
+    {
+        "Page":  "Home.js",
+        "Import":  "../utils/formatters/formatDate",
+        "Line":  "import { formatDate } from \u0027../utils/formatters/formatDate\u0027"
+    },
+    {
+        "Page":  "Home.js",
+        "Import":  "../utils/analytics/trackEvent",
+        "Line":  "import { trackEvent } from \u0027../utils/analytics/trackEvent\u0027"
+    },
+    {
+        "Page":  "Home.js",
+        "Import":  "../utils/feedCache",
+        "Line":  "import { feedCache } from \u0027../utils/feedCache\u0027"
+    },
+    {
+        "Page":  "Home.js",
+        "Import":  "../utils/subscriptionManager",
+        "Line":  "import { subscriptionManager } from \u0027../utils/subscriptionManager\u0027"
+    },
+    {
+        "Page":  "Home.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "Invite.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "Invite.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "Invite.js",
+        "Import":  "../components/Layout/Layout",
+        "Line":  "import Layout from \u0027../components/Layout/Layout\u0027"
+    },
+    {
+        "Page":  "Invite.js",
+        "Import":  "../components/ShareModal",
+        "Line":  "import ShareModal from \u0027../components/ShareModal\u0027"
+    },
+    {
+        "Page":  "Invite.js",
+        "Import":  "../hooks/useClipboard",
+        "Line":  "import useClipboard from \u0027../hooks/useClipboard\u0027"
+    },
+    {
+        "Page":  "Invite.js",
+        "Import":  "react-icons/fi",
+        "Line":  "import {\r\n  FiMail,\r\n  FiMessageSquare,\r\n  FiLink,\r\n  FiShare2,\r\n  FiTwitter,\r\n  FiFacebook,\r\n  FiLinkedin,\r\n  FiCheck,\r\n  FiCopy,\r\n  FiSend,\r\n  FiUsers,\r\n  FiClock\r\n} from \u0027react-icons/fi\u0027"
+    },
+    {
+        "Page":  "Invite.js",
+        "Import":  "react-icons/fa",
+        "Line":  "import { FaWhatsapp, FaTelegram } from \u0027react-icons/fa\u0027"
+    },
+    {
+        "Page":  "Likes.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useParams, useNavigate } from \"react-router-dom\""
+    },
+    {
+        "Page":  "Likes.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \"../supabaseClient\""
+    },
+    {
+        "Page":  "Likes.js",
+        "Import":  "../components/Layout/Layout",
+        "Line":  "import Layout from \"../components/Layout/Layout\""
+    },
+    {
+        "Page":  "Likes.js",
+        "Import":  "../components/SearchBar",
+        "Line":  "import SearchBar from \"../components/SearchBar\""
+    },
+    {
+        "Page":  "Likes.js",
+        "Import":  "../components/FollowButton",
+        "Line":  "import FollowButton from \"../components/FollowButton\""
+    },
+    {
+        "Page":  "Likes.js",
+        "Import":  "../hooks/useDebounce",
+        "Line":  "import useDebounce from \"../hooks/useDebounce\""
+    },
+    {
+        "Page":  "Likes.js",
+        "Import":  "../utils/formatters/formatNumber",
+        "Line":  "import { formatNumber } from \"../utils/formatters/formatNumber\""
+    },
+    {
+        "Page":  "LiveStream.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useParams, useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "LiveStream.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "LiveStream.js",
+        "Import":  "../utils/formatters/formatNumber",
+        "Line":  "import { formatNumber } from \u0027../utils/formatters/formatNumber\u0027"
+    },
+    {
+        "Page":  "LiveStream.js",
+        "Import":  "../hooks/useWebRTCStream",
+        "Line":  "import { useWebRTCStream } from \u0027../hooks/useWebRTCStream\u0027"
+    },
+    {
+        "Page":  "LiveStream.js",
+        "Import":  "../components/VideoPlayer",
+        "Line":  "import VideoPlayer from \u0027../components/VideoPlayer\u0027"
+    },
+    {
+        "Page":  "LiveStream.js",
+        "Import":  "../components/ChatWindow",
+        "Line":  "import ChatWindow from \u0027../components/ChatWindow\u0027"
+    },
+    {
+        "Page":  "LiveStream.js",
+        "Import":  "../components/HeartAnimation",
+        "Line":  "import HeartAnimation from \u0027../components/HeartAnimation\u0027"
+    },
+    {
+        "Page":  "Login.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \"../supabaseClient\""
+    },
+    {
+        "Page":  "Messages.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \"framer-motion\""
+    },
+    {
+        "Page":  "Messages.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \"../supabaseClient\""
+    },
+    {
+        "Page":  "Messages.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate, useParams } from \"react-router-dom\""
+    },
+    {
+        "Page":  "Messages.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, utils } from \u0027@/importMap\u0027"
+    },
+    {
+        "Page":  "Messages.js",
+        "Import":  "../components/SearchBar",
+        "Line":  "import SearchBar from \u0027../components/SearchBar\u0027"
+    },
+    {
+        "Page":  "Messages.js",
+        "Import":  "../components/OnlineIndicator",
+        "Line":  "import OnlineIndicator from \u0027../components/OnlineIndicator\u0027"
+    },
+    {
+        "Page":  "Messages.js",
+        "Import":  "../components/Badge",
+        "Line":  "import Badge from \u0027../components/Badge\u0027"
+    },
+    {
+        "Page":  "Messages.js",
+        "Import":  "../components/SkeletonLoader",
+        "Line":  "import SkeletonLoader from \u0027../components/SkeletonLoader\u0027"
+    },
+    {
+        "Page":  "Messages.js",
+        "Import":  "../hooks/useMessages",
+        "Line":  "import { useMessages } from \u0027../hooks/useMessages\u0027"
+    },
+    {
+        "Page":  "Messages.js",
+        "Import":  "../hooks/usePresence",
+        "Line":  "import usePresence from \u0027../hooks/usePresence\u0027"
+    },
+    {
+        "Page":  "Messages.js",
+        "Import":  "../hooks/useDebounce",
+        "Line":  "import useDebounce from \u0027../hooks/useDebounce\u0027"
+    },
+    {
+        "Page":  "Messages.js",
+        "Import":  "../utils/dateFormatter",
+        "Line":  "import { formatDate, formatMessageTime } from \u0027../utils/dateFormatter\u0027"
+    },
+    {
+        "Page":  "Messages.js",
+        "Import":  "../utils/data/truncateText",
+        "Line":  "import truncateText from \u0027../utils/data/truncateText\u0027"
+    },
+    {
+        "Page":  "MessagesNew.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate, useParams } from \"react-router-dom\""
+    },
+    {
+        "Page":  "MessagesNew.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \"framer-motion\""
+    },
+    {
+        "Page":  "MessagesNew.js",
+        "Import":  "../importMap",
+        "Line":  "import { components, hooks, utils } from \u0027../importMap\u0027"
+    },
+    {
+        "Page":  "MessagesNew.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "Notifications.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "Notifications.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "Notifications.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "Notifications.js",
+        "Import":  "../components/Layout/Layout",
+        "Line":  "import Layout from \u0027../components/Layout/Layout\u0027"
+    },
+    {
+        "Page":  "Notifications.js",
+        "Import":  "../components/Badge",
+        "Line":  "import Badge from \u0027../components/Badge\u0027"
+    },
+    {
+        "Page":  "Notifications.js",
+        "Import":  "../components/SkeletonLoader",
+        "Line":  "import SkeletonLoader from \u0027../components/SkeletonLoader\u0027"
+    },
+    {
+        "Page":  "Notifications.js",
+        "Import":  "../components/EmptyState",
+        "Line":  "import EmptyState from \u0027../components/EmptyState\u0027"
+    },
+    {
+        "Page":  "Notifications.js",
+        "Import":  "../hooks/useNotifications",
+        "Line":  "import { useNotifications } from \u0027../hooks/useNotifications\u0027"
+    },
+    {
+        "Page":  "Notifications.js",
+        "Import":  "../hooks/useRealtimeConnection",
+        "Line":  "import { useRealtimeConnection } from \u0027../hooks/useRealtimeConnection\u0027"
+    },
+    {
+        "Page":  "Notifications.js",
+        "Import":  "../utils/notificationService",
+        "Line":  "import { notificationService } from \u0027../utils/notificationService\u0027"
+    },
+    {
+        "Page":  "Notifications.js",
+        "Import":  "../utils/formatters/formatDate",
+        "Line":  "import { formatDate } from \u0027../utils/formatters/formatDate\u0027"
+    },
+    {
+        "Page":  "NotificationsNew.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \"react-router-dom\""
+    },
+    {
+        "Page":  "NotificationsNew.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \"framer-motion\""
+    },
+    {
+        "Page":  "NotificationsNew.js",
+        "Import":  "../importMap",
+        "Line":  "import { components, hooks, utils } from \u0027../importMap\u0027"
+    },
+    {
+        "Page":  "NotificationsNew.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "Onboarding.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "Onboarding.js",
+        "Import":  "../components/Layout/Layout",
+        "Line":  "import Layout from \u0027../components/Layout/Layout\u0027"
+    },
+    {
+        "Page":  "Onboarding.js",
+        "Import":  "../components/SuggestedUsers",
+        "Line":  "import SuggestedUsers from \u0027../components/SuggestedUsers\u0027"
+    },
+    {
+        "Page":  "Onboarding.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "People.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "People.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "People.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "People.js",
+        "Import":  "../components/Layout/Layout",
+        "Line":  "import Layout from \u0027../components/Layout/Layout\u0027"
+    },
+    {
+        "Page":  "People.js",
+        "Import":  "../components/SuggestedUsers",
+        "Line":  "import SuggestedUsers from \u0027../components/SuggestedUsers\u0027"
+    },
+    {
+        "Page":  "People.js",
+        "Import":  "react-icons/fi",
+        "Line":  "import { FiRefreshCw, FiFilter, FiSearch, FiUser, FiUserPlus, FiTrendingUp } from \u0027react-icons/fi\u0027"
+    },
+    {
+        "Page":  "PostDetail.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useParams, useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "PostDetail.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "PostDetail.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "PostDetail.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components } from \u0027@/importMap\u0027"
+    },
+    {
+        "Page":  "PostDetail.js",
+        "Import":  "../hooks/useRealtimeInteractions",
+        "Line":  "import { useRealtimeInteractions } from \u0027../hooks/useRealtimeInteractions\u0027"
+    },
+    {
+        "Page":  "PostDetail.js",
+        "Import":  "../utils/formatters/formatDate",
+        "Line":  "import { formatDate } from \u0027../utils/formatters/formatDate\u0027"
+    },
+    {
+        "Page":  "Profile.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \"framer-motion\""
+    },
+    {
+        "Page":  "Profile.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \"../supabaseClient\""
+    },
+    {
+        "Page":  "Profile.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate, useParams } from \"react-router-dom\""
+    },
+    {
+        "Page":  "Profile.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \u0027@/importMap\u0027"
+    },
+    {
+        "Page":  "ProfileNew.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate, useParams } from \"react-router-dom\""
+    },
+    {
+        "Page":  "ProfileNew.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \"framer-motion\""
+    },
+    {
+        "Page":  "ProfileNew.js",
+        "Import":  "../importMap",
+        "Line":  "import { components, hooks, utils } from \u0027../importMap\u0027"
+    },
+    {
+        "Page":  "ProfileNew.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "Quiz.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "Quiz.js",
+        "Import":  "../components/QuizCreator",
+        "Line":  "import QuizCreator from \u0027../components/QuizCreator\u0027"
+    },
+    {
+        "Page":  "Quiz.js",
+        "Import":  "../components/QuizVoter",
+        "Line":  "import QuizVoter from \u0027../components/QuizVoter\u0027"
+    },
+    {
+        "Page":  "Quiz.js",
+        "Import":  "../components/QuizCard",
+        "Line":  "import QuizCard from \u0027../components/QuizCard\u0027"
+    },
+    {
+        "Page":  "Quiz.js",
+        "Import":  "../components/BottomNav",
+        "Line":  "import BottomNav from \u0027../components/BottomNav\u0027"
+    },
+    {
+        "Page":  "Report.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate, useLocation, useSearchParams } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "Report.js",
+        "Import":  "../components/Layout/Layout",
+        "Line":  "import Layout from \u0027../components/Layout/Layout\u0027"
+    },
+    {
+        "Page":  "Report.js",
+        "Import":  "../components/RadioGroup",
+        "Line":  "import RadioGroup from \u0027../components/RadioGroup\u0027"
+    },
+    {
+        "Page":  "Report.js",
+        "Import":  "../components/ConfirmDialog",
+        "Line":  "import ConfirmDialog from \u0027../components/ConfirmDialog\u0027"
+    },
+    {
+        "Page":  "Report.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "Saved.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "Saved.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "Saved.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "Saved.js",
+        "Import":  "../components/Layout/Layout",
+        "Line":  "import Layout from \u0027../components/Layout/Layout\u0027"
+    },
+    {
+        "Page":  "Saved.js",
+        "Import":  "../components/PostCard",
+        "Line":  "import PostCard from \u0027../components/PostCard\u0027"
+    },
+    {
+        "Page":  "Saved.js",
+        "Import":  "../components/CollectionCard",
+        "Line":  "import CollectionCard from \u0027../components/CollectionCard\u0027"
+    },
+    {
+        "Page":  "Saved.js",
+        "Import":  "../utils/dateFormatter",
+        "Line":  "import { formatDate } from \u0027../utils/dateFormatter\u0027"
+    },
+    {
+        "Page":  "Schedule.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "Schedule.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "Schedule.js",
+        "Import":  "react-icons/fi",
+        "Line":  "import { \r\n  FiCalendar, \r\n  FiPlus, \r\n  FiEdit2, \r\n  FiTrash2, \r\n  FiSend, \r\n  FiClock,\r\n  FiImage,\r\n  FiRefreshCw,\r\n  FiAlertCircle\r\n} from \u0027react-icons/fi\u0027"
+    },
+    {
+        "Page":  "Schedule.js",
+        "Import":  "../components/Layout/Layout",
+        "Line":  "import Layout from \u0027../components/Layout/Layout\u0027"
+    },
+    {
+        "Page":  "Schedule.js",
+        "Import":  "../components/PostCard",
+        "Line":  "import PostCard from \u0027../components/PostCard\u0027"
+    },
+    {
+        "Page":  "Schedule.js",
+        "Import":  "../components/DateTimePicker",
+        "Line":  "import DateTimePicker from \u0027../components/DateTimePicker\u0027"
+    },
+    {
+        "Page":  "Schedule.js",
+        "Import":  "../components/ConfirmDialog",
+        "Line":  "import ConfirmDialog from \u0027../components/ConfirmDialog\u0027"
+    },
+    {
+        "Page":  "Schedule.js",
+        "Import":  "../utils/formatters/formatDate",
+        "Line":  "import { formatDate } from \u0027../utils/formatters/formatDate\u0027"
+    },
+    {
+        "Page":  "Search.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate, useSearchParams } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "Search.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "Search.js",
+        "Import":  "../hooks/useDebounce",
+        "Line":  "import useDebounce from \u0027../hooks/useDebounce\u0027"
+    },
+    {
+        "Page":  "Search.js",
+        "Import":  "../utils/searchService",
+        "Line":  "import searchService from \u0027../utils/searchService\u0027"
+    },
+    {
+        "Page":  "Search.js",
+        "Import":  "../components/SearchBar",
+        "Line":  "import SearchBar from \u0027../components/SearchBar\u0027"
+    },
+    {
+        "Page":  "Search.js",
+        "Import":  "../components/SearchResultCard",
+        "Line":  "import SearchResultCard from \u0027../components/SearchResultCard\u0027"
+    },
+    {
+        "Page":  "Search.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "Settings.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \"framer-motion\""
+    },
+    {
+        "Page":  "Settings.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \"@/importMap\""
+    },
+    {
+        "Page":  "Settings.js",
+        "Import":  "../assets/focus-logo.png",
+        "Line":  "import FocusLogo from \"../assets/focus-logo.png\""
+    },
+    {
+        "Page":  "ShareButton.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \"@/importMap\""
+    },
+    {
+        "Page":  "SimpleAuth.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \u0027@/importMap\u0027"
+    },
+    {
+        "Page":  "SimpleSignup.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \u0027@/importMap\u0027"
+    },
+    {
+        "Page":  "TestConnection.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \u0027@/importMap\u0027"
+    },
+    {
+        "Page":  "TestWebRTC.js",
+        "Import":  "react",
+        "Line":  "import React from \u0027react\u0027"
+    },
+    {
+        "Page":  "TestWebRTC.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "TestWebRTC.js",
+        "Import":  "../components/WebRTCTest",
+        "Line":  "import WebRTCTest from \u0027../components/WebRTCTest\u0027"
+    },
+    {
+        "Page":  "Trending.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useNavigate } from \u0027react-router-dom\u0027"
+    },
+    {
+        "Page":  "Trending.js",
+        "Import":  "framer-motion",
+        "Line":  "import { motion, AnimatePresence } from \u0027framer-motion\u0027"
+    },
+    {
+        "Page":  "Trending.js",
+        "Import":  "../importMap",
+        "Line":  "import { components, utils } from \u0027../importMap\u0027"
+    },
+    {
+        "Page":  "Trending.js",
+        "Import":  "../supabaseClient",
+        "Line":  "import { supabase } from \u0027../supabaseClient\u0027"
+    },
+    {
+        "Page":  "VerifyGuardian.js",
+        "Import":  "react-router-dom",
+        "Line":  "import { useSearchParams, useNavigate } from \"react-router-dom\""
+    },
+    {
+        "Page":  "VerifyGuardian.js",
+        "Import":  "@/importMap",
+        "Line":  "import { components, hooks, utils } from \"@/importMap\""
+    }
+]

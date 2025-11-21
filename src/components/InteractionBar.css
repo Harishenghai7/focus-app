@@ -1,0 +1,127 @@
+.interaction-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: transparent;
+  gap: 4px;
+}
+
+.interaction-bar-small {
+  padding: 6px 12px;
+}
+
+.interaction-bar-large {
+  padding: 12px 20px;
+}
+
+.interaction-left,
+.interaction-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.interaction-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.interaction-btn:hover {
+  opacity: 0.7;
+  transform: scale(1.05);
+}
+
+.interaction-btn:active {
+  transform: scale(0.95);
+}
+
+.interaction-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.interaction-btn.active {
+  color: #ff3040;
+}
+
+.interaction-btn.save-btn.active {
+  color: #000;
+  font-weight: 600;
+}
+
+.interaction-btn svg {
+  flex-shrink: 0;
+}
+
+.interaction-btn .count {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.views-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.views-indicator svg {
+  flex-shrink: 0;
+}
+
+.like-burst {
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translate(-50%, -50%);
+  font-size: 32px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .interaction-bar {
+    padding: 6px 12px;
+  }
+  
+  .interaction-left,
+  .interaction-right {
+    gap: 12px;
+  }
+  
+  .interaction-btn {
+    padding: 6px;
+  }
+  
+  .interaction-btn .count {
+    font-size: 13px;
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .interaction-btn {
+    color: #fff;
+  }
+  
+  .interaction-btn .count {
+    color: #fff;
+  }
+  
+  .views-indicator {
+    color: #a8a8a8;
+  }
+}

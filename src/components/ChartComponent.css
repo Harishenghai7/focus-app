@@ -1,0 +1,97 @@
+.chart-component {
+  position: relative;
+  width: 100%;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.chart-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.chart-svg {
+  width: 100%;
+  overflow: visible;
+}
+
+.chart-point {
+  cursor: pointer;
+  transition: r 0.2s ease;
+}
+
+.chart-point:hover {
+  r: 2.5;
+}
+
+.chart-bar {
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.chart-bar:hover {
+  opacity: 0.8;
+}
+
+.chart-labels {
+  display: flex;
+  position: relative;
+  margin-top: 12px;
+  height: 20px;
+}
+
+.chart-label-x {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.chart-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .chart-component {
+    background: var(--card-bg-dark, #1f2937);
+  }
+
+  .chart-label {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .chart-label-x {
+    color: var(--text-secondary-dark, #9ca3af);
+  }
+
+  .chart-empty {
+    color: var(--text-secondary-dark, #9ca3af);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .chart-component {
+    padding: 16px;
+  }
+
+  .chart-label {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .chart-label-x {
+    font-size: 10px;
+  }
+}
+

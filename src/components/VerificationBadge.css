@@ -1,0 +1,126 @@
+:root {
+  --badge-transition: 0.25s ease;
+  --badge-bg-light: #ffffff;
+  --badge-bg-dark: #1f2937;
+  --badge-tooltip-bg-light: #111827;
+  --badge-tooltip-bg-dark: #f9fafb;
+  --badge-tooltip-color-light: #f9fafb;
+  --badge-tooltip-color-dark: #1f2937;
+}
+
+.verification-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: var(--badge-size);
+  height: var(--badge-size);
+  line-height: 1;
+  color: var(--badge-color);
+  font-weight: 600;
+  cursor: default;
+  vertical-align: middle;
+  transition: transform var(--badge-transition), filter var(--badge-transition);
+  filter: drop-shadow(0 0 0 rgba(0,0,0,0));
+}
+
+.verification-badge .badge-icon {
+  display: inline-flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  -webkit-user-select: none; /* Safari support */
+  user-select: none;
+}
+
+.verification-badge:focus-visible,
+.verification-badge:hover {
+  transform: scale(1.12);
+  filter: drop-shadow(0 0 6px var(--badge-color));
+}
+
+/* Tooltip */
+.badge-tooltip {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  background: var(--badge-tooltip-bg-light);
+  color: var(--badge-tooltip-color-light);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.2;
+  min-width: 160px;
+  z-index: 20;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--badge-transition), transform var(--badge-transition);
+  transform-origin: bottom center;
+  transform: translate(-50%, -90%) scale(.92);
+}
+
+.verification-badge:hover .badge-tooltip,
+.verification-badge:focus-visible .badge-tooltip {
+  opacity: 1;
+  transform: translate(-50%, -100%) scale(1);
+}
+
+.badge-tooltip-title {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.badge-tooltip-text {
+  display: block;
+  font-weight: 400;
+  opacity: .85;
+}
+
+/* Size variants allow for consistent layout if we later wrap in a circle */
+.verification-badge.size-sm { --badge-size: 14px; }
+.verification-badge.size-md { --badge-size: 18px; }
+.verification-badge.size-lg { --badge-size: 24px; }
+
+/* Type specific tweaks (optional future) */
+.verification-badge.type-standard { text-shadow: 0 0 2px rgba(59,130,246,.6); }
+.verification-badge.type-premium { text-shadow: 0 0 2px rgba(251,191,36,.6); }
+.verification-badge.type-official { text-shadow: 0 0 2px rgba(139,92,246,.6); }
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .badge-tooltip {
+    background: var(--badge-tooltip-bg-dark);
+    color: var(--badge-tooltip-color-dark);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .verification-badge,
+  .badge-tooltip {
+    transition: none !important;
+  }
+}
+
+.verification-badge.gradient .badge-icon {
+  background: var(--badge-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.verification-badge.gradient:hover .badge-icon,
+.verification-badge.gradient:focus-visible .badge-icon {
+  filter: brightness(1.1);
+}
+
+/* Improve glow using CSS variable */
+.verification-badge:hover,
+.verification-badge:focus-visible {
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.6), 0 0 10px 3px var(--badge-color);
+}

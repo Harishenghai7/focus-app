@@ -1,0 +1,203 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-6);
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  line-height: var(--leading-none);
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: var(--transition-all);
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Primary Button - Gradient */
+.button-primary {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.button-primary:hover {
+  box-shadow: var(--shadow-lg), var(--glow-cyan);
+  transform: translateY(-2px);
+}
+
+.button-primary:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Secondary Button - Outlined */
+.button-secondary {
+  background: transparent;
+  color: var(--focus-blue-primary);
+  border: 2px solid var(--focus-blue-primary);
+}
+
+.button-secondary:hover {
+  background: var(--focus-blue-primary);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.button-secondary:active {
+  transform: scale(0.98);
+}
+
+/* Tertiary Button - Ghost */
+.button-tertiary {
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.button-tertiary:hover {
+  background: var(--bg-hover);
+}
+
+.dark .button-tertiary:hover {
+  background: var(--dark-bg-hover);
+}
+
+.button-tertiary:active {
+  transform: scale(0.98);
+}
+
+/* Danger Button */
+.button-danger {
+  background: var(--gradient-danger);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.button-danger:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.button-danger:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Success Button */
+.button-success {
+  background: var(--gradient-success);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.button-success:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.button-success:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Icon Button */
+.button-icon {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.button-icon:hover {
+  background: var(--bg-hover);
+  color: var(--focus-blue-primary);
+}
+
+.dark .button-icon:hover {
+  background: var(--dark-bg-hover);
+}
+
+.button-icon:active {
+  transform: scale(0.95);
+}
+
+/* Sizes */
+.button-sm {
+  padding: var(--spacing-2) var(--spacing-4);
+  font-size: var(--text-sm);
+}
+
+.button-lg {
+  padding: var(--spacing-4) var(--spacing-8);
+  font-size: var(--text-lg);
+}
+
+.button-icon.button-sm {
+  width: 36px;
+  height: 36px;
+}
+
+.button-icon.button-lg {
+  width: 52px;
+  height: 52px;
+}
+
+/* Full Width */
+.button-full {
+  width: 100%;
+}
+
+/* Loading State */
+.button-loading {
+  position: relative;
+  color: transparent;
+  pointer-events: none;
+}
+
+.button-loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.6s linear infinite;
+}
+
+/* Ripple Effect */
+.button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.button:active::before {
+  width: 300px;
+  height: 300px;
+  opacity: 0;
+}

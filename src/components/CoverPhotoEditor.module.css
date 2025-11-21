@@ -1,0 +1,43 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+}
+.photoWrapper {
+  width: 320px;
+  height: 120px;
+  overflow: hidden;
+  border-radius: 12px;
+  position: relative;
+  background: var(--color-bg-secondary, #eee);
+  cursor: grab;
+}
+.photo {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: auto;
+  user-select: none;
+}
+.saveBtn {
+  background: var(--color-primary, #007bff);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 24px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.saveBtn:hover {
+  background: var(--color-primary-dark, #0056b3);
+}
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: var(--color-bg-dark, #181818);
+  }
+  .photoWrapper {
+    background: #222;
+  }
+}

@@ -1,0 +1,23 @@
+.container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.theme {
+  background: var(--color-bg-secondary, #eee);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  color: #222;
+}
+.selected {
+  background: var(--color-primary, #007bff);
+  color: #fff;
+}
+@media (prefers-color-scheme: dark) {
+  .theme {
+    background: #333;
+    color: #fff;
+  }
+}

@@ -1,0 +1,139 @@
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* ERROR MESSAGE COMPONENT */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+.error-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: 40px 20px;
+}
+
+.error-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 480px;
+  text-align: center;
+  background: rgba(32, 25, 74, 0.8);
+  backdrop-filter: blur(30px);
+  border: 2px solid rgba(239, 68, 68, 0.3);
+  border-radius: 24px;
+  padding: 48px 32px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+  animation: errorAppear 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes errorAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.error-icon {
+  color: #EF4444;
+  animation: errorPulse 2s infinite;
+}
+
+@keyframes errorPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+.error-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.error-description {
+  font-size: 16px;
+  color: #B4A7FF;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.error-retry-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #8B7FD7, #EE7BFA);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  box-shadow: 0 6px 20px rgba(139, 127, 215, 0.4);
+}
+
+.error-retry-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 28px rgba(139, 127, 215, 0.5);
+}
+
+.error-retry-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.error-retry-btn svg {
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-retry-btn:hover svg {
+  animation-play-state: paused;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* RESPONSIVE */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+  .error-message {
+    min-height: 300px;
+    padding: 20px;
+  }
+
+  .error-content {
+    padding: 32px 24px;
+    gap: 16px;
+  }
+
+  .error-title {
+    font-size: 20px;
+  }
+
+  .error-description {
+    font-size: 14px;
+  }
+
+  .error-retry-btn {
+    padding: 12px 24px;
+    font-size: 15px;
+  }
+}

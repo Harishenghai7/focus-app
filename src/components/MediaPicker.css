@@ -1,0 +1,323 @@
+/* ================================================
+   MEDIA PICKER - LAVENDER THEME
+   ================================================ */
+
+.media-picker-container {
+  width: 100%;
+  animation: fadeSlideIn 0.5s ease;
+}
+
+.media-picker-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.media-picker-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #8B7FD7 0%, #EE7BFA 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.media-picker-header p {
+  font-size: 14px;
+  color: rgba(139, 127, 215, 0.8);
+  font-weight: 500;
+}
+
+/* Dropzone */
+.media-dropzone {
+  position: relative;
+  background: rgba(139, 127, 215, 0.08);
+  backdrop-filter: blur(20px);
+  border: 3px dashed rgba(139, 127, 215, 0.3);
+  border-radius: 24px;
+  padding: 60px 40px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.media-dropzone::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(139, 127, 215, 0.1) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.media-dropzone:hover::before {
+  opacity: 1;
+}
+
+.media-dropzone.drag-active {
+  border-color: #EE7BFA;
+  background: rgba(238, 123, 250, 0.1);
+  box-shadow: 0 0 40px rgba(238, 123, 250, 0.3);
+}
+
+.media-dropzone.drag-active::before {
+  opacity: 1;
+}
+
+.media-dropzone.error {
+  border-color: rgba(255, 59, 48, 0.5);
+  background: rgba(255, 59, 48, 0.05);
+  animation: shake 0.5s ease;
+}
+
+/* Dropzone Content */
+.dropzone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.dropzone-icon {
+  font-size: 72px;
+  filter: drop-shadow(0 4px 12px rgba(139, 127, 215, 0.3));
+  animation: float 3s ease-in-out infinite;
+}
+
+.dropzone-content h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.dropzone-content p {
+  font-size: 14px;
+  color: rgba(139, 127, 215, 0.6);
+  margin: 0;
+}
+
+.upload-button {
+  background: linear-gradient(135deg, #8B7FD7 0%, #EE7BFA 100%);
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  padding: 14px 32px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(139, 127, 215, 0.3);
+}
+
+.upload-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(139, 127, 215, 0.4);
+}
+
+.upload-button:active {
+  transform: translateY(0);
+}
+
+.dropzone-info {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: rgba(139, 127, 215, 0.6);
+  margin-top: 8px;
+}
+
+.dropzone-info span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Preview Grid */
+.media-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+.media-preview-item {
+  position: relative;
+  aspect-ratio: 1;
+  background: rgba(139, 127, 215, 0.08);
+  backdrop-filter: blur(12px);
+  border: 2px solid rgba(139, 127, 215, 0.2);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.media-preview-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(139, 127, 215, 0.3);
+  border-color: rgba(139, 127, 215, 0.4);
+}
+
+.preview-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-media-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 59, 48, 0.9);
+  backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.media-preview-item:hover .remove-media-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.remove-media-btn:hover {
+  background: rgba(255, 59, 48, 1);
+  transform: scale(1.1);
+}
+
+.video-indicator {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Add More Button */
+.add-more-btn {
+  aspect-ratio: 1;
+  background: rgba(139, 127, 215, 0.08);
+  backdrop-filter: blur(12px);
+  border: 3px dashed rgba(139, 127, 215, 0.3);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: rgba(139, 127, 215, 0.8);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.add-more-btn:hover {
+  background: rgba(139, 127, 215, 0.15);
+  border-color: rgba(139, 127, 215, 0.5);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(139, 127, 215, 0.2);
+}
+
+.add-icon {
+  font-size: 32px;
+  color: #8B7FD7;
+}
+
+/* Error Message */
+.media-error {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: rgba(255, 59, 48, 0.1);
+  border: 1px solid rgba(255, 59, 48, 0.3);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255, 59, 48, 0.9);
+  font-size: 14px;
+  font-weight: 500;
+  animation: shake 0.5s ease;
+}
+
+.error-icon {
+  font-size: 18px;
+}
+
+/* Animations */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .media-dropzone {
+    padding: 40px 24px;
+    min-height: 280px;
+  }
+
+  .dropzone-icon {
+    font-size: 56px;
+  }
+
+  .media-preview-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .media-picker-header h2 {
+    font-size: 20px;
+  }
+
+  .media-preview-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

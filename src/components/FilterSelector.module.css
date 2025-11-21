@@ -1,0 +1,29 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+}
+.filters {
+  display: flex;
+  gap: 12px;
+}
+.filter {
+  background: var(--color-bg-secondary, #eee);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  color: #222;
+}
+.selected {
+  background: var(--color-primary, #007bff);
+  color: #fff;
+}
+@media (prefers-color-scheme: dark) {
+  .filter {
+    background: #333;
+    color: #fff;
+  }
+}

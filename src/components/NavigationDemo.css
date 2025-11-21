@@ -1,0 +1,130 @@
+/* Navigation Demo Styles */
+
+.navigation-demo {
+  min-height: 100vh;
+  background: var(--color-background);
+}
+
+.demo-content {
+  padding-top: var(--space-16); /* Account for fixed header */
+  padding-bottom: var(--space-20); /* Account for mobile bottom nav */
+  min-height: 100vh;
+}
+
+/* Desktop layout - account for sidebar */
+@media (min-width: 768px) {
+  .demo-content {
+    margin-left: 280px; /* Sidebar width */
+    padding-bottom: var(--space-8); /* No bottom nav on desktop */
+  }
+}
+
+.content-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6); /* 32px 24px */
+}
+
+.content-inner h1 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-8);
+  text-align: center;
+}
+
+.demo-section {
+  background: var(--color-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.demo-section h2 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.demo-section h2::before {
+  content: '📱';
+  font-size: var(--font-size-lg);
+}
+
+.demo-section:nth-child(2) h2::before {
+  content: '🖥️';
+}
+
+.demo-section:nth-child(3) h2::before {
+  content: '⬅️';
+}
+
+.demo-section:nth-child(4) h2::before {
+  content: '⬇️';
+}
+
+.demo-section:nth-child(5) h2::before {
+  content: '📱💻';
+}
+
+.demo-section:nth-child(6) h2::before {
+  content: '🎨';
+}
+
+.demo-section p {
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-3);
+}
+
+.demo-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.demo-section li {
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.demo-section li:last-child {
+  border-bottom: none;
+}
+
+.demo-section strong {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .content-inner {
+    padding: var(--space-6) var(--space-4); /* 24px 16px */
+  }
+  
+  .content-inner h1 {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .demo-section {
+    padding: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .demo-content {
+    margin-left: 240px; /* Smaller sidebar on tablet */
+  }
+}
+

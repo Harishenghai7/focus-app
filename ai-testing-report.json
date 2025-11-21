@@ -1,0 +1,502 @@
+{
+  "timestamp": "2025-11-09T09:51:24.660Z",
+  "summary": {
+    "totalIssues": 13,
+    "criticalIssues": 0,
+    "highIssues": 11,
+    "mediumIssues": 1,
+    "lowIssues": 1,
+    "testCoverage": 0,
+    "overallScore": null
+  },
+  "issues": [
+    {
+      "type": "NO_ASSERTIONS",
+      "severity": "HIGH",
+      "message": "Test file has no assertions: accessibility.cy.js",
+      "file": "cypress/e2e/accessibility.cy.js",
+      "line": 0,
+      "recommendation": "Add expect() assertions to verify behavior"
+    },
+    {
+      "type": "NO_ASSERTIONS",
+      "severity": "HIGH",
+      "message": "Test file has no assertions: auth.cy.js",
+      "file": "cypress/e2e/auth.cy.js",
+      "line": 0,
+      "recommendation": "Add expect() assertions to verify behavior"
+    },
+    {
+      "type": "NO_ASSERTIONS",
+      "severity": "HIGH",
+      "message": "Test file has no assertions: basic-accessibility.cy.js",
+      "file": "cypress/e2e/basic-accessibility.cy.js",
+      "line": 0,
+      "recommendation": "Add expect() assertions to verify behavior"
+    },
+    {
+      "type": "NO_ASSERTIONS",
+      "severity": "HIGH",
+      "message": "Test file has no assertions: basic-integration.cy.js",
+      "file": "cypress/e2e/basic-integration.cy.js",
+      "line": 0,
+      "recommendation": "Add expect() assertions to verify behavior"
+    },
+    {
+      "type": "NO_ASSERTIONS",
+      "severity": "HIGH",
+      "message": "Test file has no assertions: complete-user-flows.cy.js",
+      "file": "cypress/e2e/complete-user-flows.cy.js",
+      "line": 0,
+      "recommendation": "Add expect() assertions to verify behavior"
+    },
+    {
+      "type": "NO_ASSERTIONS",
+      "severity": "HIGH",
+      "message": "Test file has no assertions: feed-discovery.cy.js",
+      "file": "cypress/e2e/feed-discovery.cy.js",
+      "line": 0,
+      "recommendation": "Add expect() assertions to verify behavior"
+    },
+    {
+      "type": "NO_ASSERTIONS",
+      "severity": "HIGH",
+      "message": "Test file has no assertions: messaging.cy.js",
+      "file": "cypress/e2e/messaging.cy.js",
+      "line": 0,
+      "recommendation": "Add expect() assertions to verify behavior"
+    },
+    {
+      "type": "NO_ASSERTIONS",
+      "severity": "HIGH",
+      "message": "Test file has no assertions: multi-user-messaging.cy.js",
+      "file": "cypress/e2e/multi-user-messaging.cy.js",
+      "line": 0,
+      "recommendation": "Add expect() assertions to verify behavior"
+    },
+    {
+      "type": "NO_ASSERTIONS",
+      "severity": "HIGH",
+      "message": "Test file has no assertions: navigation.cy.js",
+      "file": "cypress/e2e/navigation.cy.js",
+      "line": 0,
+      "recommendation": "Add expect() assertions to verify behavior"
+    },
+    {
+      "type": "NO_ASSERTIONS",
+      "severity": "HIGH",
+      "message": "Test file has no assertions: post-creation.cy.js",
+      "file": "cypress/e2e/post-creation.cy.js",
+      "line": 0,
+      "recommendation": "Add expect() assertions to verify behavior"
+    },
+    {
+      "type": "NO_ASSERTIONS",
+      "severity": "HIGH",
+      "message": "Test file has no assertions: visual-regression.cy.js",
+      "file": "cypress/e2e/visual-regression.cy.js",
+      "line": 0,
+      "recommendation": "Add expect() assertions to verify behavior"
+    },
+    {
+      "type": "DEBUG_CODE",
+      "severity": "LOW",
+      "message": "Console.log statement found",
+      "file": "src\\utils\\browserCompatibility.js",
+      "line": 315,
+      "recommendation": "Remove console.log statements before production"
+    },
+    {
+      "type": "LARGE_BUNDLE_SIZE",
+      "severity": "MEDIUM",
+      "message": "Bundle size is large: 1.28MB",
+      "file": "build",
+      "line": 0,
+      "recommendation": "Consider code splitting and lazy loading"
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": "HIGH",
+      "title": "Improve Test Coverage",
+      "description": "Test coverage is only 0%. This is below recommended levels.",
+      "action": "Add more comprehensive test cases to cover core functionality."
+    }
+  ],
+  "coverage": {
+    "testFiles": 22,
+    "totalTests": 553
+  },
+  "performance": {
+    "bundleSize": 1341277
+  },
+  "accessibility": {},
+  "security": {},
+  "manualGuideValidation": {
+    "timestamp": "2025-11-09T09:51:24.682Z",
+    "summary": {
+      "totalFeatures": 34,
+      "implementedFeatures": 34,
+      "missingFeatures": 0,
+      "partialFeatures": 0,
+      "bugs": 0,
+      "errors": 0,
+      "completionRate": 100
+    },
+    "features": [
+      {
+        "name": "Authentication",
+        "total": 5,
+        "implemented": 5,
+        "missing": 0,
+        "features": [
+          {
+            "name": "User Registration",
+            "status": "implemented",
+            "files": [
+              "src/pages/Auth.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "User Login",
+            "status": "implemented",
+            "files": [
+              "src/pages/Auth.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Password Reset",
+            "status": "implemented",
+            "files": [
+              "src/pages/Auth.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Social Login",
+            "status": "implemented",
+            "files": [
+              "src/pages/Auth.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Logout Functionality",
+            "status": "implemented",
+            "files": [
+              "src/utils/logout.js"
+            ],
+            "exists": true
+          }
+        ]
+      },
+      {
+        "name": "Posts",
+        "total": 6,
+        "implemented": 6,
+        "missing": 0,
+        "features": [
+          {
+            "name": "Create Text Post",
+            "status": "implemented",
+            "files": [
+              "src/pages/Create.js",
+              "src/pages/CreateMultiType.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Create Photo Post",
+            "status": "implemented",
+            "files": [
+              "src/pages/Create.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Create Video Post",
+            "status": "implemented",
+            "files": [
+              "src/pages/Create.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Carousel Posts",
+            "status": "implemented",
+            "files": [
+              "src/pages/Create.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Like Posts",
+            "status": "implemented",
+            "files": [
+              "src/components/",
+              "src/pages/"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Comment on Posts",
+            "status": "implemented",
+            "files": [
+              "src/components/",
+              "src/pages/"
+            ],
+            "exists": true
+          }
+        ]
+      },
+      {
+        "name": "Boltz",
+        "total": 3,
+        "implemented": 3,
+        "missing": 0,
+        "features": [
+          {
+            "name": "Boltz Page",
+            "status": "implemented",
+            "files": [
+              "src/pages/Boltz.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Record Boltz Video",
+            "status": "implemented",
+            "files": [
+              "src/pages/Boltz.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Video Controls",
+            "status": "implemented",
+            "files": [
+              "src/pages/Boltz.js"
+            ],
+            "exists": true
+          }
+        ]
+      },
+      {
+        "name": "Flash Stories",
+        "total": 3,
+        "implemented": 3,
+        "missing": 0,
+        "features": [
+          {
+            "name": "Flash Stories Page",
+            "status": "implemented",
+            "files": [
+              "src/pages/Flash.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Create Story",
+            "status": "implemented",
+            "files": [
+              "src/pages/Flash.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Story Highlights",
+            "status": "implemented",
+            "files": [
+              "src/pages/Highlights.js"
+            ],
+            "exists": true
+          }
+        ]
+      },
+      {
+        "name": "Messaging",
+        "total": 4,
+        "implemented": 4,
+        "missing": 0,
+        "features": [
+          {
+            "name": "Messages Page",
+            "status": "implemented",
+            "files": [
+              "src/pages/Messages.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Direct Messages",
+            "status": "implemented",
+            "files": [
+              "src/pages/Messages.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Group Chat",
+            "status": "implemented",
+            "files": [
+              "src/pages/GroupChat.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Voice Messages",
+            "status": "implemented",
+            "files": [
+              "src/pages/Messages.js"
+            ],
+            "exists": true
+          }
+        ]
+      },
+      {
+        "name": "Audio/Video Calls",
+        "total": 3,
+        "implemented": 3,
+        "missing": 0,
+        "features": [
+          {
+            "name": "Audio/Video Calls",
+            "status": "implemented",
+            "files": [
+              "src/pages/Call.js",
+              "src/pages/Calls.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "WebRTC Integration",
+            "status": "implemented",
+            "files": [
+              "src/utils/webrtcService.js",
+              "src/hooks/useWebRTCCall.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Call Signaling",
+            "status": "implemented",
+            "files": [
+              "src/utils/callSignaling.js"
+            ],
+            "exists": true
+          }
+        ]
+      },
+      {
+        "name": "Search & Discovery",
+        "total": 3,
+        "implemented": 3,
+        "missing": 0,
+        "features": [
+          {
+            "name": "Explore Page",
+            "status": "implemented",
+            "files": [
+              "src/pages/Explore.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Search Users",
+            "status": "implemented",
+            "files": [
+              "src/pages/Explore.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Hashtag Support",
+            "status": "implemented",
+            "files": [
+              "src/pages/HashtagPage.js"
+            ],
+            "exists": true
+          }
+        ]
+      },
+      {
+        "name": "Profile Management",
+        "total": 4,
+        "implemented": 4,
+        "missing": 0,
+        "features": [
+          {
+            "name": "Profile Page",
+            "status": "implemented",
+            "files": [
+              "src/pages/Profile.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Edit Profile",
+            "status": "implemented",
+            "files": [
+              "src/pages/EditProfile.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Settings Page",
+            "status": "implemented",
+            "files": [
+              "src/pages/Settings.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Privacy Settings",
+            "status": "implemented",
+            "files": [
+              "src/pages/Settings.js"
+            ],
+            "exists": true
+          }
+        ]
+      },
+      {
+        "name": "Accessibility",
+        "total": 3,
+        "implemented": 3,
+        "missing": 0,
+        "features": [
+          {
+            "name": "Keyboard Navigation",
+            "status": "implemented",
+            "files": [
+              "src/hooks/useKeyboardNavigation.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Screen Reader Support",
+            "status": "implemented",
+            "files": [
+              "src/components/ScreenReaderAnnouncer.js"
+            ],
+            "exists": true
+          },
+          {
+            "name": "Focus Management",
+            "status": "implemented",
+            "files": [
+              "src/components/",
+              "src/hooks/"
+            ],
+            "exists": true
+          }
+        ]
+      }
+    ],
+    "missing": [],
+    "bugs": [],
+    "errors": []
+  }
+}

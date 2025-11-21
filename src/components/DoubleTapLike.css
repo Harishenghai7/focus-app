@@ -1,0 +1,87 @@
+.double-tap-container {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+}
+
+.double-tap-heart {
+  position: absolute;
+  pointer-events: none;
+  z-index: 10;
+  font-size: 2rem;
+  color: #ff3040;
+  text-shadow: 0 0 10px rgba(255, 48, 64, 0.5);
+  filter: drop-shadow(0 0 8px rgba(255, 48, 64, 0.3));
+}
+
+.double-tap-ripple {
+  position: absolute;
+  pointer-events: none;
+  z-index: 5;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 48, 64, 0.3) 0%, transparent 70%);
+}
+
+/* Animation keyframes */
+@keyframes heartBeat {
+  0% {
+    transform: scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  20% {
+    transform: scale(1.2) rotate(-10deg);
+    opacity: 1;
+  }
+  40% {
+    transform: scale(1) rotate(10deg);
+    opacity: 1;
+  }
+  60% {
+    transform: scale(1.1) rotate(-5deg);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(1) rotate(5deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.8) rotate(0deg);
+    opacity: 0;
+  }
+}
+
+@keyframes rippleEffect {
+  0% {
+    transform: scale(0);
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Apply animations to elements */
+.double-tap-heart {
+  animation: heartBeat 1s ease-out forwards;
+}
+
+.double-tap-ripple {
+  animation: rippleEffect 0.6s ease-out forwards;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .double-tap-heart {
+    font-size: 1.5rem;
+  }
+  
+  .double-tap-ripple {
+    width: 80px;
+    height: 80px;
+  }
+}

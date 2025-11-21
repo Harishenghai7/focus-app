@@ -1,0 +1,15 @@
+# Playwright test artifacts
+test-results/
+playwright-report/
+screenshots/
+videos/
+traces/
+
+# Test fixtures
+fixtures/*.jpg
+fixtures/*.png
+fixtures/*.mp4
+
+# Temporary files
+*.tmp
+*.log

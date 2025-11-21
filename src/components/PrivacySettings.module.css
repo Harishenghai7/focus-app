@@ -1,0 +1,260 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  background: var(--color-bg, #fff);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: var(--color-text, #1a1a1a);
+}
+
+/* Two-column layout */
+.twoColumnLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Section styling */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: var(--color-surface, #f9f9f9);
+  border-radius: 8px;
+  border: 1px solid var(--color-border, #e5e5e5);
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: var(--color-text, #1a1a1a);
+}
+
+.sectionDescription {
+  font-size: 14px;
+  color: var(--color-text-secondary, #666);
+  margin: 0 0 12px 0;
+}
+
+/* Setting row with toggle */
+.settingRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.settingInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-text, #1a1a1a);
+  cursor: pointer;
+}
+
+.description {
+  font-size: 13px;
+  color: var(--color-text-secondary, #666);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Toggle switch */
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 28px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.3s;
+  border-radius: 28px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+.toggle input:checked + .slider {
+  background-color: #0095f6;
+}
+
+.toggle input:focus + .slider {
+  box-shadow: 0 0 1px #0095f6;
+}
+
+.toggle input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* Radio button group */
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--color-bg, #fff);
+  border-radius: 6px;
+  border: 2px solid var(--color-border, #e5e5e5);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.radioLabel:hover {
+  background: var(--color-hover, #f5f5f5);
+  border-color: #0095f6;
+}
+
+.radioLabel input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #0095f6;
+}
+
+.radioText {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text, #1a1a1a);
+}
+
+.radioLabel input[type="radio"]:checked ~ .radioText {
+  color: #0095f6;
+}
+
+/* Responsive design */
+@media (max-width: 968px) {
+  .twoColumnLayout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .section {
+    padding: 16px;
+  }
+
+  .sectionTitle {
+    font-size: 16px;
+  }
+
+  .settingRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .toggle {
+    align-self: flex-start;
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: var(--color-bg-dark, #181818);
+    color: #fff;
+  }
+
+  .title {
+    color: #fff;
+  }
+
+  .section {
+    background: var(--color-surface-dark, #242424);
+    border-color: var(--color-border-dark, #333);
+  }
+
+  .sectionTitle {
+    color: #fff;
+  }
+
+  .sectionDescription {
+    color: var(--color-text-secondary-dark, #aaa);
+  }
+
+  .label {
+    color: #fff;
+  }
+
+  .description {
+    color: var(--color-text-secondary-dark, #aaa);
+  }
+
+  .radioLabel {
+    background: var(--color-bg-dark, #181818);
+    border-color: var(--color-border-dark, #333);
+  }
+
+  .radioLabel:hover {
+    background: var(--color-hover-dark, #2a2a2a);
+    border-color: #0095f6;
+  }
+
+  .radioText {
+    color: #fff;
+  }
+}

@@ -1,0 +1,200 @@
+/* ===== PROFESSIONAL INTERACTION BAR (INSTAGRAM-QUALITY) ===== */
+
+.interaction-bar {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-light);
+  position: relative;
+}
+
+/* Actions Container */
+.interaction-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Interaction Buttons */
+.interaction-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.interaction-btn:hover {
+  background: rgba(139, 127, 215, 0.08);
+  transform: scale(1.1);
+}
+
+.interaction-btn:active {
+  transform: scale(0.9);
+}
+
+.interaction-btn svg {
+  transition: all 0.2s ease;
+}
+
+.interaction-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Like Button */
+.interaction-btn.liked svg {
+  fill: #E91E63;
+  stroke: #E91E63;
+  animation: heartBeat 0.3s ease;
+}
+
+@keyframes heartBeat {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.3); }
+  50% { transform: scale(1.1); }
+}
+
+.interaction-btn.animating {
+  animation: buttonPulse 0.6s ease;
+}
+
+@keyframes buttonPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* Like Burst Effect */
+.like-burst {
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(233, 30, 99, 0.4) 0%, transparent 70%);
+  animation: burstAnimation 0.6s ease-out;
+  pointer-events: none;
+}
+
+@keyframes burstAnimation {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(3);
+    opacity: 0;
+  }
+}
+
+/* Save Button */
+.save-btn {
+  margin-left: auto;
+}
+
+.save-btn.saved svg {
+  fill: #8B7FD7;
+  stroke: #8B7FD7;
+  animation: saveAnimation 0.4s ease;
+}
+
+@keyframes saveAnimation {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.2) rotate(-10deg); }
+  75% { transform: scale(1.2) rotate(10deg); }
+}
+
+/* Like Count */
+.like-count {
+  font-size: 14px;
+  color: var(--text-primary);
+  padding: 8px 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.like-count:hover {
+  color: #8B7FD7;
+  transform: translateY(-1px);
+}
+
+.like-count strong {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Hover Effects */
+@media (hover: hover) {
+  .interaction-btn:hover svg {
+    filter: drop-shadow(0 0 4px rgba(139, 127, 215, 0.3));
+  }
+
+  .interaction-btn.liked:hover svg {
+    filter: drop-shadow(0 0 8px rgba(233, 30, 99, 0.5));
+  }
+
+  .save-btn.saved:hover svg {
+    filter: drop-shadow(0 0 8px rgba(139, 127, 215, 0.5));
+  }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .interaction-bar {
+    padding: 8px 12px;
+  }
+
+  .interaction-actions {
+    gap: 12px;
+  }
+
+  .interaction-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .like-count {
+    font-size: 13px;
+  }
+}
+
+/* Dark Mode Enhancements */
+.dark .interaction-bar {
+  border-top-color: rgba(139, 127, 215, 0.15);
+}
+
+.dark .interaction-btn:hover {
+  background: rgba(139, 127, 215, 0.12);
+}
+
+/* Accessibility */
+.interaction-btn:focus-visible {
+  outline: 2px solid #8B7FD7;
+  outline-offset: 2px;
+}
+
+/* Animation for new likes */
+@keyframes countIncrease {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); color: #E91E63; }
+  100% { transform: scale(1); }
+}
+
+.like-count.animating strong {
+  animation: countIncrease 0.4s ease;
+}

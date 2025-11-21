@@ -1,0 +1,141 @@
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* LOADING FALLBACK COMPONENT */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+.loading-fallback {
+  width: 100%;
+  padding: 20px 0;
+}
+
+.loading-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.skeleton-tile {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(32, 25, 74, 0.6);
+  border: 2px solid rgba(139, 127, 215, 0.15);
+}
+
+.skeleton-media {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(32, 25, 74, 0.8) 0%,
+    rgba(139, 127, 215, 0.15) 50%,
+    rgba(32, 25, 74, 0.8) 100%
+  );
+  background-size: 200% 100%;
+}
+
+.skeleton-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(139, 127, 215, 0.2) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-overlay {
+  position: absolute;
+  inset: 0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.skeleton-stats {
+  display: flex;
+  gap: 16px;
+}
+
+.skeleton-stat {
+  width: 48px;
+  height: 20px;
+  background: rgba(139, 127, 215, 0.2);
+  border-radius: 10px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.skeleton-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.skeleton-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(139, 127, 215, 0.2);
+  animation: pulse 1.5s infinite;
+}
+
+.skeleton-name {
+  width: 80px;
+  height: 16px;
+  background: rgba(139, 127, 215, 0.2);
+  border-radius: 8px;
+  animation: pulse 1.5s infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* RESPONSIVE */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .loading-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .skeleton-tile {
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .loading-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .skeleton-tile {
+    border-radius: 14px;
+  }
+
+  .skeleton-overlay {
+    padding: 12px;
+  }
+}

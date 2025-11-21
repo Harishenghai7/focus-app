@@ -1,0 +1,19 @@
+.container {
+  display: flex;
+  align-items: center;
+}
+.select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  background: var(--color-bg-secondary, #eee);
+  color: #222;
+}
+@media (prefers-color-scheme: dark) {
+  .select {
+    background: #333;
+    color: #fff;
+    border: 1px solid #444;
+  }
+}

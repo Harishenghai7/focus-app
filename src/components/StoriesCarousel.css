@@ -1,0 +1,231 @@
+.stories-carousel {
+  position: relative;
+  background: #fff;
+  border-bottom: 1px solid #dbdbdb;
+  padding: 16px 0;
+  margin-bottom: 8px;
+}
+
+.stories-scroll {
+  display: flex;
+  gap: 16px;
+  padding: 0 20px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.stories-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.story-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 70px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.story-avatar {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  margin-bottom: 8px;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #dbdbdb;
+  transition: transform 0.2s ease;
+}
+
+/* Unviewed stories - colorful ring */
+.story-avatar.has-ring {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  padding: 3px;
+}
+
+/* Viewed stories - gray ring */
+.story-avatar.viewed {
+  background: #dbdbdb;
+  padding: 2px;
+}
+
+.story-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+  display: block;
+}
+
+.story-ring {
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  z-index: -1;
+  animation: pulse-ring 2s ease-in-out infinite;
+}
+
+@keyframes pulse-ring {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.story-username {
+  font-size: 12px;
+  color: #262626;
+  text-align: center;
+  max-width: 70px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.add-story {
+  position: relative;
+}
+
+.add-story-avatar {
+  background: #fafafa;
+  border: 1px solid #dbdbdb;
+}
+
+.add-story-plus {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 20px;
+  height: 20px;
+  background: #0095f6;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  border: 2px solid #fff;
+}
+
+.story-item.read .story-username {
+  color: #8e8e8e;
+}
+
+.story-item.unread .story-username {
+  color: #262626;
+  font-weight: 600;
+}
+
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.stories-carousel:hover .scroll-btn {
+  opacity: 1;
+}
+
+.scroll-left {
+  left: 8px;
+}
+
+.scroll-right {
+  right: 8px;
+}
+
+.scroll-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* Skeleton loading */
+.story-item.skeleton {
+  pointer-events: none;
+}
+
+.skeleton-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+.skeleton-text {
+  width: 60px;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .stories-carousel {
+    padding: 12px 0;
+  }
+  
+  .stories-scroll {
+    padding: 0 16px;
+    gap: 12px;
+  }
+  
+  .story-item {
+    min-width: 60px;
+  }
+  
+  .story-avatar {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .story-username {
+    font-size: 11px;
+    max-width: 60px;
+  }
+  
+  .scroll-btn {
+    display: none;
+  }
+}

@@ -1,0 +1,164 @@
+:root {
+  /* ============================================
+     PRIMARY BRAND COLORS (Focus Twilight Theme)
+     ============================================ */
+  
+  --focus-blue-primary: #0095F6; /* Primary action blue */
+  --focus-cyan: #00D9FF; /* Vibrant cyan accent */
+  --focus-purple: #7B68EE; /* Medium purple */
+  --focus-violet: #A78BFA; /* Soft violet */
+  --focus-magenta: #FF006E; /* Bold magenta accent */
+  --focus-indigo: #667eea; /* Deep indigo */
+  
+  /* ============================================
+     GRADIENT COMBINATIONS
+     ============================================ */
+  
+  /* Primary gradient (most used) */
+  --gradient-primary: linear-gradient(135deg, #00D9FF 0%, #7B68EE 100%);
+  
+  /* Secondary gradients */
+  --gradient-secondary: var(--gradient-primary);
+  --gradient-tertiary: linear-gradient(135deg, #A78BFA 0%, #EC4899 100%);
+  
+  /* Action gradients */
+  --gradient-accent: linear-gradient(135deg, #0095F6 0%, #FF006E 100%);
+  --gradient-success: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+  --gradient-warning: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
+  --gradient-danger: linear-gradient(135deg, #EF4444 0%, #F87171 100%);
+  
+  /* Special effect gradients */
+  --gradient-sunset: linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%);
+  --gradient-ocean: linear-gradient(135deg, #00D9FF 0%, #0095F6 100%);
+  --gradient-aurora: linear-gradient(135deg, #A78BFA 0%, #00D9FF 50%, #10B981 100%);
+  --gradient-fire: linear-gradient(135deg, #FF006E 0%, #FF6B6B 50%, #FFE66D 100%);
+  
+  /* ============================================
+     LIGHT MODE COLORS
+     ============================================ */
+  
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F7F9FC;
+  --bg-tertiary: #E8EEF7;
+  --bg-hover: #F3F4F6;
+  --bg-active: #E5E7EB;
+  
+  --text-primary: #1A1A2E;
+  --text-secondary: #6B7280;
+  --text-tertiary: #9CA3AF;
+  --text-disabled: #D1D5DB;
+  
+  --border-light: #F3F4F6;
+  --border-medium: #E5E7EB;
+  --border-dark: #D1D5DB;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  
+  /* ============================================
+     DARK MODE COLORS
+     ============================================ */
+  
+  --dark-bg-primary: #0F0F23; /* Deep navy black */
+  --dark-bg-secondary: #1A1A2E; /* Slightly lighter */
+  --dark-bg-tertiary: #252538; /* Card backgrounds */
+  --dark-bg-hover: #2D2D44;
+  --dark-bg-active: #353550;
+  
+  --dark-text-primary: #F8F9FA;
+  --dark-text-secondary: #B8B9BE;
+  --dark-text-tertiary: #6B6C7E;
+  --dark-text-disabled: #4A4A5E;
+  
+  --dark-border-light: #252538;
+  --dark-border-medium: #2D2D44;
+  --dark-border-dark: #353550;
+  
+  --dark-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --dark-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --dark-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --dark-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  --dark-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  
+  /* ============================================
+     SEMANTIC COLORS
+     ============================================ */
+  
+  --success: #10B981;
+  --success-light: #D1FAE5;
+  --success-dark: #065F46;
+  
+  --error: #EF4444;
+  --error-light: #FEE2E2;
+  --error-dark: #991B1B;
+  
+  --warning: #F59E0B;
+  --warning-light: #FEF3C7;
+  --warning-dark: #92400E;
+  
+  --info: #3B82F6;
+  --info-light: #DBEAFE;
+  --info-dark: #1E40AF;
+  
+  /* ============================================
+     GLASS MORPHISM EFFECTS
+     ============================================ */
+  
+  --glass-light: rgba(255, 255, 255, 0.7);
+  --glass-medium: rgba(255, 255, 255, 0.5);
+  --glass-heavy: rgba(255, 255, 255, 0.3);
+  
+  --glass-dark-light: rgba(26, 26, 46, 0.7);
+  --glass-dark-medium: rgba(26, 26, 46, 0.5);
+  --glass-dark-heavy: rgba(26, 26, 46, 0.3);
+  
+  --blur-sm: blur(4px);
+  --blur-md: blur(12px);
+  --blur-lg: blur(20px);
+  --blur-xl: blur(40px);
+  
+  /* ============================================
+     GLOW EFFECTS
+     ============================================ */
+  
+  --glow-cyan: 0 0 20px rgba(0, 217, 255, 0.5);
+  --glow-purple: 0 0 20px rgba(123, 104, 238, 0.5);
+  --glow-blue: 0 0 20px rgba(0, 149, 246, 0.5);
+  --glow-magenta: 0 0 20px rgba(255, 0, 110, 0.5);
+  
+  /* ============================================
+     OVERLAY COLORS
+     ============================================ */
+  
+  --overlay-light: rgba(0, 0, 0, 0.4);
+  --overlay-medium: rgba(0, 0, 0, 0.6);
+  --overlay-heavy: rgba(0, 0, 0, 0.8);
+}
+
+/* Dark mode class toggle */
+.dark {
+  --bg-primary: var(--dark-bg-primary);
+  --bg-secondary: var(--dark-bg-secondary);
+  --bg-tertiary: var(--dark-bg-tertiary);
+  --bg-hover: var(--dark-bg-hover);
+  --bg-active: var(--dark-bg-active);
+  
+  --text-primary: var(--dark-text-primary);
+  --text-secondary: var(--dark-text-secondary);
+  --text-tertiary: var(--dark-text-tertiary);
+  --text-disabled: var(--dark-text-disabled);
+  
+  --border-light: var(--dark-border-light);
+  --border-medium: var(--dark-border-medium);
+  --border-dark: var(--dark-border-dark);
+  
+  --shadow-sm: var(--dark-shadow-sm);
+  --shadow-md: var(--dark-shadow-md);
+  --shadow-lg: var(--dark-shadow-lg);
+  --shadow-xl: var(--dark-shadow-xl);
+  --shadow-2xl: var(--dark-shadow-2xl);
+}
+

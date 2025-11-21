@@ -1,0 +1,48 @@
+.parsed-content {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  line-height: 1.5;
+}
+
+.parsed-hashtag,
+.parsed-mention {
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.parsed-hashtag {
+  color: #667eea;
+}
+
+.parsed-hashtag:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+.parsed-mention {
+  color: #2196f3;
+}
+
+.parsed-mention:hover {
+  color: #1976d2;
+  text-decoration: underline;
+}
+
+/* Dark Mode */
+.dark-mode .parsed-hashtag {
+  color: #8b9aff;
+}
+
+.dark-mode .parsed-hashtag:hover {
+  color: #a5b4ff;
+}
+
+.dark-mode .parsed-mention {
+  color: #64b5f6;
+}
+
+.dark-mode .parsed-mention:hover {
+  color: #90caf9;
+}

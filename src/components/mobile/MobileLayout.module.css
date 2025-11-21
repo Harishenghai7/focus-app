@@ -1,0 +1,18 @@
+.mobile-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg-secondary);
+}
+
+.mobile-content {
+  flex: 1;
+  margin-top: var(--mobile-header-height);
+  padding-bottom: var(--bottom-nav-height);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dark .mobile-layout {
+  background: var(--dark-bg-primary);
+}

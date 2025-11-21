@@ -1,0 +1,325 @@
+/* =====================================
+   HOME PAGE STYLES - LAVENDER THEME 💜
+   ===================================== */
+
+.page-home {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  padding-bottom: var(--bottom-nav-height);
+  position: relative;
+}
+
+/* ===================================
+   NEW POSTS NOTIFICATION
+   =================================== */
+
+.new-posts-notification {
+  position: fixed;
+  top: calc(var(--header-height) + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--gradient-primary);
+  color: white;
+  padding: 12px 24px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  border: none;
+  cursor: pointer;
+  z-index: var(--z-fixed);
+  box-shadow: var(--shadow-lg);
+  transition: var(--transition-fast);
+}
+
+.new-posts-notification:hover {
+  transform: translateX(-50%) scale(1.05);
+}
+
+.new-posts-notification:active {
+  transform: translateX(-50%) scale(0.95);
+}
+
+/* ===================================
+   STORIES SECTION
+   =================================== */
+
+.stories-section {
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+  padding: var(--spacing-4) 0;
+  position: sticky;
+  top: var(--header-height);
+  z-index: var(--z-sticky);
+}
+
+/* ===================================
+   POSTS FEED
+   =================================== */
+
+.posts-feed {
+  max-width: 630px;
+  margin: 0 auto;
+  padding: var(--spacing-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+}
+
+/* ===================================
+   LOADING SKELETON
+   =================================== */
+
+.post-skeleton {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  padding: var(--spacing-4);
+}
+
+.skeleton-header {
+  height: 40px;
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 0%,
+    var(--bg-tertiary) 50%,
+    var(--bg-secondary) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-4);
+}
+
+.skeleton-image {
+  aspect-ratio: 1;
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 0%,
+    var(--bg-tertiary) 50%,
+    var(--bg-secondary) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-3);
+}
+
+.skeleton-actions {
+  height: 32px;
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 0%,
+    var(--bg-tertiary) 50%,
+    var(--bg-secondary) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-3);
+}
+
+.skeleton-caption {
+  height: 60px;
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 0%,
+    var(--bg-tertiary) 50%,
+    var(--bg-secondary) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ===================================
+   ERROR STATE
+   =================================== */
+
+.error-state {
+  text-align: center;
+  padding: var(--spacing-12);
+}
+
+.error-state p {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-4);
+}
+
+.retry-button {
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--radius-lg);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.retry-button:hover {
+  transform: scale(1.05);
+}
+
+.retry-button:active {
+  transform: scale(0.95);
+}
+
+/* ===================================
+   EMPTY STATE
+   =================================== */
+
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-12);
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: var(--spacing-4);
+}
+
+.empty-state h3 {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-2);
+}
+
+.empty-state p {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-6);
+}
+
+.explore-button {
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  padding: 12px 32px;
+  border-radius: var(--radius-full);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.explore-button:hover {
+  transform: scale(1.05);
+}
+
+.explore-button:active {
+  transform: scale(0.95);
+}
+
+/* ===================================
+   FOCUSLY AI FLOATING BUTTON
+   =================================== */
+
+.focusly-button {
+  position: fixed;
+  bottom: calc(var(--bottom-nav-height) + 20px);
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-full);
+  background: var(--gradient-primary);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-fixed);
+  transition: var(--transition-fast);
+}
+
+.focusly-icon {
+  font-size: 28px;
+  position: relative;
+  z-index: 2;
+}
+
+.focusly-pulse {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: var(--radius-full);
+  background: var(--gradient-primary);
+  animation: pulse 2s ease-out infinite;
+  z-index: 1;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* ===================================
+   RESPONSIVE DESIGN
+   =================================== */
+
+@media (max-width: 768px) {
+  .posts-feed {
+    padding: var(--spacing-2);
+    gap: var(--spacing-4);
+  }
+
+  .focusly-button {
+    width: 56px;
+    height: 56px;
+    bottom: calc(var(--bottom-nav-height) + 16px);
+    right: 16px;
+  }
+
+  .focusly-icon {
+    font-size: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .posts-feed {
+    max-width: 935px;
+  }
+
+  .focusly-button {
+    right: 40px;
+    bottom: 40px;
+  }
+}
+
+/* ===================================
+   DARK MODE SUPPORT
+   =================================== */
+
+.dark .post-skeleton {
+  background: var(--bg-secondary);
+}
+
+.dark .skeleton-header,
+.dark .skeleton-image,
+.dark .skeleton-actions,
+.dark .skeleton-caption {
+  background: linear-gradient(
+    90deg,
+    var(--bg-tertiary) 0%,
+    var(--bg-hover) 50%,
+    var(--bg-tertiary) 100%
+  );
+  background-size: 200% 100%;
+}

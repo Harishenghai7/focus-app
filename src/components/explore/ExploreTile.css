@@ -1,0 +1,274 @@
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* EXPLORE TILE COMPONENT */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+.explore-tile {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  background: rgba(32, 25, 74, 0.6);
+  border: 2px solid rgba(139, 127, 215, 0.2);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  animation: tileAppear 0.4s ease backwards;
+}
+
+@keyframes tileAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.explore-tile:hover,
+.explore-tile:focus-visible {
+  transform: translateY(-6px) scale(1.04);
+  border-color: #8B7FD7;
+  box-shadow: 0 12px 40px rgba(139, 127, 215, 0.4);
+  outline: none;
+  z-index: 10;
+}
+
+.tile-media-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.tile-skeleton {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(32, 25, 74, 0.8) 0%,
+    rgba(139, 127, 215, 0.2) 50%,
+    rgba(32, 25, 74, 0.8) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.tile-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tile-media.loaded {
+  opacity: 1;
+}
+
+.tile-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 50%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+.explore-tile:hover .tile-overlay,
+.explore-tile:focus-visible .tile-overlay {
+  opacity: 1;
+}
+
+.tile-stats {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tile-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 600;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.tile-stat svg {
+  flex-shrink: 0;
+}
+
+.tile-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tile-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.tile-user-name {
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 600;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* BADGES */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+.tile-video-badge,
+.tile-boltz-badge,
+.tile-flash-badge,
+.tile-liked-badge {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.tile-video-badge {
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #3B82F6, #2563EB);
+  color: #FFFFFF;
+}
+
+.tile-boltz-badge {
+  top: 12px;
+  left: 12px;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #FCD34D, #F59E0B);
+  color: #FFFFFF;
+}
+
+.tile-flash-badge {
+  top: 12px;
+  left: 12px;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #EE7BFA, #8B7FD7);
+  color: #FFFFFF;
+}
+
+.tile-liked-badge {
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #EC4899, #DB2777);
+  color: #FFFFFF;
+  animation: heartBeat 0.4s ease;
+}
+
+@keyframes heartBeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* RESPONSIVE */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .explore-tile {
+    border-radius: 16px;
+  }
+
+  .tile-overlay {
+    padding: 12px;
+  }
+
+  .tile-stats {
+    gap: 12px;
+  }
+
+  .tile-stat {
+    font-size: 13px;
+  }
+
+  .tile-user-avatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  .tile-user-name {
+    font-size: 13px;
+  }
+
+  .tile-video-badge,
+  .tile-liked-badge {
+    width: 32px;
+    height: 32px;
+  }
+
+  .tile-boltz-badge,
+  .tile-flash-badge {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .explore-tile {
+    border-radius: 14px;
+  }
+
+  .tile-overlay {
+    padding: 10px;
+  }
+}

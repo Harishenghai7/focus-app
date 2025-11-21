@@ -1,0 +1,229 @@
+.container {
+  background: var(--color-bg, #fff);
+  border: 1px solid var(--color-border, #e1e8ed);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 16px 0;
+}
+
+.question {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text, #14171a);
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.resultsInfo {
+  background: var(--color-bg-secondary, #f7f9fa);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.correct {
+  color: #17bf63;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.incorrect {
+  color: #f45d22;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.expired {
+  color: var(--color-text-secondary, #657786);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.stats {
+  font-size: 14px;
+  color: var(--color-text-secondary, #657786);
+}
+
+.optionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.optionBtn {
+  position: relative;
+  width: 100%;
+  background: var(--color-bg, #fff);
+  border: 2px solid var(--color-border, #e1e8ed);
+  border-radius: 10px;
+  padding: 16px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  overflow: hidden;
+}
+
+.optionBtn:hover:not(:disabled) {
+  border-color: var(--color-primary, #1da1f2);
+  background: var(--color-bg-hover, #e8f5fe);
+}
+
+.optionBtn:disabled {
+  cursor: not-allowed;
+}
+
+.optionBtn.selected {
+  border-color: var(--color-primary, #1da1f2);
+  background: var(--color-bg-hover, #e8f5fe);
+}
+
+.optionBtn.correctOption {
+  border-color: #17bf63;
+  background: #e6f7ed;
+}
+
+.optionBtn.incorrectOption {
+  border-color: #f45d22;
+  background: #fef3f0;
+}
+
+.optionContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.optionText {
+  flex: 1;
+  font-weight: 600;
+  color: var(--color-text, #14171a);
+}
+
+.optionVotes {
+  font-size: 14px;
+  color: var(--color-text-secondary, #657786);
+}
+
+.optionPercent {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary, #1da1f2);
+  min-width: 40px;
+  text-align: right;
+}
+
+.checkmark {
+  font-size: 20px;
+  color: #17bf63;
+}
+
+.progressBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(29, 161, 242, 0.1) 0%, rgba(29, 161, 242, 0.05) 100%);
+  transition: width 0.5s ease-out;
+  border-radius: 8px;
+}
+
+.correctOption .progressBar {
+  background: linear-gradient(90deg, rgba(23, 191, 99, 0.15) 0%, rgba(23, 191, 99, 0.05) 100%);
+}
+
+.incorrectOption .progressBar {
+  background: linear-gradient(90deg, rgba(244, 93, 34, 0.15) 0%, rgba(244, 93, 34, 0.05) 100%);
+}
+
+.leaderboardSection {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border, #e1e8ed);
+}
+
+.leaderboardSection h3 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text, #14171a);
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: var(--color-text-secondary, #657786);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: var(--color-bg-dark, #192734);
+    border-color: var(--color-border-dark, #38444d);
+  }
+
+  .question,
+  .optionText,
+  .leaderboardSection h3 {
+    color: var(--color-text-dark, #fff);
+  }
+
+  .resultsInfo {
+    background: var(--color-bg-dark, #253341);
+  }
+
+  .optionBtn {
+    background: var(--color-bg-dark, #253341);
+    border-color: var(--color-border-dark, #38444d);
+  }
+
+  .optionBtn:hover:not(:disabled) {
+    background: var(--color-bg-hover-dark, #38444d);
+  }
+
+  .optionBtn.selected {
+    background: var(--color-bg-hover-dark, #1c2938);
+  }
+
+  .optionBtn.correctOption {
+    background: rgba(23, 191, 99, 0.15);
+    border-color: #17bf63;
+  }
+
+  .optionBtn.incorrectOption {
+    background: rgba(244, 93, 34, 0.15);
+    border-color: #f45d22;
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .container {
+    padding: 16px;
+  }
+
+  .question {
+    font-size: 16px;
+  }
+
+  .optionBtn {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .optionContent {
+    flex-wrap: wrap;
+  }
+
+  .optionPercent {
+    min-width: 35px;
+  }
+}

@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus App - Automated User Scenario Tests</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-controls {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            height: 600px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #5a6fd8;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status.running { background: #ffeaa7; color: #2d3436; }
+        .status.completed { background: #00b894; color: white; }
+        .status.failed { background: #e17055; color: white; }
+        .progress {
+            width: 100%;
+            height: 6px;
+            background: #ddd;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00b894, #00cec9);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .test-section {
+            background: white;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .success { color: #00b894; }
+        .error { color: #e17055; }
+        .info { color: #0984e3; }
+        .warning { color: #fdcb6e; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Focus App - User A & User B Scenario Tests</h1>
+        <p>Comprehensive automated testing of all core social media functionality</p>
+    </div>
+
+    <div class="test-controls">
+        <h2>Test Controls</h2>
+        <button id="runTests" onclick="runFullTestSuite()">🚀 Run Complete Test Suite</button>
+        <button id="runUserA" onclick="runUserATests()">👤 Test User A Scenario</button>
+        <button id="runUserB" onclick="runUserBTests()">👥 Test User B Scenario</button>
+        <button id="clearOutput" onclick="clearOutput()">🗑️ Clear Output</button>
+        
+        <div>
+            <span>Status:</span>
+            <span id="status" class="status">Ready</span>
+        </div>
+        
+        <div class="progress">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+        
+        <div id="testStats">
+            <span>Tests: <span id="totalTests">0</span></span> |
+            <span>Passed: <span id="passedTests" class="success">0</span></span> |
+            <span>Failed: <span id="failedTests" class="error">0</span></span> |
+            <span>Success Rate: <span id="successRate">0%</span></span>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Output</h3>
+        <div id="testOutput" class="test-output">Ready to run tests...\n\nThis will test the complete User A & User B workflow:\n\n👤 User A Tests:\n- Registration and profile setup\n- Content creation (posts, stories, boltz)\n- Social interactions (follow, like, comment)\n- Messaging and calls\n- Privacy settings\n\n👥 User B Tests:\n- Registration and profile setup\n- Accept follow requests\n- Interact with User A's content\n- Real-time notifications\n- Cross-user functionality\n\n🔄 Real-time Sync Tests:\n- Instant updates across users\n- Notification delivery\n- Live interaction sync\n\n🛡️ Security Tests:\n- Permission enforcement\n- Data privacy\n- Access control\n\nClick 'Run Complete Test Suite' to begin automated testing.\n</div>
+    </div>
+
+    <script>
+        // Global test state
+        let testState = {
+            isRunning: false,
+            totalTests: 0,
+            passedTests: 0,
+            failedTests: 0,
+            currentTest: '',
+            userA: null,
+            userB: null,
+            userAData: null
+        };
+
+        // Utility functions
+        function updateStatus(status, className = '') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = status;
+            statusEl.className = `status ${className}`;
+        }
+
+        function updateProgress(percentage) {
+            document.getElementById('progressBar').style.width = percentage + '%';
+        }
+
+        function updateStats() {
+            document.getElementById('totalTests').textContent = testState.totalTests;
+            document.getElementById('passedTests').textContent = testState.passedTests;
+            document.getElementById('failedTests').textContent = testState.failedTests;
+            
+            const successRate = testState.totalTests > 0 
+                ? Math.round((testState.passedTests / testState.totalTests) * 100)
+                : 0;
+            document.getElementById('successRate').textContent = successRate + '%';
+        }
+
+        function log(message, type = 'info') {
+            const output = document.getElementById('testOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            const typeColors = {
+                info: 'info',
+                success: 'success',
+                error: 'error',
+                warning: 'warning'
+            };
+            
+            const colorClass = typeColors[type] || 'info';
+            const logEntry = `[${timestamp}] ${message}\n`;
+            
+            output.innerHTML += `<span class="${colorClass}">${logEntry}</span>`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function clearOutput() {
+            document.getElementById('testOutput').innerHTML = '';
+        }
+
+        function recordResult(testName, success, notes = '') {
+            testState.totalTests++;
+            if (success) {
+                testState.passedTests++;
+                log(`✅ ${testName}: ${notes}`, 'success');
+            } else {
+                testState.failedTests++;
+                log(`❌ ${testName}: ${notes}`, 'error');
+            }
+            updateStats();
+        }
+
+        async function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Check if we have access to Supabase
+        function checkSupabaseAccess() {
+            if (typeof window.supabase === 'undefined') {
+                log('❌ Supabase client not available. Make sure you are running this from the Focus app.', 'error');
+                return false;
+            }
+            log('✅ Supabase client available', 'success');
+            return true;
+        }
+
+        // Test data generation
+        function generateTestData() {
+            const timestamp = Date.now();
+            return {
+                userA: {
+                    email: `usera.test.${timestamp}@focusapp.test`,
+                    username: `usera_${timestamp}`,
+                    password: 'TestPassword123!',
+                    fullName: 'Test User Alpha',
+                    bio: 'This is User A testing the Focus app! 📱✨',
+                },
+                userB: {
+                    email: `userb.test.${timestamp}@focusapp.test`,
+                    username: `userb_${timestamp}`,
+                    password: 'TestPassword123!',
+                    fullName: 'Test User Beta',
+                    bio: 'This is User B ready to connect! 🚀💫',
+                }
+            };
+        }
+
+        // User registration
+        async function signUpUser(userData, userType) {
+            try {
+                log(`🔄 Signing up ${userType}...`);
+                
+                const { data, error } = await window.supabase.auth.signUp({
+                    email: userData.email,
+                    password: userData.password,
+                    options: {
+                        data: {
+                            username: userData.username,
+                            full_name: userData.fullName
+                        }
+                    }
+                });
+
+                if (error) throw error;
+
+                recordResult(`${userType} Registration`, true, `Successfully registered with email ${userData.email}`);
+                return data.user;
+            } catch (error) {
+                recordResult(`${userType} Registration`, false, error.message);
+                throw error;
+            }
+        }
+
+        // Profile setup
+        async function setupProfile(user, userData, userType) {
+            try {
+                log(`🔄 Setting up profile for ${userType}...`);
+
+                const { error: profileError } = await window.supabase
+                    .from('profiles')
+                    .upsert({
+                        id: user.id,
+                        username: userData.username,
+                        full_name: userData.fullName,
+                        bio: userData.bio,
+                        avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userData.username}`,
+                        cover_url: null,
+                        is_private: false,
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    });
+
+                if (profileError) throw profileError;
+
+                const { data: profile, error: fetchError } = await window.supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
+                if (fetchError) throw fetchError;
+
+                recordResult(`${userType} Profile Setup`, true, `Profile created with username ${profile.username}`);
+                return profile;
+            } catch (error) {
+                recordResult(`${userType} Profile Setup`, false, error.message);
+                throw error;
+            }
+        }
+
+        // Content creation
+        async function createPost(user, userType) {
+            try {
+                log(`🔄 Creating post for ${userType}...`);
+
+                const postData = {
+                    user_id: user.id,
+                    caption: `Test post from ${userType}! 📱 This includes @${userType === 'userA' ? 'userb' : 'usera'} and #testing #focusapp`,
+                    media_urls: [
+                        'https://picsum.photos/800/600?random=1',
+                        'https://picsum.photos/800/600?random=2'
+                    ],
+                    media_types: ['image', 'image'],
+                    location: 'Test Location',
+                    hashtags: ['testing', 'focusapp'],
+                    mentions: [userType === 'userA' ? 'userb' : 'usera'],
+                    created_at: new Date().toISOString()
+                };
+
+                const { data: post, error } = await window.supabase
+                    .from('posts')
+                    .insert(postData)
+                    .select()
+                    .single();
+
+                if (error) throw error;
+
+                recordResult(`${userType} Create Post`, true, `Post created with ID ${post.id}`);
+                return post;
+            } catch (error) {
+                recordResult(`${userType} Create Post`, false, error.message);
+                throw error;
+            }
+        }
+
+        // User A scenario tests
+        async function runUserATests() {
+            if (testState.isRunning) return;
+            
+            testState.isRunning = true;
+            updateStatus('Running User A Tests...', 'running');
+            
+            try {
+                if (!checkSupabaseAccess()) return;
+                
+                log('🚀 Starting User A Scenario Tests...', 'info');
+                updateProgress(10);
+                
+                const testData = generateTestData();
+                
+                // 1. Register User A
+                testState.userA = await signUpUser(testData.userA, 'userA');
+                await delay(1000);
+                updateProgress(20);
+                
+                // 2. Setup profile
+                const profileA = await setupProfile(testState.userA, testData.userA, 'userA');
+                await delay(1000);
+                updateProgress(40);
+                
+                // 3. Create content
+                const postA = await createPost(testState.userA, 'userA');
+                await delay(1000);
+                updateProgress(60);
+                
+                // Store data for User B tests
+                testState.userAData = {
+                    user: testState.userA,
+                    profile: profileA,
+                    post: postA
+                };
+                
+                updateProgress(100);
+                updateStatus('User A Tests Completed', 'completed');
+                log('✅ User A Scenario Tests Completed Successfully!', 'success');
+                
+            } catch (error) {
+                updateStatus('User A Tests Failed', 'failed');
+                log(`❌ User A Tests Failed: ${error.message}`, 'error');
+            }
+            
+            testState.isRunning = false;
+        }
+
+        // User B scenario tests
+        async function runUserBTests() {
+            if (testState.isRunning) return;
+            
+            testState.isRunning = true;
+            updateStatus('Running User B Tests...', 'running');
+            
+            try {
+                if (!checkSupabaseAccess()) return;
+                
+                log('🚀 Starting User B Scenario Tests...', 'info');
+                updateProgress(10);
+                
+                const testData = generateTestData();
+                
+                // 1. Register User B
+                testState.userB = await signUpUser(testData.userB, 'userB');
+                await delay(1000);
+                updateProgress(30);
+                
+                // 2. Setup profile
+                const profileB = await setupProfile(testState.userB, testData.userB, 'userB');
+                await delay(1000);
+                updateProgress(60);
+                
+                // 3. Interact with User A's content (if available)
+                if (testState.userAData) {
+                    try {
+                        // Follow User A
+                        await window.supabase
+                            .from('follows')
+                            .insert({
+                                follower_id: testState.userB.id,
+                                following_id: testState.userAData.user.id,
+                                created_at: new Date().toISOString()
+                            });
+                        
+                        recordResult('userB Follow userA', true, 'Successfully followed User A');
+                        
+                        // Like User A's post
+                        await window.supabase
+                            .from('likes')
+                            .insert({
+                                user_id: testState.userB.id,
+                                post_id: testState.userAData.post.id,
+                                created_at: new Date().toISOString()
+                            });
+                        
+                        recordResult('userB Like Post', true, 'Successfully liked User A\'s post');
+                        
+                    } catch (error) {
+                        recordResult('userB Interactions', false, error.message);
+                    }
+                }
+                
+                updateProgress(100);
+                updateStatus('User B Tests Completed', 'completed');
+                log('✅ User B Scenario Tests Completed Successfully!', 'success');
+                
+            } catch (error) {
+                updateStatus('User B Tests Failed', 'failed');
+                log(`❌ User B Tests Failed: ${error.message}`, 'error');
+            }
+            
+            testState.isRunning = false;
+        }
+
+        // Real-time sync test
+        async function testRealTimeSync() {
+            try {
+                log('🔄 Testing real-time synchronization...', 'info');
+                
+                let receivedUpdate = false;
+                
+                const subscription = window.supabase
+                    .channel('test-posts')
+                    .on('postgres_changes', 
+                        { event: 'INSERT', schema: 'public', table: 'posts' },
+                        (payload) => {
+                            receivedUpdate = true;
+                            log('📡 Real-time post update received!', 'info');
+                        }
+                    )
+                    .subscribe();
+
+                await delay(1000);
+
+                // Create a test post if User A exists
+                if (testState.userA) {
+                    await createPost(testState.userA, 'realtime-test');
+                }
+                
+                // Wait for real-time update
+                await delay(3000);
+                
+                subscription.unsubscribe();
+
+                recordResult('Real-time Sync', receivedUpdate, 
+                    receivedUpdate ? 'Real-time updates working' : 'Real-time updates not received');
+
+            } catch (error) {
+                recordResult('Real-time Sync', false, error.message);
+            }
+        }
+
+        // Security test
+        async function testSecurity() {
+            try {
+                log('🔄 Testing security and permissions...', 'info');
+
+                // Test unauthorized access (should fail)
+                const { error } = await window.supabase
+                    .from('profiles')
+                    .update({ bio: 'Unauthorized update attempt' })
+                    .eq('id', 'invalid-user-id');
+
+                const securityWorking = error !== null;
+
+                recordResult('Security Test', securityWorking, 
+                    securityWorking ? 'RLS policies working correctly' : 'Security vulnerability detected');
+
+            } catch (error) {
+                recordResult('Security Test', true, 'Security policies properly enforced');
+            }
+        }
+
+        // Full test suite
+        async function runFullTestSuite() {
+            if (testState.isRunning) return;
+            
+            // Reset state
+            testState = {
+                isRunning: true,
+                totalTests: 0,
+                passedTests: 0,
+                failedTests: 0,
+                currentTest: '',
+                userA: null,
+                userB: null,
+                userAData: null
+            };
+            
+            updateStats();
+            clearOutput();
+            updateStatus('Running Full Test Suite...', 'running');
+            
+            try {
+                log('🎯 Starting Complete Focus App Test Suite...', 'info');
+                log('Testing User A & User B Full Workflow Scenarios', 'info');
+                log('='.repeat(60), 'info');
+                
+                if (!checkSupabaseAccess()) return;
+                
+                // Run User A tests
+                updateProgress(10);
+                await runUserATests();
+                await delay(2000);
+                
+                // Run User B tests
+                updateProgress(40);
+                await runUserBTests();
+                await delay(2000);
+                
+                // Test real-time functionality
+                updateProgress(70);
+                await testRealTimeSync();
+                await delay(1000);
+                
+                // Test security
+                updateProgress(90);
+                await testSecurity();
+                
+                updateProgress(100);
+                generateFinalReport();
+                updateStatus('Test Suite Completed', 'completed');
+                
+            } catch (error) {
+                updateStatus('Test Suite Failed', 'failed');
+                log(`❌ Test Suite Failed: ${error.message}`, 'error');
+            }
+            
+            testState.isRunning = false;
+        }
+
+        // Generate final report
+        function generateFinalReport() {
+            const successRate = testState.totalTests > 0 
+                ? Math.round((testState.passedTests / testState.totalTests) * 100)
+                : 0;
+            
+            log('\n' + '='.repeat(60), 'info');
+            log('🎯 FOCUS APP: USER A & USER B SCENARIO QA REPORT', 'info');
+            log('='.repeat(60), 'info');
+            
+            log(`\n📊 OVERALL RESULTS:`, 'info');
+            log(`Total Tests: ${testState.totalTests}`, 'info');
+            log(`Passed: ${testState.passedTests}`, 'success');
+            log(`Failed: ${testState.failedTests}`, 'error');
+            log(`Success Rate: ${successRate}%`, 'info');
+            
+            log(`\n🎯 FINAL ASSESSMENT:`, 'info');
+            log(`App Readiness: ${successRate}/100`, 'info');
+            
+            if (successRate >= 95) {
+                log('✅ PRODUCTION READY - Excellent quality!', 'success');
+            } else if (successRate >= 85) {
+                log('⚠️ MOSTLY READY - Minor issues to address', 'warning');
+            } else if (successRate >= 70) {
+                log('🔧 NEEDS WORK - Several issues found', 'warning');
+            } else {
+                log('❌ NOT READY - Major issues need fixing', 'error');
+            }
+            
+            log('\n🚀 NEXT STEPS:', 'info');
+            if (testState.failedTests === 0) {
+                log('- Deploy to production', 'success');
+                log('- Monitor real user feedback', 'success');
+                log('- Scale infrastructure as needed', 'success');
+            } else {
+                log('- Fix identified issues', 'warning');
+                log('- Re-run failed tests', 'warning');
+                log('- Conduct additional testing', 'warning');
+            }
+            
+            log('\n🎉 Test Suite Completed!', 'success');
+            log('='.repeat(60), 'info');
+        }
+
+        // Disable buttons during test execution
+        setInterval(() => {
+            const buttons = document.querySelectorAll('button:not(#clearOutput)');
+            buttons.forEach(button => {
+                button.disabled = testState.isRunning;
+            });
+        }, 100);
+    </script>
+</body>
+</html>

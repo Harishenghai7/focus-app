@@ -1,0 +1,126 @@
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* EMPTY STATE COMPONENT */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: 60px 20px;
+}
+
+.empty-state-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  max-width: 480px;
+  text-align: center;
+  background: rgba(32, 25, 74, 0.7);
+  backdrop-filter: blur(30px);
+  border: 2px solid rgba(139, 127, 215, 0.2);
+  border-radius: 24px;
+  padding: 56px 40px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
+  animation: emptyStateAppear 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes emptyStateAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.empty-state-icon {
+  color: #8B7FD7;
+  opacity: 0.6;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.empty-state-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.empty-state-description {
+  font-size: 16px;
+  color: #B4A7FF;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 380px;
+}
+
+.empty-state-action-btn {
+  margin-top: 8px;
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #8B7FD7, #EE7BFA);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 6px 24px rgba(139, 127, 215, 0.4);
+}
+
+.empty-state-action-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 10px 32px rgba(139, 127, 215, 0.5);
+}
+
+.empty-state-action-btn:active {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 6px 24px rgba(139, 127, 215, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════ */
+/* RESPONSIVE */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+  .empty-state {
+    min-height: 320px;
+    padding: 40px 16px;
+  }
+
+  .empty-state-content {
+    padding: 40px 28px;
+    gap: 20px;
+  }
+
+  .empty-state-icon svg {
+    width: 52px;
+    height: 52px;
+  }
+
+  .empty-state-title {
+    font-size: 22px;
+  }
+
+  .empty-state-description {
+    font-size: 14px;
+  }
+
+  .empty-state-action-btn {
+    padding: 12px 28px;
+    font-size: 15px;
+  }
+}

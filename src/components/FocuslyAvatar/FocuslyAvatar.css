@@ -1,0 +1,354 @@
+/**
+ * FocuslyAvatar CSS
+ * Styles and animations for the Focusly character
+ */
+
+.focusly-avatar-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.focusly-avatar-animation {
+  width: 100%;
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+/* Placeholder avatar (until Lottie animations are ready) */
+.focusly-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 30px rgba(255, 165, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Face elements */
+.focusly-face {
+  position: relative;
+  width: 80%;
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Eyes */
+.focusly-eyes {
+  display: flex;
+  gap: 20%;
+  margin-bottom: 10%;
+  position: relative;
+  z-index: 2;
+}
+
+.focusly-eye {
+  width: 20%;
+  aspect-ratio: 1;
+  background: #000;
+  border-radius: 50%;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Eye animations based on emotion */
+.focusly-eye.happy,
+.focusly-eye.excited {
+  border-radius: 50% 50% 0 0;
+  transform: scaleY(0.6);
+}
+
+.focusly-eye.sad {
+  border-radius: 0 0 50% 50%;
+  transform: scaleY(0.6);
+}
+
+.focusly-eye.surprised {
+  transform: scale(1.3);
+}
+
+.focusly-eye.sleepy {
+  transform: scaleY(0.3);
+}
+
+.focusly-eye.waving {
+  animation: wink 2s infinite;
+}
+
+@keyframes wink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+}
+
+/* Mouth */
+.focusly-mouth {
+  width: 40%;
+  height: 20%;
+  background: #000;
+  border-radius: 0 0 100px 100px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.focusly-mouth.happy,
+.focusly-mouth.excited,
+.focusly-mouth.waving {
+  background: #000;
+  border-radius: 0 0 100px 100px;
+  animation: smile 1s ease infinite alternate;
+}
+
+.focusly-mouth.sad {
+  background: #000;
+  border-radius: 100px 100px 0 0;
+  transform: translateY(10px);
+}
+
+.focusly-mouth.surprised {
+  border-radius: 50%;
+  height: 30%;
+}
+
+.focusly-mouth.thinking {
+  border-radius: 50%;
+  height: 10%;
+  width: 20%;
+}
+
+@keyframes smile {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(1.1); }
+}
+
+/* Speaking indicator */
+.speaking-indicator {
+  display: flex;
+  gap: 3px;
+  position: absolute;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.speaking-indicator span {
+  width: 6px;
+  height: 6px;
+  background: #fff;
+  border-radius: 50%;
+  animation: speaking 0.6s infinite alternate;
+}
+
+.speaking-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.speaking-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes speaking {
+  from { transform: translateY(0); }
+  to { transform: translateY(-5px); }
+}
+
+/* Emotion label */
+.emotion-label {
+  position: absolute;
+  bottom: -30px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+/* Idle animation (gentle breathing) */
+.focusly-avatar-animation--idle {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Happy animation (bounce) */
+.focusly-avatar-animation--happy {
+  animation: bounce 1s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Excited animation (jump) */
+.focusly-avatar-animation--excited {
+  animation: jump 0.6s ease-in-out infinite;
+}
+
+@keyframes jump {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-15px) rotate(-5deg); }
+  75% { transform: translateY(-15px) rotate(5deg); }
+}
+
+/* Sad animation (droop) */
+.focusly-avatar-animation--sad {
+  animation: droop 2s ease-in-out infinite;
+}
+
+@keyframes droop {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+
+/* Thinking animation (tilt) */
+.focusly-avatar-animation--thinking {
+  animation: think 2s ease-in-out infinite;
+}
+
+@keyframes think {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+
+/* Surprised animation (shake) */
+.focusly-avatar-animation--surprised {
+  animation: surprised 0.5s ease-in-out;
+}
+
+@keyframes surprised {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.1) rotate(-3deg); }
+  75% { transform: scale(1.1) rotate(3deg); }
+}
+
+/* Speaking animation (subtle movement) */
+.focusly-avatar-animation--speaking {
+  animation: speaking-motion 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes speaking-motion {
+  from { transform: translateY(0) scale(1); }
+  to { transform: translateY(-3px) scale(1.02); }
+}
+
+/* Particle effects */
+.particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.particles span {
+  position: absolute;
+  font-size: 20px;
+  animation: float 2s infinite;
+  opacity: 0;
+}
+
+.particles--excited span:nth-child(1) {
+  top: 10%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.particles--excited span:nth-child(2) {
+  top: 20%;
+  right: 20%;
+  animation-delay: 0.3s;
+}
+
+.particles--excited span:nth-child(3) {
+  bottom: 20%;
+  left: 15%;
+  animation-delay: 0.6s;
+}
+
+.particles--excited span:nth-child(4) {
+  bottom: 15%;
+  right: 15%;
+  animation-delay: 0.9s;
+}
+
+.particles--love span {
+  animation: float-love 3s infinite;
+}
+
+.particles--love span:nth-child(1) {
+  top: 50%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.particles--love span:nth-child(2) {
+  top: 30%;
+  right: 10%;
+  animation-delay: 1s;
+}
+
+.particles--love span:nth-child(3) {
+  bottom: 30%;
+  left: 50%;
+  animation-delay: 2s;
+}
+
+@keyframes float {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-30px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-60px) scale(0.5);
+  }
+}
+
+@keyframes float-love {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.8);
+  }
+  30% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px) scale(1.2);
+  }
+}
+
+/* Responsive sizing */
+@media (max-width: 768px) {
+  .emotion-label {
+    font-size: 12px;
+    bottom: -25px;
+  }
+  
+  .focusly-eyes {
+    gap: 15%;
+  }
+}

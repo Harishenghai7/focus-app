@@ -1,0 +1,689 @@
+@import '../styles/variables.css';
+
+/* Focus PostCard - Professional Instagram-Level Design */
+.postCard {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-6);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+.postCard:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Post Header */
+.postHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+}
+
+.postUserInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+  flex: 1;
+  transition: all var(--transition-fast);
+  padding: var(--space-1);
+  border-radius: var(--radius-lg);
+}
+
+.postUserInfo:hover {
+  background: var(--bg-hover);
+}
+
+.postAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  border: 2px solid var(--border-light);
+  transition: all var(--transition-fast);
+}
+
+.postAvatar:hover {
+  border-color: var(--focus-primary);
+}
+
+.postUserDetails {
+  flex: 1;
+}
+
+.postUsernameContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: 2px;
+}
+
+.postUsername {
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+}
+
+.verifiedBadge {
+  color: var(--focus-primary);
+  font-size: 14px;
+  font-weight: var(--font-bold);
+}
+
+.separator {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+.followBtnInline {
+  background: none;
+  border: none;
+  color: var(--focus-primary);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.followBtnInline:hover {
+  background: rgba(74, 144, 226, 0.1);
+}
+
+.postLocation {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+/* Post Menu */
+.postMenuContainer {
+  position: relative;
+}
+
+.postMenuBtn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.postMenuBtn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.postMenuDropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  z-index: var(--z-dropdown);
+  min-width: 220px;
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.postMenuDropdown button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.postMenuDropdown button:hover {
+  background: var(--bg-hover);
+}
+
+.postMenuDropdown button.deleteBtn,
+.postMenuDropdown button.reportBtn {
+  color: var(--error);
+}
+
+/* Post Media */
+.postMediaContainer {
+  position: relative;
+  width: 100%;
+  background: var(--bg-secondary);
+  cursor: pointer;
+}
+
+.postMediaWrapper,
+.postVideoWrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.postImage {
+  width: 100%;
+  height: auto;
+  max-height: 600px;
+  display: block;
+  object-fit: cover;
+}
+
+.postVideo {
+  width: 100%;
+  height: auto;
+  max-height: 600px;
+  display: block;
+}
+
+/* Like animation now handled by DoubleTapLike component */
+
+/* Post Interaction Bar */
+.postInteractionBar {
+  padding: var(--space-4);
+}
+
+/* Post Interactions */
+.postInteractions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--border-light);
+  position: relative;
+}
+
+.postActionsLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.actionBtn {
+  background: none;
+  border: none;
+  padding: var(--space-2);
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  position: relative;
+}
+
+.actionBtn:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.actionBtn:focusVisible {
+  outline: 2px solid var(--focus-primary);
+  outline-offset: 2px;
+}
+
+.actionBtnLiked {
+  color: #ff3040;
+}
+
+.actionBtnLiked svg {
+  filter: drop-shadow(0 0 4px rgba(255, 48, 64, 0.4));
+}
+
+.actionBtnSaved {
+  color: #ffa500;
+}
+
+.actionBtnSaved svg {
+  filter: drop-shadow(0 0 4px rgba(255, 165, 0, 0.4));
+}
+
+.actionBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.actionBtn svg {
+  transition: all 0.2s ease;
+}
+
+.actionBtn:active svg {
+  transform: scale(0.9);
+}
+
+/* Post Stats */
+.postStats {
+  padding: 0 var(--space-4) var(--space-2);
+  min-height: 24px;
+}
+
+.postLikes {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.likesCount {
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  transition: all 0.2s ease;
+}
+
+/* Post Save Action */
+.postSaveAction {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 5;
+}
+
+.postSaveAction .actionBtn {
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.postSaveAction .actionBtn:hover {
+  background: rgba(0, 0, 0, 0.7);
+  transform: scale(1.05);
+}
+
+.postSaveAction .actionBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.postSaveAction .actionBtn svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  transition: all var(--transition-fast);
+}
+
+.postSaveAction .saveBtnSaved {
+  background: rgba(74, 144, 226, 0.8);
+  color: white;
+}
+
+.postSaveAction .saveBtnSaved svg {
+  fill: currentColor;
+}
+
+/* Post Content */
+
+.postContent {
+  padding: 0 var(--space-4) var(--space-3);
+  line-height: 1.5;
+}
+
+.postContent .postUsername {
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-right: var(--space-2);
+}
+
+.postText {
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.viewCommentsBtn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  padding: 0 var(--space-4) var(--space-2);
+  text-align: left;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.viewCommentsBtn:hover {
+  color: var(--text-primary);
+}
+
+.viewCommentsBtn:focusVisible {
+  outline: 2px solid var(--focus-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.viewCommentsBtn::after {
+  content: '';
+  position: absolute;
+  left: var(--space-4);
+  bottom: var(--space-2);
+  width: 0;
+  height: 2px;
+  background: var(--focus-primary);
+  transition: width 0.3s ease;
+}
+
+.viewCommentsBtn:hover::after {
+  width: calc(100% - var(--space-8));
+}
+
+.postTime {
+  padding: 0 var(--space-4) var(--space-4);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: var(--font-medium);
+}
+
+/* Comments Section */
+.commentsSection {
+  border-top: 1px solid var(--border-light);
+  background: var(--bg-primary);
+}
+
+.commentsList {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+.commentItem {
+  display: flex;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  animation: focusFadeIn 0.3s ease;
+}
+
+.commentAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--border-light);
+}
+
+.commentContent {
+  flex: 1;
+}
+
+.commentUsername {
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  margin-right: var(--space-2);
+}
+
+.commentText {
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+.commentActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-1);
+}
+
+.commentTime {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-weight: var(--font-medium);
+}
+
+.commentLikeBtn,
+.commentReplyBtn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.commentLikeBtn:hover,
+.commentReplyBtn:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+/* Add Comment Form */
+.addCommentForm {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-top: 1px solid var(--border-light);
+}
+
+.commentInputAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--border-light);
+}
+
+.commentInput {
+  flex: 1;
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  outline: none;
+  padding: var(--space-2);
+}
+
+.commentInput::placeholder {
+  color: var(--text-muted);
+}
+
+.commentSubmitBtn {
+  background: none;
+  border: none;
+  color: var(--focus-primary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  opacity: 0.5;
+  transition: all var(--transition-fast);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+}
+
+.commentSubmitBtn:not(:disabled) {
+  opacity: 1;
+}
+
+.commentSubmitBtn:not(:disabled):hover {
+  background: rgba(74, 144, 226, 0.1);
+}
+
+.commentSubmitBtn:disabled {
+  cursor: not-allowed;
+}
+
+/* Share Modal */
+.shareModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.shareModal {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  max-width: 400px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-xl);
+}
+
+.shareModal h3 {
+  margin: 0 0 var(--space-6) 0;
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.shareOptions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+.shareOptions button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.shareOptions button:hover {
+  background: var(--bg-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.shareOptions button span {
+  font-size: 28px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .postCard {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    margin-bottom: var(--space-4);
+  }
+
+  .postHeader {
+    padding: var(--space-3);
+  }
+
+  .postInteractionBar {
+    padding: var(--space-3);
+  }
+
+  .postContent {
+    padding-left: var(--space-3);
+    padding-right: var(--space-3);
+  }
+
+  .postTime {
+    padding-left: var(--space-3);
+    padding-right: var(--space-3);
+  }
+
+  .viewCommentsBtn {
+    padding-left: var(--space-3);
+    padding-right: var(--space-3);
+  }
+
+  .shareModal {
+    width: 95%;
+    padding: var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .postAvatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .actionBtn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .actionBtn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .shareOptions {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Focus States */
+.postSaveAction .actionBtn:focusVisible,
+.commentLikeBtn:focusVisible,
+.commentReplyBtn:focusVisible,
+.commentSubmitBtn:focusVisible {
+  outline: 2px solid var(--focus-primary);
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .postCard {
+    border-width: 2px;
+  }
+
+  .postSaveAction .actionBtn {
+    border: 1px solid var(--border-color);
+  }
+}
+

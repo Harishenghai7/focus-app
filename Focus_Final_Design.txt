@@ -1,0 +1,1824 @@
+================================================================================
+🎨 FOCUS APP - COMPLETE UNIVERSAL UI/UX DESIGN SYSTEM
+================================================================================
+
+PROJECT: Focus Social Media App
+MISSION: Create the most beautiful, professional, unique UI that surpasses Instagram, TikTok, and Twitter
+
+DESIGN PHILOSOPHY:
+- Modern & Minimalist (Clean interfaces, purposeful elements)
+- Vibrant & Energetic (Blue/Purple gradient theme - "Twilight" brand)
+- Intuitive & User-First (Zero learning curve, natural interactions)
+- Delightful & Smooth (Buttery animations, satisfying micro-interactions)
+- Accessible & Inclusive (WCAG 2.1 AA compliant, readable for all)
+
+================================================================================
+🎨 PART 1: COMPLETE COLOR SYSTEM
+================================================================================
+
+Create: src/styles/colors.css
+
+:root {
+  /* ============================================
+     PRIMARY BRAND COLORS (Focus Twilight Theme)
+     ============================================ */
+  
+  --focus-blue-primary: #0095F6; /* Primary action blue */
+  --focus-cyan: #00D9FF; /* Vibrant cyan accent */
+  --focus-purple: #7B68EE; /* Medium purple */
+  --focus-violet: #A78BFA; /* Soft violet */
+  --focus-magenta: #FF006E; /* Bold magenta accent */
+  --focus-indigo: #667eea; /* Deep indigo */
+  
+  /* ============================================
+     GRADIENT COMBINATIONS
+     ============================================ */
+  
+  /* Primary gradient (most used) */
+  --gradient-primary: linear-gradient(135deg, #00D9FF 0%, #7B68EE 100%);
+  
+  /* Secondary gradients */
+  --gradient-secondary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-tertiary: linear-gradient(135deg, #A78BFA 0%, #EC4899 100%);
+  
+  /* Action gradients */
+  --gradient-accent: linear-gradient(135deg, #0095F6 0%, #FF006E 100%);
+  --gradient-success: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+  --gradient-warning: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
+  --gradient-danger: linear-gradient(135deg, #EF4444 0%, #F87171 100%);
+  
+  /* Special effect gradients */
+  --gradient-sunset: linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%);
+  --gradient-ocean: linear-gradient(135deg, #00D9FF 0%, #0095F6 100%);
+  --gradient-aurora: linear-gradient(135deg, #A78BFA 0%, #00D9FF 50%, #10B981 100%);
+  --gradient-fire: linear-gradient(135deg, #FF006E 0%, #FF6B6B 50%, #FFE66D 100%);
+  
+  /* ============================================
+     LIGHT MODE COLORS
+     ============================================ */
+  
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F7F9FC;
+  --bg-tertiary: #E8EEF7;
+  --bg-hover: #F3F4F6;
+  --bg-active: #E5E7EB;
+  
+  --text-primary: #1A1A2E;
+  --text-secondary: #6B7280;
+  --text-tertiary: #9CA3AF;
+  --text-disabled: #D1D5DB;
+  
+  --border-light: #F3F4F6;
+  --border-medium: #E5E7EB;
+  --border-dark: #D1D5DB;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  
+  /* ============================================
+     DARK MODE COLORS
+     ============================================ */
+  
+  --dark-bg-primary: #0F0F23; /* Deep navy black */
+  --dark-bg-secondary: #1A1A2E; /* Slightly lighter */
+  --dark-bg-tertiary: #252538; /* Card backgrounds */
+  --dark-bg-hover: #2D2D44;
+  --dark-bg-active: #353550;
+  
+  --dark-text-primary: #F8F9FA;
+  --dark-text-secondary: #B8B9BE;
+  --dark-text-tertiary: #6B6C7E;
+  --dark-text-disabled: #4A4A5E;
+  
+  --dark-border-light: #252538;
+  --dark-border-medium: #2D2D44;
+  --dark-border-dark: #353550;
+  
+  --dark-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --dark-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --dark-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --dark-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  --dark-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  
+  /* ============================================
+     SEMANTIC COLORS
+     ============================================ */
+  
+  --success: #10B981;
+  --success-light: #D1FAE5;
+  --success-dark: #065F46;
+  
+  --error: #EF4444;
+  --error-light: #FEE2E2;
+  --error-dark: #991B1B;
+  
+  --warning: #F59E0B;
+  --warning-light: #FEF3C7;
+  --warning-dark: #92400E;
+  
+  --info: #3B82F6;
+  --info-light: #DBEAFE;
+  --info-dark: #1E40AF;
+  
+  /* ============================================
+     GLASS MORPHISM EFFECTS
+     ============================================ */
+  
+  --glass-light: rgba(255, 255, 255, 0.7);
+  --glass-medium: rgba(255, 255, 255, 0.5);
+  --glass-heavy: rgba(255, 255, 255, 0.3);
+  
+  --glass-dark-light: rgba(26, 26, 46, 0.7);
+  --glass-dark-medium: rgba(26, 26, 46, 0.5);
+  --glass-dark-heavy: rgba(26, 26, 46, 0.3);
+  
+  --blur-sm: blur(4px);
+  --blur-md: blur(12px);
+  --blur-lg: blur(20px);
+  --blur-xl: blur(40px);
+  
+  /* ============================================
+     GLOW EFFECTS
+     ============================================ */
+  
+  --glow-cyan: 0 0 20px rgba(0, 217, 255, 0.5);
+  --glow-purple: 0 0 20px rgba(123, 104, 238, 0.5);
+  --glow-blue: 0 0 20px rgba(0, 149, 246, 0.5);
+  --glow-magenta: 0 0 20px rgba(255, 0, 110, 0.5);
+  
+  /* ============================================
+     OVERLAY COLORS
+     ============================================ */
+  
+  --overlay-light: rgba(0, 0, 0, 0.4);
+  --overlay-medium: rgba(0, 0, 0, 0.6);
+  --overlay-heavy: rgba(0, 0, 0, 0.8);
+}
+
+/* Dark mode class toggle */
+.dark {
+  --bg-primary: var(--dark-bg-primary);
+  --bg-secondary: var(--dark-bg-secondary);
+  --bg-tertiary: var(--dark-bg-tertiary);
+  --bg-hover: var(--dark-bg-hover);
+  --bg-active: var(--dark-bg-active);
+  
+  --text-primary: var(--dark-text-primary);
+  --text-secondary: var(--dark-text-secondary);
+  --text-tertiary: var(--dark-text-tertiary);
+  --text-disabled: var(--dark-text-disabled);
+  
+  --border-light: var(--dark-border-light);
+  --border-medium: var(--dark-border-medium);
+  --border-dark: var(--dark-border-dark);
+  
+  --shadow-sm: var(--dark-shadow-sm);
+  --shadow-md: var(--dark-shadow-md);
+  --shadow-lg: var(--dark-shadow-lg);
+  --shadow-xl: var(--dark-shadow-xl);
+  --shadow-2xl: var(--dark-shadow-2xl);
+}
+
+================================================================================
+📐 PART 2: COMPLETE SPACING & LAYOUT SYSTEM
+================================================================================
+
+Create: src/styles/spacing.css
+
+:root {
+  /* ============================================
+     SPACING SCALE (8px base system)
+     ============================================ */
+  
+  --spacing-0: 0;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-7: 28px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-14: 56px;
+  --spacing-16: 64px;
+  --spacing-20: 80px;
+  --spacing-24: 96px;
+  --spacing-32: 128px;
+  
+  /* ============================================
+     BORDER RADIUS
+     ============================================ */
+  
+  --radius-none: 0;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-3xl: 32px;
+  --radius-full: 9999px;
+  
+  /* ============================================
+     CONTAINER WIDTHS
+     ============================================ */
+  
+  --container-xs: 480px;
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
+  
+  /* ============================================
+     BREAKPOINTS
+     ============================================ */
+  
+  --breakpoint-xs: 480px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+  
+  /* ============================================
+     Z-INDEX SCALE
+     ============================================ */
+  
+  --z-0: 0;
+  --z-10: 10;
+  --z-20: 20;
+  --z-30: 30;
+  --z-40: 40;
+  --z-50: 50;
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-fixed: 1200;
+  --z-modal-backdrop: 1300;
+  --z-modal: 1400;
+  --z-popover: 1500;
+  --z-tooltip: 1600;
+  --z-notification: 1700;
+  
+  /* ============================================
+     COMPONENT SIZES
+     ============================================ */
+  
+  /* Mobile Bottom Nav */
+  --bottom-nav-height: 60px;
+  
+  /* Mobile Header */
+  --mobile-header-height: 56px;
+  
+  /* Desktop Sidebar */
+  --desktop-sidebar-width: 245px;
+  --desktop-sidebar-collapsed-width: 72px;
+  
+  /* Desktop Top Bar */
+  --desktop-topbar-height: 60px;
+  
+  /* Post Card */
+  --post-card-max-width: 614px;
+  
+  /* Story Ring */
+  --story-ring-size: 66px;
+  --story-ring-size-sm: 56px;
+  
+  /* Avatar Sizes */
+  --avatar-xs: 24px;
+  --avatar-sm: 32px;
+  --avatar-md: 40px;
+  --avatar-lg: 56px;
+  --avatar-xl: 80px;
+  --avatar-2xl: 150px;
+}
+
+================================================================================
+✨ PART 3: TYPOGRAPHY SYSTEM
+================================================================================
+
+Create: src/styles/typography.css
+
+:root {
+  /* ============================================
+     FONT FAMILIES
+     ============================================ */
+  
+  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 
+                  'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  --font-display: 'Poppins', var(--font-primary);
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  
+  /* ============================================
+     FONT SIZES
+     ============================================ */
+  
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.875rem; /* 14px */
+  --text-base: 1rem; /* 16px */
+  --text-lg: 1.125rem; /* 18px */
+  --text-xl: 1.25rem; /* 20px */
+  --text-2xl: 1.5rem; /* 24px */
+  --text-3xl: 1.875rem; /* 30px */
+  --text-4xl: 2.25rem; /* 36px */
+  --text-5xl: 3rem; /* 48px */
+  --text-6xl: 3.75rem; /* 60px */
+  --text-7xl: 4.5rem; /* 72px */
+  
+  /* ============================================
+     FONT WEIGHTS
+     ============================================ */
+  
+  --font-thin: 100;
+  --font-extralight: 200;
+  --font-light: 300;
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --font-extrabold: 800;
+  --font-black: 900;
+  
+  /* ============================================
+     LINE HEIGHTS
+     ============================================ */
+  
+  --leading-none: 1;
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
+  
+  /* ============================================
+     LETTER SPACING
+     ============================================ */
+  
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+}
+
+/* Typography Classes */
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.heading-1 {
+  font-family: var(--font-display);
+  font-size: var(--text-5xl);
+  font-weight: var(--font-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+}
+
+.heading-2 {
+  font-family: var(--font-display);
+  font-size: var(--text-4xl);
+  font-weight: var(--font-semibold);
+  line-height: var(--leading-tight);
+}
+
+.heading-3 {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: var(--font-semibold);
+  line-height: var(--leading-snug);
+}
+
+================================================================================
+🎬 PART 4: ANIMATION SYSTEM
+================================================================================
+
+Create: src/styles/animations.css
+
+:root {
+  /* ============================================
+     TIMING FUNCTIONS
+     ============================================ */
+  
+  --ease-linear: linear;
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+  
+  /* ============================================
+     DURATION
+     ============================================ */
+  
+  --duration-instant: 75ms;
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 350ms;
+  --duration-slower: 500ms;
+  --duration-slowest: 750ms;
+  
+  /* ============================================
+     TRANSITIONS
+     ============================================ */
+  
+  --transition-all: all var(--duration-normal) var(--ease-out);
+  --transition-colors: color var(--duration-fast) var(--ease-out),
+                       background-color var(--duration-fast) var(--ease-out),
+                       border-color var(--duration-fast) var(--ease-out);
+  --transition-transform: transform var(--duration-normal) var(--ease-out);
+  --transition-opacity: opacity var(--duration-normal) var(--ease-out);
+  --transition-shadow: box-shadow var(--duration-normal) var(--ease-out);
+}
+
+/* Keyframe Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideLeft {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideRight {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes scaleOut {
+  from { transform: scale(1); opacity: 1; }
+  to { transform: scale(0.9); opacity: 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+@keyframes heartBeat {
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.3); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.3); }
+  56% { transform: scale(1); }
+}
+
+/* Animation Classes */
+.animate-fade-in { animation: fadeIn var(--duration-normal) var(--ease-out); }
+.animate-slide-up { animation: slideUp var(--duration-normal) var(--ease-out); }
+.animate-scale-in { animation: scaleIn var(--duration-normal) var(--ease-out); }
+.animate-pulse { animation: pulse var(--duration-slower) var(--ease-in-out) infinite; }
+.animate-spin { animation: spin 1s linear infinite; }
+
+================================================================================
+📱 PART 5: MOBILE LAYOUT (< 768px)
+================================================================================
+
+Create: src/components/mobile/MobileLayout.js
+
+MOBILE STRUCTURE:
+┌────────────────────────────────┐
+│ Top Header (56px) │ ← Fixed
+│ [←] Focus [💬][📞][🔔][⚙️] │
+├────────────────────────────────┤
+│ │
+│ │
+│ Page Content Area │ ← Scrollable
+│ (padding-bottom: 60px) │
+│ │
+│ │
+├────────────────────────────────┤
+│ [🏠] [🔍] [➕] [⚡] [👤] │ ← Fixed Bottom Nav (60px)
+└────────────────────────────────┘
+
+Component Structure:
+
+import React from 'react';
+import MobileHeader from './MobileHeader';
+import BottomNav from './BottomNav';
+import './MobileLayout.module.css';
+
+const MobileLayout = ({ children, pageTitle, showBackButton }) => {
+  return (
+    <div className="mobile-layout">
+      <MobileHeader 
+        pageTitle={pageTitle}
+        showBackButton={showBackButton}
+      />
+      
+      <main className="mobile-content">
+        {children}
+      </main>
+      
+      <BottomNav />
+    </div>
+  );
+};
+
+export default MobileLayout;
+
+================================================================================
+📱 PART 5A: MOBILE HEADER COMPONENT
+================================================================================
+
+Create: src/components/mobile/MobileHeader.js & MobileHeader.module.css
+
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+import { useNotifications } from '../../hooks/useNotifications';
+import ThemeToggle from '../ThemeToggle';
+import styles from './MobileHeader.module.css';
+
+const MobileHeader = ({ pageTitle, showBackButton = false }) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { unreadMessages, missedCalls, unreadNotifications } = useNotifications();
+
+  return (
+    <header className={styles.header}>
+      {/* Left Section */}
+      <div className={styles.left}>
+        {showBackButton ? (
+          <button className={styles.backButton} onClick={() => navigate(-1)}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+        ) : (
+          <div className={styles.logo}>
+            Focus
+            <span className={styles.logoDot}>.</span>
+          </div>
+        )}
+      </div>
+
+      {/* Center Section (Page Title - Optional) */}
+      {pageTitle && (
+        <div className={styles.center}>
+          <h1 className={styles.pageTitle}>{pageTitle}</h1>
+        </div>
+      )}
+
+      {/* Right Section */}
+      <div className={styles.right}>
+        <button 
+          className={styles.iconButton}
+          onClick={() => navigate('/messages')}
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          {unreadMessages > 0 && (
+            <span className={styles.badge}>{unreadMessages}</span>
+          )}
+        </button>
+
+        <button 
+          className={styles.iconButton}
+          onClick={() => navigate('/calls')}
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M22 16.92V19.92C22 20.4728 21.5523 20.92 21 20.92H3C2.44772 20.92 2 20.4728 2 19.92V16.92C2 16.3677 2.44772 15.92 3 15.92H21C21.5523 15.92 22 16.3677 22 16.92Z" stroke="currentColor" strokeWidth="2"/>
+          </svg>
+          {missedCalls > 0 && (
+            <span className={styles.badge}>{missedCalls}</span>
+          )}
+        </button>
+
+        <button 
+          className={styles.iconButton}
+          onClick={() => navigate('/notifications')}
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M18 8C18 6.4087 17.3679 4.88258 16.2426 3.75736C15.1174 2.63214 13.5913 2 12 2C10.4087 2 8.88258 2.63214 7.75736 3.75736C6.63214 4.88258 6 6.4087 6 8C6 15 3 17 3 17H21C21 17 18 15 18 8Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M13.73 21C13.5542 21.3031 13.3019 21.5547 12.9982 21.7295C12.6946 21.9044 12.3504 21.9965 12 21.9965C11.6496 21.9965 11.3054 21.9044 11.0018 21.7295C10.6982 21.5547 10.4458 21.3031 10.27 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          {unreadNotifications > 0 && (
+            <span className={styles.badge}>{unreadNotifications}</span>
+          )}
+        </button>
+
+        <ThemeToggle />
+      </div>
+    </header>
+  );
+};
+
+export default MobileHeader;
+
+/* MobileHeader.module.css */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--mobile-header-height);
+  background: var(--glass-light);
+  backdrop-filter: var(--blur-lg);
+  border-bottom: 1px solid var(--border-medium);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-4);
+  z-index: var(--z-sticky);
+  box-shadow: var(--shadow-sm);
+}
+
+.dark .header {
+  background: var(--glass-dark-light);
+  border-bottom-color: var(--dark-border-medium);
+}
+
+.left,
+.center,
+.right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.left {
+  flex: 1;
+  min-width: 0;
+}
+
+.center {
+  flex: 2;
+  justify-content: center;
+}
+
+.right {
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  letter-spacing: var(--tracking-tight);
+}
+
+.logoDot {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.backButton:hover {
+  background: var(--bg-hover);
+}
+
+.backButton:active {
+  transform: scale(0.95);
+}
+
+.pageTitle {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.iconButton {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.iconButton:hover {
+  background: var(--bg-hover);
+  color: var(--focus-blue-primary);
+}
+
+.iconButton:active {
+  transform: scale(0.95);
+}
+
+.badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-accent);
+  color: white;
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 0 2px var(--bg-primary);
+}
+
+================================================================================
+📱 PART 5B: BOTTOM NAVIGATION COMPONENT
+================================================================================
+
+Create: src/components/mobile/BottomNav.js & BottomNav.module.css
+
+import React from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+import styles from './BottomNav.module.css';
+
+const BottomNav = () => {
+  const { user } = useAuth();
+  const location = useLocation();
+
+  const navItems = [
+    {
+      path: '/home',
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M9 22V12H15V22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+      label: 'Home',
+    },
+    {
+      path: '/explore',
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+      label: 'Explore',
+    },
+    {
+      path: '/create',
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+      label: 'Create',
+      featured: true,
+    },
+    {
+      path: '/boltz',
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+      label: 'Boltz',
+    },
+    {
+      path: `/profile/${user?.username}`,
+      icon: user?.avatar_url ? (
+        <img src={user.avatar_url} alt="Profile" className={styles.avatar} />
+      ) : (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+      label: 'Profile',
+    },
+  ];
+
+  return (
+    <nav className={styles.bottomNav}>
+      {navItems.map((item) => (
+        <NavLink
+          key={item.path}
+          to={item.path}
+          className={({ isActive }) =>
+            `${styles.navItem} ${isActive ? styles.active : ''} ${
+              item.featured ? styles.featured : ''
+            }`
+          }
+        >
+          <div className={styles.iconWrapper}>
+            {item.icon}
+          </div>
+          <span className={styles.label}>{item.label}</span>
+        </NavLink>
+      ))}
+    </nav>
+  );
+};
+
+export default BottomNav;
+
+/* BottomNav.module.css */
+.bottomNav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--bottom-nav-height);
+  background: var(--glass-light);
+  backdrop-filter: var(--blur-lg);
+  border-top: 1px solid var(--border-medium);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 var(--spacing-2);
+  z-index: var(--z-fixed);
+  box-shadow: 0 -2px 10px var(--shadow-color);
+}
+
+.dark .bottomNav {
+  background: var(--glass-dark-light);
+  border-top-color: var(--dark-border-medium);
+}
+
+.navItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-1);
+  padding: var(--spacing-2);
+  text-decoration: none;
+  color: var(--text-secondary);
+  transition: var(--transition-all);
+  position: relative;
+  cursor: pointer;
+  border-radius: var(--radius-lg);
+}
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-transform);
+}
+
+.navItem svg {
+  transition: var(--transition-all);
+}
+
+.label {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  transition: var(--transition-colors);
+}
+
+/* Active State */
+.navItem.active {
+  color: var(--focus-blue-primary);
+}
+
+.navItem.active .iconWrapper {
+  transform: translateY(-2px);
+}
+
+.navItem.active svg {
+  filter: drop-shadow(var(--glow-cyan));
+}
+
+/* Top indicator for active */
+.navItem.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 3px;
+  background: var(--gradient-primary);
+  border-radius: 0 0 var(--radius-full) var(--radius-full);
+}
+
+/* Featured Create Button */
+.navItem.featured {
+  transform: scale(1.15);
+}
+
+.navItem.featured .iconWrapper {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg), var(--glow-cyan);
+}
+
+.navItem.featured svg {
+  color: white;
+  stroke-width: 3;
+}
+
+.navItem.featured:active .iconWrapper {
+  transform: scale(0.9);
+}
+
+/* Avatar */
+.avatar {
+  width: var(--avatar-sm);
+  height: var(--avatar-sm);
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  transition: var(--transition-all);
+  object-fit: cover;
+}
+
+.navItem.active .avatar {
+  border-color: var(--focus-blue-primary);
+  box-shadow: var(--glow-cyan);
+}
+
+/* Tap Animation */
+.navItem:active {
+  transform: scale(0.95);
+}
+
+.navItem.featured:active {
+  transform: scale(1.1);
+}
+
+/* Hover (for devices with pointer) */
+@media (hover: hover) {
+  .navItem:hover:not(.active) {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+  }
+}
+
+================================================================================
+💻 PART 6: DESKTOP LAYOUT (≥ 768px)
+================================================================================
+
+DESKTOP STRUCTURE:
+
+┌─────────────────────────────────────────────────────────────┐
+│ Top Bar (60px) - Focus Logo, Search, Profile, Theme │
+├──────────┬──────────────────────────────────────────────────┤
+│ │ │
+│ │ │
+│ │ │
+│ Sidebar │ Main Content Area │
+│ (245px) │ (max-width: 935px) │
+│ │ │
+│ Home │ │
+│ Explore │ │
+│ Create │ │
+│ Boltz │ │
+│ Messages│ │
+│ Calls │ │
+│ Notifs │ │
+│ Settings│ │
+│ Profile │ │
+│ │ │
+└──────────┴──────────────────────────────────────────────────┘
+
+Create: src/components/desktop/DesktopLayout.js
+
+import React, { useState } from 'react';
+import DesktopSidebar from './DesktopSidebar';
+import DesktopTopBar from './DesktopTopBar';
+import styles from './DesktopLayout.module.css';
+
+const DesktopLayout = ({ children }) => {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  return (
+    <div className={styles.layout}>
+      <DesktopTopBar />
+      
+      <div className={styles.container}>
+        <DesktopSidebar 
+          collapsed={sidebarCollapsed}
+          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+        />
+        
+        <main className={styles.mainContent}>
+          <div className={styles.contentWrapper}>
+            {children}
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default DesktopLayout;
+
+/* DesktopLayout.module.css */
+.layout {
+  min-height: 100vh;
+  background: var(--bg-secondary);
+}
+
+.dark .layout {
+  background: var(--dark-bg-primary);
+}
+
+.container {
+  display: flex;
+  padding-top: var(--desktop-topbar-height);
+}
+
+.mainContent {
+  flex: 1;
+  min-height: calc(100vh - var(--desktop-topbar-height));
+  padding: var(--spacing-6);
+  overflow-y: auto;
+}
+
+.contentWrapper {
+  max-width: 935px;
+  margin: 0 auto;
+}
+
+================================================================================
+💻 PART 6A: DESKTOP TOP BAR
+================================================================================
+
+Create: src/components/desktop/DesktopTopBar.js & DesktopTopBar.module.css
+
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+import SearchBar from '../SearchBar';
+import ThemeToggle from '../ThemeToggle';
+import styles from './DesktopTopBar.module.css';
+
+const DesktopTopBar = () => {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  return (
+    <header className={styles.topBar}>
+      <div className={styles.container}>
+        {/* Left: Logo */}
+        <div className={styles.left}>
+          <button className={styles.logo} onClick={() => navigate('/home')}>
+            <span className={styles.logoText}>Focus</span>
+            <span className={styles.logoDot}>.</span>
+          </button>
+        </div>
+
+        {/* Center: Search */}
+        <div className={styles.center}>
+          <SearchBar />
+        </div>
+
+        {/* Right: Actions */}
+        <div className={styles.right}>
+          <button 
+            className={styles.iconButton}
+            onClick={() => navigate('/notifications')}
+            title="Notifications"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M18 8C18 6.4087 17.3679 4.88258 16.2426 3.75736C15.1174 2.63214 13.5913 2 12 2C10.4087 2 8.88258 2.63214 7.75736 3.75736C6.63214 4.88258 6 6.4087 6 8C6 15 3 17 3 17H21C21 17 18 15 18 8Z" stroke="currentColor" strokeWidth="2"/>
+            </svg>
+          </button>
+
+          <button 
+            className={styles.iconButton}
+            onClick={() => navigate('/messages')}
+            title="Messages"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="currentColor" strokeWidth="2"/>
+            </svg>
+          </button>
+
+          <ThemeToggle />
+
+          {/* Profile Dropdown */}
+          <div className={styles.profileWrapper}>
+            <button
+              className={styles.profileButton}
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+            >
+              <img 
+                src={user?.avatar_url || '/default-avatar.png'} 
+                alt={user?.username}
+                className={styles.avatar}
+              />
+            </button>
+
+            {showProfileMenu && (
+              <div className={styles.profileMenu}>
+                <button 
+                  className={styles.menuItem}
+                  onClick={() => {
+                    navigate(`/profile/${user.username}`);
+                    setShowProfileMenu(false);
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" strokeWidth="2"/>
+                    <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
+                  Profile
+                </button>
+
+                <button 
+                  className={styles.menuItem}
+                  onClick={() => {
+                    navigate('/saved');
+                    setShowProfileMenu(false);
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M19 21L12 16L5 21V5C5 4.46957 5.21071 3.96086 5.58579 3.58579C5.96086 3.21071 6.46957 3 7 3H17C17.5304 3 18.0391 3.21071 18.4142 3.58579C18.7893 3.96086 19 4.46957 19 5V21Z" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
+                  Saved
+                </button>
+
+                <button 
+                  className={styles.menuItem}
+                  onClick={() => {
+                    navigate('/settings');
+                    setShowProfileMenu(false);
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M19.4 15C19.2669 15.3016 19.2272 15.6362 19.286 15.9606C19.3448 16.285 19.4995 16.5843 19.73 16.82L19.79 16.88C19.976 17.0657 20.1235 17.2863 20.2241 17.5291C20.3248 17.7719 20.3766 18.0322 20.3766 18.295C20.3766 18.5578 20.3248 18.8181 20.2241 19.0609C20.1235 19.3037 19.976 19.5243 19.79 19.71C19.6043 19.896 19.3837 20.0435 19.1409 20.1441C18.8981 20.2448 18.6378 20.2966 18.375 20.2966C18.1122 20.2966 17.8519 20.2448 17.6091 20.1441C17.3663 20.0435 17.1457 19.896 16.96 19.71L16.9 19.65C16.6643 19.4195 16.365 19.2648 16.0406 19.206C15.7162 19.1472 15.3816 19.1869 15.08 19.32C14.7842 19.4468 14.532 19.6572 14.3543 19.9255C14.1766 20.1938 14.0813 20.5082 14.08 20.83V21C14.08 21.5304 13.8693 22.0391 13.4942 22.4142C13.1191 22.7893 12.6104 23 12.08 23C11.5496 23 11.0409 22.7893 10.6658 22.4142C10.2907 22.0391 10.08 21.5304 10.08 21V20.91C10.0723 20.579 9.96512 20.258 9.77251 19.9887C9.5799 19.7194 9.31074 19.5143 9 19.4C8.69838 19.2669 8.36381 19.2272 8.03941 19.286C7.71502 19.3448 7.41568 19.4995 7.18 19.73L7.12 19.79C6.93425 19.976 6.71368 20.1235 6.47088 20.2241C6.22808 20.3248 5.96783 20.3766 5.705 20.3766C5.44217 20.3766 5.18192 20.3248 4.93912 20.2241C4.69632 20.1235 4.47575 19.976 4.29 19.79C4.10405 19.6043 3.95653 19.3837 3.85588 19.1409C3.75523 18.8981 3.70343 18.6378 3.70343 18.375C3.70343 18.1122 3.75523 17.8519 3.85588 17.6091C3.95653 17.3663 4.10405 17.1457 4.29 16.96L4.35 16.9C4.58054 16.6643 4.73519 16.365 4.794 16.0406C4.85282 15.7162 4.81312 15.3816 4.68 15.08C4.55324 14.7842 4.34276 14.532 4.07447 14.3543C3.80618 14.1766 3.49179 14.0813 3.17 14.08H3C2.46957 14.08 1.96086 13.8693 1.58579 13.4942C1.21071 13.1191 1 12.6104 1 12.08C1 11.5496 1.21071 11.0409 1.58579 10.6658C1.96086 10.2907 2.46957 10.08 3 10.08H3.09C3.42099 10.0723 3.742 9.96512 4.0113 9.77251C4.28059 9.5799 4.48572 9.31074 4.6 9C4.73312 8.69838 4.77282 8.36381 4.714 8.03941C4.65519 7.71502 4.50054 7.41568 4.27 7.18L4.21 7.12C4.02405 6.93425 3.87653 6.71368 3.77588 6.47088C3.67523 6.22808 3.62343 5.96783 3.62343 5.705C3.62343 5.44217 3.67523 5.18192 3.77588 4.93912C3.87653 4.69632 4.02405 4.47575 4.21 4.29C4.39575 4.10405 4.61632 3.95653 4.85912 3.85588C5.10192 3.75523 5.36217 3.70343 5.625 3.70343C5.88783 3.70343 6.14808 3.75523 6.39088 3.85588C6.63368 3.95653 6.85425 4.10405 7.04 4.29L7.1 4.35C7.33568 4.58054 7.63502 4.73519 7.95941 4.794C8.28381 4.85282 8.61838 4.81312 8.92 4.68H9C9.29577 4.55324 9.54802 4.34276 9.72569 4.07447C9.90337 3.80618 9.99872 3.49179 10 3.17V3C10 2.46957 10.2107 1.96086 10.5858 1.58579C10.9609 1.21071 11.4696 1 12 1C12.5304 1 13.0391 1.21071 13.4142 1.58579C13.7893 1.96086 14 2.46957 14 3V3.09C14.0013 3.41179 14.0966 3.72618 14.2743 3.99447C14.452 4.26276 14.7042 4.47324 15 4.6C15.3016 4.73312 15.6362 4.77282 15.9606 4.714C16.285 4.65519 16.5843 4.50054 16.82 4.27L16.88 4.21C17.0657 4.02405 17.2863 3.87653 17.5291 3.77588C17.7719 3.67523 18.0322 3.62343 18.295 3.62343C18.5578 3.62343 18.8181 3.67523 19.0609 3.77588C19.3037 3.87653 19.5243 4.02405 19.71 4.21C19.896 4.39575 20.0435 4.61632 20.1441 4.85912C20.2448 5.10192 20.2966 5.36217 20.2966 5.625C20.2966 5.88783 20.2448 6.14808 20.1441 6.39088C20.0435 6.63368 19.896 6.85425 19.71 7.04L19.65 7.1C19.4195 7.33568 19.2648 7.63502 19.206 7.95941C19.1472 8.28381 19.1869 8.61838 19.32 8.92V9C19.4468 9.29577 19.6572 9.54802 19.9255 9.72569C20.1938 9.90337 20.5082 9.99872 20.83 10H21C21.5304 10 22.0391 10.2107 22.4142 10.5858C22.7893 10.9609 23 11.4696 23 12C23 12.5304 22.7893 13.0391 22.4142 13.4142C22.0391 13.7893 21.5304 14 21 14H20.91C20.5882 14.0013 20.2738 14.0966 20.0055 14.2743C19.7372 14.452 19.5268 14.7042 19.4 15Z" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
+                  Settings
+                </button>
+
+                <div className={styles.menuDivider} />
+
+                <button 
+                  className={styles.menuItem}
+                  onClick={() => {
+                    logout();
+                    navigate('/auth');
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M16 17L21 12L16 7" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M21 12H9" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
+                  Log out
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default DesktopTopBar;
+
+/* DesktopTopBar.module.css */
+.topBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--desktop-topbar-height);
+  background: var(--glass-light);
+  backdrop-filter: var(--blur-lg);
+  border-bottom: 1px solid var(--border-medium);
+  z-index: var(--z-sticky);
+  box-shadow: var(--shadow-sm);
+}
+
+.dark .topBar {
+  background: var(--glass-dark-light);
+  border-bottom-color: var(--dark-border-medium);
+}
+
+.container {
+  max-width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 var(--spacing-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-6);
+}
+
+.left,
+.center,
+.right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+.left {
+  flex: 0 0 auto;
+}
+
+.center {
+  flex: 1;
+  max-width: 600px;
+}
+
+.right {
+  flex: 0 0 auto;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: var(--spacing-2) var(--spacing-4);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.logo:hover {
+  background: var(--bg-hover);
+}
+
+.logoText {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  letter-spacing: var(--tracking-tight);
+}
+
+.logoDot {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.iconButton {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.iconButton:hover {
+  background: var(--bg-hover);
+  color: var(--focus-blue-primary);
+}
+
+.profileWrapper {
+  position: relative;
+}
+
+.profileButton {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.profileButton:hover {
+  opacity: 0.8;
+  transform: scale(1.05);
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  border: 2px solid transparent;
+  transition: var(--transition-all);
+}
+
+.profileButton:hover .avatar {
+  border-color: var(--focus-blue-primary);
+}
+
+.profileMenu {
+  position: absolute;
+  top: calc(100% + var(--spacing-2));
+  right: 0;
+  min-width: 220px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-2);
+  box-shadow: var(--shadow-xl);
+  animation: slideDown var(--duration-normal) var(--ease-out);
+  z-index: var(--z-dropdown);
+}
+
+.dark .profileMenu {
+  background: var(--dark-bg-tertiary);
+  border-color: var(--dark-border-medium);
+}
+
+.menuItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3) var(--spacing-4);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition-colors);
+}
+
+.menuItem:hover {
+  background: var(--bg-hover);
+}
+
+.dark .menuItem:hover {
+  background: var(--dark-bg-hover);
+}
+
+.menuDivider {
+  height: 1px;
+  margin: var(--spacing-2) 0;
+  background: var(--border-medium);
+}
+
+.dark .menuDivider {
+  background: var(--dark-border-medium);
+}
+
+================================================================================
+💻 PART 6B: DESKTOP SIDEBAR
+================================================================================
+
+Create: src/components/desktop/DesktopSidebar.js & DesktopSidebar.module.css
+
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+import { useNotifications } from '../../hooks/useNotifications';
+import styles from './DesktopSidebar.module.css';
+
+const DesktopSidebar = ({ collapsed, onToggle }) => {
+  const { user } = useAuth();
+  const { unreadMessages, missedCalls, unreadNotifications } = useNotifications();
+
+  const navItems = [
+    {
+      path: '/home',
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M9 22V12H15V22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+      label: 'Home',
+    },
+    {
+      path: '/explore',
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/>
+          <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2"/>
+        </svg>
+      ),
+      label: 'Explore',
+    },
+    {
+      path: '/create',
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+      label: 'Create',
+    },
+    {
+      path: '/boltz',
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" strokeWidth="2"/>
+        </svg>
+      ),
+      label: 'Boltz',
+    },
+    {
+      path: '/messages',
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="currentColor" strokeWidth="2"/>
+        </svg>
+      ),
+      label: 'Messages',
+      badge: unreadMessages,
+    },
+    {
+      path: '/calls',
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M22 16.92V19.92C22.0011 20.1985 21.9441 20.4742 21.8325 20.7293C21.7209 20.9845 21.5573 21.2136 21.3521 21.4019C21.1468 21.5901 20.9046 21.7335 20.6407 21.8227C20.3769 21.9119 20.0974 21.9451 19.82 21.92C16.7428 21.5856 13.787 20.5341 11.19 18.85C8.77382 17.3147 6.72533 15.2662 5.18999 12.85C3.49997 10.2412 2.44824 7.27099 2.11999 4.18C2.095 3.90347 2.12787 3.62476 2.21649 3.36162C2.30512 3.09849 2.44756 2.85669 2.63476 2.65162C2.82196 2.44655 3.0498 2.28271 3.30379 2.17052C3.55777 2.05833 3.83233 2.00026 4.10999 2H7.10999C7.59524 1.99522 8.06572 2.16708 8.43369 2.48353C8.80166 2.79999 9.04201 3.23945 9.10999 3.72C9.23662 4.68007 9.47144 5.62273 9.80999 6.53C9.94454 6.88792 9.97366 7.27691 9.8939 7.65088C9.81415 8.02485 9.62886 8.36811 9.35999 8.64L8.08999 9.91C9.51355 12.4135 11.5865 14.4864 14.09 15.91L15.36 14.64C15.6319 14.3711 15.9751 14.1858 16.3491 14.1061C16.7231 14.0263 17.1121 14.0555 17.47 14.19C18.3773 14.5286 19.3199 14.7634 20.28 14.89C20.7658 14.9585 21.2094 15.2032 21.5265 15.5775C21.8437 15.9518 22.0122 16.4296 22 16.92Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+      label: 'Calls',
+      badge: missedCalls,
+    },
+    {
+      path: '/notifications',
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M18 8C18 6.4087 17.3679 4.88258 16.2426 3.75736C15.1174 2.63214 13.5913 2 12 2C10.4087 2 8.88258 2.63214 7.75736 3.75736C6.63214 4.88258 6 6.4087 6 8C6 15 3 17 3 17H21C21 17 18 15 18 8Z" stroke="currentColor" strokeWidth="2"/>
+          <path d="M13.73 21C13.5542 21.3031 13.3019 21.5547 12.9982 21.7295C12.6946 21.9044 12.3504 21.9965 12 21.9965C11.6496 21.9965 11.3054 21.9044 11.0018 21.7295C10.6982 21.5547 10.4458 21.3031 10.27 21" stroke="currentColor" strokeWidth="2"/>
+        </svg>
+      ),
+      label: 'Notifications',
+      badge: unreadNotifications,
+    },
+    {
+      path: '/settings',
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+          <path d="M12 1V3M12 21V23M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M1 12H3M21 12H23M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        </svg>
+      ),
+      label: 'Settings',
+    },
+    {
+      path: `/profile/${user?.username}`,
+      icon: user?.avatar_url ? (
+        <img src={user.avatar_url} alt="Profile" className={styles.navAvatar} />
+      ) : (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" strokeWidth="2"/>
+          <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
+        </svg>
+      ),
+      label: 'Profile',
+    },
+  ];
+
+  return (
+    <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}>
+      <nav className={styles.nav}>
+        {navItems.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) =>
+              `${styles.navItem} ${isActive ? styles.active : ''}`
+            }
+          >
+            <div className={styles.iconWrapper}>
+              {item.icon}
+              {item.badge > 0 && (
+                <span className={styles.badge}>{item.badge}</span>
+              )}
+            </div>
+            {!collapsed && (
+              <span className={styles.label}>{item.label}</span>
+            )}
+          </NavLink>
+        ))}
+      </nav>
+
+      {/* Collapse Toggle */}
+      <button className={styles.toggleButton} onClick={onToggle}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </button>
+    </aside>
+  );
+};
+
+export default DesktopSidebar;
+
+/* DesktopSidebar.module.css */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: var(--desktop-topbar-height);
+  bottom: 0;
+  width: var(--desktop-sidebar-width);
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border-medium);
+  padding: var(--spacing-4) 0;
+  transition: width var(--duration-normal) var(--ease-out);
+  z-index: var(--z-fixed);
+  overflow-y: auto;
+}
+
+.dark .sidebar {
+  background: var(--dark-bg-secondary);
+  border-right-color: var(--dark-border-medium);
+}
+
+.sidebar.collapsed {
+  width: var(--desktop-sidebar-collapsed-width);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: 0 var(--spacing-3);
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  transition: var(--transition-all);
+  position: relative;
+  cursor: pointer;
+}
+
+.navItem:hover {
+  background: var(--bg-hover);
+}
+
+.dark .navItem:hover {
+  background: var(--dark-bg-hover);
+}
+
+.navItem.active {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: var(--shadow-md), var(--glow-cyan);
+}
+
+.iconWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.navAvatar {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+}
+
+.label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.collapsed .label {
+  display: none;
+}
+
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-accent);
+  color: white;
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 0 2px var(--bg-primary);
+}
+
+.dark .badge {
+  box-shadow: 0 0 0 2px var(--dark-bg-secondary);
+}
+
+.toggleButton {
+  position: absolute;
+  bottom: var(--spacing-4);
+  right: var(--spacing-4);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-full);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: var(--transition-all);
+}
+
+.dark .toggleButton {
+  background: var(--dark-bg-tertiary);
+  border-color: var(--dark-border-medium);
+}
+
+.toggleButton:hover {
+  background: var(--bg-hover);
+  transform: scale(1.05);
+}
+
+.collapsed .toggleButton svg {
+  transform: rotate(180deg);
+}
+
+================================================================================
+🎨 PART 7: UNIVERSAL COMPONENT STYLES
+================================================================================
+
+Create complete, professional CSS modules for:
+
+1. PostCard.module.css
+2. StoryRing.module.css
+3. CommentSection.module.css
+4. InteractionBar.module.css
+5. SearchBar.module.css
+6. Modal.module.css
+7. Button.module.css
+8. Input.module.css
+9. Avatar.module.css
+10. Badge.module.css
+
+For EACH component:
+- Mobile-first responsive design
+- Dark mode support
+- Smooth animations
+- Accessibility (ARIA labels, focus states)
+- Touch-friendly (44x44px minimum tap targets)
+- Professional polish (shadows, gradients, micro-interactions)
+
+Use the design system variables defined above.
+Follow Instagram-quality design but with Focus's unique blue/purple gradient theme.
+
+================================================================================
+✨ PART 8: PAGE-SPECIFIC LAYOUTS
+================================================================================
+
+Create specialized layouts for:
+
+HOME PAGE:
+- Stories carousel at top
+- Posts feed (infinite scroll)
+- Skeleton loaders
+- Pull-to-refresh
+
+EXPLORE PAGE:
+- Grid layout (3 columns desktop, 3 columns mobile)
+- Category tabs
+- Trending hashtags sidebar (desktop only)
+- Masonry grid for varied content sizes
+
+PROFILE PAGE:
+- Cover photo + avatar
+- Bio section
+- Stats row (posts, followers, following)
+- Tabs (Posts, Saved, Tagged, Reels)
+- Posts grid
+
+MESSAGES PAGE:
+- Conversation list (desktop) + chat thread (desktop)
+- Mobile: List → Thread navigation
+- Search bar at top
+- Online status indicators
+
+CREATE PAGE:
+- Multi-step wizard
+- Media preview carousel
+- Caption editor
+- Advanced options drawer
+
+BOLTZ PAGE:
+- Full-screen vertical video
+- Swipe gestures
+- Floating interaction buttons
+- Progress indicator
+
+================================================================================
+🎯 FINAL IMPLEMENTATION CHECKLIST
+================================================================================
+
+✅ Complete color system with gradients
+✅ Spacing and layout system
+✅ Typography system
+✅ Animation system
+✅ Mobile layout with BottomNav + Header
+✅ Desktop layout with Sidebar + TopBar
+✅ All component styles (PostCard, StoryRing, etc.)
+✅ Page-specific layouts
+✅ Dark mode support everywhere
+✅ Smooth transitions and micro-interactions
+✅ Accessibility (ARIA, focus states, keyboard nav)
+✅ Mobile-responsive (touch-friendly, proper breakpoints)
+✅ Professional polish (shadows, glows, gradients)
+✅ Performance optimizations (CSS containment, will-change)
+
+================================================================================
+🚀 GENERATE ALL CSS FILES AND COMPONENTS!
+================================================================================
+
+Create production-ready, pixel-perfect UI that:
+1. Matches Instagram quality
+2. Has unique Focus branding (blue/purple gradient theme)
+3. Works flawlessly on mobile and desktop
+4. Supports dark mode
+5. Is accessible to all users
+6. Has buttery-smooth animations
+7. Feels premium and professional
+
+MAKE FOCUS THE MOST BEAUTIFUL SOCIAL MEDIA APP EVER CREATED! 🎨✨🔥

@@ -1,0 +1,40 @@
+.people-picker-container {
+  margin-bottom: 1rem;
+}
+.people-search {
+  padding: 8px 14px;
+  width: 100%;
+  border-radius: 10px;
+  border: 1.5px solid #ccc;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+.people-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+.people-picker-user {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 7px 12px;
+  background: #f5f7fa;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  font-size: 1.02rem;
+  font-weight: 600;
+  transition: background .12s;
+}
+.people-picker-user:hover {
+  background: #e3edfa;
+}
+.people-picker-user img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}

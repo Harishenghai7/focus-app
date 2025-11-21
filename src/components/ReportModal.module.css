@@ -1,0 +1,536 @@
+@import '../styles/variables.css';
+
+/* Modal Overlay */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+/* Modal Container */
+.reportModal {
+  background: var(--background-primary, #ffffff);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 540px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Modal Header */
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  background: var(--background-primary, #ffffff);
+  z-index: 1;
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: capitalize;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 0.25rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.closeBtn:hover:not(:disabled) {
+  background-color: var(--background-secondary, #f3f4f6);
+  color: var(--text-primary);
+}
+
+.closeBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Report Form */
+.reportForm {
+  padding: 1.5rem;
+}
+
+/* Fieldset for Radio Group */
+.reasonsFieldset {
+  border: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+}
+
+.reasonsFieldset legend {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+/* Radio Group */
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  background: var(--background-primary, #ffffff);
+}
+
+.radioLabel:hover {
+  border-color: var(--accent-primary, #3b82f6);
+  background-color: var(--background-secondary, #f9fafb);
+}
+
+.radioLabel.selected {
+  border-color: var(--accent-primary, #3b82f6);
+  background-color: var(--accent-light, #eff6ff);
+}
+
+.radioLabel input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.radioContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.radioTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.radioDescription {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.radioIndicator {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color, #d1d5db);
+  border-radius: 50%;
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.radioLabel.selected .radioIndicator {
+  border-color: var(--accent-primary, #3b82f6);
+  background-color: var(--accent-primary, #3b82f6);
+}
+
+.radioLabel.selected .radioIndicator::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #ffffff;
+}
+
+.radioLabel:has(input:disabled) {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Form Group */
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.formGroup textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--text-primary);
+  resize: vertical;
+  transition: all 0.2s;
+  background: var(--background-primary, #ffffff);
+}
+
+.formGroup textarea:focus {
+  outline: none;
+  border-color: var(--accent-primary, #3b82f6);
+  box-shadow: 0 0 0 3px var(--accent-light, #eff6ff);
+}
+
+.formGroup textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--background-secondary, #f3f4f6);
+}
+
+.charCount {
+  text-align: right;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+/* Report Info */
+.reportInfo {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: var(--accent-light, #eff6ff);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--accent-primary, #3b82f6);
+}
+
+.reportInfo svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--accent-primary, #3b82f6);
+  margin-top: 2px;
+}
+
+.reportInfo p {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* Form Actions */
+.formActions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  padding-top: 0.5rem;
+}
+
+.btnCancel,
+.btnSubmit {
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.btnCancel {
+  background-color: var(--background-secondary, #f3f4f6);
+  color: var(--text-primary);
+}
+
+.btnCancel:hover:not(:disabled) {
+  background-color: var(--border-color, #e5e7eb);
+}
+
+.btnSubmit {
+  background-color: var(--accent-primary, #3b82f6);
+  color: #ffffff;
+  min-width: 140px;
+}
+
+.btnSubmit:hover:not(:disabled) {
+  background-color: var(--accent-hover, #2563eb);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btnCancel:disabled,
+.btnSubmit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Spinner */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Thank You Container */
+.thankYouContainer {
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.successIcon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: scaleIn 0.4s ease-out;
+}
+
+.successIcon svg {
+  width: 48px;
+  height: 48px;
+  color: #ffffff;
+  stroke-width: 3;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.thankYouContainer h3 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+}
+
+.thankYouContainer p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0 0 0.75rem 0;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.subText {
+  font-size: 0.875rem !important;
+  color: var(--text-tertiary, #9ca3af) !important;
+  font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .reportModal {
+    max-width: 100%;
+    border-radius: 16px 16px 0 0;
+    max-height: 95vh;
+  }
+
+  .modalHeader {
+    padding: 1.25rem;
+  }
+
+  .modalHeader h3 {
+    font-size: 1.125rem;
+  }
+
+  .reportForm {
+    padding: 1.25rem;
+  }
+
+  .radioLabel {
+    padding: 0.875rem;
+  }
+
+  .radioTitle {
+    font-size: 0.9rem;
+  }
+
+  .radioDescription {
+    font-size: 0.8rem;
+  }
+
+  .formActions {
+    flex-direction: column-reverse;
+  }
+
+  .btnCancel,
+  .btnSubmit {
+    width: 100%;
+  }
+
+  .thankYouContainer {
+    padding: 2rem 1.5rem;
+  }
+
+  .successIcon {
+    width: 64px;
+    height: 64px;
+  }
+
+  .successIcon svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .thankYouContainer h3 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .reportModal {
+    background: var(--background-primary-dark, #1f2937);
+  }
+
+  .modalHeader {
+    background: var(--background-primary-dark, #1f2937);
+    border-bottom-color: var(--border-color-dark, #374151);
+  }
+
+  .modalHeader h3 {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .closeBtn {
+    color: var(--text-secondary-dark, #9ca3af);
+  }
+
+  .closeBtn:hover:not(:disabled) {
+    background-color: var(--background-secondary-dark, #374151);
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .reasonsFieldset legend,
+  .formGroup label,
+  .radioTitle {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .radioLabel {
+    border-color: var(--border-color-dark, #374151);
+    background: var(--background-primary-dark, #1f2937);
+  }
+
+  .radioLabel:hover {
+    background-color: var(--background-secondary-dark, #374151);
+  }
+
+  .radioLabel.selected {
+    background-color: rgba(59, 130, 246, 0.1);
+  }
+
+  .radioDescription {
+    color: var(--text-secondary-dark, #9ca3af);
+  }
+
+  .formGroup textarea {
+    background: var(--background-secondary-dark, #374151);
+    border-color: var(--border-color-dark, #4b5563);
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .reportInfo {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-color: var(--accent-primary, #3b82f6);
+  }
+
+  .reportInfo p {
+    color: var(--text-secondary-dark, #d1d5db);
+  }
+
+  .btnCancel {
+    background-color: var(--background-secondary-dark, #374151);
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .btnCancel:hover:not(:disabled) {
+    background-color: var(--border-color-dark, #4b5563);
+  }
+
+  .thankYouContainer h3 {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .thankYouContainer p {
+    color: var(--text-secondary-dark, #d1d5db);
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .spinner,
+  .successIcon {
+    animation: none;
+  }
+}
+
+/* Focus States */
+.closeBtn:focus-visible,
+.radioLabel:has(input:focus-visible),
+.formGroup textarea:focus-visible,
+.btnCancel:focus-visible,
+.btnSubmit:focus-visible {
+  outline: 2px solid var(--accent-primary, #3b82f6);
+  outline-offset: 2px;
+}
+

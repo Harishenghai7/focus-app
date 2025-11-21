@@ -1,0 +1,584 @@
+/* ============================================
+   SKELETON LOADERS
+   Loading state skeletons with shimmer animation
+   ============================================ */
+
+/* SKELETON BASE STYLES */
+.skeleton-line,
+.skeleton-avatar,
+.skeleton-post-image,
+.skeleton-button,
+.skeleton-stat,
+.skeleton-action,
+.skeleton-message-avatar,
+.skeleton-message-bubble,
+.skeleton-message-text,
+.skeleton-comment-avatar,
+.skeleton-input-field {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e8e8e8 50%,
+    #f0f0f0 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 2s infinite;
+  border-radius: 4px;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* For dark mode compatibility */
+@media (prefers-color-scheme: dark) {
+  .skeleton-line,
+  .skeleton-avatar,
+  .skeleton-post-image,
+  .skeleton-button,
+  .skeleton-stat,
+  .skeleton-action,
+  .skeleton-message-avatar,
+  .skeleton-message-bubble,
+  .skeleton-message-text,
+  .skeleton-comment-avatar,
+  .skeleton-input-field {
+    background: linear-gradient(
+      90deg,
+      #333 25%,
+      #2a2a2a 50%,
+      #333 75%
+    );
+    background-size: 200% 100%;
+  }
+}
+
+/* ============================================
+   POST SKELETON
+   ============================================ */
+
+.skeleton-post {
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.skeleton-post-header {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.skeleton-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.skeleton-name {
+  width: 100%;
+  height: 12px;
+}
+
+.skeleton-time {
+  width: 60px;
+  height: 10px;
+}
+
+.skeleton-post-image {
+  width: 100%;
+  height: 300px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.skeleton-post-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.skeleton-post-content .skeleton-line {
+  height: 12px;
+  width: 100%;
+}
+
+.skeleton-post-stats {
+  display: flex;
+  gap: 16px;
+  padding: 8px 0;
+  border-top: 1px solid var(--border-color, #e0e0e0);
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+  margin-bottom: 12px;
+}
+
+.skeleton-stat {
+  width: 60px;
+  height: 16px;
+  flex: 1;
+  max-width: 120px;
+}
+
+.skeleton-post-actions {
+  display: flex;
+  justify-content: space-around;
+  gap: 8px;
+}
+
+.skeleton-action {
+  flex: 1;
+  height: 32px;
+  border-radius: 4px;
+}
+
+/* Post List */
+.skeleton-post-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ============================================
+   PROFILE SKELETON
+   ============================================ */
+
+.skeleton-profile {
+  width: 100%;
+}
+
+.skeleton-profile-cover {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e8e8e8 50%,
+    #f0f0f0 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 2s infinite;
+  border-radius: 0 0 8px 8px;
+  margin-bottom: 20px;
+}
+
+.skeleton-profile-header {
+  padding: 20px;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.skeleton-profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin: -50px auto 16px;
+  border: 3px solid var(--bg-primary, #fff);
+}
+
+.skeleton-profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.skeleton-profile-name {
+  width: 60%;
+  height: 20px;
+}
+
+.skeleton-profile-username {
+  width: 40%;
+  height: 14px;
+}
+
+.skeleton-profile-bio {
+  width: 80%;
+  height: 12px;
+}
+
+.skeleton-profile-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.skeleton-stat-block {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.skeleton-stat-value {
+  width: 40px;
+  height: 18px;
+  margin: 0 auto;
+}
+
+.skeleton-stat-label {
+  width: 50px;
+  height: 12px;
+  margin: 0 auto;
+}
+
+.skeleton-profile-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.skeleton-button {
+  width: 100px;
+  height: 36px;
+  border-radius: 6px;
+  flex: 1;
+  max-width: 150px;
+}
+
+/* Posts Grid */
+.skeleton-posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  padding: 20px;
+}
+
+.skeleton-post-grid-item {
+  width: 100%;
+  padding-bottom: 100%;
+  position: relative;
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e8e8e8 50%,
+    #f0f0f0 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 2s infinite;
+  border-radius: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .skeleton-post-grid-item {
+    background: linear-gradient(
+      90deg,
+      #333 25%,
+      #2a2a2a 50%,
+      #333 75%
+    );
+    background-size: 200% 100%;
+  }
+}
+
+/* ============================================
+   MESSAGE SKELETON
+   ============================================ */
+
+.skeleton-message {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: flex-end;
+}
+
+.skeleton-message-left {
+  flex-direction: row;
+}
+
+.skeleton-message-right {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+
+.skeleton-message-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-message-bubble {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 12px;
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e8e8e8 50%,
+    #f0f0f0 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 2s infinite;
+  border-radius: 12px;
+  max-width: 60%;
+}
+
+.skeleton-message-text {
+  height: 14px;
+  width: 100%;
+}
+
+/* Chat List */
+.skeleton-chat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-chat-list-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 8px;
+  align-items: center;
+}
+
+.skeleton-chat-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-chat-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.skeleton-chat-name {
+  width: 40%;
+  height: 14px;
+}
+
+.skeleton-chat-time {
+  width: 60px;
+  height: 12px;
+}
+
+.skeleton-chat-preview {
+  width: 100%;
+  height: 12px;
+}
+
+.skeleton-chat-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Conversation */
+.skeleton-conversation {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.skeleton-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeleton-message-input {
+  padding: 16px;
+  border-top: 1px solid var(--border-color, #e0e0e0);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.skeleton-input-field {
+  flex: 1;
+  height: 40px;
+  border-radius: 20px;
+}
+
+/* ============================================
+   COMMENT SKELETON
+   ============================================ */
+
+.skeleton-comment {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px;
+}
+
+.skeleton-comment-reply {
+  margin-left: 32px;
+  opacity: 0.8;
+}
+
+.skeleton-comment-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-comment-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-comment-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.skeleton-comment-author {
+  width: 80px;
+  height: 12px;
+}
+
+.skeleton-comment-time {
+  width: 50px;
+  height: 10px;
+}
+
+.skeleton-comment-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.skeleton-comment-text .skeleton-line {
+  height: 12px;
+}
+
+.skeleton-comment-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.skeleton-action-small {
+  width: 40px;
+  height: 12px;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e8e8e8 50%,
+    #f0f0f0 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 2s infinite;
+}
+
+@media (prefers-color-scheme: dark) {
+  .skeleton-action-small {
+    background: linear-gradient(
+      90deg,
+      #333 25%,
+      #2a2a2a 50%,
+      #333 75%
+    );
+    background-size: 200% 100%;
+  }
+}
+
+/* Comment Section */
+.skeleton-comment-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.skeleton-comment-replies {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Comment Input */
+.skeleton-comment-input {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 8px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .skeleton-profile-avatar {
+    width: 80px;
+    height: 80px;
+    margin: -40px auto 12px;
+  }
+
+  .skeleton-posts-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  .skeleton-message-bubble {
+    max-width: 80%;
+  }
+
+  .skeleton-comment-reply {
+    margin-left: 16px;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-line,
+  .skeleton-avatar,
+  .skeleton-post-image,
+  .skeleton-button,
+  .skeleton-stat,
+  .skeleton-action,
+  .skeleton-message-avatar,
+  .skeleton-message-bubble,
+  .skeleton-message-text,
+  .skeleton-comment-avatar,
+  .skeleton-input-field,
+  .skeleton-action-small,
+  .skeleton-post-grid-item,
+  .skeleton-profile-cover {
+    animation: none;
+    opacity: 0.6;
+  }
+}

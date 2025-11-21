@@ -1,0 +1,449 @@
+/**
+ * PeopleTagger Component Styles
+ */
+
+.people-tagger {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--background-primary);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Header */
+.people-tagger-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--background-secondary);
+}
+
+.people-tagger-header h3 {
+  flex: 1;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.people-tagger-count {
+  padding: 4px 12px;
+  background: rgba(168, 85, 247, 0.1);
+  border: 2px solid rgba(168, 85, 247, 0.3);
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #a855f7;
+}
+
+.people-tagger-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.05);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.people-tagger-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: scale(1.1);
+}
+
+/* Search */
+.people-tagger-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  background: var(--background-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.people-tagger-search-icon {
+  position: absolute;
+  left: 32px;
+  font-size: 18px;
+  pointer-events: none;
+}
+
+.people-tagger-search-input {
+  flex: 1;
+  padding: 12px 40px 12px 48px;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 15px;
+  background: var(--background-primary);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.people-tagger-search-input:focus {
+  outline: none;
+  border-color: #a855f7;
+  box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.1);
+}
+
+.people-tagger-search-clear {
+  position: absolute;
+  right: 32px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.05);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.people-tagger-search-clear:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: scale(1.1);
+}
+
+/* Tagged People */
+.people-tagger-tagged {
+  padding: 16px 20px;
+  background: rgba(168, 85, 247, 0.03);
+  border-bottom: 2px solid rgba(168, 85, 247, 0.2);
+}
+
+.people-tagger-section-title {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.people-tagger-tagged-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.people-tagger-tag {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--background-primary);
+  border: 2px solid rgba(168, 85, 247, 0.2);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.people-tagger-tag:hover {
+  border-color: rgba(168, 85, 247, 0.4);
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.1);
+}
+
+.people-tagger-tag-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(168, 85, 247, 0.2);
+}
+
+.people-tagger-tag-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.people-tagger-tag-name {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.people-tagger-tag-username {
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.people-tagger-tag-remove {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.1);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ef4444;
+  transition: all 0.2s ease;
+}
+
+.people-tagger-tag-remove:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: scale(1.1);
+}
+
+/* Results */
+.people-tagger-results {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+/* Loading */
+.people-tagger-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+}
+
+.people-tagger-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(168, 85, 247, 0.2);
+  border-top-color: #a855f7;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.people-tagger-loading p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* Section */
+.people-tagger-section {
+  padding: 16px 0;
+}
+
+.people-tagger-section .people-tagger-section-title {
+  padding: 0 20px;
+  margin-bottom: 12px;
+}
+
+/* User Item */
+.people-tagger-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.people-tagger-user:hover {
+  background: rgba(168, 85, 247, 0.05);
+}
+
+.people-tagger-user:active {
+  background: rgba(168, 85, 247, 0.1);
+}
+
+.people-tagger-user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.people-tagger-user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.people-tagger-user-name {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.people-tagger-user-username {
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.people-tagger-user-add {
+  padding: 8px 16px;
+  background: rgba(168, 85, 247, 0.1);
+  border: 2px solid #a855f7;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #a855f7;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.people-tagger-user-add:hover {
+  background: rgba(168, 85, 247, 0.2);
+}
+
+/* Empty State */
+.people-tagger-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.people-tagger-empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.people-tagger-empty p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.people-tagger-empty-subtitle {
+  margin-top: 8px !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: var(--text-secondary) !important;
+}
+
+/* Verified Badge */
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(135deg, #a855f7 0%, #db2777 100%);
+  color: white;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .people-tagger-close,
+  .people-tagger-search-clear {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .people-tagger-close:hover,
+  .people-tagger-search-clear:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .people-tagger-tag-remove {
+    background: rgba(239, 68, 68, 0.2);
+  }
+
+  .people-tagger-tag-remove:hover {
+    background: rgba(239, 68, 68, 0.3);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .people-tagger-header {
+    padding: 14px 16px;
+  }
+
+  .people-tagger-header h3 {
+    font-size: 17px;
+  }
+
+  .people-tagger-search {
+    padding: 12px 16px;
+  }
+
+  .people-tagger-tagged {
+    padding: 12px 16px;
+  }
+
+  .people-tagger-section .people-tagger-section-title {
+    padding: 0 16px;
+  }
+
+  .people-tagger-user {
+    padding: 10px 16px;
+  }
+
+  .people-tagger-user-avatar {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .people-tagger {
+    animation: none;
+  }
+
+  .people-tagger-loading-spinner {
+    animation: none;
+  }
+
+  .people-tagger-close,
+  .people-tagger-search-clear,
+  .people-tagger-tag-remove,
+  .people-tagger-user-add {
+    transition: none;
+  }
+}

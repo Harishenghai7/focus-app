@@ -1,0 +1,37 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   PROFILE GRID STYLES
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+}
+
+/* Responsive Grid */
+@media (max-width: 1024px) {
+  .profile-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    padding: 0 0.75rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 0 0.5rem 1rem;
+  }
+}

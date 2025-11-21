@@ -1,0 +1,249 @@
+/* ================================================
+   UPLOAD OVERLAY - LAVENDER THEME
+   ================================================ */
+
+.upload-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.upload-overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+}
+
+.upload-content-card {
+  position: relative;
+  background: rgba(20, 20, 30, 0.95);
+  backdrop-filter: blur(40px);
+  border: 2px solid rgba(139, 127, 215, 0.3);
+  border-radius: 28px;
+  padding: 48px 40px;
+  max-width: 480px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Icon */
+.upload-icon-wrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-icon {
+  font-size: 64px;
+  position: relative;
+  z-index: 2;
+  animation: float 3s ease-in-out infinite;
+}
+
+.icon-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--status-color) 0%, transparent 70%);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Text */
+.upload-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  text-align: center;
+}
+
+.upload-message {
+  font-size: 15px;
+  color: rgba(139, 127, 215, 0.8);
+  margin: 0;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Progress Bar */
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background: rgba(139, 127, 215, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+.progress-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+/* Action Buttons */
+.upload-action-btn {
+  padding: 14px 32px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.upload-action-btn.success {
+  background: linear-gradient(135deg, #34C759 0%, #30D158 100%);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(52, 199, 89, 0.4);
+}
+
+.upload-action-btn.primary {
+  background: linear-gradient(135deg, #8B7FD7 0%, #EE7BFA 100%);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(139, 127, 215, 0.4);
+}
+
+.upload-action-btn.secondary {
+  background: rgba(139, 127, 215, 0.15);
+  border: 2px solid rgba(139, 127, 215, 0.3);
+  color: var(--text-primary);
+}
+
+.upload-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(139, 127, 215, 0.5);
+}
+
+.upload-actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.upload-actions .upload-action-btn {
+  margin-top: 0;
+}
+
+/* Hint */
+.upload-hint {
+  font-size: 13px;
+  color: rgba(139, 127, 215, 0.6);
+  text-align: center;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.3);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .upload-content-card {
+    padding: 40px 32px;
+    width: 95%;
+  }
+
+  .upload-icon {
+    font-size: 56px;
+  }
+
+  .upload-title {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .upload-content-card {
+    padding: 32px 24px;
+  }
+
+  .upload-actions {
+    flex-direction: column;
+  }
+}

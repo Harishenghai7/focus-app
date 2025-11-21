@@ -1,0 +1,133 @@
+/* ============================================================================
+   FOCUSLY FLOATING BUTTON STYLES
+   ============================================================================ */
+
+.focusly-float-btn {
+  position: fixed;
+  bottom: 84px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8B7FD7 0%, #A198FF 100%);
+  border: none;
+  box-shadow: 0 8px 24px rgba(139, 127, 215, 0.4);
+  cursor: pointer;
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: visible;
+}
+
+.focusly-float-btn:hover {
+  box-shadow: 0 12px 32px rgba(139, 127, 215, 0.6);
+  transform: translateY(-2px);
+}
+
+.focusly-float-btn:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.focusly-float-btn:focus-visible {
+  outline: 3px solid #A198FF;
+  outline-offset: 4px;
+}
+
+/* Pulse animation for attention */
+.focusly-float-btn.pulse {
+  animation: focusly-pulse 2s infinite;
+}
+
+@keyframes focusly-pulse {
+  0%, 100% {
+    box-shadow: 0 8px 24px rgba(139, 127, 215, 0.4);
+  }
+  50% {
+    box-shadow: 0 8px 32px rgba(139, 127, 215, 0.8), 
+                0 0 0 0 rgba(139, 127, 215, 0.7);
+  }
+}
+
+.focusly-icon-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.focusly-icon {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+/* Tooltip */
+.focusly-tooltip {
+  position: absolute;
+  right: 70px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(29, 18, 56, 0.95);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.focusly-float-btn:hover .focusly-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(-4px);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .focusly-float-btn {
+    bottom: 70px;
+    right: 16px;
+    width: 56px;
+    height: 56px;
+  }
+
+  .focusly-tooltip {
+    display: none; /* Hide tooltip on mobile */
+  }
+}
+
+@media (max-width: 480px) {
+  .focusly-float-btn {
+    bottom: 64px;
+    right: 12px;
+    width: 52px;
+    height: 52px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .focusly-float-btn {
+    background: linear-gradient(135deg, #8B7FD7 0%, #A198FF 100%);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .focusly-float-btn.pulse {
+    animation: none;
+  }
+
+  .focusly-float-btn,
+  .focusly-tooltip {
+    transition: none;
+  }
+}

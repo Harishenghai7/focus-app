@@ -1,0 +1,45 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  padding: 24px;
+}
+.map {
+  width: 320px;
+  height: 180px;
+  background: var(--color-bg-secondary, #eee);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+}
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 12px;
+}
+.location {
+  background: var(--color-bg-secondary, #eee);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  color: #222;
+}
+.selected {
+  background: var(--color-primary, #007bff);
+  color: #fff;
+}
+@media (prefers-color-scheme: dark) {
+  .map {
+    background: #222;
+  }
+  .location {
+    background: #333;
+    color: #fff;
+  }
+}

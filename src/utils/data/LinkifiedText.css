@@ -1,0 +1,109 @@
+/* LinkifiedText Component Styles */
+
+.linkified-text {
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+/* URL Links */
+.linkified-text .link-url {
+  color: #1d9bf0;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.linkified-text .link-url:hover {
+  text-decoration: underline;
+  color: #1a8cd8;
+}
+
+.linkified-text .link-url:active {
+  color: #1570b0;
+}
+
+/* Mention Links */
+.linkified-text .mention {
+  color: #1d9bf0;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.linkified-text .mention:hover {
+  text-decoration: underline;
+  background-color: rgba(29, 155, 240, 0.1);
+  border-radius: 2px;
+  padding: 0 2px;
+  margin: 0 -2px;
+}
+
+.linkified-text .mention:active {
+  color: #1570b0;
+}
+
+/* Hashtag Links */
+.linkified-text .hashtag {
+  color: #1d9bf0;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.linkified-text .hashtag:hover {
+  text-decoration: underline;
+  background-color: rgba(29, 155, 240, 0.1);
+  border-radius: 2px;
+  padding: 0 2px;
+  margin: 0 -2px;
+}
+
+.linkified-text .hashtag:active {
+  color: #1570b0;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .linkified-text .link-url,
+  .linkified-text .mention,
+  .linkified-text .hashtag {
+    color: #58a6ff;
+  }
+
+  .linkified-text .link-url:hover,
+  .linkified-text .mention:hover,
+  .linkified-text .hashtag:hover {
+    color: #79b8ff;
+    background-color: rgba(88, 166, 255, 0.15);
+  }
+
+  .linkified-text .link-url:active,
+  .linkified-text .mention:active,
+  .linkified-text .hashtag:active {
+    color: #a5d6ff;
+  }
+}
+
+/* Focus Styles for Accessibility */
+.linkified-text .link-url:focus,
+.linkified-text .mention:focus,
+.linkified-text .hashtag:focus {
+  outline: 2px solid #1d9bf0;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Print Styles */
+@media print {
+  .linkified-text .link-url::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
+  
+  .linkified-text .mention,
+  .linkified-text .hashtag {
+    color: inherit;
+    text-decoration: underline;
+  }
+}
