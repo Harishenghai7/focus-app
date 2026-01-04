@@ -1,0 +1,81 @@
+.container {
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.seeAll {
+    background: none;
+    border: none;
+    color: var(--primary-lavender);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.audioList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.audioCard {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.audioCard:hover {
+    background: var(--bg-hover);
+}
+
+.audioIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+}
+
+.audioInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.audioName {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.audioArtist {
+    font-size: 12px;
+    color: var(--text-secondary);
+}

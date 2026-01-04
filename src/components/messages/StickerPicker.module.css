@@ -1,0 +1,203 @@
+.stickerPicker {
+    width: 100%;
+    max-width: 650px;
+    height: 70vh;
+    max-height: 700px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--border-default);
+    flex-shrink: 0;
+}
+
+.title {
+    font-size: var(--font-xl);
+    font-weight: var(--font-bold);
+    margin: 0;
+}
+
+.closeBtn {
+    background: none;
+    border: none;
+    font-size: 32px;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    transition: all 0.2s;
+}
+
+.closeBtn:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.searchContainer {
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--border-default);
+    flex-shrink: 0;
+}
+
+.searchInput {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: var(--font-base);
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: var(--primary-lavender);
+}
+
+.categories {
+    display: flex;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--border-default);
+    overflow-x: auto;
+    flex-shrink: 0;
+}
+
+.categoryBtn {
+    padding: var(--space-2) var(--space-4);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: var(--font-sm);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.categoryBtn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.categoryBtn.active {
+    background: var(--primary-lavender);
+    color: white;
+    border-color: var(--primary-lavender);
+}
+
+.recentSection {
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--border-default);
+    flex-shrink: 0;
+}
+
+.sectionTitle {
+    font-size: var(--font-sm);
+    font-weight: var(--font-semibold);
+    color: var(--text-secondary);
+    margin: 0 0 var(--space-3) 0;
+}
+
+.stickersContainer {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-4);
+    min-height: 0;
+}
+
+.stickerGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: var(--space-3);
+}
+
+.stickerItem {
+    aspect-ratio: 1;
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: var(--bg-tertiary);
+    padding: var(--space-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.stickerItem:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-md);
+    z-index: 1;
+}
+
+.stickerImage {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.stickerFallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+}
+
+.emptyState {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8);
+    color: var(--text-muted);
+    font-size: var(--font-sm);
+}
+
+/* Scrollbar styling */
+.stickersContainer::-webkit-scrollbar {
+    width: 8px;
+}
+
+.stickersContainer::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+}
+
+.stickersContainer::-webkit-scrollbar-thumb {
+    background: var(--border-default);
+    border-radius: 4px;
+}
+
+.stickersContainer::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+.categories::-webkit-scrollbar {
+    height: 6px;
+}
+
+.categories::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+}
+
+.categories::-webkit-scrollbar-thumb {
+    background: var(--border-default);
+    border-radius: 3px;
+}

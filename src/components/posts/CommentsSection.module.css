@@ -1,0 +1,196 @@
+/* CommentsSection Component - Design System Compliant */
+
+.commentsSection {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: 80vh;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4);
+    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.header h3 {
+    font-size: var(--font-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+}
+
+.closeBtn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.closeBtn:hover {
+    background: rgba(139, 92, 246, 0.1);
+}
+
+.commentsList {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-4);
+}
+
+.loading,
+.empty {
+    text-align: center;
+    padding: var(--space-8);
+    color: var(--text-muted);
+}
+
+.commentItem {
+    display: flex;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.commentContent {
+    flex: 1;
+}
+
+.commentHeader {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: 4px;
+}
+
+.username {
+    font-size: var(--font-sm);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.verified {
+    color: #9b87f5;
+    font-size: 12px;
+}
+
+.timestamp {
+    font-size: var(--font-xs);
+    color: var(--text-muted);
+}
+
+.commentText {
+    font-size: var(--font-sm);
+    color: var(--text-primary);
+    line-height: 1.5;
+    margin-bottom: var(--space-2);
+    word-wrap: break-word;
+}
+
+.commentActions {
+    display: flex;
+    gap: var(--space-3);
+}
+
+.actionBtn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: var(--font-xs);
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.actionBtn:hover {
+    color: var(--text-secondary);
+}
+
+.replies {
+    margin-top: var(--space-3);
+    margin-left: var(--space-6);
+    border-left: 1px solid rgba(139, 92, 246, 0.2);
+    padding-left: var(--space-3);
+}
+
+.commentForm {
+    padding: var(--space-4);
+    border-top: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.replyingTo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2) var(--space-3);
+    background: rgba(139, 92, 246, 0.1);
+    border-radius: 8px;
+    margin-bottom: var(--space-2);
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+}
+
+.cancelReply {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+}
+
+.inputWrapper {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 20px;
+    padding: 10px 16px;
+    font-size: var(--font-sm);
+    color: var(--text-primary);
+    font-family: var(--font-primary);
+}
+
+.input:focus {
+    outline: none;
+    border-color: #9b87f5;
+}
+
+.submitBtn {
+    background: linear-gradient(135deg, #9b87f5, #7c3aed);
+    color: #ffffff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 24px;
+    font-size: var(--font-sm);
+    font-weight: var(--font-semibold);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.submitBtn:hover:not(:disabled) {
+    transform: scale(1.02);
+}
+
+.submitBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

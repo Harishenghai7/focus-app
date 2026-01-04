@@ -1,0 +1,35 @@
+.container {
+    margin-bottom: 24px;
+}
+
+.bar {
+    height: 6px;
+    background: #E5E7EB;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.fill {
+    height: 100%;
+    background: linear-gradient(90deg, #8B5CF6 0%, #A78BFA 100%);
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 3px;
+}
+
+.info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: #9CA3AF;
+}
+
+.step {
+    font-weight: 500;
+}
+
+.percentage {
+    font-weight: 600;
+    color: #8B5CF6;
+}

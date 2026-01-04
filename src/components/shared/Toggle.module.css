@@ -1,0 +1,100 @@
+.toggleContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    width: 100%;
+}
+
+.labelContainer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    flex: 1;
+}
+
+.label {
+    font-size: var(--font-base);
+    font-weight: var(--font-medium);
+    color: var(--text-primary);
+}
+
+.description {
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+    line-height: var(--leading-snug);
+}
+
+.toggle {
+    position: relative;
+    width: 48px;
+    height: 28px;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-default);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+}
+
+.toggle:hover:not(.disabled) {
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-sm);
+}
+
+.toggle:focus-visible {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: var(--shadow-focus);
+}
+
+.toggle.checked {
+    background: var(--gradient-primary);
+    border-color: var(--primary-lavender);
+}
+
+.toggle.checked:hover:not(.disabled) {
+    box-shadow: var(--shadow-glow);
+}
+
+.toggle.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.toggleThumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: var(--text-primary);
+    border-radius: 50%;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle.checked .toggleThumb {
+    transform: translateX(20px);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+    .toggleContainer {
+        gap: var(--space-3);
+    }
+
+    .toggle {
+        width: 44px;
+        height: 26px;
+    }
+
+    .toggleThumb {
+        width: 18px;
+        height: 18px;
+    }
+
+    .toggle.checked .toggleThumb {
+        transform: translateX(18px);
+    }
+}

@@ -1,0 +1,305 @@
+.container {
+    padding: var(--space-3);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-1);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-3);
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.timeDisplay {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--font-md);
+    font-weight: 600;
+}
+
+.currentTime {
+    color: var(--primary-lavender);
+}
+
+.separator {
+    color: var(--text-tertiary);
+}
+
+.totalTime {
+    color: var(--text-secondary);
+}
+
+.manualInputs {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-2);
+    background: linear-gradient(135deg,
+            rgba(var(--primary-lavender-rgb), 0.08) 0%,
+            rgba(var(--primary-lavender-rgb), 0.03) 100%);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(var(--primary-lavender-rgb), 0.15);
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.inputGroup label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--font-xs);
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.inputGroup label svg {
+    color: var(--primary-lavender);
+}
+
+.timeInput {
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    border: 2px solid var(--border-default);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: var(--font-md);
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+    width: 100px;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.timeInput:hover {
+    border-color: rgba(var(--primary-lavender-rgb), 0.5);
+}
+
+.timeInput:focus {
+    outline: none;
+    border-color: var(--primary-lavender);
+    box-shadow: 0 0 0 4px rgba(var(--primary-lavender-rgb), 0.15);
+    background: var(--bg-primary);
+    transform: scale(1.05);
+}
+
+.timeInput::placeholder {
+    color: var(--text-tertiary);
+}
+
+.timeline {
+    position: relative;
+    height: 100px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    cursor: pointer;
+    margin-bottom: var(--space-2);
+}
+
+.thumbnailStrip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    display: flex;
+    overflow: hidden;
+}
+
+.thumbnail {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    border-right: 1px solid var(--border-default);
+}
+
+.thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.track {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: var(--bg-tertiary);
+}
+
+.dimmedRegion {
+    position: absolute;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+}
+
+.activeRegion {
+    position: absolute;
+    height: 100%;
+    background: linear-gradient(180deg,
+            rgba(var(--primary-lavender-rgb), 0.2) 0%,
+            rgba(var(--primary-lavender-rgb), 0.05) 100%);
+    border-left: 2px solid var(--primary-lavender);
+    border-right: 2px solid var(--primary-lavender);
+    pointer-events: none;
+}
+
+.trimHandle {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 12px;
+    transform: translateX(-50%);
+    cursor: ew-resize;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.trimHandleBar {
+    width: 4px;
+    height: 100%;
+    background: var(--primary-lavender);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.trimHandle:hover .trimHandleBar {
+    background: var(--primary-lavender-light);
+    width: 6px;
+}
+
+.playhead {
+    position: absolute;
+    top: -60px;
+    height: 100px;
+    width: 2px;
+    transform: translateX(-50%);
+    z-index: 4;
+    pointer-events: none;
+}
+
+.playheadLine {
+    width: 2px;
+    height: 100%;
+    background: var(--error);
+    box-shadow: 0 0 8px rgba(var(--error-rgb), 0.5);
+}
+
+.playheadHandle {
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 14px;
+    background: var(--error);
+    border: 2px solid white;
+    border-radius: 50%;
+    cursor: pointer;
+    pointer-events: auto;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.playheadHandle:hover {
+    transform: translateX(-50%) scale(1.2);
+}
+
+.timeMarkers {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    pointer-events: none;
+}
+
+.timeMarker {
+    position: absolute;
+    bottom: 0;
+    transform: translateX(-50%);
+}
+
+.markerTick {
+    width: 1px;
+    height: 6px;
+    background: var(--border-default);
+    margin: 0 auto;
+}
+
+.markerLabel {
+    display: block;
+    font-size: 9px;
+    color: var(--text-tertiary);
+    margin-top: 2px;
+    white-space: nowrap;
+    transform: translateX(-50%);
+    margin-left: 50%;
+}
+
+.trimInfo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    font-size: var(--font-sm);
+    padding: var(--space-2) var(--space-3);
+    background: linear-gradient(135deg,
+            rgba(var(--primary-lavender-rgb), 0.1) 0%,
+            rgba(var(--primary-lavender-rgb), 0.05) 100%);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(var(--primary-lavender-rgb), 0.2);
+}
+
+.trimLabel {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.trimDuration {
+    color: var(--primary-lavender);
+    font-weight: 700;
+    font-size: var(--font-md);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .manualInputs {
+        justify-content: space-between;
+    }
+
+    .timeline {
+        height: 80px;
+    }
+
+    .thumbnailStrip {
+        height: 50px;
+    }
+
+    .track {
+        height: 30px;
+    }
+
+    .timeMarkers {
+        display: none;
+    }
+}

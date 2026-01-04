@@ -1,0 +1,297 @@
+/**
+ * Focus App - Ultimate Lavender Theme v3.0
+ * Global CSS Variables and Theme Foundation
+ */
+
+:root {
+    /* ═══════════════════════════════════════════════════════════════
+     BACKGROUNDS - Deep Purple Foundation
+     ═══════════════════════════════════════════════════════════════ */
+    --bg-primary: #1a0f2e;
+    --bg-secondary: #14082b;
+    --bg-surface: #2a1b47;
+    --bg-elevated: #3d2463;
+    --bg-overlay: rgba(26, 15, 46, 0.95);
+
+    /* ═══════════════════════════════════════════════════════════════
+     LAVENDER ACCENT SYSTEM - The Star of the Show
+     ═══════════════════════════════════════════════════════════════ */
+    --lavender-100: #f3f0ff;
+    --lavender-200: #e4dcff;
+    --lavender-300: #c4b5fd;
+    --lavender-400: #a78bfa;
+    --lavender-500: #8b5cf6;
+    --lavender-600: #7c3aed;
+    --lavender-700: #6d28d9;
+
+    /* Primary Lavender (Most Used) */
+    --primary-lavender: var(--lavender-400);
+    --secondary-lavender: var(--lavender-500);
+    --deep-lavender: var(--lavender-600);
+
+    /* Gradients */
+    --lavender-gradient: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #7c3aed 100%);
+    --lavender-gradient-horizontal: linear-gradient(90deg, #a78bfa, #8b5cf6);
+    --lavender-gradient-soft: linear-gradient(135deg, rgba(167, 139, 250, 0.3), rgba(139, 92, 246, 0.1));
+
+    /* ═══════════════════════════════════════════════════════════════
+     TEXT COLORS - Purple-Tinted Whites
+     ═══════════════════════════════════════════════════════════════ */
+    --text-primary: #f8f7ff;
+    --text-secondary: rgba(248, 247, 255, 0.7);
+    --text-muted: rgba(248, 247, 255, 0.5);
+    --text-inverse: #1a0f2e;
+
+    /* ═══════════════════════════════════════════════════════════════
+     SEMANTIC COLORS
+     ═══════════════════════════════════════════════════════════════ */
+    --success: #10b981;
+    --error: #ef4444;
+    --warning: #f59e0b;
+    --info: #3b82f6;
+
+    /* ═══════════════════════════════════════════════════════════════
+     EFFECTS & SHADOWS - Lavender Glow
+     ═══════════════════════════════════════════════════════════════ */
+    --shadow-sm: 0 2px 8px rgba(124, 58, 237, 0.15);
+    --shadow-md: 0 4px 16px rgba(124, 58, 237, 0.25);
+    --shadow-lg: 0 8px 32px rgba(124, 58, 237, 0.35);
+    --shadow-xl: 0 12px 48px rgba(124, 58, 237, 0.45);
+    --glow: 0 0 20px rgba(155, 135, 245, 0.4);
+    --glow-strong: 0 0 32px rgba(155, 135, 245, 0.6);
+
+    /* ═══════════════════════════════════════════════════════════════
+     BORDERS - Subtle Lavender
+     ═══════════════════════════════════════════════════════════════ */
+    --border-subtle: rgba(167, 139, 250, 0.15);
+    --border-default: rgba(167, 139, 250, 0.25);
+    --border-strong: rgba(167, 139, 250, 0.4);
+
+    /* ═══════════════════════════════════════════════════════════════
+     GLASSMORPHISM
+     ═══════════════════════════════════════════════════════════════ */
+    --glass-bg: rgba(42, 27, 71, 0.7);
+    --glass-border: rgba(167, 139, 250, 0.2);
+    --glass-blur: blur(20px) saturate(180%);
+
+    /* ═══════════════════════════════════════════════════════════════
+     SPACING & SIZING
+     ═══════════════════════════════════════════════════════════════ */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+    --space-16: 64px;
+
+    /* ═══════════════════════════════════════════════════════════════
+     BORDER RADIUS
+     ═══════════════════════════════════════════════════════════════ */
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 24px;
+    --radius-full: 9999px;
+
+    /* ═══════════════════════════════════════════════════════════════
+     TYPOGRAPHY
+     ═══════════════════════════════════════════════════════════════ */
+    --font-xs: 11px;
+    --font-sm: 13px;
+    --font-base: 15px;
+    --font-lg: 17px;
+    --font-xl: 20px;
+    --font-2xl: 24px;
+    --font-3xl: 30px;
+    --font-4xl: 36px;
+
+    --font-normal: 400;
+    --font-medium: 500;
+    --font-semibold: 600;
+    --font-bold: 700;
+
+    /* ═══════════════════════════════════════════════════════════════
+     TRANSITIONS
+     ═══════════════════════════════════════════════════════════════ */
+    --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLOBAL STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCROLLBAR STYLING - Lavender Gradient
+   ═══════════════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(42, 27, 71, 0.5);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    border-radius: 4px;
+    transition: background var(--transition-base);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #8b5cf6 rgba(42, 27, 71, 0.5);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATIONS & KEYFRAMES
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(155, 135, 245, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 32px rgba(155, 135, 245, 0.6);
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slide-in-right {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes bounce-dot {
+
+    0%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-8px);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════ */
+
+.lavender-gradient {
+    background: var(--lavender-gradient);
+}
+
+.lavender-text {
+    background: var(--lavender-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.glass-effect {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+}
+
+.glow-effect {
+    box-shadow: var(--glow);
+}
+
+.smooth-transition {
+    transition: all var(--transition-base);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOCUS STATES - Lavender Ring
+   ═══════════════════════════════════════════════════════════════ */
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15), 0 0 20px rgba(139, 92, 246, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SELECTION - Lavender Highlight
+   ═══════════════════════════════════════════════════════════════ */
+
+::selection {
+    background: rgba(167, 139, 250, 0.3);
+    color: var(--text-primary);
+}
+
+::-moz-selection {
+    background: rgba(167, 139, 250, 0.3);
+    color: var(--text-primary);
+}

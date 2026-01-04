@@ -1,93 +1,71 @@
 import React, { useState } from 'react';
-import { supabase } from '../../supabaseClient';
-import ConfirmationModal from './ConfirmationModal';
-import { useLanguage } from '../../hooks/useLanguage';
+import Button from '../ui/Button';
+import Modal from '../ui/Modal';
+import { useAuth } from '../../hooks/useAuth';
+import styles from './LogOutButton.module.css';
 
-const LogoutButton = ({ onSuccess }) => {
-  const { t } = useLanguage();
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+const LogOutButton = () => {
+    const { signOut } = useAuth();
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-  const handleLogout = async () => {
-    setIsLoggingOut(true);
-    
-    try {
-      // Clean up peer instance if exists
-      if (window.peerInstance) {
+    const handleLogOut = async () => {
+        setLoading(true);
         try {
-          window.peerInstance.destroy();
-          window.peerInstance = null;
-        } catch (err) {
-          console.warn('Error destroying peer instance:', err);
+            await signOut();
+        } catch (error) {
+            console.error('Error signing out:', error);
+        } finally {
+            setLoading(false);
+            setShowConfirm(false);
         }
-      }
+    };
 
-      // Close all active peer connections
-      if (window.activeConnections) {
-        window.activeConnections.forEach(conn => {
-          try {
-            conn.close();
-          } catch (err) {
-            console.warn('Error closing connection:', err);
-          }
-        });
-        window.activeConnections.clear();
-      }
+    return (
+        <>
+            <div className={styles.logoutContainer}>
+                <Button
+                    variant="outline"
+                    className={styles.logoutButton}
+                    onClick={() => setShowConfirm(true)}
+                >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M16 17L21 12L16 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M21 12H9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    Log Out
+                </Button>
+            </div>
 
-      // Clear localStorage
-      const keysToKeep = ['focus-theme', 'focus-language'];
-      const allKeys = Object.keys(localStorage);
-      allKeys.forEach(key => {
-        if (!keysToKeep.includes(key)) {
-          localStorage.removeItem(key);
-        }
-      });
-
-      // Sign out from Supabase
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) throw error;
-
-      // Clear session storage
-      sessionStorage.clear();
-
-      // Call success callback
-      if (onSuccess) {
-        onSuccess();
-      }
-    } catch (error) {
-      console.error('Error during logout:', error);
-      alert('Failed to log out. Please try again.');
-    } finally {
-      setIsLoggingOut(false);
-      setShowConfirm(false);
-    }
-  };
-
-  return (
-    <>
-      <button 
-        className="logout-button danger-zone"
-        onClick={() => setShowConfirm(true)}
-        disabled={isLoggingOut}
-        aria-label={t('logout.button')}
-      >
-        <span className="logout-icon">🚪</span>
-        <span className="logout-text">{t('logout.button')}</span>
-      </button>
-
-      <ConfirmationModal
-        isOpen={showConfirm}
-        title={t('logout.button')}
-        message={t('logout.confirm')}
-        confirmText={t('logout.button')}
-        cancelText={t('common.cancel')}
-        onConfirm={handleLogout}
-        onCancel={() => setShowConfirm(false)}
-        danger={true}
-      />
-    </>
-  );
+            <Modal isOpen={showConfirm} onClose={() => setShowConfirm(false)} title="Log Out">
+                <div className={styles.confirmContent}>
+                    <div className={styles.warningIcon}>⚠️</div>
+                    <h3 className={styles.confirmTitle}>Are you sure you want to log out?</h3>
+                    <p className={styles.confirmText}>
+                        You'll need to sign in again to access your account.
+                    </p>
+                    <div className={styles.actions}>
+                        <Button
+                            variant="secondary"
+                            onClick={() => setShowConfirm(false)}
+                            disabled={loading}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="primary"
+                            onClick={handleLogOut}
+                            loading={loading}
+                            className={styles.confirmButton}
+                        >
+                            Log Out
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
+        </>
+    );
 };
 
-export default LogoutButton;
+export default LogOutButton;

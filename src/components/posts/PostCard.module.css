@@ -1,0 +1,61 @@
+
+
+/* ---------------------------------------------------------------
+   DOUBLE-TAP LIKE ANIMATION
+   --------------------------------------------------------------- */
+
+.likeAnimation {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* ---------------------------------------------------------------
+   CAPTION FORMATTING
+   --------------------------------------------------------------- */
+
+.captionText {
+    display: inline;
+}
+
+.hashtag {
+    color: var(--primary-lavender);
+    cursor: pointer;
+    font-weight: var(--font-medium);
+    transition: color var(--transition-base);
+}
+
+.hashtag:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+.mention {
+    color: var(--primary-lavender);
+    cursor: pointer;
+    font-weight: var(--font-medium);
+    transition: color var(--transition-base);
+}
+
+.mention:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+.moreBtn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: var(--font-sm);
+    padding: 0;
+    margin-left: 4px;
+    transition: color var(--transition-base);
+}
+
+.moreBtn:hover {
+    color: var(--primary-lavender);
+}

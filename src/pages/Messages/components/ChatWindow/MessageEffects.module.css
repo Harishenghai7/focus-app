@@ -1,0 +1,308 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   MESSAGE EFFECTS - Animated message effects
+   Phase 5: Future Enhancements
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.messageEffect {
+    position: relative;
+    animation-duration: 0.6s;
+    animation-timing-function: ease-out;
+    animation-fill-mode: both;
+}
+
+/* Confetti Effect */
+.confetti {
+    animation-name: confettiPop;
+}
+
+@keyframes confettiPop {
+    0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.2) rotate(180deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(360deg);
+        opacity: 1;
+    }
+}
+
+.confetti::before {
+    content: '🎉';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    animation: confettiFall 1s ease-out;
+}
+
+@keyframes confettiFall {
+    0% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) rotate(0deg);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(100px) rotate(360deg);
+    }
+}
+
+/* Heart Effect */
+.hearts {
+    animation-name: heartBeat;
+}
+
+@keyframes heartBeat {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    25% {
+        transform: scale(1.1);
+    }
+
+    50% {
+        transform: scale(1);
+    }
+
+    75% {
+        transform: scale(1.15);
+    }
+}
+
+.hearts::after {
+    content: '❤️';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 40px;
+    animation: heartFloat 1.5s ease-out;
+    pointer-events: none;
+}
+
+@keyframes heartFloat {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translate(-50%, -80px) scale(1.5);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -120px) scale(2);
+    }
+}
+
+/* Fireworks Effect */
+.fireworks {
+    animation-name: fireworksPop;
+}
+
+@keyframes fireworksPop {
+    0% {
+        transform: scale(0.8);
+        filter: brightness(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+        filter: brightness(1.5);
+    }
+
+    100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+}
+
+.fireworks::before {
+    content: '✨';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    font-size: 20px;
+    animation: sparkle 0.8s ease-out;
+}
+
+.fireworks::after {
+    content: '✨';
+    position: absolute;
+    bottom: -10px;
+    right: -10px;
+    font-size: 20px;
+    animation: sparkle 0.8s ease-out 0.2s;
+}
+
+@keyframes sparkle {
+    0% {
+        opacity: 0;
+        transform: scale(0) rotate(0deg);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.5) rotate(180deg);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0) rotate(360deg);
+    }
+}
+
+/* Shake Effect */
+.shake {
+    animation-name: shake;
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        transform: translateX(-5px);
+    }
+
+    20%,
+    40%,
+    60%,
+    80% {
+        transform: translateX(5px);
+    }
+}
+
+/* Bounce Effect */
+.bounce {
+    animation-name: bounce;
+}
+
+@keyframes bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-20px);
+    }
+
+    60% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Pulse Effect */
+.pulse {
+    animation-name: pulse;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(167, 139, 250, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 15px rgba(167, 139, 250, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(167, 139, 250, 0);
+    }
+}
+
+/* Glow Effect */
+.glow {
+    animation-name: glow;
+}
+
+@keyframes glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 5px rgba(167, 139, 250, 0.5);
+    }
+
+    50% {
+        box-shadow: 0 0 20px rgba(167, 139, 250, 0.8),
+            0 0 30px rgba(139, 92, 246, 0.6);
+    }
+}
+
+/* Fade In Effect */
+.fadeIn {
+    animation-name: fadeIn;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Slide In Effect */
+.slideIn {
+    animation-name: slideIn;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Zoom Effect */
+.zoom {
+    animation-name: zoom;
+}
+
+@keyframes zoom {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

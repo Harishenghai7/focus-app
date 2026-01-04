@@ -1,0 +1,85 @@
+/**
+ * ChatList - Ultimate Lavender Theme v3.0
+ * Conversations list with lavender accents
+ */
+
+.list {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    background: transparent;
+    border-radius: var(--radius-lg);
+    margin: 0 var(--space-2);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.item:hover {
+    background: rgba(42, 27, 71, 0.5);
+    transform: translateX(2px);
+}
+
+.active {
+    background: linear-gradient(90deg, rgba(139, 92, 246, 0.25), rgba(139, 92, 246, 0.1));
+    border-left: 3px solid var(--secondary-lavender);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+}
+
+.info {
+    flex: 1;
+    min-width: 0;
+}
+
+.topRow {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space-1);
+}
+
+.username {
+    font-weight: var(--font-semibold);
+    font-size: 15px;
+    color: var(--text-primary);
+}
+
+.time {
+    font-size: 12px;
+    color: rgba(248, 247, 255, 0.5);
+}
+
+.lastMessage {
+    font-size: 13px;
+    color: rgba(248, 247, 255, 0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.badge {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    font-size: 11px;
+    font-weight: var(--font-semibold);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    margin-left: var(--space-2);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
+@media (max-width: 768px) {
+    .list {
+        width: 100%;
+    }
+}

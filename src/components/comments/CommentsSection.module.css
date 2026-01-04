@@ -1,0 +1,199 @@
+/* CommentsSection Styles */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--background);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.sortButtons {
+    display: flex;
+    gap: 8px;
+}
+
+.sortButtons button {
+    padding: 6px 12px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sortButtons button:hover {
+    background: var(--surface-hover);
+    color: var(--text-primary);
+}
+
+.sortButtons button.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.commentsList {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 16px;
+    gap: 12px;
+}
+
+.spinner {
+    font-size: 24px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 16px;
+    text-align: center;
+}
+
+.emptyIcon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.emptyState p {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 8px 0;
+}
+
+.emptySubtext {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.repliesSection {
+    margin-left: 44px;
+    border-left: 2px solid var(--border);
+    padding-left: 12px;
+}
+
+.viewRepliesButton {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px 0;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.viewRepliesButton:hover {
+    color: var(--text-primary);
+}
+
+.repliesList {
+    margin-top: 8px;
+}
+
+.loadMoreButton {
+    width: 100%;
+    padding: 16px;
+    background: none;
+    border: none;
+    border-top: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.loadMoreButton:hover:not(:disabled) {
+    background: var(--surface-hover);
+    color: var(--text-primary);
+}
+
+.loadMoreButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Scrollbar styling */
+.commentsList::-webkit-scrollbar {
+    width: 8px;
+}
+
+.commentsList::-webkit-scrollbar-track {
+    background: var(--surface);
+}
+
+.commentsList::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+
+.commentsList::-webkit-scrollbar-thumb:hover {
+    background: var(--text-tertiary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header {
+        padding: 12px;
+    }
+
+    .title {
+        font-size: 15px;
+    }
+
+    .sortButtons button {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+
+    .repliesSection {
+        margin-left: 28px;
+        padding-left: 8px;
+    }
+}

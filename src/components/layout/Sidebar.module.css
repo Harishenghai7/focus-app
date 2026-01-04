@@ -1,0 +1,194 @@
+/**
+ * Sidebar - Ultimate Lavender Theme v3.0
+ * Dark purple sidebar with lavender accents
+ */
+
+.sidebar {
+    width: 280px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-subtle);
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    user-select: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LOGO - Lavender Gradient Text
+   ═══════════════════════════════════════════════════════════════ */
+
+.logo {
+    margin-bottom: var(--space-8);
+    padding-left: var(--space-3);
+}
+
+.logo h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    background: var(--lavender-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAVIGATION - Lavender Active States
+   ═══════════════════════════════════════════════════════════════ */
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    flex: 1;
+    overflow-y: auto;
+}
+
+.navItem {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    color: rgba(248, 247, 255, 0.7);
+    text-decoration: none;
+    transition: all var(--transition-base);
+    font-weight: var(--font-medium);
+    position: relative;
+    min-height: 44px;
+}
+
+.navItem:hover {
+    background: rgba(167, 139, 250, 0.15);
+    color: var(--primary-lavender);
+    transform: translateX(4px);
+}
+
+.active {
+    background: linear-gradient(90deg, rgba(139, 92, 246, 0.3), transparent);
+    color: var(--primary-lavender);
+    font-weight: var(--font-semibold);
+    border-left: 3px solid var(--secondary-lavender);
+    box-shadow: 0 0 20px rgba(155, 135, 245, 0.2);
+}
+
+.navIcon {
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+}
+
+.label {
+    font-size: var(--font-base);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER - User Profile
+   ═══════════════════════════════════════════════════════════════ */
+
+.footer {
+    margin-top: auto;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.userProfile {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-width: 0;
+    flex: 1;
+}
+
+.userInfo {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.username {
+    font-weight: var(--font-semibold);
+    font-size: var(--font-sm);
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.handle {
+    font-size: var(--font-xs);
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.logoutBtn {
+    color: var(--error);
+    flex-shrink: 0;
+    min-width: 32px;
+    min-height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-base);
+}
+
+.logoutBtn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--error);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE DESIGN
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (min-width: 641px) and (max-width: 1024px) {
+    .sidebar {
+        width: 80px;
+        padding: var(--space-4);
+        align-items: center;
+    }
+
+    .logo {
+        margin-bottom: var(--space-6);
+        padding-left: 0;
+    }
+
+    .logo h1 {
+        font-size: var(--font-xl);
+    }
+
+    .label,
+    .userInfo {
+        display: none;
+    }
+
+    .navItem {
+        justify-content: center;
+        padding: var(--space-3);
+    }
+
+    .footer {
+        flex-direction: column;
+        gap: var(--space-4);
+    }
+}
+
+@media (max-width: 640px) {
+    .sidebar {
+        display: none;
+    }
+}

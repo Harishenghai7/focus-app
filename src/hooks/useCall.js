@@ -1,140 +1,236 @@
-import { useState, useEffect, useRef } from "react";
-import Peer from "peerjs";
-import { createCall, subscribeToIncomingCalls, answerCall, endCall } from "../hooks/supabaseCallHelpers";
+import { useState, useCallback, useEffect } from 'react';
+import { supabase, supabaseUrl, supabaseAnonKey } from '../lib/supabase';
+import { useAuth } from './useAuth';
 
-export default function useCall(userId, onIncomingCallNotify) {
-  const peerRef = useRef(null);
-  const localStreamRef = useRef(null);
-  const callRef = useRef(null);
+export const useCall = (conversationId = null, listenForIncoming = false) => {
+    const { user, session } = useAuth();
+    const [activeCall, setActiveCall] = useState(null);
+    const [incomingCall, setIncomingCall] = useState(null);
+    const [callStatus, setCallStatus] = useState('idle');
+    const [callType, setCallType] = useState(null);
+    const [remoteUserId, setRemoteUserId] = useState(null);
+    const [isInitiator, setIsInitiator] = useState(false);
 
-  const [localStream, setLocalStream] = useState(null);
-  const [remoteStream, setRemoteStream] = useState(null);
-  const [callStatus, setCallStatus] = useState("loading");
-  const [incomingCall, setIncomingCall] = useState(null);
+    // Initiate a call
+    const initiateCall = useCallback(async (recipientId, type = 'audio', convId = null) => {
+        if (!user) return null;
 
-  useEffect(() => {
-    let ignore = false;
-    async function initMediaPeer() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        if (ignore) return;
-        setLocalStream(stream);
-        localStreamRef.current = stream;
+        try {
+            console.log(`📞 Initiating ${type} call to:`, recipientId);
+            setCallStatus('calling');
+            setCallType(type);
+            setRemoteUserId(recipientId);
+            setIsInitiator(true);
 
-        const peer = new Peer(userId, { secure: true });
-        peerRef.current = peer;
+            const targetConvId = convId || conversationId;
 
-        peer.on("open", () => setCallStatus("ready"));
+            if (!targetConvId) {
+                throw new Error('No conversation ID available for call');
+            }
 
-        peer.on("call", (call) => {
-          setIncomingCall(call);
-          setCallStatus("incoming-call");
-          call.answer(stream);
+            // Create call record
+            const response = await fetch(
+                `${supabaseUrl}/rest/v1/calls`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'apikey': supabaseAnonKey,
+                        'Authorization': `Bearer ${session.access_token}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify({
+                        conversation_id: targetConvId,
+                        caller_id: user.id,
+                        receiver_id: recipientId,
+                        call_type: type,
+                        status: 'ringing',
+                        started_at: new Date().toISOString()
+                    })
+                }
+            );
 
-          call.on("stream", remoteStream => {
-            setRemoteStream(remoteStream);
-            setCallStatus("in-call");
-          });
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
 
-          call.on("close", () => {
-            setCallStatus("ended");
-            cleanupCall();
-          });
-        });
+            const [call] = await response.json();
+            console.log('📞 Call record created:', call.id);
 
-        const unsubscribe = subscribeToIncomingCalls(userId, (callData) => {
-          onIncomingCallNotify(callData);
-        });
+            setActiveCall(call);
+            playRingtone();
+
+            return call;
+        } catch (err) {
+            console.error('Error initiating call:', err);
+            setCallStatus('idle');
+            setIsInitiator(false);
+            return null;
+        }
+    }, [user, conversationId, session]);
+
+    // Answer incoming call
+    const answerCall = useCallback(async (callId, type = 'audio') => {
+        try {
+            console.log('✅ Answering call:', callId, 'Type:', type);
+
+            // Set active call and type
+            setActiveCall({ id: callId });
+            setCallStatus('active');
+            setCallType(type);
+            setIsInitiator(false);
+
+            // Update call status in database
+            await supabase
+                .from('calls')
+                .update({ status: 'answered' })
+                .eq('id', callId);
+
+            stopRingtone();
+            console.log('✅ Call answered');
+        } catch (err) {
+            console.error('Error answering call:', err);
+        }
+    }, []);
+
+    // Decline incoming call
+    const declineCall = useCallback(async (callId) => {
+        try {
+            console.log('❌ Declining call:', callId);
+
+            await supabase
+                .from('calls')
+                .update({
+                    status: 'rejected',
+                    ended_at: new Date().toISOString()
+                })
+                .eq('id', callId);
+
+            setIncomingCall(null);
+            setCallStatus('idle');
+            stopRingtone();
+        } catch (err) {
+            console.error('Error declining call:', err);
+        }
+    }, []);
+
+    // End active call
+    const endCall = useCallback(async () => {
+        if (!activeCall) return;
+
+        try {
+            console.log('📴 Ending call:', activeCall.id);
+
+            const endTime = new Date();
+            const startTime = new Date(activeCall.started_at);
+            const duration = Math.floor((endTime - startTime) / 1000);
+
+            await supabase
+                .from('calls')
+                .update({
+                    status: 'ended',
+                    ended_at: endTime.toISOString(),
+                    duration_seconds: duration
+                })
+                .eq('id', activeCall.id);
+
+        } catch (err) {
+            console.error('Error ending call:', err);
+        } finally {
+            // ALWAYS clear state, even if DB update fails
+            setActiveCall(null);
+            setCallStatus('idle');
+            setCallType(null);
+            setRemoteUserId(null);
+            setIsInitiator(false);
+            stopRingtone();
+        }
+    }, [activeCall]);
+
+
+
+    // Ringtone helpers
+    const playRingtone = () => {
+        try {
+            if (window.activeRingtone) {
+                window.activeRingtone.play().catch(() => { });
+                return;
+            }
+
+            const audio = new Audio('/sounds/ringtone.mp3');
+            audio.loop = true;
+            audio.volume = 0.5;
+            audio.play().catch(err => {
+                // Ignore NotSupportedError (missing file) to prevent console noise
+                if (err.name !== 'NotSupportedError') {
+                    console.log('Ringtone play failed:', err);
+                }
+            });
+            window.activeRingtone = audio;
+        } catch (err) {
+            // Ignore errors
+        }
+    };
+
+    // Listen for incoming calls (if enabled)
+    useEffect(() => {
+        if (!user || !listenForIncoming) {
+            if (!listenForIncoming) {
+                console.log('📡 useCall: NOT setting up call subscription (listenForIncoming is false)');
+            }
+            return;
+        }
+
+        console.log('📡 useCall: Setting up call subscription');
+
+        const subscription = supabase
+            .channel(`calls-${user.id}`)
+            .on('postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'calls',
+                    filter: `receiver_id=eq.${user.id}`
+                },
+                (payload) => {
+                    console.log('🔔 Incoming call detected:', payload.new);
+                    setIncomingCall(payload.new);
+                    playRingtone();
+                }
+            )
+            .subscribe();
 
         return () => {
-          unsubscribe();
+            subscription.unsubscribe();
+            stopRingtone();
         };
-      } catch (e) {
-        console.error("Media error", e);
-        setCallStatus("error");
-      }
-    }
-    initMediaPeer();
+    }, [user, listenForIncoming]);
 
-    return () => {
-      ignore = true;
-      cleanupCall();
-      if (peerRef.current) {
-        peerRef.current.destroy();
-        peerRef.current = null;
-      }
-      if (localStreamRef.current) {
-        localStreamRef.current.getTracks().forEach(t => t.stop());
-        localStreamRef.current = null;
-      }
+    // Ringtone helpers
+    const stopRingtone = () => {
+        if (window.activeRingtone) {
+            window.activeRingtone.pause();
+            window.activeRingtone.currentTime = 0;
+            window.activeRingtone = null;
+        }
     };
-  }, [userId]);
 
-  const makeCall = (calleeId) => {
-    if (!peerRef.current || !localStreamRef.current) return false;
-    setCallStatus("outgoing-call");
-    let call = peerRef.current.call(calleeId, localStreamRef.current);
-    callRef.current = call;
-
-    call.on("stream", (remoteStream) => {
-      setRemoteStream(remoteStream);
-      setCallStatus("in-call");
-    });
-
-    call.on("close", () => {
-      setCallStatus("ended");
-      cleanupCall();
-    });
-
-    return true;
-  };
-
-  const acceptIncomingCall = () => {
-    if (incomingCall) {
-      setCallStatus("in-call");
-      setIncomingCall(null);
-    }
-  };
-
-  const rejectIncomingCall = () => {
-    if (incomingCall) {
-      incomingCall.close();
-      setIncomingCall(null);
-      setCallStatus("ready");
-    }
-  };
-
-  const endCall = () => {
-    if (callRef.current) callRef.current.close();
-    cleanupCall();
-    setCallStatus("ended");
-  };
-
-  const cleanupCall = () => {
-    if (callRef.current) {
-      callRef.current.close();
-      callRef.current = null;
-    }
-    setRemoteStream(null);
-  };
-
-  const toggleMute = () => {
-    if (!localStreamRef.current) return;
-    localStreamRef.current.getAudioTracks().forEach(track => (track.enabled = !track.enabled));
-  };
-
-  return {
-    localStream,
-    remoteStream,
-    incomingCall,
-    callStatus,
-    makeCall,
-    acceptIncomingCall,
-    rejectIncomingCall,
-    endCall,
-    toggleMute,
-  };
-}
-
-// Named export for compatibility
-export { useCall };
+    return {
+        activeCall,
+        incomingCall,
+        callStatus,
+        callType,
+        isInitiator,
+        initiateCall,
+        answerCall,
+        declineCall,
+        endCall,
+        // For compatibility
+        localStream: null,
+        remoteStream: null,
+        isConnected: false,
+        toggleAudio: () => { },
+        toggleVideo: () => { },
+        webRTCError: null
+    };
+};

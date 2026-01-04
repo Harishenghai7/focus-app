@@ -1,0 +1,71 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.title {
+    color: #8B5CF6;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #6B7280;
+    font-size: 15px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.selectionCount {
+    text-align: center;
+    font-size: 15px;
+    color: #374151;
+    font-weight: 500;
+    margin: 10px 0;
+}
+
+.hint {
+    color: #9CA3AF;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.actions button {
+    flex: 1;
+}
+
+.progressInfo {
+    text-align: center;
+    margin-top: 16px;
+    color: #9CA3AF;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+    }
+
+    .title {
+        font-size: 22px;
+    }
+}

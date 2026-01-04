@@ -1,0 +1,55 @@
+.container {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    padding: var(--space-2);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.container:focus-within {
+    border-color: var(--primary-lavender);
+    box-shadow: 0 0 0 2px var(--primary-lavender-200);
+}
+
+.tagsWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    background: var(--primary-lavender-100);
+    color: var(--primary-lavender);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-sm);
+    font-weight: var(--font-medium);
+    gap: var(--space-1);
+}
+
+.removeButton {
+    background: transparent;
+    border: none;
+    color: var(--primary-lavender);
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.removeButton:hover {
+    color: var(--primary-lavender-dark);
+}
+
+.input {
+    flex: 1;
+    min-width: 120px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-size: var(--font-base);
+    padding: var(--space-1);
+}

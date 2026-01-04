@@ -1,0 +1,19 @@
+.container {
+    background: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    border: 1px solid var(--border-default);
+    margin-bottom: var(--space-6);
+}
+
+.title {
+    font-size: var(--font-lg);
+    margin-bottom: var(--space-4);
+    color: var(--text-primary);
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}

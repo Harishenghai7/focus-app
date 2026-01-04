@@ -1,0 +1,28 @@
+/* BoltzPlayer - Full Screen Video */
+
+.container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    scroll-snap-align: start;
+    background: #000000;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    background: #000000;
+}
+
+/* Desktop - Contained video */
+@media (min-width: 1024px) {
+    .video {
+        object-fit: contain;
+    }
+}

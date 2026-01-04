@@ -1,0 +1,22 @@
+.wrapper {
+    width: 100%;
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.available {
+    color: #22c55e;
+}
+
+.taken {
+    color: #ef4444;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

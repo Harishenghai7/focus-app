@@ -1,0 +1,294 @@
+/* TrendingPanel - Focus Lavender Theme */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 16px;
+}
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    gap: 16px;
+    color: #d1d5db;
+}
+
+.spinner {
+    font-size: 32px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.section {
+    margin-bottom: 48px;
+}
+
+.section:last-child {
+    margin-bottom: 0;
+}
+
+.sectionHeader {
+    margin-bottom: 20px;
+}
+
+.sectionTitle {
+    font-size: 24px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #a78bfa 0%, #c4b5fd 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0 0 4px 0;
+}
+
+.sectionSubtitle {
+    font-size: 14px;
+    color: #9ca3af;
+}
+
+/* Trending Hashtags */
+.hashtagGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.hashtagCard {
+    background: #251640;
+    border: 1px solid rgba(167, 139, 250, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.hashtagCard:hover {
+    background: #2d1b4e;
+    border-color: #a78bfa;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(167, 139, 250, 0.15);
+}
+
+.hashtagRank {
+    width: 40px;
+    height: 40px;
+    background: rgba(167, 139, 250, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #a78bfa;
+}
+
+.hashtagInfo {
+    flex: 1;
+}
+
+.hashtagName {
+    font-size: 16px;
+    font-weight: 600;
+    color: #f3f4f6;
+    margin-bottom: 4px;
+}
+
+.hashtagStats {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.hashtagCount {
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+.hashtagGrowth {
+    font-size: 13px;
+    font-weight: 600;
+    color: #10b981;
+}
+
+/* Trending Creators */
+.creatorsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.creatorCard {
+    background: #251640;
+    border: 1px solid rgba(167, 139, 250, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.creatorCard:hover {
+    background: #2d1b4e;
+    border-color: #a78bfa;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(167, 139, 250, 0.15);
+}
+
+.creatorAvatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(167, 139, 250, 0.3);
+}
+
+.creatorInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.creatorName {
+    font-size: 15px;
+    font-weight: 600;
+    color: #f3f4f6;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 2px;
+}
+
+.verified {
+    color: #a78bfa;
+    font-size: 14px;
+}
+
+.creatorFullName {
+    font-size: 13px;
+    color: #9ca3af;
+    margin-bottom: 4px;
+}
+
+.creatorFollowers {
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+.followBtn {
+    padding: 8px 20px;
+    background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+    border: none;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(167, 139, 250, 0.3);
+}
+
+.followBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(167, 139, 250, 0.4);
+}
+
+.followBtn:active {
+    transform: translateY(0);
+}
+
+/* Viral Posts */
+.viralGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+}
+
+.viralCard {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 1px solid rgba(167, 139, 250, 0.2);
+}
+
+.viralCard:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 24px rgba(167, 139, 250, 0.2);
+}
+
+.viralThumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.viralOverlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(26, 15, 46, 0.9) 0%, transparent 50%);
+    display: flex;
+    align-items: flex-end;
+    padding: 16px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.viralCard:hover .viralOverlay {
+    opacity: 1;
+}
+
+.viralStats {
+    display: flex;
+    gap: 16px;
+}
+
+.viralStat {
+    color: #f3f4f6;
+    font-size: 14px;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .container {
+        padding: 16px 12px;
+    }
+
+    .section {
+        margin-bottom: 32px;
+    }
+
+    .sectionTitle {
+        font-size: 20px;
+    }
+
+    .hashtagGrid,
+    .creatorsGrid,
+    .viralGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .viralGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+}

@@ -1,0 +1,264 @@
+/* src/pages/Boltz.css */
+
+/* 🎥 PAGE CONTAINER */
+.boltz-page {
+  position: fixed; /* Take over the viewport */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; /* Full viewport height */
+  height: 100dvh; /* Dynamic viewport for mobile browsers */
+  background: #000; /* Cinema black background */
+  z-index: 10; /* Above standard layout */
+  overflow: hidden;
+}
+
+/* 📱 MAIN FEED SNAP CONTAINER */
+.boltz-feed-container {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory; /* The magic property */
+  scroll-behavior: smooth;
+  
+  /* Hide Scrollbar */
+  scrollbar-width: none; 
+  -ms-overflow-style: none;
+}
+
+.boltz-feed-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* 🎞️ INDIVIDUAL REEL ITEM */
+.boltz-item {
+  position: relative;
+  width: 100%;
+  height: 100%; /* Fills viewport exactly */
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  overflow: hidden;
+  background: #1a1a1a;
+}
+
+/* 📹 VIDEO ELEMENT */
+.boltz-video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensure full screen fill */
+  display: block;
+}
+
+/* 🌑 GRADIENT OVERLAY (For text readability) */
+.boltz-overlay-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  pointer-events: none;
+}
+
+/* 🧭 HEADER TABS */
+.boltz-header {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 20;
+  pointer-events: none; /* Let clicks pass through to video */
+}
+
+.glass-pill {
+  pointer-events: auto;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border-radius: 99px;
+  padding: 4px;
+  display: flex;
+  gap: 4px;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 99px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* 👉 RIGHT ACTIONS BAR */
+.boltz-actions-right {
+  position: absolute;
+  right: 12px;
+  bottom: 100px; /* Clear bottom nav */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  z-index: 20;
+}
+
+/* Avatar Stack */
+.profile-follow-stack {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.action-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid white;
+  object-fit: cover;
+}
+
+.mini-follow-btn {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--focus-accent); /* Pink accent */
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+/* Interaction Bar Overrides for Vertical Layout */
+.boltz-actions-right .interaction-btn {
+  color: white;
+  text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.boltz-actions-right .interaction-count {
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+/* 👇 BOTTOM INFO AREA */
+.boltz-info-bottom {
+  position: absolute;
+  bottom: 20px;
+  left: 16px;
+  width: 75%; /* Leave room for right actions */
+  z-index: 20;
+  text-align: left;
+  color: white;
+}
+
+.info-user-row h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  cursor: pointer;
+}
+
+.verified-tick {
+  background: var(--focus-aqua);
+  color: white;
+  font-size: 10px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.info-caption {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  margin-bottom: 12px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.info-caption .tag {
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+/* 🎵 MUSIC TICKER */
+.info-music-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(5px);
+  padding: 6px 12px;
+  border-radius: 99px;
+  width: fit-content;
+}
+
+.music-ticker {
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 150px;
+}
+
+.music-icon-anim {
+  animation: spin 3s linear infinite;
+}
+
+/* 🔊 MUTE TOGGLE */
+.mute-toggle-float {
+  position: absolute;
+  top: 80px;
+  right: 16px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  z-index: 20;
+  cursor: pointer;
+}
+
+/* 📱 MOBILE ADJUSTMENTS */
+@media (max-width: 600px) {
+  .boltz-info-bottom {
+    bottom: 70px; /* Account for bottom nav */
+  }
+  
+  .boltz-actions-right {
+    bottom: 90px;
+  }
+}
+
+/* 🔄 LOADING */
+.boltz-loader {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  color: var(--focus-lavender);
+}

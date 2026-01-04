@@ -1,0 +1,95 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--bg-primary);
+}
+
+.canvasWrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    overflow: hidden;
+    padding: var(--space-4);
+}
+
+.canvas {
+    max-width: 100%;
+    max-height: 60vh;
+    object-fit: contain;
+}
+
+.controls {
+    background: var(--bg-elevated);
+    padding: var(--space-4);
+    border-top: 1px solid var(--border-default);
+}
+
+.filters {
+    display: flex;
+    gap: var(--space-4);
+    overflow-x: auto;
+    padding-bottom: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+
+.filterBtn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.filterPreview {
+    width: 60px;
+    height: 60px;
+    background: #ddd;
+    border-radius: var(--radius-md);
+    border: 2px solid transparent;
+}
+
+.activeFilter .filterPreview {
+    border-color: var(--primary-lavender);
+}
+
+.activeFilter span {
+    color: var(--primary-lavender);
+    font-weight: var(--font-bold);
+}
+
+.adjustments {
+    display: flex;
+    gap: var(--space-8);
+    margin-bottom: var(--space-4);
+}
+
+.sliderGroup {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.sliderGroup label {
+    font-size: var(--font-xs);
+    color: var(--text-muted);
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-default);
+}
+
+.mainActions {
+    display: flex;
+    gap: var(--space-2);
+}

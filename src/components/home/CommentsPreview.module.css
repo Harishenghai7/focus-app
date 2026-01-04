@@ -1,0 +1,28 @@
+.container {
+    padding: 0 var(--space-4);
+    margin-bottom: var(--space-4);
+}
+
+.viewAllBtn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: var(--font-sm);
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: var(--space-1);
+}
+
+.comment {
+    font-size: var(--font-sm);
+    margin-top: var(--space-1);
+}
+
+.username {
+    font-weight: var(--font-bold);
+    margin-right: var(--space-2);
+}
+
+.text {
+    color: var(--text-primary);
+}

@@ -1,0 +1,177 @@
+/* Delete Message Modal - Lavender Theme */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+.modal {
+    background: linear-gradient(135deg, rgba(30, 20, 50, 0.98), rgba(42, 27, 71, 0.98));
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 20px;
+    width: 90%;
+    max-width: 450px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease;
+}
+
+.header {
+    padding: 32px 24px 24px;
+    text-align: center;
+    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.icon {
+    margin-bottom: 16px;
+}
+
+.title {
+    font-size: 22px;
+    font-weight: 600;
+    color: white;
+    margin: 0 0 8px 0;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.content {
+    padding: 24px;
+}
+
+.option {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+    background: rgba(42, 27, 71, 0.6);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.option:last-child {
+    margin-bottom: 0;
+}
+
+.option:hover:not(:disabled) {
+    background: rgba(42, 27, 71, 0.8);
+    border-color: rgba(139, 92, 246, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+}
+
+.option:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.option.danger {
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.option.danger:hover:not(:disabled) {
+    border-color: rgba(239, 68, 68, 0.5);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.optionIcon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(139, 92, 246, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a78bfa;
+}
+
+.option.danger .optionIcon {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.optionContent {
+    flex: 1;
+}
+
+.optionTitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 4px;
+}
+
+.optionDescription {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.4;
+}
+
+.actions {
+    padding: 0 24px 24px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal {
+        width: 95%;
+    }
+
+    .header {
+        padding: 24px 16px 16px;
+    }
+
+    .content {
+        padding: 16px;
+    }
+
+    .option {
+        padding: 12px;
+    }
+
+    .optionIcon {
+        width: 36px;
+        height: 36px;
+    }
+}

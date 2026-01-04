@@ -1,0 +1,64 @@
+.bioSection {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.fullName {
+    font-size: var(--font-base);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.bio {
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+    line-height: var(--leading-relaxed);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 0;
+}
+
+.bio .link {
+    color: var(--primary-lavender);
+    text-decoration: none;
+    font-weight: var(--font-medium);
+    transition: color 0.2s ease;
+}
+
+.bio .link:hover {
+    color: var(--primary-lavender-light);
+    text-decoration: underline;
+}
+
+.website,
+.location {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.website:hover {
+    color: var(--primary-lavender);
+}
+
+.website span,
+.location span {
+    color: inherit;
+}
+
+@media (max-width: 768px) {
+    .bioSection {
+        text-align: center;
+    }
+
+    .website,
+    .location {
+        justify-content: center;
+    }
+}

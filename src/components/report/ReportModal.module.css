@@ -1,0 +1,292 @@
+.reportModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+}
+
+.modalContent {
+    background: linear-gradient(135deg, #1A0B2E 0%, #2D1B4E 100%);
+    border-radius: 20px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(185, 148, 246, 0.3);
+    border: 1px solid rgba(157, 127, 234, 0.2);
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modalHeader {
+    padding: 24px;
+    border-bottom: 1px solid rgba(157, 127, 234, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modalTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.closeButton:hover {
+    background: rgba(157, 127, 234, 0.1);
+    color: #B794F6;
+}
+
+.modalBody {
+    padding: 24px;
+}
+
+.categoryGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.categoryCard {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
+}
+
+.categoryCard:hover {
+    background: rgba(185, 148, 246, 0.1);
+    border-color: rgba(157, 127, 234, 0.3);
+    transform: translateY(-2px);
+}
+
+.categoryCard.selected {
+    background: rgba(185, 148, 246, 0.2);
+    border-color: #B794F6;
+    box-shadow: 0 0 20px rgba(185, 148, 246, 0.3);
+}
+
+.categoryIcon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.categoryLabel {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+}
+
+.categoryDescription {
+    font-size: 12px;
+    color: #999;
+    margin: 4px 0 0 0;
+}
+
+.formGroup {
+    margin-bottom: 20px;
+}
+
+.label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+.textarea {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(157, 127, 234, 0.2);
+    border-radius: 12px;
+    padding: 12px;
+    color: #ffffff;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 100px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.textarea:focus {
+    outline: none;
+    border-color: #B794F6;
+    box-shadow: 0 0 0 3px rgba(185, 148, 246, 0.1);
+}
+
+.textarea::placeholder {
+    color: #666;
+}
+
+.charCount {
+    text-align: right;
+    font-size: 12px;
+    color: #999;
+    margin-top: 4px;
+}
+
+.evidenceUpload {
+    margin-top: 16px;
+}
+
+.uploadButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed rgba(157, 127, 234, 0.3);
+    border-radius: 8px;
+    padding: 12px 20px;
+    color: #B794F6;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.uploadButton:hover {
+    background: rgba(185, 148, 246, 0.1);
+    border-color: #B794F6;
+}
+
+.modalFooter {
+    padding: 24px;
+    border-top: 1px solid rgba(157, 127, 234, 0.2);
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.button {
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+}
+
+.buttonSecondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+}
+
+.buttonSecondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.buttonPrimary {
+    background: linear-gradient(135deg, #B794F6 0%, #9D7FEA 100%);
+    color: #ffffff;
+}
+
+.buttonPrimary:hover {
+    background: linear-gradient(135deg, #C5A4F7 0%, #AE8FEB 100%);
+    box-shadow: 0 8px 20px rgba(185, 148, 246, 0.4);
+    transform: translateY(-2px);
+}
+
+.buttonPrimary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.successMessage {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.successIcon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    animation: bounce 0.5s ease;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.successTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+.successText {
+    font-size: 14px;
+    color: #999;
+    margin-bottom: 24px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .modalContent {
+        max-width: 100%;
+        border-radius: 20px 20px 0 0;
+        max-height: 95vh;
+    }
+
+    .categoryGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .modalFooter {
+        flex-direction: column-reverse;
+    }
+
+    .button {
+        width: 100%;
+    }
+}

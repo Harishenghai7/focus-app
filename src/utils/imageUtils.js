@@ -1,193 +1,115 @@
 /**
- * imageUtils - Image utility functions
- * @function
- * @param {string} url - Image URL
- * @returns {Object}
+ * Creates a new Image object from a URL
  */
-export function imageUtils(url) {
-  // ...image logic...
-  return { url };
+export const createImage = (url) =>
+    new Promise((resolve, reject) => {
+        const image = new Image();
+        image.addEventListener('load', () => resolve(image));
+        image.addEventListener('error', (error) => reject(error));
+        image.setAttribute('crossOrigin', 'anonymous'); // needed to avoid cross-origin issues on CodeSandbox
+        image.src = url;
+    });
+
+/**
+ * Returns the new bounding area of a rotated rectangle.
+ */
+export function getRotatedSize(width, height, rotation) {
+    const rotRad = (rotation * Math.PI) / 180;
+    return {
+        width:
+            Math.abs(Math.cos(rotRad) * width) + Math.abs(Math.sin(rotRad) * height),
+        height:
+            Math.abs(Math.sin(rotRad) * width) + Math.abs(Math.cos(rotRad) * height),
+    };
 }
 
 /**
- * imageCompression - Compresses images
- * @function
- * @param {File} file - Image file
- * @returns {Promise<File>}
+ * This function returns the result of the crop as a blob URL
  */
-export async function imageCompression(file) {
-  // ...compression logic...
-  return file;
-}
-
-/**
- * videoUtils - Video utility functions
- * @function
- * @param {string} url - Video URL
- * @returns {Object}
- */
-export function videoUtils(url) {
-  // ...video logic...
-  return { url };
-}
-
-/**
- * contentParser - Parses content
- * @function
- * @param {string} content - Content string
- * @returns {Object}
- */
-export function contentParser(content) {
-  // ...parse logic...
-  return { parsed: content };
-}
-
-/**
- * linkifiedText - Converts text to links
- * @function
- * @param {string} text - Text to linkify
- * @returns {string}
- */
-export function linkifiedText(text) {
-  // ...linkify logic...
-  return text;
-}
-
-/**
- * altTextGenerator - Generates alt text
- * @function
- * @param {string} imageUrl - Image URL
- * @returns {string}
- */
-export function altTextGenerator(imageUrl) {
-  // ...alt text logic...
-  return 'Alt text';
-}
-
-/**
- * lazyLoad - Lazy loads images
- * @function
- * @param {string} selector - CSS selector
- * @returns {void}
- */
-export function lazyLoad(selector) {
-  // ...lazy load logic...
-}
-
-/**
- * haptics - Triggers haptic feedback
- * @function
- * @param {string} type - Feedback type
- * @returns {void}
- */
-export function haptics(type) {
-  // ...haptic logic...
-}
-
-/**
- * browserCompatibility - Checks browser compatibility
- * @function
- * @returns {boolean}
- */
-export function browserCompatibility() {
-  // ...compatibility logic...
-  return true;
-}
-
-/**
- * colorContrast - Calculates color contrast
- * @function
- * @param {string} colorA - First color
- * @param {string} colorB - Second color
- * @returns {number}
- */
-export function colorContrast(colorA, colorB) {
-  // ...contrast logic...
-  return 1;
-}
-
-/**
- * accessibility - Accessibility helpers
- * @function
- * @returns {Object}
- */
-export function accessibility() {
-  // ...accessibility logic...
-  return {};
-}
-
-/**
- * i18n - Internationalization helpers
- * @function
- * @returns {Object}
- */
-export function i18n() {
-  // ...i18n logic...
-  return {};
-}
-
-/**
- * logger - Logs messages
- * @function
- * @param {string} msg - Message to log
- * @returns {void}
- */
-export function logger(msg) {
-  // ...log logic...
-}
-
-/**
- * errorHandler - Handles errors
- * @function
- * @param {Error} error - Error object
- * @returns {string}
- */
-export function errorHandler(error) {
-  // ...error logic...
-  return error.message;
-}
-
-// Image optimization utilities
-export const compressImage = (file, quality = 0.8) => {
-  return new Promise((resolve) => {
+export async function getCroppedImg(
+    imageSrc,
+    pixelCrop,
+    rotation = 0,
+    flip = { horizontal: false, vertical: false }
+) {
+    const image = await createImage(imageSrc);
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    const img = new Image();
-    
-    img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
-      
-      canvas.toBlob(resolve, 'image/jpeg', quality);
-    };
-    
-    img.src = URL.createObjectURL(file);
-  });
-};
 
-export const resizeImage = (file, maxWidth = 1920, maxHeight = 1080) => {
-  return new Promise((resolve) => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const img = new Image();
-    
-    img.onload = () => {
-      let { width, height } = img;
-      
-      if (width > maxWidth || height > maxHeight) {
-        const ratio = Math.min(maxWidth / width, maxHeight / height);
-        width *= ratio;
-        height *= ratio;
-      }
-      
-      canvas.width = width;
-      canvas.height = height;
-      ctx.drawImage(img, 0, 0, width, height);
-      
-      canvas.toBlob(resolve, 'image/jpeg', 0.9);
-    };
-    
-    img.src = URL.createObjectURL(file);
-  });
+    if (!ctx) {
+        return null;
+    }
+
+    const rotRad = (rotation * Math.PI) / 180;
+
+    // calculate bounding box of the rotated image
+    const { width: bBoxWidth, height: bBoxHeight } = getRotatedSize(
+        image.width,
+        image.height,
+        rotation
+    );
+
+    // set canvas size to match the bounding box
+    canvas.width = bBoxWidth;
+    canvas.height = bBoxHeight;
+
+    // translate canvas context to a central location to allow rotating and flipping around the center
+    ctx.translate(bBoxWidth / 2, bBoxHeight / 2);
+    ctx.rotate(rotRad);
+    ctx.scale(flip.horizontal ? -1 : 1, flip.vertical ? -1 : 1);
+    ctx.translate(-image.width / 2, -image.height / 2);
+
+    // draw rotated image
+    ctx.drawImage(image, 0, 0);
+
+    // croppedAreaPixels values are bounding box relative
+    // extract the cropped image using these values
+    const data = ctx.getImageData(
+        pixelCrop.x,
+        pixelCrop.y,
+        pixelCrop.width,
+        pixelCrop.height
+    );
+
+    // set canvas width to final desired crop size - this will clear existing context
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+
+    // paste generated rotate image at the top left corner
+    ctx.putImageData(data, 0, 0);
+
+    // As Base64 string
+    // return canvas.toDataURL('image/jpeg');
+
+    // As Blob
+    return new Promise((resolve, reject) => {
+        canvas.toBlob((file) => {
+            resolve(URL.createObjectURL(file));
+        }, 'image/jpeg');
+    });
+}
+
+export const generateVideoThumbnail = (videoFile) => {
+    return new Promise((resolve, reject) => {
+        const video = document.createElement('video');
+        video.preload = 'metadata';
+        video.onloadedmetadata = () => {
+            video.currentTime = 1; // Capture at 1s
+        };
+        video.onseeked = () => {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageUrl = canvas.toDataURL('image/jpeg');
+                resolve(imageUrl);
+            } catch (e) {
+                reject(e);
+            }
+        };
+        video.onerror = (e) => reject(e);
+        video.src = URL.createObjectURL(videoFile);
+    });
 };

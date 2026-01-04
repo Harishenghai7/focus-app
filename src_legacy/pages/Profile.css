@@ -1,0 +1,89 @@
+/* src/pages/Profile.css */
+
+/* 🏗️ PAGE LAYOUT */
+.profile-page {
+  width: 100%;
+  min-height: 100vh;
+  /* Background handled by body, but can enforce specific here if needed */
+  padding-bottom: 80px; /* Mobile Nav space */
+}
+
+.profile-container {
+  max-width: 935px; /* Instagram-standard width */
+  margin: 0 auto;
+  padding: 30px 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px; /* Vertical Rhythm */
+}
+
+/* 📱 RESPONSIVE HEADER LAYOUT */
+/* Note: ProfileHeader component handles its internal CSS, 
+   but page-level adjustments go here */
+
+/* 📊 STATS BAR (Page Level Integration) */
+.profile-section-highlights {
+  margin-bottom: 10px; /* Spacing before tabs */
+  /* Horizontal scroll container for highlights */
+  width: 100%;
+}
+
+/* 🧱 CONTENT AREA */
+.profile-content-area {
+  min-height: 400px; /* Prevent collapse on loading */
+  width: 100%;
+}
+
+/* 🔄 LOADING STATE */
+.profile-page-loading {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 100px;
+}
+
+/* 🚫 NOT FOUND STATE */
+.profile-not-found {
+  text-align: center;
+  margin-top: 100px;
+  color: var(--text-primary);
+}
+
+.profile-not-found h2 {
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+}
+
+.profile-not-found button {
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 99px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.profile-not-found button:hover {
+  transform: scale(1.05);
+}
+
+/* 📱 MOBILE OPTIMIZATION */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 0; /* Flush on mobile */
+    gap: 12px;
+  }
+
+  /* Ensure header has padding on mobile since container doesn't */
+  .profile-header { 
+    padding: 16px 16px 0; 
+  }
+  
+  .profile-section-highlights {
+    padding-left: 16px; /* Alignment with header content */
+  }
+}

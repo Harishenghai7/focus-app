@@ -1,89 +1,41 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 
-export const useVideoPlayer = (videoRef, isActive) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
-  const [volume, setVolume] = useState(0.7);
+export const useVideoPlayer = (currentIndex, videos, playing, muted) => {
+    const videoRefs = useRef([]);
 
-  // Auto-play when active
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (isActive) {
-      video.play()
-        .then(() => setIsPlaying(true))
-        .catch(err => {
-          console.error('Auto-play failed:', err);
-          setIsPlaying(false);
+    useEffect(() => {
+        // Pause all videos except current
+        videoRefs.current.forEach((video, index) => {
+            if (video) {
+                if (index === currentIndex && playing) {
+                    video.play().catch(err => {
+                        if (err.name !== 'AbortError') {
+                            console.error('Play error:', err);
+                        }
+                    });
+                } else {
+                    video.pause();
+                }
+                video.muted = muted;
+            }
         });
-    } else {
-      video.pause();
-      setIsPlaying(false);
-    }
-  }, [isActive, videoRef]);
+    }, [currentIndex, playing, muted]);
 
-  // Sync playing state with video element
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            videoRefs.current.forEach(video => {
+                if (video) {
+                    video.pause();
+                    video.src = '';
+                }
+            });
+        };
+    }, []);
 
-    const handlePlay = () => setIsPlaying(true);
-    const handlePause = () => setIsPlaying(false);
-
-    video.addEventListener('play', handlePlay);
-    video.addEventListener('pause', handlePause);
-
-    return () => {
-      video.removeEventListener('play', handlePlay);
-      video.removeEventListener('pause', handlePause);
+    const setVideoRef = (index) => (ref) => {
+        videoRefs.current[index] = ref;
     };
-  }, [videoRef]);
 
-  // Update volume
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    video.volume = volume;
-  }, [volume, videoRef]);
-
-  // Toggle play/pause
-  const togglePlay = useCallback(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (video.paused) {
-      video.play().catch(err => console.error('Play failed:', err));
-    } else {
-      video.pause();
-    }
-  }, [videoRef]);
-
-  // Toggle mute
-  const toggleMute = useCallback(() => {
-    setIsMuted(prev => !prev);
-    const video = videoRef.current;
-    if (video) {
-      video.muted = !isMuted;
-    }
-  }, [isMuted, videoRef]);
-
-  // Seek to position (0-1)
-  const seek = useCallback((percent) => {
-    const video = videoRef.current;
-    if (!video || !video.duration) return;
-
-    video.currentTime = video.duration * percent;
-  }, [videoRef]);
-
-  return {
-    isPlaying,
-    isMuted,
-    volume,
-    togglePlay,
-    toggleMute,
-    setVolume,
-    seek
-  };
+    return { setVideoRef, videoRefs };
 };

@@ -1,0 +1,112 @@
+/* Bottom Navigation - Mobile-First Design System Compliant */
+
+.bottomNav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: #1a1a1a;
+    border-top: 1px solid rgba(139, 92, 246, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 8px;
+    z-index: 1000;
+    backdrop-filter: blur(20px) saturate(180%);
+    background: rgba(26, 26, 26, 0.95);
+}
+
+/* Safe area padding for devices with notch */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .bottomNav {
+        padding-bottom: env(safe-area-inset-bottom);
+        height: calc(56px + env(safe-area-inset-bottom));
+    }
+}
+
+.navItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-width: 48px;
+    min-height: 48px;
+    padding: 4px 8px;
+    background: transparent;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+}
+
+.navItem:active {
+    transform: scale(0.95);
+    background: rgba(139, 92, 246, 0.1);
+}
+
+.navIconWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.active .navIconWrapper {
+    background: rgba(139, 92, 246, 0.1);
+}
+
+.special .navIconWrapper {
+    background: linear-gradient(135deg, #9b87f5, #7c3aed);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+.special:active .navIconWrapper {
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.4);
+}
+
+.navLabel {
+    font-size: 10px;
+    font-weight: 500;
+    color: #9b87f5;
+    letter-spacing: 0.02em;
+    margin-top: -2px;
+    animation: labelFadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes labelFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Tablet optimization */
+@media (min-width: 640px) and (max-width: 1024px) {
+    .bottomNav {
+        padding: 0 24px;
+    }
+
+    .navItem {
+        min-width: 64px;
+    }
+}
+
+/* Hide on desktop (use sidebar instead) */
+@media (min-width: 1024px) {
+    .bottomNav {
+        display: none;
+    }
+}

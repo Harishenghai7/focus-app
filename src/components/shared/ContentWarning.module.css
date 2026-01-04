@@ -1,0 +1,61 @@
+.container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.blurredContent {
+    filter: blur(20px);
+    pointer-events: none;
+    user-select: none;
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.warning {
+    text-align: center;
+    padding: var(--space-6);
+    max-width: 400px;
+}
+
+.icon {
+    font-size: 48px;
+    margin-bottom: var(--space-4);
+}
+
+.title {
+    font-size: var(--font-xl);
+    font-weight: var(--font-bold);
+    color: white;
+    margin: 0 0 var(--space-2) 0;
+}
+
+.message {
+    font-size: var(--font-base);
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0 0 var(--space-6) 0;
+}
+
+.revealBtn {
+    background: white;
+    color: var(--text-primary);
+    border: none;
+    border-radius: var(--radius-lg);
+    padding: var(--space-3) var(--space-6);
+    font-weight: var(--font-semibold);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.revealBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+}

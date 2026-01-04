@@ -1,0 +1,42 @@
+.badgeCount {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--text-secondary);
+    font-weight: var(--font-medium);
+}
+
+.badgeCount svg {
+    color: var(--primary);
+}
+
+.badgeCount.sm {
+    font-size: var(--font-sm);
+}
+
+.badgeCount.sm svg {
+    width: 14px;
+    height: 14px;
+}
+
+.badgeCount.md {
+    font-size: var(--font-base);
+}
+
+.badgeCount.md svg {
+    width: 16px;
+    height: 16px;
+}
+
+.badgeCount.lg {
+    font-size: var(--font-lg);
+}
+
+.badgeCount.lg svg {
+    width: 18px;
+    height: 18px;
+}
+
+.text {
+    white-space: nowrap;
+}

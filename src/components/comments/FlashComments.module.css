@@ -1,0 +1,255 @@
+/* FlashComments - Instagram Stories Style - Fixed Positioning */
+
+.container {
+    position: absolute;
+    bottom: 80px;
+    /* Space for Reply/Share buttons */
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+    padding: 20px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: calc(60vh - 80px);
+    /* Account for button space */
+    pointer-events: auto;
+    z-index: 5;
+    /* Below bottom buttons which are z-index: 10 */
+}
+
+.loading {
+    text-align: center;
+    font-size: 24px;
+    padding: 20px;
+    color: white;
+}
+
+/* Quick Reactions */
+.quickReactions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    padding: 8px 0;
+}
+
+.reactionBtn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    backdrop-filter: blur(10px);
+}
+
+.reactionBtn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.reactionBtn:active {
+    transform: scale(0.95);
+}
+
+.reactionBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Comments List */
+.commentsList {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+    padding: 8px 0;
+}
+
+.commentsList::-webkit-scrollbar {
+    width: 4px;
+}
+
+.commentsList::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+}
+
+.empty {
+    text-align: center;
+    padding: 20px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.empty span {
+    font-size: 32px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.empty p {
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Comment Item */
+.comment {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.bubble {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 18px;
+    padding: 8px 12px;
+    max-width: 70%;
+}
+
+.username {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.verified {
+    color: #0095f6;
+    font-size: 12px;
+}
+
+.text {
+    font-size: 14px;
+    color: white;
+    word-wrap: break-word;
+    line-height: 1.4;
+    margin-bottom: 4px;
+}
+
+.time {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Input Form */
+.inputForm {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 4px 4px 4px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: white;
+    font-size: 14px;
+    padding: 8px 0;
+}
+
+.input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.input:disabled {
+    opacity: 0.5;
+}
+
+.charCount {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    flex-shrink: 0;
+    margin-right: 4px;
+}
+
+.charCount.warning {
+    color: #ff4444;
+    font-weight: 600;
+}
+
+.sendBtn {
+    background: #0095f6;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 16px;
+    color: white;
+    flex-shrink: 0;
+}
+
+.sendBtn:hover:not(:disabled) {
+    background: #1877f2;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.sendBtn:active {
+    transform: scale(0.95);
+}
+
+.sendBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .container {
+        bottom: 70px;
+        /* Adjust for mobile button height */
+        max-height: calc(50vh - 70px);
+    }
+
+    .bubble {
+        max-width: 80%;
+    }
+
+    .reactionBtn {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+}

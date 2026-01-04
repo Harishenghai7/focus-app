@@ -1,0 +1,50 @@
+/**
+ * Profile Page - Ultimate Lavender Theme v3.0
+ * User profile with lavender accents
+ */
+
+.profileContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--bg-primary);
+    min-height: 100vh;
+}
+
+.content {
+    padding: var(--space-4);
+}
+
+.error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-16);
+    text-align: center;
+    min-height: 60vh;
+}
+
+.error h2 {
+    font-size: var(--font-3xl);
+    font-weight: var(--font-bold);
+    background: var(--lavender-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: var(--space-4);
+}
+
+.error p {
+    font-size: var(--font-lg);
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .profileContainer {
+        max-width: 100%;
+    }
+
+    .content {
+        padding: var(--space-2);
+    }
+}

@@ -1,0 +1,127 @@
+.replyPreview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(139, 92, 246, 0.05);
+    border-top: 1px solid rgba(139, 92, 246, 0.1);
+    animation: slideUp 0.2s ease;
+}
+
+.replyLine {
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, #8b5cf6 0%, #6366f1 100%);
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.replyContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.replyHeader {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #8b5cf6;
+}
+
+.replyHeader svg {
+    flex-shrink: 0;
+}
+
+.replyLabel {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.replyMessage {
+    font-size: 14px;
+    color: #6b7280;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.textPreview {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mediaPreview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mediaPreview img {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+.mediaPreview svg {
+    flex-shrink: 0;
+    color: #8b5cf6;
+}
+
+.mediaPreview span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cancelButton {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    border-radius: 50%;
+    color: #9ca3af;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cancelButton:hover {
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .replyPreview {
+        padding: 10px 12px;
+    }
+
+    .replyLabel {
+        font-size: 11px;
+    }
+
+    .replyMessage {
+        font-size: 13px;
+    }
+}

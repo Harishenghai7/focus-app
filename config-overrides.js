@@ -39,14 +39,20 @@ module.exports = override(
       '@': path.resolve(__dirname, 'src')
     };
 
+    // Ignore source map warnings from node_modules (fixes nsfwjs warnings)
+    config.ignoreWarnings = [
+      ...(config.ignoreWarnings || []),
+      /Failed to parse source map/,
+    ];
+
     return config;
   },
-  
+
   // Add path aliases
   addWebpackAlias({
     '@': path.resolve(__dirname, 'src'),
   }),
-  
+
   // Add process and Buffer polyfills
   (config) => {
     config.plugins.push(
@@ -59,7 +65,7 @@ module.exports = override(
         'process.browser': true,
       })
     );
-    
+
     return config;
   }
 );

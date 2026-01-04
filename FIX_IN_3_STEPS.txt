@@ -1,0 +1,91 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║                  🚨 FIX "NO USER FOUND" - 3 STEPS                      ║
+║                  Time: 5 minutes | Deadline: 4.5 hours                 ║
+╚════════════════════════════════════════════════════════════════════════╝
+
+┌─ STEP 1: FIX DATABASE (2 MIN) ─────────────────────────────────────────┐
+│                                                                         │
+│  1. Open: https://app.supabase.com                                     │
+│  2. Click: SQL Editor (left sidebar)                                   │
+│  3. Run these 3 files IN ORDER:                                        │
+│                                                                         │
+│     A) EMERGENCY_FIX_RLS.sql                                           │
+│        → Fixes infinite recursion                                      │
+│        → Fixes RLS policies                                            │
+│                                                                         │
+│     B) DIAGNOSTIC_PROFILES.sql                                         │
+│        → Check if users exist                                          │
+│        → Look for "Total profiles: X"                                  │
+│                                                                         │
+│     C) CREATE_TEST_USERS.sql (if Total profiles = 0)                  │
+│        → Creates 20 test users                                         │
+│        → Skip if you already have users                                │
+│                                                                         │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌─ STEP 2: TEST IN BROWSER (2 MIN) ──────────────────────────────────────┐
+│                                                                         │
+│  1. Refresh your app (Ctrl+R)                                          │
+│  2. Open Console (F12)                                                 │
+│  3. Click "New Message" button                                         │
+│  4. Look for these logs:                                               │
+│                                                                         │
+│     ✅ GOOD:                                                           │
+│     👥 Fetching suggested users...                                     │
+│     ✅ Loaded 20 suggested users                                       │
+│                                                                         │
+│     ❌ BAD:                                                            │
+│     ❌ Error fetching suggested users: [error]                        │
+│     → If you see this, go to STEP 3                                    │
+│                                                                         │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌─ STEP 3: NUCLEAR FIX (1 MIN) - ONLY IF STEP 2 FAILED ─────────────────┐
+│                                                                         │
+│  If you STILL see "No User Found", run this in Supabase SQL Editor:   │
+│                                                                         │
+│  -- Disable RLS temporarily (for testing only)                         │
+│  ALTER TABLE profiles DISABLE ROW LEVEL SECURITY;                      │
+│                                                                         │
+│  -- Grant all permissions                                              │
+│  GRANT ALL ON profiles TO authenticated;                               │
+│  GRANT ALL ON profiles TO anon;                                        │
+│                                                                         │
+│  ⚠️  WARNING: This removes security! Re-enable after launch!          │
+│                                                                         │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌─ WHAT WAS FIXED ───────────────────────────────────────────────────────┐
+│                                                                         │
+│  ✅ Fixed infinite recursion in conversation_participants              │
+│  ✅ Fixed RLS policies on profiles table                               │
+│  ✅ Fixed search query syntax in NewMessageModal.jsx                   │
+│  ✅ Added debug logging to see what's happening                        │
+│  ✅ Created test users if database was empty                           │
+│                                                                         │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌─ FILES TO RUN (in Supabase SQL Editor) ────────────────────────────────┐
+│                                                                         │
+│  📁 supabase/migrations/                                               │
+│     1️⃣  EMERGENCY_FIX_RLS.sql          (REQUIRED)                     │
+│     2️⃣  DIAGNOSTIC_PROFILES.sql        (CHECK)                        │
+│     3️⃣  CREATE_TEST_USERS.sql          (IF NEEDED)                    │
+│                                                                         │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌─ SUCCESS LOOKS LIKE ───────────────────────────────────────────────────┐
+│                                                                         │
+│  When you click "New Message":                                         │
+│  ✅ Modal opens                                                        │
+│  ✅ Shows "Suggested" section                                          │
+│  ✅ Shows list of users with avatars                                   │
+│  ✅ Search works when you type                                         │
+│  ✅ Can select users                                                   │
+│  ✅ "Chat" button works                                                │
+│                                                                         │
+└────────────────────────────────────────────────────────────────────────┘
+
+╔════════════════════════════════════════════════════════════════════════╗
+║  ⏰ START NOW! You have 4.5 hours until launch!                        ║
+╚════════════════════════════════════════════════════════════════════════╝

@@ -1,0 +1,34 @@
+.container {
+    height: calc(100vh - 60px);
+    /* Adjust for navbar */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--bg-primary);
+}
+
+.wizard {
+    width: 100%;
+    max-width: 1000px;
+    height: 90%;
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-default);
+}
+
+@media (max-width: 768px) {
+    .container {
+        height: 100vh;
+        padding: 0;
+    }
+
+    .wizard {
+        height: 100%;
+        border-radius: 0;
+        border: none;
+    }
+}

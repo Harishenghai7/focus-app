@@ -1,0 +1,174 @@
+# FOCUS APP - CORE PAGES & FEATURES AUDIT
+# Date: 2025-12-31
+# Status: Production Readiness Review
+
+================================================================================
+1. HOME PAGE (src/pages/Home/Home.js)
+================================================================================
+The central hub for user engagement, focusing on real-time updates from the user's network.
+
+CORE FEATURES:
+- Flash Stories Bar: A horizontal, scrollable bar at the top for viewing and adding "Flash" (ephemeral stories). Includes an "Add" button for quick creation.
+- Advanced Feed System: A dynamic, infinite-scrolling feed that displays posts from followed users. Supports various media types (images, carousels, videos).
+- Flash Viewer: A high-end modal component for viewing stories with progress bars and navigation controls.
+- Share Integration: Integrated ShareModal for quickly sending posts to messages or external platforms.
+- Responsive Layout: Uses MainLayout for consistent navigation across devices.
+
+================================================================================
+2. EXPLORE PAGE (src/pages/Explore/Explore.js)
+================================================================================
+A pro-grade discovery experience designed to surface trending and relevant content.
+
+CORE FEATURES:
+- Enhanced Search Bar: Real-time search functionality with suggestions for users, hashtags, and locations.
+- Smart Tabs: Categorized discovery sections (e.g., 'All', 'Trending', 'Boltz', 'Photos') to filter content types.
+- Masonry Grid: A responsive, Pinterest-style layout that optimizes screen real estate for varying image/video aspect ratios.
+- Trending Panel: A dedicated section for viral content, trending creators, and popular hashtags.
+- Suggested Accounts: In-feed horizontal rows recommending users to follow based on interests or popularity.
+- Content Detail Modals: PostDetailModal and BoltzViewerModal allow users to engage with content without losing their place in the grid.
+- Infinite Scroll: Seamlessly loads more discovery content as the user scrolls.
+
+================================================================================
+3. CREATE PAGE (src/pages/Create/Create.js)
+================================================================================
+A comprehensive content creation suite with a guided multi-step workflow.
+
+CORE FEATURES:
+- Creation Wizard: A 5-step process (Type -> Media -> Edit -> Music -> Preview) for high-quality output.
+- Content Types: Supports creating regular Posts, Boltz (short videos), and Flash (stories).
+- Media Selection: Advanced file picker with support for multiple images/videos and file validation.
+- Media Editing: Basic editing tools (cropping, filters, adjustments) integrated into the workflow.
+- Music Library: Searchable music database to add background tracks to Boltz and Flash.
+- Post Optimization: Final step allows adding captions, tagging users, adding locations, and setting audience privacy.
+- Advanced Settings: Toggles for hiding like counts and turning off comments per post.
+
+================================================================================
+4. BOLTZ PAGE (src/pages/Boltz/Boltz.js)
+================================================================================
+A dedicated short-form video platform (TikTok/Reels style) for immersive entertainment.
+
+CORE FEATURES:
+- Full-Screen Player: Immersive, edge-to-edge video playback with high-performance rendering.
+- Vertical Swipe Navigation: Intuitive gesture-based navigation to move between videos.
+- Social Interaction Overlay: Quick-access buttons for Like (with heart animation), Comment, Save, and Share.
+- Music Integration: Displays track info; clicking opens a MusicPageModal showing all Boltz using that audio.
+- Follow Integration: One-tap follow button for creators directly from the video player.
+- Video Preloading: Intelligent background preloading of upcoming videos to ensure zero-lag transitions.
+- Comments Sheet: A non-intrusive bottom sheet for viewing and adding comments while the video continues to play.
+
+================================================================================
+5. MESSAGES PAGE (src/pages/Messages/CompleteMessages.jsx)
+================================================================================
+A robust communication hub featuring a modern, three-pane desktop layout.
+
+CORE FEATURES:
+- Three-Pane Architecture: Global Sidebar | Conversation List | Active Chat Window.
+- Real-time Messaging: Instant message delivery and receipt using Supabase Realtime.
+- Online Status: Real-time indicators showing which friends are currently active.
+- Conversation Management: Searchable inbox, unread message badges, and message snippets with timestamps.
+- New Message Suite: A modal for searching the entire user database to start new threads.
+- Media Sharing: (Inferred from components) Support for sending images and videos in-chat.
+- Focusly Mascot: A branded empty state that encourages users to start their first conversation.
+
+================================================================================
+6. PROFILE PAGE (src/pages/Profile/Profile.js)
+================================================================================
+A highly customizable personal space showcasing user identity and content history.
+
+CORE FEATURES:
+- Dynamic Header: Displays avatar (with active story ring), stats (Posts, Followers, Following), bio, and external links.
+- Highlight Carousel: Permanent collections of past Flash stories, categorized by the user.
+- Content Tabs: Switch between 'Posts' (grid), 'Boltz' (video grid), 'Saved' (private), and 'Tagged'.
+- Social Management: Modals for viewing and managing Followers and Following lists.
+- Profile Actions: Context-aware buttons (Edit Profile for self, Follow/Message for others).
+- Detailed Viewers: Integrated modals for viewing posts and boltz with navigation between items in the grid.
+
+================================================================================
+7. SETTINGS PAGE (src/pages/Settings/Settings.js)
+================================================================================
+A centralized control center for account management and app preferences.
+
+CORE FEATURES:
+- Sectioned Navigation: Sidebar (desktop) or list (mobile) for Account, Profile, Appearance, Privacy, Notifications, and Support.
+- Theme Engine: Options to switch between Light, Dark, and the signature Lavender theme.
+- Privacy Suite: Manage account visibility (Public/Private), blocked users, and data sharing.
+- Notification Controls: Granular toggles for push and in-app notifications across all activity types.
+- Account Security: Password reset, email updates, and account deletion options.
+- Support Center: Access to help documentation and ticket submission.
+
+================================================================================
+8. NOTIFICATIONS PAGE (src/pages/Notifications/Notifications.js)
+================================================================================
+A real-time activity log keeping users informed of all social interactions.
+
+CORE FEATURES:
+- Activity Filtering: Tabs to view 'All' notifications or filter by 'Likes', 'Comments', 'Follows', and 'Mentions'.
+- Real-time Sync: Instant notification delivery using Supabase Realtime subscriptions.
+- Bulk Management: 'Mark All as Read' functionality to quickly clear the inbox.
+- Interaction Links: Clicking a notification navigates directly to the relevant post, profile, or comment.
+- Settings Shortcut: Quick link to notification preferences for easy adjustment.
+
+================================================================================
+9. AUTH PAGE (src/pages/Auth.js)
+================================================================================
+A secure and streamlined entry point for the Focus community.
+
+CORE FEATURES:
+- Unified Interface: Seamless switching between Login and Signup forms.
+- OAuth Integration: One-tap login/signup via Google and other social providers.
+- Form Validation: Real-time feedback on email format, password strength, and username availability.
+- Secure Recovery: Integrated links to Forgot Password and Reset Password workflows.
+
+================================================================================
+10. SECURITY CENTER / TRUST SHIELD (src/pages/SecurityCenter.js)
+================================================================================
+A unique "Trust Shield" system designed to enhance platform safety and user credibility.
+
+CORE FEATURES:
+- Trust Score Gauge: A visual meter (0-100) representing the user's verified status and platform behavior.
+- Trust Tiers: Progression system (e.g., Bronze, Silver, Gold, Platinum) based on score.
+- Security Event Log: A transparent history of all security-related actions on the account.
+- Device Management: View and revoke access for all devices currently logged into the account.
+- Trust Breakdown: Detailed explanation of how the score is calculated and how to improve it.
+
+================================================================================
+11. VERIFICATION CENTER (src/pages/VerificationCenter.js)
+================================================================================
+The action center for users to earn trust points and verify their identity.
+
+CORE FEATURES:
+- Verification Steps: Clear list of actions (Email, Profile, Social Link, Biometric) to increase Trust Score.
+- Government ID Integration: High-security verification using DigiLocker and Face Recognition.
+- Verified Human Badge: The ultimate credibility marker earned through ID verification.
+- Biometric Lock: Option to enable device-level security (FaceID/TouchID) for app access.
+
+================================================================================
+12. BADGE CENTER (src/pages/BadgeCenter.js)
+================================================================================
+A gamified achievement system to reward positive community participation.
+
+CORE FEATURES:
+- Badge Gallery: A visual showcase of all earned, locked, and available badges.
+- Progress Tracking: Real-time tracking of requirements for the "Next Badge" to be earned.
+- Badge Applications: Formal application process for restricted or manually reviewed badges.
+- Categorization: Badges grouped by 'Verification', 'Achievement', and 'Community Contribution'.
+
+================================================================================
+13. TEEN CARE GUARDIAN DASHBOARD (src/pages/TeenCareGuardianDashboard.js)
+================================================================================
+A specialized safety tool for parents and guardians to protect younger users.
+
+CORE FEATURES:
+- Multi-Teen Monitoring: Support for managing multiple linked teen accounts from a single dashboard.
+- Activity Overview: 7-day summary of posts created, new followers, and general activity levels.
+- Safety Alerts Panel: Real-time alerts for flagged content, suspicious interactions, or safety violations.
+- Parental Controls: Remote management of teen account settings and privacy restrictions.
+- Invitation System: Secure workflow for linking guardian and teen accounts.
+
+================================================================================
+AUDIT SUMMARY:
+The Focus app features a highly mature and feature-rich ecosystem that rivals major 
+social platforms. The integration of the "Trust Shield" and "Teen Care" systems 
+sets it apart as a safety-first platform. All core social features (Feed, Explore, 
+Boltz, Messages) are implemented with high-end UI/UX standards.
+================================================================================

@@ -1,0 +1,83 @@
+.messageList {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: var(--bg-primary);
+}
+
+.messageList::-webkit-scrollbar {
+    width: 6px;
+}
+
+.messageList::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.messageList::-webkit-scrollbar-thumb {
+    background: var(--bg-elevated);
+    border-radius: var(--radius-full);
+}
+
+.messageList::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-lavender-300);
+}
+
+.messagesContainer {
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+}
+
+.loadingContainer {
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.messageSkeleton {
+    display: flex;
+    gap: var(--space-2);
+    align-items: flex-end;
+}
+
+.messageSkeleton.own {
+    justify-content: flex-end;
+}
+
+.messageSkeleton.other {
+    justify-content: flex-start;
+}
+
+.skeletonBubble {
+    max-width: 60%;
+}
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: var(--space-16) var(--space-8);
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.emptyState svg {
+    margin-bottom: var(--space-6);
+    opacity: 0.3;
+}
+
+.emptyTitle {
+    font-size: var(--font-xl);
+    font-weight: var(--font-bold);
+    color: var(--text-secondary);
+    margin: 0 0 var(--space-2) 0;
+}
+
+.emptyText {
+    font-size: var(--font-base);
+    color: var(--text-muted);
+    margin: 0;
+}

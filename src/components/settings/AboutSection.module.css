@@ -1,0 +1,146 @@
+.logoSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-6);
+}
+
+.logo {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-glow);
+}
+
+.logoText {
+    font-size: var(--font-2xl);
+    font-weight: var(--font-black);
+    color: var(--text-primary);
+}
+
+.tagline {
+    font-size: var(--font-base);
+    color: var(--text-secondary);
+    text-align: center;
+    margin: 0;
+}
+
+.infoGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+}
+
+.infoItem {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+}
+
+.infoLabel {
+    font-size: var(--font-xs);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+}
+
+.infoValue {
+    font-size: var(--font-base);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+}
+
+.divider {
+    height: 1px;
+    background: var(--border-default);
+    margin: var(--space-2) 0;
+}
+
+.creditsSection {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.creditsTitle {
+    font-size: var(--font-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.creditsList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.creditItem {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+}
+
+.creditIcon {
+    font-size: var(--font-2xl);
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+    flex-shrink: 0;
+}
+
+.creditInfo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.creditName {
+    font-size: var(--font-base);
+    font-weight: var(--font-medium);
+    color: var(--text-primary);
+}
+
+.creditRole {
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+}
+
+.footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    text-align: center;
+}
+
+.copyright,
+.madeWith {
+    font-size: var(--font-sm);
+    color: var(--text-muted);
+    margin: 0;
+}
+
+@media (max-width: 640px) {
+    .infoGrid {
+        grid-template-columns: 1fr;
+    }
+}

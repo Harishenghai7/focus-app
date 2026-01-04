@@ -1,0 +1,39 @@
+.custom-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-icon svg {
+    display: block;
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-icon.active svg {
+    color: #9b87f5;
+    transform: scale(1.1);
+}
+
+.custom-icon:hover svg {
+    color: #c4b5fd;
+    transform: scale(1.05);
+}
+
+/* Animation for icon state change */
+@keyframes iconPop {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+.custom-icon.active {
+    animation: iconPop 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

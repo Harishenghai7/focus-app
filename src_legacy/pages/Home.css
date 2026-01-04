@@ -1,0 +1,100 @@
+/* src/pages/Home.css */
+
+/* 🏠 Main Page Layout */
+.home-page {
+  min-height: 100vh;
+  width: 100%;
+  padding-top: 20px; /* Space from top */
+  padding-bottom: 80px; /* Space for bottom nav on mobile */
+  
+  /* Background handled by body in index.css, 
+     but we ensure it flows correctly here */
+  display: flex;
+  justify-content: center;
+}
+
+/* 📦 Content Container */
+.home-container {
+  width: 100%;
+  max-width: 600px; /* Instagram-standard feed width */
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px; /* Vertical spacing between sections */
+}
+
+/* 📸 Stories Section */
+.stories-section {
+  width: 100%;
+  margin-bottom: 8px;
+  /* Stories component handles its own internal overflow/scroll */
+}
+
+/* 📰 Feed Section */
+.posts-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 24px; /* Space between posts */
+  width: 100%;
+}
+
+/* 🔄 Loading More Spinner */
+.loading-more-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 32px 0;
+  width: 100%;
+  color: var(--focus-lavender);
+}
+
+.spinner-icon {
+  animation: spin 1s linear infinite;
+  opacity: 0.8;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 🕵️ Observer Target (Invisible) */
+.feed-observer {
+  height: 40px;
+  width: 100%;
+  margin-top: -20px; /* Pull it up slightly to trigger earlier */
+  pointer-events: none;
+}
+
+/* 📱 Mobile Optimization */
+@media (max-width: 600px) {
+  .home-page {
+    padding-top: 0; /* Flush with top on mobile */
+  }
+
+  .home-container {
+    padding: 0; /* Edge-to-edge on mobile */
+    gap: 16px;
+  }
+
+  /* Stories often look better with some top padding on mobile if under a transparent header */
+  .stories-section {
+    padding-top: 12px;
+    padding-bottom: 4px;
+  }
+
+  /* On mobile, posts often touch edges, but if we use the "Card" style 
+     from PostCard.new.css, we might want a tiny bit of padding or none.
+     Assuming PostCard handles its own edge-to-edge logic via its media query. */
+  .posts-feed {
+    gap: 16px;
+  }
+}
+
+/* 🌗 Dark Mode Adjustments */
+/* Note: Most colors are handled by CSS variables in index.css 
+   but we can add specific overrides here if needed */
+:global(.dark) .spinner-icon {
+  color: var(--focus-lavender);
+}

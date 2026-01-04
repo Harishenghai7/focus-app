@@ -1,0 +1,59 @@
+/* Notification Settings Shortcut Styles */
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+}
+
+.button:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(167, 139, 250, 0.3);
+    color: var(--primary-lavender);
+    transform: rotate(90deg);
+}
+
+.button:active {
+    transform: rotate(90deg) scale(0.95);
+}
+
+/* Tooltip (optional - can be added later) */
+.button::after {
+    content: attr(title);
+    position: absolute;
+    bottom: -35px;
+    right: 0;
+    padding: 0.5rem 0.75rem;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    font-size: 0.75rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.button:hover::after {
+    opacity: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .button {
+        width: 36px;
+        height: 36px;
+    }
+
+    .button::after {
+        display: none;
+    }
+}

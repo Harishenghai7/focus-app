@@ -1,0 +1,87 @@
+.container {
+    background: var(--bg-secondary);
+    backdrop-filter: blur(12px);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-default);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 350px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-5);
+    width: 100%;
+    justify-content: space-between;
+}
+
+.title {
+    font-size: var(--font-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.scoreContainer {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin-bottom: var(--space-5);
+}
+
+.svg {
+    transform: rotate(0deg);
+}
+
+.scoreTextContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.scoreValue {
+    font-size: var(--font-4xl);
+    font-weight: var(--font-bold);
+}
+
+.scoreLabel {
+    font-size: var(--font-xs);
+    color: var(--text-secondary);
+}
+
+.tierInfo {
+    text-align: center;
+}
+
+.tierBadge {
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    font-size: var(--font-sm);
+    font-weight: var(--font-semibold);
+    display: inline-block;
+    margin-bottom: var(--space-2);
+}
+
+.tierDescription {
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.skeleton {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+    width: 100%;
+}

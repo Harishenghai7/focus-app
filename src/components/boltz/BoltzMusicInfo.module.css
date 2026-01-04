@@ -1,0 +1,98 @@
+/* BoltzMusicInfo - Fixed Visibility */
+
+.container {
+    position: absolute;
+    bottom: 80px;
+    left: 16px;
+    right: 90px;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: auto;
+}
+
+.container:active {
+    transform: scale(0.98);
+}
+
+.musicIcon {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+}
+
+.musicIcon.playing {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.musicDetails {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.musicName {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    text-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.9),
+        0 1px 3px rgba(0, 0, 0, 1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.artistName {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    text-shadow:
+        0 1px 4px rgba(0, 0, 0, 0.8);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .container {
+        bottom: 140px;
+        left: 12px;
+        right: 80px;
+    }
+
+    .musicIcon {
+        width: 14px;
+        height: 14px;
+    }
+
+    .musicName {
+        font-size: 12px;
+    }
+
+    .artistName {
+        font-size: 10px;
+    }
+}

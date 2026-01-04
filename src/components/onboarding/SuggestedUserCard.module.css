@@ -1,0 +1,101 @@
+.card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    background: white;
+    transition: all 0.3s;
+}
+
+.card:hover {
+    border-color: #C4B5FD;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #F3F4F6;
+}
+
+.details {
+    flex: 1;
+    min-width: 0;
+}
+
+.nameRow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 2px;
+}
+
+.name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.verified {
+    color: #8B5CF6;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.fullName {
+    font-size: 14px;
+    color: #6B7280;
+    margin: 0 0 4px 0;
+}
+
+.stats {
+    font-size: 13px;
+    color: #9CA3AF;
+    margin: 0 0 4px 0;
+}
+
+.bio {
+    font-size: 13px;
+    color: #6B7280;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.followBtn {
+    flex-shrink: 0;
+    min-width: 100px;
+}
+
+@media (max-width: 768px) {
+    .card {
+        padding: 12px;
+    }
+
+    .avatar {
+        width: 40px;
+        height: 40px;
+    }
+
+    .name {
+        font-size: 14px;
+    }
+
+    .bio {
+        font-size: 12px;
+    }
+}

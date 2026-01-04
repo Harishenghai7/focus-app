@@ -1,0 +1,321 @@
+/* src/components/desktop/DesktopSidebar.css */
+
+/* 🏗️ CONTAINER STRUCTURE */
+.desktop-sidebar {
+  /* Fixed positioning on left */
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: var(--sidebar-width, 260px);
+  
+  /* 🪟 Glassmorphism Core */
+  background: var(--glass-surface, rgba(255, 255, 255, 0.85));
+  backdrop-filter: blur(var(--glass-blur, 20px));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 20px));
+  border-right: 1px solid var(--glass-border, rgba(255, 255, 255, 0.5));
+  
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  z-index: 100;
+  transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  
+  /* Shadow for depth */
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
+}
+
+/* Collapsed State Override */
+.desktop-sidebar.collapsed {
+  width: 88px;
+  padding: 24px 12px;
+}
+
+/* 🦁 HEADER & LOGO */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+  padding: 0 12px;
+  cursor: pointer;
+  height: 48px;
+}
+
+.logo-icon-container {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 12px;
+  /* Lavender Gradient Background */
+  background: var(--gradient-primary, linear-gradient(135deg, #8B7FD7 0%, #4A378F 100%));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 16px rgba(139, 127, 215, 0.25);
+  transition: transform 0.3s ease;
+}
+
+.sidebar-header:hover .logo-icon-container {
+  transform: rotate(-5deg) scale(1.05);
+}
+
+.logo-emoji {
+  font-size: 20px;
+}
+
+.sidebar-logo-text {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  /* Ensure text gradient works if defined globally */
+  background: var(--gradient-primary, linear-gradient(135deg, #8B7FD7 0%, #4A378F 100%));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+  opacity: 1;
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
+}
+
+.desktop-sidebar.collapsed .sidebar-logo-text {
+  opacity: 0;
+  width: 0;
+  pointer-events: none;
+}
+
+/* 🧭 NAVIGATION */
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  padding-bottom: 20px;
+}
+
+/* Hide scrollbar but allow scroll */
+.sidebar-nav::-webkit-scrollbar {
+  display: none;
+}
+
+/* 🔘 NAV ITEMS */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  width: 100%;
+  border-radius: 16px; /* Smooth rounded corners */
+  border: none;
+  background: transparent;
+  color: var(--text-secondary, #6B7280);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  text-align: left;
+}
+
+.desktop-sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: 12px 0;
+}
+
+/* Hover State */
+.nav-item:hover {
+  background: rgba(139, 127, 215, 0.08); /* Light lavender tint */
+  color: var(--focus-lavender, #8B7FD7);
+  transform: translateX(4px);
+}
+
+.desktop-sidebar.collapsed .nav-item:hover {
+  transform: scale(1.05); /* Scale instead of translate in collapsed */
+}
+
+/* ACTIVE STATE - The "Pro" Look */
+.nav-item.active {
+  background: var(--gradient-primary, linear-gradient(135deg, #8B7FD7 0%, #4A378F 100%));
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 10px 20px rgba(139, 127, 215, 0.3); /* Lavender glow */
+}
+
+.nav-item.active:hover {
+  transform: translateX(0); /* No movement on active */
+}
+
+.nav-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+.nav-label {
+  font-size: 0.95rem;
+  font-weight: inherit;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+/* 🔴 BADGES */
+.nav-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: var(--focus-accent, #E91E63); /* Pink for notifications */
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  height: 16px;
+  min-width: 16px;
+  padding: 0 4px;
+  border-radius: 99px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white; /* Contrast border */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* ➕ CREATE BUTTON */
+.create-button {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px;
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid var(--focus-lavender, #8B7FD7);
+  background: transparent;
+  color: var(--focus-lavender, #8B7FD7);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.create-button:hover {
+  background: var(--focus-lavender, #8B7FD7);
+  color: white;
+  box-shadow: 0 8px 20px rgba(139, 127, 215, 0.25);
+}
+
+.desktop-sidebar.collapsed .create-button {
+  padding: 14px 0;
+  border-radius: 50%; /* Circular in collapsed */
+  width: 48px;
+  height: 48px;
+  margin: 16px auto 0;
+}
+
+/* 👤 USER PROFILE FOOTER */
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--glass-border, rgba(255, 255, 255, 0.5));
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s ease;
+}
+
+.profile-button:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.profile-avatar-container {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.profile-avatar, .profile-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.profile-avatar-placeholder {
+  background: var(--focus-lavender);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.profile-username {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-handle {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Logout Button (Small & Subtle) */
+.logout-button {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary, #9CA3AF);
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-button:hover {
+  color: #FF5378; /* Red for logout */
+  background: rgba(255, 83, 120, 0.1);
+}
+
+/* 🌙 DARK MODE ADAPTATIONS */
+:global(.dark) .desktop-sidebar {
+  background: rgba(20, 16, 30, 0.85);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+}
+
+:global(.dark) .nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+:global(.dark) .nav-badge {
+  border-color: #1A1625; /* Match dark bg */
+}
+
+:global(.dark) .profile-button:hover {
+  background: rgba(255, 255, 255, 0.05);
+}

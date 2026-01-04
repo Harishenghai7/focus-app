@@ -1,0 +1,320 @@
+/* Safety Alerts Panel Styles */
+
+.safety-alerts-panel {
+    padding: 0;
+}
+
+/* Alerts Header */
+.alerts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.alerts-header h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary, #1f2937);
+    margin: 0;
+}
+
+.filters {
+    display: flex;
+    gap: 12px;
+}
+
+.filter-select {
+    padding: 8px 16px;
+    border: 2px solid var(--border-color, #e5e7eb);
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary, #1f2937);
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-color, #8b5cf6);
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+}
+
+/* Alerts List */
+.alerts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.alerts-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.alerts-list::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 10px;
+}
+
+.alerts-list::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 10px;
+}
+
+/* Alert Card */
+.alert-card {
+    background: white;
+    border: 2px solid;
+    border-radius: 14px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.alert-card.unread {
+    background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.15);
+}
+
+.alert-card.critical {
+    border-color: #ef4444;
+}
+
+.alert-card.high {
+    border-color: #f59e0b;
+}
+
+.alert-card.medium {
+    border-color: #eab308;
+}
+
+.alert-card.low {
+    border-color: #10b981;
+}
+
+.alert-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Alert Header Content */
+.alert-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.alert-icon-severity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alert-type-icon {
+    font-size: 28px;
+}
+
+.severity-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    color: white;
+    letter-spacing: 0.5px;
+}
+
+.alert-time {
+    font-size: 12px;
+    color: var(--text-tertiary, #9ca3af);
+    font-weight: 500;
+}
+
+/* Alert Content */
+.alert-content h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary, #1f2937);
+    margin: 0 0 8px;
+}
+
+.alert-content p {
+    font-size: 14px;
+    color: var(--text-secondary, #6b7280);
+    line-height: 1.6;
+    margin: 0 0 12px;
+}
+
+.related-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: var(--background-secondary, #f3f4f6);
+    border-radius: 8px;
+}
+
+.info-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary, #6b7280);
+}
+
+.info-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary-color, #8b5cf6);
+}
+
+/* Confidence Score */
+.confidence-score {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.confidence-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary, #6b7280);
+    white-space: nowrap;
+}
+
+.confidence-bar {
+    flex: 1;
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.confidence-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #8b5cf6 0%, #7c3aed 100%);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.confidence-value {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary-color, #8b5cf6);
+    white-space: nowrap;
+}
+
+/* Alert Actions */
+.alert-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color, #e5e7eb);
+}
+
+.action-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-btn.review {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e40af;
+}
+
+.action-btn.review:hover {
+    background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+    transform: translateY(-1px);
+}
+
+.action-btn.resolve {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #065f46;
+}
+
+.action-btn.resolve:hover {
+    background: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
+    transform: translateY(-1px);
+}
+
+.action-btn.false {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #991b1b;
+}
+
+.action-btn.false:hover {
+    background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+    transform: translateY(-1px);
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    background: var(--background-secondary, #f3f4f6);
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary, #6b7280);
+}
+
+/* Empty Alerts */
+.empty-alerts {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.empty-alerts .empty-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+}
+
+.empty-alerts h3 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #10b981;
+    margin: 0 0 8px;
+}
+
+.empty-alerts p {
+    font-size: 15px;
+    color: var(--text-secondary, #6b7280);
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .alerts-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .filters {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .filter-select {
+        width: 100%;
+    }
+
+    .alert-actions {
+        flex-direction: column;
+    }
+
+    .action-btn {
+        width: 100%;
+    }
+}

@@ -1,0 +1,20 @@
+.card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    margin-bottom: var(--space-4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 768px) {
+    .card {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+}

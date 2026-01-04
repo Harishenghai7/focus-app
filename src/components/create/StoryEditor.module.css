@@ -1,0 +1,18 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.header {
+    padding: var(--space-4);
+    text-align: center;
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border-default);
+    font-weight: var(--font-bold);
+}
+
+.editorWrapper {
+    flex: 1;
+    overflow: hidden;
+}

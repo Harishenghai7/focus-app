@@ -1,0 +1,46 @@
+/* Boltz - Full Screen Instagram Reels Style */
+
+.container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #000000;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: #000000;
+}
+
+.carousel {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+
+.carousel::-webkit-scrollbar {
+    display: none;
+}
+
+/* Desktop - Center with max width */
+@media (min-width: 1024px) {
+    .container {
+        left: 280px;
+        /* Sidebar width */
+    }
+
+    .carousel {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+}

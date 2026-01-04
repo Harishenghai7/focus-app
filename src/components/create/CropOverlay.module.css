@@ -1,0 +1,196 @@
+.overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.dimmedRegions {
+    position: absolute;
+    inset: 0;
+}
+
+.dimmed {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.6);
+    pointer-events: none;
+}
+
+.cropBox {
+    position: absolute;
+    border: 2px solid var(--primary-lavender);
+    box-shadow:
+        0 0 0 2000px rgba(0, 0, 0, 0),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+    cursor: move;
+    pointer-events: auto;
+    transition: box-shadow 0.2s;
+}
+
+.cropBox:hover {
+    box-shadow:
+        0 0 0 2000px rgba(0, 0, 0, 0),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+        0 0 20px rgba(var(--primary-lavender-rgb), 0.4);
+}
+
+.grid {
+    position: absolute;
+    inset: 0;
+    opacity: 0.5;
+}
+
+.gridLine {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    pointer-events: none;
+}
+
+.handle {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: white;
+    border: 2px solid var(--primary-lavender);
+    border-radius: 50%;
+    pointer-events: auto;
+    z-index: 10;
+    transition: transform 0.2s;
+}
+
+.handle:hover {
+    transform: scale(1.3);
+    background: var(--primary-lavender);
+}
+
+.handle-nw {
+    top: -6px;
+    left: -6px;
+    cursor: nw-resize;
+}
+
+.handle-n {
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: n-resize;
+}
+
+.handle-ne {
+    top: -6px;
+    right: -6px;
+    cursor: ne-resize;
+}
+
+.handle-e {
+    top: 50%;
+    right: -6px;
+    transform: translateY(-50%);
+    cursor: e-resize;
+}
+
+.handle-se {
+    bottom: -6px;
+    right: -6px;
+    cursor: se-resize;
+}
+
+.handle-s {
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: s-resize;
+}
+
+.handle-sw {
+    bottom: -6px;
+    left: -6px;
+    cursor: sw-resize;
+}
+
+.handle-w {
+    top: 50%;
+    left: -6px;
+    transform: translateY(-50%);
+    cursor: w-resize;
+}
+
+.corner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid white;
+    pointer-events: none;
+}
+
+.cornerNW {
+    top: -2px;
+    left: -2px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.cornerNE {
+    top: -2px;
+    right: -2px;
+    border-left: none;
+    border-bottom: none;
+}
+
+.cornerSE {
+    bottom: -2px;
+    right: -2px;
+    border-left: none;
+    border-top: none;
+}
+
+.cornerSW {
+    bottom: -2px;
+    left: -2px;
+    border-right: none;
+    border-top: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .handle {
+        width: 16px;
+        height: 16px;
+    }
+
+    .handle-nw {
+        top: -8px;
+        left: -8px;
+    }
+
+    .handle-n {
+        top: -8px;
+    }
+
+    .handle-ne {
+        top: -8px;
+        right: -8px;
+    }
+
+    .handle-e {
+        right: -8px;
+    }
+
+    .handle-se {
+        bottom: -8px;
+        right: -8px;
+    }
+
+    .handle-s {
+        bottom: -8px;
+    }
+
+    .handle-sw {
+        bottom: -8px;
+        left: -8px;
+    }
+
+    .handle-w {
+        left: -8px;
+    }
+}

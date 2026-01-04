@@ -1,0 +1,17 @@
+// Quick test file - Add this to Settings.js temporarily
+// Put this right after the useSettings hook call
+
+console.log('🔍 SETTINGS DEBUG:');
+console.log('Settings:', settings);
+console.log('Loading:', loading);
+console.log('Error:', error);
+
+// Test updateSetting function
+window.testUpdate = async () => {
+    console.log('Testing updateSetting...');
+    const { updateSetting } = require('./hooks/useUpdateSetting');
+    const result = await updateSetting('theme', 'light');
+    console.log('Update result:', result);
+};
+
+console.log('Run window.testUpdate() in console to test');

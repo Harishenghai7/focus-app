@@ -1,0 +1,76 @@
+/* Chat Filter Tabs - Lavender Theme */
+
+.tabs {
+    display: flex;
+    gap: 8px;
+    padding: 16px 20px;
+    background: rgba(26, 15, 46, 0.95);
+    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    overflow-x: auto;
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(42, 27, 71, 0.6);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 20px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.tab:hover {
+    background: rgba(42, 27, 71, 0.8);
+    border-color: rgba(139, 92, 246, 0.5);
+    color: white;
+}
+
+.tab.active {
+    background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+    border-color: transparent;
+    color: white;
+}
+
+.icon {
+    font-size: 16px;
+}
+
+.label {
+    font-weight: 600;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.tab.active .badge {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.tabs::-webkit-scrollbar {
+    height: 4px;
+}
+
+.tabs::-webkit-scrollbar-track {
+    background: rgba(139, 92, 246, 0.1);
+}
+
+.tabs::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.3);
+    border-radius: 2px;
+}

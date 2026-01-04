@@ -1,39 +1,21 @@
 import { useState, useEffect } from 'react';
 
-/**
- * useMediaQuery - Hook to detect media query matches
- * @param {string} query - Media query string (e.g., '(max-width: 768px)')
- * @returns {boolean} - True if media query matches
- */
-export function useMediaQuery(query) {
-  const [matches, setMatches] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return window.matchMedia(query).matches;
-    }
-    return false;
-  });
+const useMediaQuery = (query) => {
+    const [matches, setMatches] = useState(false);
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
+    useEffect(() => {
+        const media = window.matchMedia(query);
+        if (media.matches !== matches) {
+            setMatches(media.matches);
+        }
 
-    const mediaQuery = window.matchMedia(query);
-    
-    // Update state if it changed
-    const handleChange = () => {
-      setMatches(mediaQuery.matches);
-    };
+        const listener = () => setMatches(media.matches);
+        media.addListener(listener);
 
-    // Set initial value
-    handleChange();
+        return () => media.removeListener(listener);
+    }, [matches, query]);
 
-    // Listen for changes
-    mediaQuery.addEventListener('change', handleChange);
+    return matches;
+};
 
-    // Cleanup
-    return () => {
-      mediaQuery.removeEventListener('change', handleChange);
-    };
-  }, [query]);
-
-  return matches;
-}
+export default useMediaQuery;

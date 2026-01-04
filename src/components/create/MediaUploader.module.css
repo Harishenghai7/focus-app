@@ -1,0 +1,69 @@
+.dropzone {
+    border: 2px dashed var(--border-default);
+    border-radius: var(--radius-xl);
+    padding: var(--space-12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--bg-secondary);
+    min-height: 300px;
+}
+
+.dropzone:hover,
+.active {
+    border-color: var(--primary-lavender);
+    background: var(--bg-tertiary);
+}
+
+.icon {
+    color: var(--primary-lavender);
+    margin-bottom: var(--space-4);
+}
+
+.text {
+    font-size: var(--font-lg);
+    font-weight: var(--font-medium);
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+    text-align: center;
+}
+
+.subtext {
+    font-size: var(--font-sm);
+    color: var(--text-muted);
+}
+
+.previewContainer {
+    position: relative;
+    width: 100%;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    background: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+}
+
+.preview {
+    max-width: 100%;
+    max-height: 600px;
+    object-fit: contain;
+}
+
+.removeBtn {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border-radius: 50%;
+    padding: var(--space-2);
+}
+
+.removeBtn:hover {
+    background: rgba(0, 0, 0, 0.7);
+}

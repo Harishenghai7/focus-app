@@ -1,0 +1,128 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   CONVERSATION CARD STYLING - Lavender theme
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.card {
+    background: rgba(42, 27, 71, 0.6);
+    border: 1px solid rgba(167, 139, 250, 0.2);
+    border-radius: 16px;
+    padding: 12px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    gap: 12px;
+    position: relative;
+}
+
+.card:hover {
+    background: rgba(42, 27, 71, 0.8);
+    transform: translateX(4px);
+}
+
+.card.selected {
+    background: linear-gradient(90deg, rgba(139, 92, 246, 0.25), rgba(139, 92, 246, 0.1));
+    border-left: 3px solid #8b5cf6;
+}
+
+/* Avatar */
+.avatarContainer {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(167, 139, 250, 0.3);
+}
+
+.onlineIndicator {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 14px;
+    height: 14px;
+    background: #10b981;
+    border: 2px solid #1a0f2e;
+    border-radius: 50%;
+}
+
+/* Content */
+.content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.nameContainer {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+}
+
+.name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #f8f7ff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.verifiedBadge {
+    flex-shrink: 0;
+}
+
+.time {
+    font-size: 13px;
+    color: rgba(248, 247, 255, 0.5);
+    flex-shrink: 0;
+}
+
+.preview {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.previewText {
+    font-size: 14px;
+    color: rgba(248, 247, 255, 0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+}
+
+.unreadBadge {
+    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    min-width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.pinIndicator {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: #8b5cf6;
+}

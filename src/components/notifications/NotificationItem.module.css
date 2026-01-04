@@ -1,0 +1,74 @@
+.item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--border-default);
+    transition: background 0.2s ease;
+    cursor: pointer;
+}
+
+.item:hover {
+    background: var(--bg-tertiary);
+}
+
+.unread {
+    background: var(--primary-lavender-50);
+}
+
+.avatarWrapper {
+    position: relative;
+}
+
+.iconBadge {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-primary);
+}
+
+.like {
+    background: var(--error);
+}
+
+.comment {
+    background: var(--primary-lavender);
+}
+
+.follow {
+    background: var(--success);
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.text {
+    font-size: var(--font-base);
+    color: var(--text-primary);
+}
+
+.username {
+    font-weight: var(--font-bold);
+}
+
+.time {
+    font-size: var(--font-xs);
+    color: var(--text-muted);
+}
+
+.postImage {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+}

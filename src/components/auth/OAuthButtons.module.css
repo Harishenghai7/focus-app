@@ -1,0 +1,102 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.oauthButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.oauthButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.oauthButton:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.oauthButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.icon {
+    margin-right: 0.75rem;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+}
+
+/* Provider specific styles */
+.google {
+    background: white;
+    color: #333;
+    border-color: white;
+}
+
+.google:hover:not(:disabled) {
+    background: #f8f9fa;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+.microsoft {
+    background: #2f2f2f;
+    color: white;
+    border-color: #2f2f2f;
+}
+
+.microsoft:hover:not(:disabled) {
+    background: #3a3a3a;
+    box-shadow: 0 0 15px rgba(47, 47, 47, 0.5);
+}
+
+.github {
+    background: #24292e;
+    color: white;
+    border-color: #24292e;
+}
+
+.github:hover:not(:disabled) {
+    background: #2f363d;
+    box-shadow: 0 0 15px rgba(36, 41, 46, 0.5);
+}
+
+.discord {
+    background: #5865F2;
+    color: white;
+    border-color: #5865F2;
+}
+
+.discord:hover:not(:disabled) {
+    background: #4752c4;
+    box-shadow: 0 0 15px rgba(88, 101, 242, 0.5);
+}
+
+.twitter {
+    background: black;
+    color: white;
+    border-color: black;
+}
+
+.twitter:hover:not(:disabled) {
+    background: #1a1a1a;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}

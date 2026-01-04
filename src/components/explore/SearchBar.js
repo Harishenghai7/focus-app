@@ -1,203 +1,153 @@
-import React, { useRef, useEffect, useState } from 'react';
-import './SearchBar.css';
+import React, { useState, useRef, useEffect } from 'react';
+import { Search, X, Clock, TrendingUp } from 'lucide-react';
+import styles from './SearchBar.module.css';
+import { useSearch } from '../../hooks/useSearch';
+import Avatar from '../ui/Avatar';
+import { useNavigate } from 'react-router-dom';
 
-const SearchBar = ({
-  value,
-  onChange,
-  onClear,
-  recentSearches = [],
-  onRecentSearchClick,
-  onClearRecent,
-  onRemoveRecent,
-  loading = false
-}) => {
-  const [showRecent, setShowRecent] = useState(false);
-  const inputRef = useRef(null);
-  const containerRef = useRef(null);
+const SearchBar = ({ placeholder = "Search" }) => {
+    const navigate = useNavigate();
+    const {
+        query,
+        setQuery,
+        results,
+        loading,
+        history,
+        addToHistory,
+        removeFromHistory
+    } = useSearch();
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
-        setShowRecent(false);
-      }
+    const [isFocused, setIsFocused] = useState(false);
+    const wrapperRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+                setIsFocused(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleSelect = (item, type) => {
+        if (type === 'user') {
+            addToHistory(item.username);
+            navigate(`/profile/${item.username}`);
+        } else if (type === 'hashtag') {
+            addToHistory(`#${item.name}`);
+            navigate(`/explore/tags/${item.name}`);
+        } else if (type === 'history') {
+            setQuery(item);
+        }
+        setIsFocused(false);
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    const handleSearchSubmit = (e) => {
+        if (e.key === 'Enter' && query) {
+            addToHistory(query);
+            navigate(`/explore/search?q=${encodeURIComponent(query)}`);
+            setIsFocused(false);
+        }
+    };
 
-  const handleFocus = () => {
-    if (recentSearches.length > 0 && !value) {
-      setShowRecent(true);
-    }
-  };
-
-  const handleChange = (e) => {
-    onChange(e.target.value);
-    if (e.target.value) {
-      setShowRecent(false);
-    } else if (recentSearches.length > 0) {
-      setShowRecent(true);
-    }
-  };
-
-  const handleRecentClick = (search) => {
-    onRecentSearchClick(search);
-    setShowRecent(false);
-    inputRef.current?.focus();
-  };
-
-  const handleRemoveRecent = (e, search) => {
-    e.stopPropagation();
-    onRemoveRecent(search);
-  };
-
-  const handleClearAll = () => {
-    onClearRecent();
-    setShowRecent(false);
-  };
-
-  const handleClear = () => {
-    onClear();
-    setShowRecent(false);
-    inputRef.current?.focus();
-  };
-
-  return (
-    <div className="search-bar-container" ref={containerRef}>
-      <div className="search-bar">
-        <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        
-        <input
-          ref={inputRef}
-          type="text"
-          className="search-input"
-          placeholder="Search posts, people, or hashtags..."
-          value={value}
-          onChange={handleChange}
-          onFocus={handleFocus}
-          aria-label="Search"
-          aria-describedby="search-description"
-          autoComplete="off"
-        />
-        
-        <span id="search-description" className="sr-only">
-          Search for posts, people, or hashtags on Focus
-        </span>
-
-        {loading && (
-          <div className="search-loading" aria-label="Searching">
-            <svg className="spinner-icon" width="20" height="20" viewBox="0 0 24 24">
-              <circle
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="2"
-                fill="none"
-                strokeLinecap="round"
-                strokeDasharray="60"
-                strokeDashoffset="60"
-              >
-                <animateTransform
-                  attributeName="transform"
-                  type="rotate"
-                  from="0 12 12"
-                  to="360 12 12"
-                  dur="1s"
-                  repeatCount="indefinite"
+    return (
+        <div className={styles.searchWrapper} ref={wrapperRef}>
+            <div className={`${styles.inputContainer} ${isFocused ? styles.focused : ''}`}>
+                <Search className={styles.searchIcon} size={18} />
+                <input
+                    type="text"
+                    className={styles.input}
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onFocus={() => setIsFocused(true)}
+                    onKeyDown={handleSearchSubmit}
+                    placeholder={placeholder}
                 />
-              </circle>
-            </svg>
-          </div>
-        )}
+                {query && (
+                    <button className={styles.clearButton} onClick={() => setQuery('')}>
+                        <X size={16} />
+                    </button>
+                )}
+            </div>
 
-        {value && !loading && (
-          <button
-            className="clear-button"
-            onClick={handleClear}
-            aria-label="Clear search"
-            type="button"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M6 18L18 6M6 6l12 12"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        )}
-      </div>
+            {isFocused && (
+                <div className={styles.dropdown}>
+                    {/* Recent History */}
+                    {!query && history.length > 0 && (
+                        <div className={styles.section}>
+                            <div className={styles.sectionHeader}>
+                                <span>Recent</span>
+                                <button className={styles.clearAll} onClick={() => { }}>Clear all</button>
+                            </div>
+                            {history.map((term, idx) => (
+                                <div key={idx} className={styles.historyItem} onClick={() => handleSelect(term, 'history')}>
+                                    <Clock size={16} className={styles.historyIcon} />
+                                    <span>{term}</span>
+                                    <button
+                                        className={styles.removeHistory}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            removeFromHistory(term);
+                                        }}
+                                    >
+                                        <X size={14} />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
 
-      {showRecent && recentSearches.length > 0 && (
-        <div className="recent-searches-dropdown" role="listbox" aria-label="Recent searches">
-          <div className="recent-header">
-            <span className="recent-title">Recent</span>
-            <button
-              className="clear-all-button"
-              onClick={handleClearAll}
-              aria-label="Clear all recent searches"
-              type="button"
-            >
-              Clear all
-            </button>
-          </div>
-          
-          <ul className="recent-list">
-            {recentSearches.map((search, index) => (
-              <li key={index} className="recent-item">
-                <button
-                  className="recent-item-button"
-                  onClick={() => handleRecentClick(search)}
-                  role="option"
-                  aria-selected="false"
-                >
-                  <svg className="recent-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  <span className="recent-text">{search}</span>
-                  <button
-                    className="remove-recent-button"
-                    onClick={(e) => handleRemoveRecent(e, search)}
-                    aria-label={`Remove ${search} from recent searches`}
-                    type="button"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                      <path
-                        d="M6 18L18 6M6 6l12 12"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
-                </button>
-              </li>
-            ))}
-          </ul>
+                    {/* Search Results */}
+                    {query && (
+                        <div className={styles.results}>
+                            {loading ? (
+                                <div className={styles.loading}>Searching...</div>
+                            ) : (
+                                <>
+                                    {results.users.length > 0 && (
+                                        <div className={styles.section}>
+                                            <div className={styles.sectionHeader}>Accounts</div>
+                                            {results.users.map(user => (
+                                                <div key={user.id} className={styles.resultItem} onClick={() => handleSelect(user, 'user')}>
+                                                    <Avatar src={user.avatar_url} size="sm" />
+                                                    <div className={styles.userInfo}>
+                                                        <span className={styles.username}>{user.username}</span>
+                                                        <span className={styles.fullname}>{user.full_name}</span>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {results.hashtags.length > 0 && (
+                                        <div className={styles.section}>
+                                            <div className={styles.sectionHeader}>Tags</div>
+                                            {results.hashtags.map(tag => (
+                                                <div key={tag.id} className={styles.resultItem} onClick={() => handleSelect(tag, 'hashtag')}>
+                                                    <div className={styles.hashtagIcon}>#</div>
+                                                    <div className={styles.tagInfo}>
+                                                        <span className={styles.tagName}>#{tag.name}</span>
+                                                        <span className={styles.tagCount}>{tag.count} posts</span>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {results.users.length === 0 && results.hashtags.length === 0 && (
+                                        <div className={styles.noResults}>
+                                            No results found for "{query}"
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default SearchBar;

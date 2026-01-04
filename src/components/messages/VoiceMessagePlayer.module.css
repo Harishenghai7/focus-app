@@ -1,0 +1,186 @@
+/* Voice Message Player - Lavender Theme */
+
+.player {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 20px;
+    min-width: 280px;
+    max-width: 350px;
+    transition: all 0.2s ease;
+}
+
+.player.own {
+    background: rgba(139, 92, 246, 0.2);
+}
+
+.player.other {
+    background: rgba(42, 27, 71, 0.6);
+}
+
+/* Play/Pause Button */
+.playButton {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.playButton:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.playButton:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+.playButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+/* Waveform Container */
+.waveformContainer {
+    flex: 1;
+    height: 40px;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.waveform {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    gap: 2px;
+    position: relative;
+    z-index: 1;
+}
+
+.bar {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    transition: all 0.15s ease;
+    min-width: 2px;
+}
+
+.bar.active {
+    background: #a78bfa;
+}
+
+.bar:hover {
+    background: rgba(167, 139, 250, 0.6);
+}
+
+.progressOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(139, 92, 246, 0.2), rgba(167, 139, 250, 0.1));
+    pointer-events: none;
+    transition: width 0.1s linear;
+    z-index: 0;
+}
+
+/* Time Display */
+.time {
+    flex-shrink: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    min-width: 40px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Speed Button */
+.speedButton {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(139, 92, 246, 0.2);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    color: #a78bfa;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.speedButton:hover {
+    background: rgba(139, 92, 246, 0.3);
+    border-color: rgba(139, 92, 246, 0.5);
+    transform: scale(1.05);
+}
+
+.speedButton:active {
+    transform: scale(0.95);
+}
+
+/* Animations */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .player {
+        min-width: 240px;
+        max-width: 300px;
+        padding: 10px 12px;
+        gap: 10px;
+    }
+
+    .playButton {
+        width: 36px;
+        height: 36px;
+    }
+
+    .waveformContainer {
+        height: 36px;
+    }
+
+    .time {
+        font-size: 12px;
+        min-width: 35px;
+    }
+
+    .speedButton {
+        width: 32px;
+        height: 32px;
+        font-size: 11px;
+    }
+}
+
+/* Dark mode optimization */
+@media (prefers-color-scheme: dark) {
+    .player.other {
+        background: rgba(42, 27, 71, 0.8);
+    }
+}

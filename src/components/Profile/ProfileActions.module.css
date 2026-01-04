@@ -1,0 +1,13 @@
+.actions {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+    position: relative;
+}
+
+@media (max-width: 768px) {
+    .actions {
+        width: 100%;
+        justify-content: center;
+    }
+}

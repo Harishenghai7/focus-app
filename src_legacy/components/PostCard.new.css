@@ -1,0 +1,330 @@
+/* src/components/PostCard.new.css */
+
+/* 🎴 CORE CARD STYLING */
+.post-card-new {
+  width: 100%;
+  /* Use the glass tokens from index.css */
+  background: var(--glass-surface);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  
+  border-radius: var(--radius-card);
+  padding: 20px;
+  margin-bottom: 32px; /* Spacing between posts */
+  
+  /* Soft, high-end shadow */
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              box-shadow 0.3s ease;
+}
+
+/* Hover Effect - Subtle lift */
+.post-card-new:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 50px -12px rgba(139, 127, 215, 0.15);
+  border-color: var(--focus-lavender);
+}
+
+/* 👤 HEADER SECTION */
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.post-user-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+}
+
+/* Avatar with Gradient Ring */
+.post-user-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  padding: 2px; /* Space for the border */
+  background: var(--gradient-primary); /* Gradient border */
+  transition: transform 0.3s ease;
+}
+
+.post-user-info:hover .post-user-avatar {
+  transform: rotate(5deg) scale(1.05);
+}
+
+.post-user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.post-username {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.post-username-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.verified-badge {
+  color: var(--focus-aqua);
+  filter: drop-shadow(0 0 8px rgba(56, 194, 229, 0.3));
+}
+
+.post-location {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Options Button */
+.post-options-btn {
+  color: var(--text-secondary);
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.post-options-btn:hover {
+  background: rgba(139, 127, 215, 0.1);
+  color: var(--focus-lavender);
+}
+
+/* 🖼️ MEDIA SECTION */
+.post-media-container {
+  position: relative;
+  width: 100%;
+  /* Slightly wider than padding to look expansive */
+  width: calc(100% + 40px);
+  margin-left: -20px;
+  
+  aspect-ratio: 4/5; /* Instagram Portrait Ratio */
+  overflow: hidden;
+  background: #000; /* Default for media loading */
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+/* Adjust container for video to avoid cropping controls if needed, 
+   but 4/5 is standard for high engagement */
+
+.post-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Like Heart Animation (Overlay) */
+.like-animation {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  filter: drop-shadow(0 10px 20px rgba(233, 30, 99, 0.4));
+  pointer-events: none;
+  animation: likePop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes likePop {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+  15% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+  30% { transform: translate(-50%, -50%) scale(0.95); opacity: 1; }
+  45% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  80% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+}
+
+/* Navigation Arrows */
+.media-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  line-height: 0;
+  padding-bottom: 4px; /* Optical alignment for arrow */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0; /* Hidden by default, shown on hover */
+}
+
+.post-media-container:hover .media-nav-btn {
+  opacity: 1;
+}
+
+.media-nav-prev { left: 16px; }
+.media-nav-next { right: 16px; }
+
+.media-nav-btn:hover {
+  background: white;
+  color: var(--focus-indigo);
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Indicators (Dots) */
+.media-indicators {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  padding: 6px 10px;
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(4px);
+  border-radius: 20px;
+}
+
+.media-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+.media-indicator.active {
+  background: white;
+  transform: scale(1.2);
+}
+
+/* ❤️ ACTION BAR */
+.post-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.post-actions-left {
+  display: flex;
+  gap: 16px;
+}
+
+.post-action-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  padding: 8px;
+  border-radius: 12px;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.post-action-btn:hover {
+  background: rgba(139, 127, 215, 0.1);
+  transform: scale(1.1);
+  color: var(--focus-lavender);
+}
+
+.post-action-btn:active {
+  transform: scale(0.9);
+}
+
+/* Liked State */
+.post-action-btn.liked {
+  color: #FF5378; /* Specific heart red */
+}
+
+.post-action-btn.liked svg {
+  fill: #FF5378;
+  stroke: #FF5378;
+}
+
+/* Saved State */
+.post-action-btn.saved {
+  color: var(--focus-yellow);
+}
+
+.post-action-btn.saved svg {
+  fill: var(--focus-yellow);
+  stroke: var(--focus-yellow);
+}
+
+/* 📊 STATS & CAPTION */
+.post-stats {
+  margin-bottom: 8px;
+}
+
+.post-likes {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.post-caption {
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.post-caption-username {
+  font-weight: 700;
+  margin-right: 8px;
+}
+
+.post-caption-text {
+  color: var(--text-secondary);
+}
+
+/* Comments Link */
+.post-view-comments {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.post-view-comments:hover {
+  color: var(--focus-lavender);
+}
+
+.post-timestamp {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.7;
+}
+
+/* 📱 MOBILE OPTIMIZATION */
+@media (max-width: 600px) {
+  .post-card-new {
+    border-radius: 0; /* Edge to edge on mobile */
+    border-left: none;
+    border-right: none;
+    padding: 12px;
+    margin-bottom: 12px;
+    box-shadow: none; /* Flatter look on mobile */
+    border-bottom: 1px solid var(--glass-border);
+  }
+  
+  .post-media-container {
+    width: calc(100% + 24px); /* Compensate for smaller padding */
+    margin-left: -12px;
+    border-radius: 0; /* Square photos on mobile often look cleaner */
+  }
+}

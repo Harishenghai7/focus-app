@@ -1,0 +1,86 @@
+.ticks {
+    display: inline-flex;
+    align-items: center;
+    gap: 1px;
+    position: relative;
+}
+
+.tick {
+    display: block;
+    transition: all 0.2s ease;
+}
+
+/* Size variants */
+.sm .tick {
+    width: 14px;
+    height: 14px;
+}
+
+.md .tick {
+    width: 16px;
+    height: 16px;
+}
+
+/* Status colors */
+.sent {
+    color: rgba(107, 114, 128, 0.6);
+    /* Gray - sent but not delivered */
+}
+
+.delivered {
+    color: rgba(107, 114, 128, 0.8);
+    /* Darker gray - delivered but not read */
+}
+
+.read {
+    color: #8b5cf6;
+    /* Lavender blue - read */
+    animation: tickRead 0.3s ease;
+}
+
+/* Double tick positioning */
+.tick1 {
+    position: relative;
+    z-index: 2;
+}
+
+.tick2 {
+    position: relative;
+    margin-left: -6px;
+    z-index: 1;
+}
+
+/* Animation when message is read */
+@keyframes tickRead {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Hover effect */
+.ticks:hover {
+    opacity: 0.8;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    .sent {
+        color: rgba(156, 163, 175, 0.5);
+    }
+
+    .delivered {
+        color: rgba(156, 163, 175, 0.7);
+    }
+
+    .read {
+        color: #a855f7;
+    }
+}

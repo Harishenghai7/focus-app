@@ -1,0 +1,161 @@
+/* Top Bar / Header - Mobile-First Design System Compliant */
+
+.topBar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: rgba(26, 26, 26, 0.95);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    z-index: 100;
+}
+
+/* Safe area padding for devices with notch */
+@supports (padding-top: env(safe-area-inset-top)) {
+    .topBar {
+        padding-top: calc(env(safe-area-inset-top) + 8px);
+        height: calc(60px + env(safe-area-inset-top));
+    }
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    cursor: pointer;
+    user-select: none;
+}
+
+.logo h1 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #9b87f5, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.actionBtn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    color: var(--text-primary);
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.actionBtn:hover {
+    background: rgba(139, 92, 246, 0.1);
+}
+
+.actionBtn:active {
+    transform: scale(0.95);
+    background: rgba(139, 92, 246, 0.15);
+}
+
+/* Badge indicator */
+.badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #1a1a1a;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+    animation: badgePulse 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes badgePulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* Search Bar */
+.searchBar {
+    flex: 1;
+    max-width: 400px;
+    margin: 0 var(--space-4);
+}
+
+/* Tablet optimization */
+@media (min-width: 640px) {
+    .topBar {
+        padding: 0 24px;
+    }
+
+    .logo h1 {
+        font-size: 26px;
+    }
+
+    .actions {
+        gap: 12px;
+    }
+}
+
+/* Desktop optimization */
+@media (min-width: 1024px) {
+    .topBar {
+        padding: 0 32px;
+    }
+
+    .actionBtn {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Desktop - Adjust for sidebar */
+@media (min-width: 1025px) {
+    .topBar {
+        margin-left: 240px;
+    }
+}
+
+/* Tablet with collapsed sidebar */
+@media (min-width: 641px) and (max-width: 1024px) {
+    .topBar {
+        margin-left: 80px;
+    }
+}

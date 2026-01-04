@@ -1,53 +1,75 @@
 import { useEffect, useCallback } from 'react';
 
-export const useKeyboardNav = (handlers = {}) => {
-  const {
-    onNext,
-    onPrev,
-    onEscape,
-    onEnter,
-    onSave,
-    enabled = true
-  } = handlers;
+export const useKeyboardNav = (options = {}) => {
+    const {
+        onArrowUp,
+        onArrowDown,
+        onArrowLeft,
+        onArrowRight,
+        onEnter,
+        onEscape,
+        onTab,
+        enabled = true
+    } = options;
 
-  const handleKeyDown = useCallback((event) => {
-    if (!enabled) return;
+    const handleKeyDown = useCallback((e) => {
+        if (!enabled) return;
 
-    // Cmd/Ctrl + Arrow Right - Next
-    if ((event.metaKey || event.ctrlKey) && event.key === 'ArrowRight' && onNext) {
-      event.preventDefault();
-      onNext();
-    }
+        switch (e.key) {
+            case 'ArrowUp':
+                if (onArrowUp) {
+                    e.preventDefault();
+                    onArrowUp(e);
+                }
+                break;
+            case 'ArrowDown':
+                if (onArrowDown) {
+                    e.preventDefault();
+                    onArrowDown(e);
+                }
+                break;
+            case 'ArrowLeft':
+                if (onArrowLeft) {
+                    e.preventDefault();
+                    onArrowLeft(e);
+                }
+                break;
+            case 'ArrowRight':
+                if (onArrowRight) {
+                    e.preventDefault();
+                    onArrowRight(e);
+                }
+                break;
+            case 'Enter':
+                if (onEnter) {
+                    e.preventDefault();
+                    onEnter(e);
+                }
+                break;
+            case 'Escape':
+                if (onEscape) {
+                    e.preventDefault();
+                    onEscape(e);
+                }
+                break;
+            case 'Tab':
+                if (onTab) {
+                    onTab(e);
+                }
+                break;
+            default:
+                break;
+        }
+    }, [enabled, onArrowUp, onArrowDown, onArrowLeft, onArrowRight, onEnter, onEscape, onTab]);
 
-    // Cmd/Ctrl + Arrow Left - Previous
-    if ((event.metaKey || event.ctrlKey) && event.key === 'ArrowLeft' && onPrev) {
-      event.preventDefault();
-      onPrev();
-    }
+    useEffect(() => {
+        if (enabled) {
+            window.addEventListener('keydown', handleKeyDown);
+            return () => {
+                window.removeEventListener('keydown', handleKeyDown);
+            };
+        }
+    }, [enabled, handleKeyDown]);
 
-    // Escape key
-    if (event.key === 'Escape' && onEscape) {
-      event.preventDefault();
-      onEscape();
-    }
-
-    // Enter key (with Cmd/Ctrl for submit)
-    if ((event.metaKey || event.ctrlKey) && event.key === 'Enter' && onEnter) {
-      event.preventDefault();
-      onEnter();
-    }
-
-    // Cmd/Ctrl + S - Save draft
-    if ((event.metaKey || event.ctrlKey) && event.key === 's' && onSave) {
-      event.preventDefault();
-      onSave();
-    }
-  }, [onNext, onPrev, onEscape, onEnter, onSave, enabled]);
-
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleKeyDown]);
-
-  return { handleKeyDown };
+    return { handleKeyDown };
 };

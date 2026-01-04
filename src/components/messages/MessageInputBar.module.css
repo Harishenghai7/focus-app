@@ -1,0 +1,195 @@
+/**
+ * MessageInputBar - Ultimate Lavender Theme v3.0
+ * Input with lavender focus ring and gradient send button
+ */
+
+.inputContainer {
+    position: sticky;
+    bottom: 0;
+    background: rgba(26, 15, 46, 0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-subtle);
+    padding: 16px 24px;
+}
+
+.replyPreview {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-3);
+    border-left: 3px solid var(--primary-lavender);
+}
+
+.replyContent {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.replyLabel {
+    font-size: var(--font-xs);
+    color: var(--primary-lavender);
+    font-weight: var(--font-semibold);
+}
+
+.replyText {
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cancelReply {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: var(--font-2xl);
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all var(--transition-base);
+    flex-shrink: 0;
+}
+
+.cancelReply:hover {
+    background: rgba(167, 139, 250, 0.15);
+    color: var(--text-primary);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INPUT WRAPPER - Glassmorphism with Lavender Focus
+   ═══════════════════════════════════════════════════════════════ */
+
+.inputWrapper {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-2);
+    background: rgba(42, 27, 71, 0.6);
+    border: 1px solid var(--border-default);
+    border-radius: 24px;
+    padding: 12px 20px;
+    transition: all var(--transition-base);
+    backdrop-filter: blur(10px);
+}
+
+.inputWrapper:focus-within {
+    border-color: var(--secondary-lavender);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15), 0 0 20px rgba(139, 92, 246, 0.2);
+}
+
+.input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 15px;
+    resize: none;
+    max-height: 120px;
+    overflow-y: auto;
+    padding: var(--space-2) var(--space-3);
+    line-height: 1.5;
+}
+
+.input:focus {
+    outline: none;
+}
+
+.input::placeholder {
+    color: rgba(248, 247, 255, 0.4);
+}
+
+.input::-webkit-scrollbar {
+    width: 4px;
+}
+
+.input::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    border-radius: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ACTION BUTTONS - Emoji/GIF/Attach
+   ═══════════════════════════════════════════════════════════════ */
+
+.iconButton {
+    background: none;
+    border: none;
+    color: rgba(248, 247, 255, 0.6);
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all var(--transition-base);
+    flex-shrink: 0;
+}
+
+.iconButton:hover {
+    background: rgba(167, 139, 250, 0.15);
+    color: var(--primary-lavender);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SEND BUTTON - Lavender Gradient Magic!
+   ═══════════════════════════════════════════════════════════════ */
+
+.sendButton {
+    background: var(--lavender-gradient);
+    border: none;
+    color: white;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all var(--transition-base);
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+}
+
+.sendButton:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.5);
+}
+
+.sendButton:active {
+    transform: scale(0.95);
+}
+
+.sendButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.emojiPickerWrapper,
+.attachmentBarWrapper {
+    margin-top: var(--space-3);
+    animation: slideUp 0.2s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

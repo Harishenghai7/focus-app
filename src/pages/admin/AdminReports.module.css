@@ -1,0 +1,230 @@
+.adminReportsPage {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+    min-height: 100vh;
+}
+
+.pageHeader {
+    margin-bottom: 32px;
+}
+
+.pageTitle {
+    font-size: 32px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 8px 0;
+}
+
+.pageSubtitle {
+    font-size: 16px;
+    color: #999;
+    margin: 0;
+}
+
+.filterBar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.filterSelect {
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(157, 127, 234, 0.2);
+    border-radius: 12px;
+    color: #ffffff;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.reportsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.reportCard {
+    background: linear-gradient(135deg, rgba(26, 11, 46, 0.9) 0%, rgba(45, 27, 78, 0.9) 100%);
+    border: 1px solid rgba(157, 127, 234, 0.2);
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.reportHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.reportInfo {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.reportId {
+    font-family: monospace;
+    color: #B794F6;
+    font-size: 13px;
+}
+
+.priorityBadge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.priorityBadge.urgent {
+    background: rgba(255, 68, 68, 0.2);
+    color: #FF4444;
+}
+
+.priorityBadge.high {
+    background: rgba(255, 140, 0, 0.2);
+    color: #FF8C00;
+}
+
+.priorityBadge.medium {
+    background: rgba(255, 193, 7, 0.2);
+    color: #FFC107;
+}
+
+.priorityBadge.low {
+    background: rgba(157, 127, 234, 0.2);
+    color: #9D7FEA;
+}
+
+.categoryBadge {
+    padding: 4px 12px;
+    background: rgba(185, 148, 246, 0.15);
+    border: 1px solid rgba(185, 148, 246, 0.3);
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #B794F6;
+    text-transform: capitalize;
+}
+
+.reportDate {
+    font-size: 12px;
+    color: #666;
+}
+
+.reportBody {
+    margin-bottom: 16px;
+}
+
+.reporterInfo,
+.reportedInfo {
+    font-size: 14px;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+.trustScore {
+    margin-left: 8px;
+    font-size: 12px;
+    color: #999;
+}
+
+.description {
+    font-size: 14px;
+    color: #999;
+    line-height: 1.6;
+    margin-top: 12px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+}
+
+.reportActions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.actionButton {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.actionButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+.actionButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.dismissButton {
+    background: rgba(158, 158, 158, 0.2);
+    color: #9E9E9E;
+}
+
+.dismissButton:hover:not(:disabled) {
+    background: rgba(158, 158, 158, 0.3);
+}
+
+.warnButton {
+    background: rgba(255, 193, 7, 0.2);
+    color: #FFC107;
+}
+
+.warnButton:hover:not(:disabled) {
+    background: rgba(255, 193, 7, 0.3);
+}
+
+.removeButton {
+    background: rgba(255, 140, 0, 0.2);
+    color: #FF8C00;
+}
+
+.removeButton:hover:not(:disabled) {
+    background: rgba(255, 140, 0, 0.3);
+}
+
+.suspendButton {
+    background: rgba(255, 68, 68, 0.2);
+    color: #FF4444;
+}
+
+.suspendButton:hover:not(:disabled) {
+    background: rgba(255, 68, 68, 0.3);
+}
+
+.loading,
+.emptyState {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.accessDenied {
+    text-align: center;
+    padding: 100px 20px;
+    color: #ffffff;
+}
+
+@media (max-width: 768px) {
+    .adminReportsPage {
+        padding: 16px;
+    }
+
+    .reportActions {
+        flex-direction: column;
+    }
+
+    .actionButton {
+        width: 100%;
+    }
+}

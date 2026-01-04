@@ -1,0 +1,85 @@
+/* SmartTabs - Focus Lavender Theme */
+
+.container {
+    width: 100%;
+    border-bottom: 1px solid rgba(167, 139, 250, 0.1);
+    background: #1a0f2e;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.tabsWrapper {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 8px 16px;
+}
+
+.tabsWrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    color: #9ca3af;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    position: relative;
+}
+
+.tab:hover {
+    background: rgba(167, 139, 250, 0.05);
+    color: #f3f4f6;
+}
+
+.tab.active {
+    background: rgba(167, 139, 250, 0.1);
+    color: #a78bfa;
+}
+
+.tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40%;
+    height: 2px;
+    background: linear-gradient(135deg, #a78bfa 0%, #c4b5fd 100%);
+    border-radius: 2px 2px 0 0;
+}
+
+.icon {
+    font-size: 18px;
+}
+
+.label {
+    font-family: inherit;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .tabsWrapper {
+        padding: 6px 12px;
+    }
+
+    .tab {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+
+    .icon {
+        font-size: 16px;
+    }
+}

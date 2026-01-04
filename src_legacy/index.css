@@ -1,0 +1,402 @@
+/* ============================================
+   FOCUS APP - GLOBAL STYLES
+   LAVENDER THEME - PROFESSIONAL DESIGN
+   ============================================ */
+
+/* CSS RESET */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ============================================
+   CSS VARIABLES - BLUEPRINT ALIGNED THEME
+   ============================================ */
+
+:root {
+  /* 🎨 CORE PALETTE - From Blueprint */
+  --focus-lavender: #8B7FD7;
+  --focus-indigo: #4A378F;
+  --focus-pink: #EE7BFA;   /* Accent 1 */
+  --focus-yellow: #FFD600; /* Accent 2 */
+  --focus-aqua: #38C2E5;   /* Accent 3 */
+
+  /* Legacy aliases for compatibility */
+  --lavender: #8B7FD7;
+  --primary: #8B7FD7;
+  --focus-lavender-light: #B5ACDE;
+  --focus-purple: #9D8FE3;
+  --focus-purple-deep: #6B5EBD;
+  --focus-accent: #EE7BFA; /* Updated to new pink */
+  --focus-secondary: #4A378F;
+  
+  /* 🏳️ BACKGROUNDS & GLASS */
+  --bg-app: #F4F1FA; /* Light lavender tinted background */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F4F1FA; /* Updated to match app bg */
+  --bg-tertiary: #F3EAF8;
+  --bg-hover: #EDE7F6;
+  --bg-active: #E1D8F1;
+  
+  --glass-surface: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-blur: 20px;
+  
+  /* 🌈 GRADIENTS */
+  --gradient-primary: linear-gradient(135deg, var(--focus-lavender) 0%, var(--focus-indigo) 100%);
+  --gradient-accent: linear-gradient(135deg, var(--focus-lavender) 0%, var(--focus-pink) 100%);
+  --gradient-glass: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.4) 100%);
+  --gradient-secondary: linear-gradient(135deg, #B5ACDE 0%, #8B7FD7 100%);
+  --gradient-soft: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+  
+  /* 🔤 TYPOGRAPHY */
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --text-primary: #1A1625;
+  --text-secondary: #6B6685;
+  --text-tertiary: #9CA3AF;
+  --text-disabled: #D1D5DB;
+  
+  /* 📏 BORDERS */
+  --border-color: #E5E0F5;
+  --border-medium: #D4C7ED;
+  --border-dark: #C5B5E8;
+  
+  /* 🌑 SHADOWS */
+  --shadow-sm: 0 1px 3px rgba(139, 127, 215, 0.08);
+  --shadow-md: 0 4px 6px rgba(139, 127, 215, 0.12);
+  --shadow-lg: 0 10px 15px rgba(139, 127, 215, 0.15);
+  --shadow-xl: 0 20px 25px rgba(139, 127, 215, 0.18);
+  
+  /* 🌑 DARK MODE VARIABLES */
+  --dark-bg-primary: #0F0C15; /* Updated to match blueprint */
+  --dark-bg-secondary: #1A1625;
+  --dark-bg-tertiary: #2E2740;
+  --dark-bg-hover: #38304A;
+  --dark-bg-active: #433955;
+  
+  --dark-text-primary: #FFFFFF;
+  --dark-text-secondary: #A09AB5; /* Updated to match blueprint */
+  --dark-text-tertiary: #6B6C7E;
+  
+  --dark-border-color: #3A3250;
+  --dark-border-medium: #45395D;
+  
+  --dark-glass-surface: rgba(20, 16, 30, 0.75);
+  --dark-glass-border: rgba(255, 255, 255, 0.08);
+  
+  /* ========== SPACING ========== */
+  
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  
+  /* ========== BORDER RADIUS ========== */
+  
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-card: 24px; /* Blueprint aligned */
+  --radius-btn: 99px; /* Blueprint aligned */
+  --radius-full: 9999px;
+  
+  /* ========== TYPOGRAPHY ========== */
+  
+  --font-primary: var(--font-main);
+  
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.875rem; /* 14px */
+  --text-base: 1rem; /* 16px */
+  --text-lg: 1.125rem; /* 18px */
+  --text-xl: 1.25rem; /* 20px */
+  --text-2xl: 1.5rem; /* 24px */
+  --text-3xl: 1.875rem; /* 30px */
+  --text-4xl: 2.25rem; /* 36px */
+  
+  --font-light: 300;
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --font-extrabold: 800;
+  
+  /* ========== LAYOUT DIMENSIONS ========== */
+  
+  --header-height: 60px; /* Blueprint aligned */
+  --bottom-nav-height: 60px;
+  --sidebar-width: 260px; /* Blueprint aligned */
+  --content-max-width: 935px;
+  --max-content-width: 935px; /* Blueprint aligned alias */
+  
+  /* ========== Z-INDEX ========== */
+  
+  --z-base: 1;
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-fixed: 1200;
+  --z-modal-backdrop: 1300;
+  --z-modal: 1400;
+  
+  /* ========== TRANSITIONS ========== */
+  
+  --transition-fast: 150ms ease-out;
+  --transition-normal: 250ms ease-out;
+  --transition-slow: 350ms ease-out;
+}
+
+/* 🌑 DARK MODE OVERRIDES */
+
+.dark {
+  --bg-app: var(--dark-bg-primary);
+  --bg-primary: var(--dark-bg-primary);
+  --bg-secondary: var(--dark-bg-secondary);
+  --bg-tertiary: var(--dark-bg-tertiary);
+  --bg-hover: var(--dark-bg-hover);
+  --bg-active: var(--dark-bg-active);
+  
+  --glass-surface: var(--dark-glass-surface);
+  --glass-border: var(--dark-glass-border);
+  
+  --text-primary: var(--dark-text-primary);
+  --text-secondary: var(--dark-text-secondary);
+  --text-tertiary: var(--dark-text-tertiary);
+  
+  --border-color: var(--dark-border-color);
+  --border-medium: var(--dark-border-medium);
+  
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-main);
+  font-size: var(--text-base);
+  font-weight: var(--font-normal);
+  line-height: 1.5;
+  color: var(--text-primary);
+  background-color: var(--bg-app);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--focus-lavender);
+  border-radius: 10px;
+  border: 2px solid var(--bg-app);
+  transition: background var(--transition-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--focus-indigo);
+}
+
+/* ============================================
+   TYPOGRAPHY ELEMENTS
+   ============================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: var(--font-bold);
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+h1 { font-size: var(--text-4xl); }
+h2 { font-size: var(--text-3xl); }
+h3 { font-size: var(--text-2xl); }
+h4 { font-size: var(--text-xl); }
+h5 { font-size: var(--text-lg); }
+h6 { font-size: var(--text-base); }
+
+p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   LINKS
+   ============================================ */
+
+a {
+  color: var(--focus-lavender);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--focus-purple-deep);
+}
+
+a:active {
+  color: var(--focus-accent);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+button {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all var(--transition-fast);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button:focus {
+  outline: none;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--focus-lavender);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   INPUTS
+   ============================================ */
+
+input,
+textarea,
+select {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* ============================================
+   IMAGES
+   ============================================ */
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-style: none;
+}
+
+/* ============================================
+   SELECTION
+   ============================================ */
+
+::selection {
+  background: var(--focus-lavender-light);
+  color: white;
+}
+
+::-moz-selection {
+  background: var(--focus-lavender-light);
+  color: white;
+}
+
+/* ============================================
+   FOCUS STYLES
+   ============================================ */
+
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--focus-lavender);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================
+   UTILITY CLASSES (Blueprint Aligned)
+   ============================================ */
+
+/* ✨ Glass Morphism Panel */
+.glass-panel {
+  background: var(--glass-surface);
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+}
+
+/* 🌈 Text Gradient */
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 🌑 Shadow Utilities */
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-xl { box-shadow: var(--shadow-xl); }
+
+/* ============================================
+   APP CONTAINER
+   ============================================ */
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}

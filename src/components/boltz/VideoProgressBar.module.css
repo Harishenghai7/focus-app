@@ -1,0 +1,59 @@
+/* VideoProgressBar - Pro-Grade Progress Indicator */
+
+.container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.15);
+    z-index: 150;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background: linear-gradient(90deg, #a78bfa 0%, #c4b5fd 50%, #a78bfa 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s linear infinite;
+    transition: width 0.1s linear;
+    box-shadow:
+        0 0 12px rgba(167, 139, 250, 0.6),
+        0 0 24px rgba(167, 139, 250, 0.3);
+    position: relative;
+}
+
+.progress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .container {
+        height: 2.5px;
+    }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+    .container {
+        height: 3px;
+    }
+}

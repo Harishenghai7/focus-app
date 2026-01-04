@@ -1,0 +1,49 @@
+.draggableContainer {
+    z-index: var(--z-focusly);
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    animation: containerFadeIn 0.3s ease;
+}
+
+@keyframes containerFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.avatarSection {
+    display: flex;
+    justify-content: center;
+    padding: var(--space-2);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        position: fixed;
+        inset: 0;
+        gap: 0;
+    }
+
+    .avatarSection {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+    }
+}

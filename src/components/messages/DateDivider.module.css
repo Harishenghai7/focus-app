@@ -1,0 +1,32 @@
+/**
+ * DateDivider - Ultimate Lavender Theme v3.0
+ * Glassmorphism date divider
+ */
+
+.dateDivider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-6) var(--space-4);
+}
+
+.line {
+    flex: 1;
+    height: 1px;
+    background: var(--border-subtle);
+}
+
+.dateText {
+    font-size: 12px;
+    font-weight: var(--font-semibold);
+    color: rgba(248, 247, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    padding: 6px 16px;
+    background: rgba(42, 27, 71, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
+    margin: 0 var(--space-3);
+}

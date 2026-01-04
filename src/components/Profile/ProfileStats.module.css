@@ -1,0 +1,56 @@
+.stats {
+    display: flex;
+    gap: var(--space-8);
+    align-items: center;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.stat:hover {
+    transform: scale(1.05);
+}
+
+.stat:first-child {
+    cursor: default;
+}
+
+.stat:first-child:hover {
+    transform: none;
+}
+
+.statValue {
+    font-size: var(--font-lg);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+}
+
+.statLabel {
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .stats {
+        gap: var(--space-6);
+        width: 100%;
+        justify-content: space-around;
+    }
+
+    .statValue {
+        font-size: var(--font-base);
+    }
+
+    .statLabel {
+        font-size: var(--font-xs);
+    }
+}

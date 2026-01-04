@@ -1,0 +1,342 @@
+.modal {
+    max-width: 1200px;
+    max-height: 90vh;
+    padding: 0;
+}
+
+.content {
+    display: flex;
+    height: 85vh;
+    max-height: 900px;
+}
+
+/* Media Section */
+.mediaSection {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.mediaContainer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.media {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Media Navigation (for multiple images/videos) */
+.mediaNav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    z-index: 2;
+}
+
+.mediaNav:hover {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.mediaNavPrev {
+    left: var(--space-4);
+}
+
+.mediaNavNext {
+    right: var(--space-4);
+}
+
+.mediaIndicators {
+    position: absolute;
+    top: var(--space-4);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: var(--space-2);
+    z-index: 2;
+}
+
+.indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transition: background 0.2s ease;
+}
+
+.indicatorActive {
+    background: white;
+}
+
+/* Post Navigation (prev/next post) */
+.postNav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 3;
+}
+
+.postNav:hover {
+    background: var(--bg-elevated);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.postNavPrev {
+    left: -16px;
+}
+
+.postNavNext {
+    right: calc(400px - 16px);
+}
+
+/* Sidebar */
+.sidebar {
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid var(--border-default);
+    background: var(--bg-secondary);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--border-default);
+}
+
+.userInfo {
+    flex: 1;
+}
+
+.username {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--font-sm);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+}
+
+.location {
+    font-size: var(--font-xs);
+    color: var(--text-secondary);
+}
+
+/* Caption */
+.caption {
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--border-default);
+    font-size: var(--font-sm);
+    line-height: var(--leading-relaxed);
+}
+
+.captionUsername {
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin-right: var(--space-2);
+}
+
+.captionText {
+    color: var(--text-primary);
+}
+
+.link {
+    color: var(--primary-lavender);
+    text-decoration: none;
+    font-weight: var(--font-medium);
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+/* Comments Section */
+.commentsSection {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-4);
+}
+
+.commentsList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.comment {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+}
+
+.commentContent {
+    flex: 1;
+}
+
+.commentText {
+    font-size: var(--font-sm);
+    color: var(--text-primary);
+    line-height: var(--leading-relaxed);
+}
+
+.commentUsername {
+    font-weight: var(--font-semibold);
+    margin-right: var(--space-2);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.commentMeta {
+    font-size: var(--font-xs);
+    color: var(--text-muted);
+    margin-top: var(--space-1);
+}
+
+.loading,
+.noComments {
+    text-align: center;
+    padding: var(--space-8);
+    color: var(--text-secondary);
+    font-size: var(--font-sm);
+}
+
+/* Actions */
+.actions {
+    padding: var(--space-4);
+    border-top: 1px solid var(--border-default);
+}
+
+.actionButtons {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-3);
+}
+
+.actionBtn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: transform 0.2s ease;
+}
+
+.actionBtn:hover {
+    transform: scale(1.1);
+}
+
+.actionBtnSave {
+    margin-left: auto;
+}
+
+.likes {
+    font-size: var(--font-sm);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.timestamp {
+    font-size: var(--font-xs);
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+/* Comment Form */
+.commentForm {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-top: 1px solid var(--border-default);
+}
+
+.commentInput {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-size: var(--font-sm);
+}
+
+.commentInput::placeholder {
+    color: var(--text-muted);
+}
+
+.commentSubmit {
+    background: none;
+    border: none;
+    color: var(--primary-lavender);
+    font-size: var(--font-sm);
+    font-weight: var(--font-semibold);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.commentSubmit:hover:not(:disabled) {
+    color: var(--primary-lavender-light);
+}
+
+.commentSubmit:disabled {
+    color: var(--text-disabled);
+    cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .content {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .mediaSection {
+        height: 50vh;
+    }
+
+    .sidebar {
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid var(--border-default);
+        max-height: 50vh;
+    }
+
+    .postNavNext {
+        right: -16px;
+    }
+}

@@ -1,0 +1,74 @@
+.header {
+    text-align: center;
+    margin-bottom: var(--space-8);
+}
+
+.title {
+    font-size: var(--font-3xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: var(--font-base);
+}
+
+.toggleText {
+    text-align: center;
+    margin-top: var(--space-6);
+    color: var(--text-secondary);
+    font-size: var(--font-sm);
+}
+
+.toggleLink {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-weight: var(--font-semibold);
+    cursor: pointer;
+    margin-left: var(--space-2);
+    font-size: var(--font-sm);
+    transition: color 0.2s ease;
+}
+
+.toggleLink:hover {
+    color: var(--primary-light);
+    text-decoration: underline;
+}
+
+.backLink {
+    display: inline-flex;
+    align-items: center;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    font-size: var(--font-sm);
+}
+
+.backLink:hover {
+    color: var(--text-primary);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    width: 100%;
+}
+
+.eyeButton {
+    background: none;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s ease;
+}
+
+.eyeButton:hover {
+    color: var(--text-primary);
+}

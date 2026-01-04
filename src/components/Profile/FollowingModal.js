@@ -1,77 +1,92 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import PropTypes from 'prop-types';
-import { useFollowingList } from '../../hooks/useFollow';
-import FollowButton from '../FollowButton';
-import '../Profile/FollowersModal.css';
+import { useNavigate } from 'react-router-dom';
+import Modal from '../ui/Modal';
+import Avatar from '../shared/Avatar';
+import Button from '../ui/Button';
+import Icon from '../ui/Icon';
+import Input from '../ui/Input';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import LoadingSkeleton from '../shared/LoadingSkeleton';
+import { useFollowing } from '../../hooks/useFollowing';
+import { useFollow } from '../../hooks/useFollow';
+import styles from './FollowingModal.module.css';
 
-const FollowingModal = ({ userId, onClose, currentUserId }) => {
-  const { following, loading, error } = useFollowingList(userId);
-  const [searchQuery, setSearchQuery] = useState('');
+const FollowingModal = ({ isOpen, onClose, userId }) => {
+    const navigate = useNavigate();
+    const { following, loading, hasMore, searchQuery, setSearchQuery, loadMore, updateFollowingStatus, unfollowUser } = useFollowing(userId, isOpen);
+    const { toggleFollow } = useFollow();
+    const [actionLoading, setActionLoading] = useState({});
 
-  const filteredFollowing = following.filter(user =>
-    user.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    const handleUnfollow = async (user) => {
+        setActionLoading(prev => ({ ...prev, [user.id]: true }));
+        await unfollowUser(user.id);
+        setActionLoading(prev => ({ ...prev, [user.id]: false }));
+    };
 
-  return (
-    <motion.div
-      className="modal-overlay"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={onClose}
-    >
-      <motion.div
-        className="followers-modal"
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="modal-header">
-          <h2>Following</h2>
-          <button className="modal-close" onClick={onClose} aria-label="Close">✕</button>
-        </div>
+    const handleUserClick = (username) => {
+        onClose();
+        navigate(`/profile/${username}`);
+    };
 
-        <div className="modal-search">
-          <input
-            type="text"
-            placeholder="Search following..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="search-input"
-          />
-        </div>
-
-        <div className="modal-body">
-          {loading && <div className="loading-text">Loading following...</div>}
-          {error && <div className="error-message">{error}</div>}
-          {!loading && filteredFollowing.length === 0 && (
-            <div className="empty-state">No following found</div>
-          )}
-          {filteredFollowing.map(user => (
-            <div key={user.id} className="user-item">
-              <img src={user.avatar_url || '/default-avatar.png'} alt={user.username} className="user-avatar" />
-              <div className="user-info">
-                <div className="user-username">{user.username}</div>
-                {user.full_name && <div className="user-fullname">{user.full_name}</div>}
-              </div>
-              {user.id !== currentUserId && (
-                <FollowButton myUserId={currentUserId} profileUserId={user.id} />
-              )}
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} title="Following" className={styles.modal}>
+            <div className={styles.searchContainer}>
+                <Input
+                    type="text"
+                    placeholder="Search following..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    icon={<Icon name="Search" size={18} />}
+                />
             </div>
-          ))}
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-};
 
-FollowingModal.propTypes = {
-  userId: PropTypes.string.isRequired,
-  onClose: PropTypes.func.isRequired,
-  currentUserId: PropTypes.string
+            <div className={styles.list} id="following-scroll">
+                {loading && following.length === 0 ? (
+                    <LoadingSkeleton type="list" count={10} />
+                ) : following.length === 0 ? (
+                    <div className={styles.emptyState}>
+                        <Icon name="Users" size={48} />
+                        <p>Not following anyone yet</p>
+                        {searchQuery && <p className={styles.emptyHint}>Try a different search term</p>}
+                    </div>
+                ) : (
+                    <InfiniteScroll
+                        dataLength={following.length}
+                        next={loadMore}
+                        hasMore={hasMore}
+                        loader={<LoadingSkeleton type="list" count={3} />}
+                        scrollableTarget="following-scroll"
+                    >
+                        {following.map((user) => (
+                            <div key={user.id} className={styles.item}>
+                                <div className={styles.userInfo} onClick={() => handleUserClick(user.username)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', flex: 1 }}>
+                                    <Avatar src={user.avatar_url} alt={user.username} size="md" />
+                                    <div className={styles.info}>
+                                        <div className={styles.username}>
+                                            {user.username}
+                                            {user.verified && <Icon name="BadgeCheck" size={14} className={styles.verified} />}
+                                        </div>
+                                        <div className={styles.fullName}>{user.full_name}</div>
+                                        {user.isMutual && <span className={styles.mutualBadge}>Mutual</span>}
+                                    </div>
+                                </div>
+                                <div className={styles.actions}>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleUnfollow(user)}
+                                        loading={actionLoading[user.id]}
+                                    >
+                                        Following
+                                    </Button>
+                                </div>
+                            </div>
+                        ))}
+                    </InfiniteScroll>
+                )}
+            </div>
+        </Modal>
+    );
 };
 
 export default FollowingModal;

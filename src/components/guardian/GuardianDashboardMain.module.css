@@ -1,0 +1,155 @@
+.dashboardContainer {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4);
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.headerIcon {
+  font-size: 2.5rem;
+  color: var(--primary);
+}
+
+.sectionCard {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-6);
+  margin-bottom: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-default);
+}
+
+.sectionTitle {
+  font-size: var(--font-xl);
+  font-weight: var(--font-semibold);
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-primary);
+}
+
+.sectionIcon {
+  font-size: var(--font-xl);
+  color: var(--primary);
+}
+
+.teenSelect {
+  margin-bottom: var(--space-6);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.label {
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.select {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: var(--font-base);
+}
+
+.error {
+  color: var(--error);
+  margin-bottom: var(--space-4);
+  padding: var(--space-3);
+  background: var(--error-alpha-10);
+  border-radius: var(--radius-md);
+}
+
+.alertList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.alertItem {
+  margin-bottom: var(--space-3);
+  padding: var(--space-3);
+  background: var(--bg-primary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.alertContent {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.alertType {
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+}
+
+.resolveButton {
+  margin-left: var(--space-3);
+  padding: var(--space-1) var(--space-3);
+  cursor: pointer;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+
+.resolveButton:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.alertCritical {
+  color: white;
+  background: var(--error);
+  border-radius: var(--radius-sm);
+  padding: 2px var(--space-2);
+  font-weight: var(--font-semibold);
+  font-size: var(--font-xs);
+}
+
+.alertHigh {
+  color: white;
+  background: var(--warning);
+  border-radius: var(--radius-sm);
+  padding: 2px var(--space-2);
+  font-weight: var(--font-semibold);
+  font-size: var(--font-xs);
+}
+
+.alertMedium {
+  color: white;
+  background: var(--warning-light);
+  /* Assuming this exists or similar */
+  border-radius: var(--radius-sm);
+  padding: 2px var(--space-2);
+  font-weight: var(--font-semibold);
+  font-size: var(--font-xs);
+}
+
+.alertLow {
+  color: white;
+  background: var(--success);
+  border-radius: var(--radius-sm);
+  padding: 2px var(--space-2);
+  font-weight: var(--font-semibold);
+  font-size: var(--font-xs);
+}

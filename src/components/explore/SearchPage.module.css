@@ -1,0 +1,21 @@
+.container {
+    padding: var(--space-4);
+    min-height: 100vh;
+}
+
+.header {
+    margin-bottom: var(--space-4);
+}
+
+.content {
+    color: var(--text-primary);
+}
+
+.placeholder {
+    padding: 40px;
+    text-align: center;
+    color: var(--text-secondary);
+    border: 1px dashed var(--border-default);
+    border-radius: 12px;
+    margin-top: 20px;
+}

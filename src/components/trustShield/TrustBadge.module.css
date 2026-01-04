@@ -1,0 +1,10 @@
+.badgeWrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.badgeList {
+    display: flex;
+    gap: var(--space-2);
+}

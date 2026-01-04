@@ -1,0 +1,146 @@
+.messageWrapper {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    animation: fadeInUp 0.3s ease-out;
+}
+
+.focuslyMessage {
+    justify-content: flex-start;
+}
+
+.userMessage {
+    justify-content: flex-end;
+}
+
+.messageAvatar {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(147, 51, 234, 0.2);
+}
+
+.avatarImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.messageContent {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 75%;
+}
+
+.messageBubble {
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    position: relative;
+    animation: bubblePop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.focuslyMessage .messageBubble {
+    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+    color: #1f2937;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.userMessage .messageBubble {
+    background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+    color: white;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 2px 12px rgba(147, 51, 234, 0.25);
+}
+
+.streaming {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.cursor {
+    display: inline-block;
+    margin-left: 2px;
+    color: #9333ea;
+}
+
+.userMessage .cursor {
+    color: white;
+}
+
+.timestamp {
+    font-size: 11px;
+    color: #9ca3af;
+    padding: 0 8px;
+    align-self: flex-start;
+}
+
+.userMessage .timestamp {
+    align-self: flex-end;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bubblePop {
+    0% {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .messageContent {
+        max-width: 85%;
+    }
+
+    .messageBubble {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+
+    .messageAvatar {
+        width: 32px;
+        height: 32px;
+    }
+}

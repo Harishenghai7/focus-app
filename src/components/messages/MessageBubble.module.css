@@ -1,0 +1,276 @@
+/**
+ * Message Bubbles - Ultimate Lavender Theme v3.0
+ * Clean version without nesting issues
+ */
+
+.messageWrapper {
+    display: flex;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-4);
+    position: relative;
+    animation: fade-in 0.3s ease-out;
+}
+
+.messageWrapper.own {
+    justify-content: flex-end;
+}
+
+.messageWrapper.other {
+    justify-content: flex-start;
+}
+
+/* Message Bubbles */
+.messageBubble {
+    max-width: 70%;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-xl);
+    position: relative;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    transition: all var(--transition-base);
+}
+
+/* Sent Messages */
+.own .messageBubble {
+    background: var(--lavender-gradient);
+    color: #ffffff;
+    border-radius: 16px 16px 4px 16px;
+    box-shadow: var(--shadow-md);
+    font-weight: 500;
+}
+
+.own .messageBubble:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+}
+
+/* Received Messages */
+.other .messageBubble {
+    background: rgba(42, 27, 71, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    border-radius: 16px 16px 16px 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.other .messageBubble:hover {
+    transform: translateY(-1px);
+    background: rgba(42, 27, 71, 0.9);
+}
+
+/* Message Text */
+.text {
+    margin: 0;
+    font-size: var(--font-base);
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+/* Message Footer */
+.messageFooter {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-1);
+    justify-content: flex-end;
+}
+
+.timestamp {
+    font-size: var(--font-xs);
+    color: rgba(248, 247, 255, 0.5);
+    margin-top: 4px;
+}
+
+.own .timestamp {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.edited {
+    font-style: italic;
+    opacity: 0.7;
+}
+
+/* Three-Dot Menu Button */
+.menuButton {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    opacity: 0;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.messageWrapper:hover .menuButton {
+    opacity: 1;
+}
+
+.menuButton.visible {
+    opacity: 1;
+}
+
+.menuButton:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.own .menuButton {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.other .menuButton {
+    color: rgba(248, 247, 255, 0.6);
+}
+
+/* Media Content */
+.mediaContainer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.image,
+.video {
+    max-width: 100%;
+    border-radius: var(--radius-lg);
+    display: block;
+}
+
+.image {
+    max-height: 400px;
+    object-fit: cover;
+}
+
+.video {
+    max-height: 400px;
+}
+
+.caption {
+    margin: 0;
+    font-size: var(--font-sm);
+}
+
+/* Reply Preview */
+.replyPreview {
+    display: flex;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+    padding: var(--space-2);
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: var(--radius-md);
+    border-left: 3px solid currentColor;
+}
+
+.replyContent {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+
+.replyAuthor {
+    font-size: var(--font-xs);
+    font-weight: var(--font-semibold);
+    opacity: 0.9;
+}
+
+.replyText {
+    font-size: var(--font-sm);
+    opacity: 0.7;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Deleted Message */
+.deletedMessage {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.5);
+    opacity: 0.7;
+}
+
+.deletedMessage svg {
+    flex-shrink: 0;
+    opacity: 0.6;
+}
+
+/* Forwarded Label */
+.forwardedLabel {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.forwardedLabel svg {
+    flex-shrink: 0;
+    opacity: 0.7;
+}
+
+/* Message Status */
+.sending {
+    font-size: var(--font-xs);
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+}
+
+.failed {
+    font-size: var(--font-xs);
+    color: #ef4444;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.failed:hover {
+    text-decoration: underline;
+}
+
+/* Stickers & GIFs */
+.stickerContainer,
+.gifContainer {
+    display: flex;
+    justify-content: center;
+    padding: var(--space-1);
+}
+
+.sticker {
+    max-width: 120px;
+    max-height: 120px;
+    object-fit: contain;
+    transition: transform var(--transition-base);
+}
+
+.sticker:hover {
+    transform: scale(1.05);
+}
+
+.gif {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: var(--radius-lg);
+    object-fit: cover;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .messageBubble {
+        max-width: 85%;
+    }
+}

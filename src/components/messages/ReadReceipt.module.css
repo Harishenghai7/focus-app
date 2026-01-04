@@ -1,0 +1,15 @@
+.readReceipt {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon {
+    color: var(--text-muted);
+    width: 14px;
+    height: 14px;
+}
+
+.icon.read {
+    color: var(--primary-lavender);
+}

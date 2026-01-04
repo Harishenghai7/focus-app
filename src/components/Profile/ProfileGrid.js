@@ -1,65 +1,36 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import PropTypes from 'prop-types';
-import ProfileTile from './ProfileTile';
-import EmptyState from '../EmptyState';
-import LoadingFallback from '../LoadingFallback';
-import './ProfileGrid.css';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import ProfileGridTile from './ProfileGridTile';
+import EmptyState from './EmptyState';
+import LoadingSkeleton from '../shared/LoadingSkeleton';
+import styles from './ProfileGrid.module.css';
 
-/**
- * ProfileGrid - Responsive grid gallery for profile content with lazyload
- */
-const ProfileGrid = ({ 
-  items, 
-  loading, 
-  emptyMessage,
-  emptyIcon,
-  emptyAction,
-  onItemClick,
-  contentType = 'post'
-}) => {
-  if (loading) {
-    return <LoadingFallback type="grid" count={9} />;
-  }
+const ProfileGrid = ({ items, loading, hasMore, onLoadMore, onItemClick, emptyMessage, emptyIcon }) => {
+    if (loading && items.length === 0) {
+        return <LoadingSkeleton type="grid" count={12} />;
+    }
 
-  if (!items || items.length === 0) {
+    if (!loading && items.length === 0) {
+        return <EmptyState message={emptyMessage} icon={emptyIcon} />;
+    }
+
     return (
-      <EmptyState
-        icon={emptyIcon || '📭'}
-        message={emptyMessage || 'No content yet'}
-        action={emptyAction}
-      />
+        <InfiniteScroll
+            dataLength={items.length}
+            next={onLoadMore}
+            hasMore={hasMore}
+            loader={<LoadingSkeleton type="grid" count={3} />}
+            className={styles.grid}
+        >
+            {items.map((item) => (
+                <ProfileGridTile
+                    key={item.id}
+                    item={item}
+                    onClick={() => onItemClick(item)}
+                />
+            ))}
+        </InfiniteScroll>
     );
-  }
-
-  return (
-    <motion.div
-      className="profile-grid"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-    >
-      {items.map((item, index) => (
-        <ProfileTile
-          key={item.id || index}
-          item={item}
-          index={index}
-          onClick={() => onItemClick(item, index)}
-          contentType={contentType}
-        />
-      ))}
-    </motion.div>
-  );
-};
-
-ProfileGrid.propTypes = {
-  items: PropTypes.array,
-  loading: PropTypes.bool,
-  emptyMessage: PropTypes.string,
-  emptyIcon: PropTypes.string,
-  emptyAction: PropTypes.node,
-  onItemClick: PropTypes.func.isRequired,
-  contentType: PropTypes.oneOf(['post', 'boltz', 'flash', 'tagged', 'saved'])
 };
 
 export default ProfileGrid;

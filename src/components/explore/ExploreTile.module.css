@@ -1,0 +1,61 @@
+.tile {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--bg-secondary);
+    /* Aspect ratio handling for masonry items if needed, 
+       but for true masonry we let the image height dictate it. 
+       However, to avoid layout shifts, we might want fixed ratios or server-provided ratios.
+    */
+    width: 100%;
+}
+
+.mediaWrapper {
+    position: relative;
+    width: 100%;
+}
+
+.media {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+.indicators {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    gap: 4px;
+}
+
+.icon {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.tile:hover .overlay {
+    opacity: 1;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+}

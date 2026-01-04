@@ -1,0 +1,27 @@
+.grid {
+    column-count: 3;
+    column-gap: 16px;
+    padding: 0 16px;
+}
+
+@media (max-width: 768px) {
+    .grid {
+        column-count: 2;
+    }
+}
+
+@media (max-width: 480px) {
+    .grid {
+        column-count: 1;
+        /* Or 2 depending on preference, Instagram uses 3 tight columns usually, but masonry is often 2 on mobile */
+        column-count: 2;
+        column-gap: 8px;
+        padding: 0 8px;
+    }
+}
+
+/* Ensure tiles don't break across columns */
+.grid>* {
+    break-inside: avoid;
+    margin-bottom: 16px;
+}

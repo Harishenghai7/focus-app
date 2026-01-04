@@ -1,0 +1,85 @@
+.auditLog {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-6);
+}
+
+.header h3 {
+    font-size: var(--font-xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+}
+
+.refreshButton {
+    padding: var(--space-2) var(--space-4);
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--font-sm);
+    font-weight: var(--font-semibold);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.refreshButton:hover {
+    background: var(--primary-dark);
+}
+
+.logList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.logEntry {
+    padding: var(--space-4);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+}
+
+.timestamp {
+    font-size: var(--font-xs);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-2);
+}
+
+.action {
+    font-size: var(--font-sm);
+    font-weight: var(--font-bold);
+    margin-bottom: var(--space-2);
+}
+
+.details {
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.badgeName {
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+}
+
+.separator {
+    color: var(--text-tertiary);
+}
+
+.userEmail,
+.actor {
+    color: var(--text-secondary);
+}

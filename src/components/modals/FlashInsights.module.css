@@ -1,0 +1,413 @@
+/* FlashInsights - Polished Pro-Grade Dark Theme */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal {
+    width: 100%;
+    max-width: 540px;
+    max-height: 90vh;
+    background: #1a1a1a;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUp 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Header */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid #2a2a2a;
+    background: #1a1a1a;
+}
+
+.backBtn {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.backBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+}
+
+.placeholder {
+    width: 40px;
+}
+
+/* Stats Summary */
+.statsSummary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    padding: 24px 0;
+    border-bottom: 1px solid #2a2a2a;
+    background: #1a1a1a;
+}
+
+.statItem {
+    text-align: center;
+    padding: 0 12px;
+}
+
+.statValue {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 4px;
+}
+
+.statLabel {
+    font-size: 11px;
+    color: #8e8e8e;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 600;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    border-bottom: 1px solid #2a2a2a;
+    overflow-x: auto;
+    scrollbar-width: none;
+    background: #1a1a1a;
+}
+
+.tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.tab {
+    flex: 1;
+    min-width: fit-content;
+    padding: 12px 8px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: #8e8e8e;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.tab:hover {
+    color: #ffffff;
+}
+
+.tab.active {
+    color: #ffffff;
+    border-bottom-color: #ffffff;
+}
+
+.tabIcon {
+    font-size: 16px;
+}
+
+.tabLabel {
+    font-weight: 600;
+}
+
+.tabCount {
+    color: #8e8e8e;
+    font-size: 12px;
+}
+
+.tab.active .tabCount {
+    color: #ffffff;
+}
+
+/* Content */
+.content {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 300px;
+    background: #000000;
+}
+
+.content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.content::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+.content::-webkit-scrollbar-thumb {
+    background: #3a3a3a;
+    border-radius: 4px;
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+    background: #4a4a4a;
+}
+
+.loading,
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.spinner {
+    font-size: 32px;
+    margin-bottom: 16px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading p {
+    color: #8e8e8e;
+    font-size: 14px;
+}
+
+.emptyIcon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+}
+
+.emptyTitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 0 8px 0;
+}
+
+.emptySubtext {
+    font-size: 14px;
+    color: #8e8e8e;
+    max-width: 300px;
+    line-height: 1.4;
+}
+
+/* List */
+.list {
+    padding: 0;
+}
+
+.listItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    transition: background 0.2s;
+    border-bottom: 1px solid #1a1a1a;
+}
+
+.listItem:hover {
+    background: #1a1a1a;
+}
+
+.listItem:last-child {
+    border-bottom: none;
+}
+
+.avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.avatar:hover {
+    opacity: 0.8;
+}
+
+.userInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.username {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 2px;
+    cursor: pointer;
+}
+
+.username:hover {
+    opacity: 0.7;
+}
+
+.verified {
+    color: #0095f6;
+    font-size: 14px;
+}
+
+.fullName {
+    font-size: 13px;
+    color: #8e8e8e;
+    margin-bottom: 4px;
+}
+
+.replyContent {
+    font-size: 14px;
+    color: #ffffff;
+    margin: 6px 0 4px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.4;
+}
+
+.time {
+    font-size: 12px;
+    color: #8e8e8e;
+}
+
+.followBtn {
+    padding: 7px 16px;
+    background: #0095f6;
+    border: none;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+
+.followBtn:hover {
+    background: #1877f2;
+}
+
+.followBtn:active {
+    transform: scale(0.98);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .modal {
+        max-width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .statsSummary {
+        gap: 0;
+        padding: 20px 0;
+    }
+
+    .statValue {
+        font-size: 20px;
+    }
+
+    .statLabel {
+        font-size: 10px;
+    }
+
+    .tab {
+        padding: 10px 6px;
+        font-size: 12px;
+    }
+
+    .tabIcon {
+        font-size: 14px;
+    }
+
+    .tabCount {
+        font-size: 11px;
+    }
+
+    .listItem {
+        padding: 10px 12px;
+    }
+
+    .avatar {
+        width: 40px;
+        height: 40px;
+    }
+
+    .username {
+        font-size: 13px;
+    }
+
+    .fullName {
+        font-size: 12px;
+    }
+
+    .replyContent {
+        font-size: 13px;
+    }
+
+    .followBtn {
+        padding: 6px 14px;
+        font-size: 13px;
+    }
+}

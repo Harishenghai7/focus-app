@@ -1,0 +1,43 @@
+.profileBadges {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.badgeList {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.moreButton,
+.lessButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-default);
+    color: var(--text-secondary);
+    font-size: var(--font-xs);
+    font-weight: var(--font-semibold);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.moreButton:hover,
+.lessButton:hover {
+    background: var(--bg-hover);
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: scale(1.05);
+}
+
+.lessButton {
+    width: auto;
+    padding: 0 var(--space-2);
+    border-radius: var(--radius-full);
+}

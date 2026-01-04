@@ -1,0 +1,97 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║                    🚨 EMERGENCY FIX - QUICK REFERENCE                  ║
+╚════════════════════════════════════════════════════════════════════════╝
+
+┌─ PROBLEM ──────────────────────────────────────────────────────────────┐
+│ ❌ Error: "infinite recursion detected in policy for relation          │
+│    conversation_participants"                                          │
+│ ❌ New Message search not working                                      │
+│ ❌ Messages page completely broken                                     │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌─ SOLUTION (5 MINUTES) ─────────────────────────────────────────────────┐
+│                                                                         │
+│  1️⃣  Open Supabase Dashboard                                          │
+│      → https://app.supabase.com                                        │
+│                                                                         │
+│  2️⃣  Go to SQL Editor                                                 │
+│      → Click "SQL Editor" in left sidebar                              │
+│                                                                         │
+│  3️⃣  Open this file:                                                  │
+│      → supabase/migrations/EMERGENCY_FIX_RLS.sql                       │
+│                                                                         │
+│  4️⃣  Copy ENTIRE contents                                             │
+│      → Ctrl+A → Ctrl+C                                                 │
+│                                                                         │
+│  5️⃣  Paste into SQL Editor                                            │
+│      → Ctrl+V                                                          │
+│                                                                         │
+│  6️⃣  Click RUN                                                         │
+│      → Or press Ctrl+Enter                                             │
+│                                                                         │
+│  7️⃣  Wait for success message                                         │
+│      → Should see "✅ ALL FIXES APPLIED SUCCESSFULLY!"                │
+│                                                                         │
+│  8️⃣  Refresh your app                                                 │
+│      → Ctrl+R or Cmd+R                                                 │
+│                                                                         │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌─ VERIFY IT WORKS ──────────────────────────────────────────────────────┐
+│                                                                         │
+│  ✅ No more "infinite recursion" errors in console                     │
+│  ✅ Messages page loads                                                │
+│  ✅ Can see conversations                                              │
+│  ✅ "New Message" button works                                         │
+│  ✅ User search works                                                  │
+│  ✅ Can start new conversations                                        │
+│                                                                         │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌─ WHAT WAS FIXED ───────────────────────────────────────────────────────┐
+│                                                                         │
+│  🔧 conversation_participants RLS policy                               │
+│     • Removed recursive helper function                                │
+│     • Created simple, non-recursive policy                             │
+│                                                                         │
+│  🔧 profiles RLS policy                                                │
+│     • Allowed authenticated users to search profiles                   │
+│     • Fixed New Message modal search                                   │
+│                                                                         │
+│  🔧 conversations & messages RLS policies                              │
+│     • Verified and updated all related policies                        │
+│                                                                         │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌─ TROUBLESHOOTING ──────────────────────────────────────────────────────┐
+│                                                                         │
+│  ⚠️  Still seeing errors?                                              │
+│     → Clear browser cache (Ctrl+Shift+Delete)                          │
+│     → Check Supabase logs in Dashboard                                 │
+│     → Verify migration ran successfully                                │
+│                                                                         │
+│  ⚠️  Migration didn't run?                                             │
+│     → Make sure you copied the ENTIRE file                             │
+│     → Check for syntax errors in SQL Editor                            │
+│     → Try running each section separately                              │
+│                                                                         │
+│  ⚠️  Need more help?                                                   │
+│     → See EMERGENCY_FIX_GUIDE.md for detailed instructions             │
+│     → See MESSAGES_FIX_SUMMARY.md for technical details                │
+│                                                                         │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌─ FILES CREATED ────────────────────────────────────────────────────────┐
+│                                                                         │
+│  📄 EMERGENCY_FIX_RLS.sql          ← USE THIS (all-in-one fix)        │
+│  📄 EMERGENCY_FIX_GUIDE.md         ← Step-by-step guide               │
+│  📄 MESSAGES_FIX_SUMMARY.md        ← Technical details                │
+│  📄 QUICK_FIX_REFERENCE.txt        ← This file                        │
+│                                                                         │
+└────────────────────────────────────────────────────────────────────────┘
+
+╔════════════════════════════════════════════════════════════════════════╗
+║  ⏱️  Estimated Time: 5 minutes                                         ║
+║  🔴 Priority: CRITICAL                                                 ║
+║  ✅ Status: Ready to deploy                                            ║
+╚════════════════════════════════════════════════════════════════════════╝

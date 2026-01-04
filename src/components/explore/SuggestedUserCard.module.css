@@ -1,0 +1,63 @@
+.card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2);
+    border-radius: var(--radius-md);
+    transition: background 0.2s ease;
+}
+
+.card:hover {
+    background: var(--bg-tertiary);
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+}
+
+.username {
+    font-weight: var(--font-medium);
+    color: var(--text-primary);
+    font-size: var(--font-sm);
+}
+
+.fullName {
+    font-size: var(--font-xs);
+    color: var(--text-muted);
+}
+
+.followButton {
+    background: var(--primary-lavender);
+    color: white;
+    border: none;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    font-size: var(--font-xs);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.followButton:hover {
+    background: var(--primary-lavender-dark);
+    box-shadow: 0 0 10px var(--primary-lavender-500);
+}
+
+.followButton.following {
+    background: transparent;
+    border: 1px solid var(--border-default);
+    color: var(--text-secondary);
+}
+
+.followButton.following:hover {
+    border-color: var(--error);
+    color: var(--error);
+    content: 'Unfollow';
+}

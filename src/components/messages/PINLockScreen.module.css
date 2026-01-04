@@ -1,0 +1,161 @@
+/* PIN Lock Screen - Lavender Theme */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(30, 20, 50, 0.98), rgba(42, 27, 71, 0.98));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease;
+}
+
+.screen {
+    width: 90%;
+    max-width: 400px;
+    padding: 40px 24px;
+    text-align: center;
+}
+
+.header {
+    margin-bottom: 40px;
+}
+
+.header svg {
+    margin-bottom: 24px;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.header h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: white;
+    margin: 0 0 8px 0;
+}
+
+.header p {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+}
+
+.dots {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 40px;
+}
+
+.dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.dot.filled {
+    background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+    border-color: #a78bfa;
+    transform: scale(1.2);
+}
+
+.dot.error {
+    background: #ef4444;
+    border-color: #ef4444;
+    animation: shake 0.5s ease;
+}
+
+.errorMessage {
+    color: #ef4444;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    animation: shake 0.5s ease;
+}
+
+.keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.key {
+    aspect-ratio: 1;
+    background: rgba(139, 92, 246, 0.2);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 50%;
+    color: white;
+    font-size: 24px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.key:hover {
+    background: rgba(139, 92, 246, 0.3);
+    border-color: rgba(139, 92, 246, 0.5);
+    transform: scale(1.05);
+}
+
+.key:active {
+    transform: scale(0.95);
+}
+
+.key svg {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-10px);
+    }
+
+    75% {
+        transform: translateX(10px);
+    }
+}
+
+@media (max-width: 768px) {
+    .screen {
+        width: 95%;
+    }
+
+    .keypad {
+        gap: 12px;
+    }
+}

@@ -1,0 +1,26 @@
+.bannerContainer {
+    position: sticky;
+    top: var(--space-4);
+    z-index: var(--z-sticky);
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--space-4);
+    animation: slideDown 0.3s ease-out;
+}
+
+.bannerBtn {
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-lg);
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
