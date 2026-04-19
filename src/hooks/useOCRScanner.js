@@ -16,7 +16,7 @@ import { createWorker } from 'tesseract.js';
 // Aadhaar: 12-digit number in groups of 4
 const AADHAAR_REGEX = /\b\d{4}\s?\d{4}\s?\d{4}\b/;
 
-const DOB_REGEX = /\b(\d{4}[\/\\.\-](?:0?[1-9]|1[0-2])[\/\\.\-](?:0?[1-9]|[12]\d|3[01])|(?:0?[1-9]|[12]\d|3[01])[\/\\.\-](?:0?[1-9]|1[0-2])[\/\\.\-]\d{4})\b/;
+const DOB_REGEX = /\b(\d{4}[-/.\\](?:0?[1-9]|1[0-2])[-/.\\](?:0?[1-9]|[12]\d|3[01])|(?:0?[1-9]|[12]\d|3[01])[-/.\\](?:0?[1-9]|1[0-2])[-/.\\]\d{4})\b/;
 
 // Year of birth (fallback)
 const YEAR_REGEX = /(?:Year of Birth|DOB|YOB)\s*[:-]?\s*(\d{4})/i;

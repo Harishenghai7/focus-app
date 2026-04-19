@@ -22,6 +22,9 @@ const VerifyMobile = () => {
     const animationFrameRef = useRef(null);
     const timeoutRef = useRef(null);
     const lastDetectionTimeRef = useRef(Date.now());
+    // Rolling blink detection: 15-frame baseline calibration + 3-frame rolling avg
+    const earBufferRef = useRef([]);
+    const baselineEARRef = useRef(null);
     
     // Helper to calculate Eye Aspect Ratio for Blink Detection
     const getEAR = (eye) => {
@@ -89,6 +92,10 @@ const VerifyMobile = () => {
                 videoRef.current.srcObject = stream;
             }
             
+            // Reset calibration for fresh session
+            earBufferRef.current = [];
+            baselineEARRef.current = null;
+            
             setCurrentStep(0);
             setMessage('Challenge 1: Please SMILE broadly 😊');
             startDetectionLoop();
@@ -127,22 +134,42 @@ const VerifyMobile = () => {
                         setCurrentStep((step) => {
                             let nextStep = step;
                             if (step === 0) {
-                                // Challenge: Smile
+                                // Challenge 1: Smile — threshold 0.35
                                 const happy = detection.expressions.happy;
                                 if (happy > SMILE_THRESHOLD) {
                                     setMessage('Challenge 2: Please BLINK deliberately 👁️👁️');
                                     nextStep = 1;
+                                    // Reset blink calibration for fresh start
+                                    earBufferRef.current = [];
+                                    baselineEARRef.current = null;
                                     if (navigator?.vibrate) navigator.vibrate(100);
                                 }
                             } else if (step === 1) {
-                                // Challenge: Blink -> Calculate EAR
+                                // Challenge 2: Blink — rolling avg of 3 frames, 40% drop from baseline
                                 const leftEye = detection.landmarks.getLeftEye();
                                 const rightEye = detection.landmarks.getRightEye();
-                                const avgEAR = (getEAR(leftEye) + getEAR(rightEye)) / 2.0;
+                                const currentEAR = (getEAR(leftEye) + getEAR(rightEye)) / 2.0;
 
-                                if (avgEAR < BLINK_THRESHOLD) {
-                                    completeHandoff();
-                                    nextStep = 2; // completed
+                                if (baselineEARRef.current === null) {
+                                    // Calibration phase: collect 15 frames of open-eye EAR
+                                    earBufferRef.current.push(currentEAR);
+                                    if (earBufferRef.current.length >= 15) {
+                                        const sum = earBufferRef.current.reduce((a, b) => a + b, 0);
+                                        baselineEARRef.current = sum / earBufferRef.current.length;
+                                        earBufferRef.current = []; // Start rolling window fresh
+                                        setMessage('Baseline set. NOW blink 👁️');
+                                    }
+                                } else {
+                                    // Detection phase: rolling average of last 3 frames
+                                    earBufferRef.current.push(currentEAR);
+                                    if (earBufferRef.current.length > 3) earBufferRef.current.shift();
+                                    const rollingAvg = earBufferRef.current.reduce((a, b) => a + b, 0) / earBufferRef.current.length;
+
+                                    // 40% drop from calibrated open-eye baseline = blink
+                                    if (rollingAvg < baselineEARRef.current * 0.60) {
+                                        completeHandoff();
+                                        nextStep = 2; // completed
+                                    }
                                 }
                             }
                             return nextStep;
@@ -168,7 +195,10 @@ const VerifyMobile = () => {
             if (uid) {
                 await supabase
                     .from('profiles')
-                    .update({ verification_status: 'VERIFIED' })
+                    .update({ 
+                        verification_status: 'VERIFIED',
+                        trust_shield_status: 'VERIFIED'
+                    })
                     .eq('id', uid);
             }
 

@@ -51,11 +51,12 @@ const TrustShieldVerification = () => {
   const [idPreview, setIdPreview] = useState(null);
   const [ocrData, setOcrData] = useState(null);
   const [guardianToken, setGuardianToken] = useState(null);
-  const [mobileToken, setMobileToken] = useState(null);
+  const [mobileToken] = useState(null); // token managed by realtime channel
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
   const [statusClicks, setStatusClicks] = useState(0);
+  const [showAccessGranted, setShowAccessGranted] = useState(false);
 
   const fileInputRef = useRef(null);
 
@@ -104,8 +105,42 @@ const TrustShieldVerification = () => {
     localStorage.removeItem(FAIL_COUNT_KEY);
   }, []);
 
-  // ── Hooks ──────────────────────────────────────────────────────────────────
+  // ── OCR Hook ──────────────────────────────────────────────────────────────
   const ocr = useOCRScanner();
+
+  // ── Final Verification Persistence (defined BEFORE useEffects that call it)
+  const completeVerification = useCallback(async (simResult) => {
+    setSaving(true);
+    try {
+      const isTeen = ageGroup === '13-17';
+      const verificationStatus = isTeen ? 'PENDING_GUARDIAN' : 'VERIFIED';
+
+      await persistTrustShieldState({
+        userId: user.id,
+        verificationStatus,
+        ocrResult: ocrData,
+        faceScore: simResult.similarity / 100,
+        attemptResult: 'PASS',
+        stage: 'trust_shield_complete',
+        reason: null,
+      });
+
+      if (isTeen) {
+        const token = await createGuardianHandshake({
+          teenUserId: user.id,
+          metadata: { ocrData, faceScore: simResult.similarity },
+        });
+        setGuardianToken(token);
+        setStep(5);
+      } else {
+        setStep(5);
+      }
+    } catch (err) {
+      handleFail('Failed to save verification. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  }, [ageGroup, ocrData, user, handleFail]);
 
   // ── Cleanup camera on unmount ──────────────────────────────────────────────
   useEffect(() => {
@@ -115,14 +150,14 @@ const TrustShieldVerification = () => {
     // eslint-disable-next-line
   }, [idPreview]);
 
-  // ── Mobile Verification Setup ──────────────────────────────────────────────
+  // ── Mobile Realtime Sync (Desktop listens for VERIFIED from mobile) ────────
   useEffect(() => {
     let channel;
     
     const initMobileSync = async () => {
-      if (step === 4 && user && !mobileToken) {
-        // Realtime listener
-        channel = supabase.channel('verification_sync')
+      if (step === 4 && user) {
+        // Use public:profiles channel for proper Supabase Realtime
+        channel = supabase.channel('public:profiles')
           .on('postgres_changes', {
               event: 'UPDATE',
               schema: 'public',
@@ -131,7 +166,9 @@ const TrustShieldVerification = () => {
           }, (payload) => {
               if (payload.new.verification_status === 'VERIFIED') {
                   handleSuccessFeedback();
-                  completeVerification({ similarity: 100 });
+                  // Cinematic unlock: show Access Granted overlay then redirect
+                  setShowAccessGranted(true);
+                  setTimeout(() => navigate('/home'), 2500);
               }
           })
           .subscribe();
@@ -142,7 +179,8 @@ const TrustShieldVerification = () => {
     return () => {
       if (channel) supabase.removeChannel(channel);
     }
-  }, [step, user, mobileToken, handleSuccessFeedback, completeVerification]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, user, handleSuccessFeedback]);
 
   // ── The Founder's Backdoor ──────────────────────────────────────────────────
   const keysPressed = useRef(new Set());
@@ -197,13 +235,15 @@ const TrustShieldVerification = () => {
     }
   }, [user]);
 
+  // Volume key listener (dev convenience)
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleVolumeKey = (e) => {
       if (e.key === 'AudioVolumeUp' || e.key === 'VolumeUp') {
         handleFounderBypass();
       }
     };
-    return () => {}
+    window.addEventListener('keydown', handleVolumeKey);
+    return () => window.removeEventListener('keydown', handleVolumeKey);
   }, [handleFounderBypass]);
 
   // ── Typewriter Effect ───────────────────────────────────────────────────────
@@ -320,40 +360,7 @@ const TrustShieldVerification = () => {
 
 
 
-  // ── Final Verification Persistence ────────────────────────────────────────
-  const completeVerification = useCallback(async (simResult) => {
-    setSaving(true);
-    try {
-      const isTeen = ageGroup === '13-17';
-      const verificationStatus = isTeen ? 'PENDING_GUARDIAN' : 'VERIFIED';
-
-      await persistTrustShieldState({
-        userId: user.id,
-        verificationStatus,
-        ocrResult: ocrData,
-        faceScore: simResult.similarity / 100,
-        attemptResult: 'PASS',
-        stage: 'trust_shield_complete',
-        reason: null,
-      });
-
-      if (isTeen) {
-        // Generate guardian handshake token
-        const token = await createGuardianHandshake({
-          teenUserId: user.id,
-          metadata: { ocrData, faceScore: simResult.similarity },
-        });
-        setGuardianToken(token);
-        setStep(5);
-      } else {
-        setStep(5);
-      }
-    } catch (err) {
-      handleFail('Failed to save verification. Please try again.');
-    } finally {
-      setSaving(false);
-    }
-  }, [ageGroup, ocrData, user, handleFail]);
+  // completeVerification is now defined above (before the useEffects that use it)
 
   // ── Progress Bar ──────────────────────────────────────────────────────────
   const renderProgress = () => (
@@ -674,6 +681,35 @@ const TrustShieldVerification = () => {
           )}
         </div>
       </div>
+
+      {/* ── CINEMATIC ACCESS GRANTED OVERLAY ──────────────────────────────────────────── */}
+      {showAccessGranted && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 9999,
+          background: 'radial-gradient(ellipse at center, rgba(74,222,128,0.15) 0%, rgba(5,5,16,0.97) 70%)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          animation: 'fadeInAccess 0.5s ease-out'
+        }}>
+          <div style={{ textAlign: 'center', animation: 'scaleInAccess 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)' }}>
+            <div style={{ fontSize: '5rem', marginBottom: '20px', filter: 'drop-shadow(0 0 40px #4ade80)' }}>✅</div>
+            <h1 style={{
+              fontSize: '2.5rem', color: '#4ade80', margin: '0 0 12px',
+              letterSpacing: '6px', textTransform: 'uppercase',
+              textShadow: '0 0 30px rgba(74,222,128,0.9), 0 0 60px rgba(74,222,128,0.5)'
+            }}>ACCESS GRANTED</h1>
+            <p style={{ color: '#d8b4fe', fontSize: '1.1rem', opacity: 0.85, margin: 0 }}>
+              Identity locked in. Entering Focus...
+            </p>
+          </div>
+          <style>{`
+            @keyframes fadeInAccess { from { opacity: 0 } to { opacity: 1 } }
+            @keyframes scaleInAccess {
+              from { transform: scale(0.4) translateY(30px); opacity: 0 }
+              to   { transform: scale(1) translateY(0);      opacity: 1 }
+            }
+          `}</style>
+        </div>
+      )}
     </MainLayout>
   );
 };

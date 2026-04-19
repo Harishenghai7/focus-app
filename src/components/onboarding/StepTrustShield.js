@@ -14,10 +14,12 @@ import {
 import styles from './StepTrustShield.module.css';
 import { useAuth } from '../../hooks/useAuth';
 import useOCRScanner from '../../hooks/useOCRScanner';
-import { v4 as uuidv4 } from 'uuid';
+// uuidv4 removed — not needed after QR URL simplification
 import { supabase } from '../../lib/supabase';
 
 const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
+    // Version cache-buster: forces fresh renders after deploys
+    const BRIDGE_VERSION = '2026.04.19-prod';
     const { user } = useAuth();
     const { scanID, progress: ocrProgress, statusMessage: ocrStatus } = useOCRScanner();
     const [stage, setStage] = useState('ocr');
@@ -30,7 +32,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
     const [videoReady, setVideoReady] = useState(false);
     const [cameraDenied, setCameraDenied] = useState(false);
     const [error, setError] = useState('');
-    const [handoffToken, setHandoffToken] = useState(null);
+    // handoffToken state removed — QR URL uses user.id directly
     const streamRef = useRef(null);
     const videoRef = useRef(null);
     const channelRef = useRef(null);
@@ -266,7 +268,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
                             teenUserId: user?.id,
                             metadata: { ocr: ocrResult, face_score: result.score },
                         });
-                        const generatedLink = `https://focus-macha.loca.lt/verification/parent-consent?token=${handshakeToken}`;
+                        const generatedLink = `${window.location.origin}/verification/parent-consent?token=${handshakeToken}`;
                         updateFormData('guardianHandshakeLink', generatedLink);
                         await persistTrustShieldState({
                             userId: user?.id,
@@ -472,7 +474,8 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
                                 boxSizing: 'border-box'
                             }}>
                                 <QRCodeSVG 
-                                    value={`${window.location.origin}/verify-mobile?uid=${user?.id}`} 
+                                    value={`${window.location.origin}/verify-mobile?uid=${user?.id}`}
+                                    data-version={BRIDGE_VERSION}
                                     style={{ width: '100%', height: '100%' }}
                                     level={"H"}
                                     bgColor="#ffffff" 
