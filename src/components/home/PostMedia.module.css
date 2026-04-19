@@ -4,7 +4,7 @@
     aspect-ratio: 1 / 1;
     /* Square posts for now, can be flexible */
     overflow: hidden;
-    background: black;
+    background: var(--bg-primary);
 }
 
 .slider {

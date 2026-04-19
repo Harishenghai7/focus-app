@@ -1,161 +1,176 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { formatDistanceToNow } from 'date-fns';
+import { 
+    Heart, MessageCircle, Send, Bookmark, 
+    MoreHorizontal, BadgeCheck 
+} from 'lucide-react'; 
+import { useAuth } from '../../context/AuthContext';
+import { supabase } from '../../config/supabaseClient';
 import styles from './PostCard.module.css';
-import Card from '../ui/Card';
-import Avatar from '../ui/Avatar';
-import Icon from '../ui/Icon';
-import Button from '../ui/Button';
-import CommentsSection from '../posts/CommentsSection';
-import { useLike } from '../../hooks/useLike';
-import { useSave } from '../../hooks/useSave';
 
-const PostCard = ({ post }) => {
-    const [localPost, setLocalPost] = useState(post);
-    const [showComments, setShowComments] = useState(false);
-    const { toggleLike, showHeartAnimation } = useLike();
-    const { toggleSave } = useSave();
+const PostCard = ({ post, onShare }) => {
+    const navigate = useNavigate();
+    const { user } = useAuth();
 
-    // Update handler for optimistic updates
-    const handleUpdate = (postId, updates) => {
-        setLocalPost(prev => {
-            const newPost = { ...prev };
+    // 1. Safe Data Extraction
+    const authorProfile = Array.isArray(post.profiles) ? post.profiles[0] : post.profiles;
+    const author = authorProfile || post.author || {};
+    
+    const username = author.username || 'Focus User';
+    const avatarUrl = author.avatar_url;
+    const isVerified = author.is_verified || false;
+    
+    // 2. Optimistic State
+    const [isLiked, setIsLiked] = useState(false);
+    const [likeCount, setLikeCount] = useState(post.likes_count || 0);
+    const [isSaved, setIsSaved] = useState(post.is_saved || false);
+    const [imageError, setImageError] = useState(false);
+    const [heartAnim, setHeartAnim] = useState(false);
 
-            if (updates.is_liked !== undefined) {
-                newPost.is_liked = updates.is_liked;
-            }
-            if (updates.is_saved !== undefined) {
-                newPost.is_saved = updates.is_saved;
-            }
-            if (updates.likes_count_delta !== undefined) {
-                newPost.likes_count = (prev.likes_count || 0) + updates.likes_count_delta;
-            }
-            if (updates.saves_count_delta !== undefined) {
-                newPost.saves_count = (prev.saves_count || 0) + updates.saves_count_delta;
-            }
+    // 3. Initial Check
+    useEffect(() => {
+        if (user && post.likes) {
+            const userHasLiked = Array.isArray(post.likes) 
+                ? post.likes.some(l => (l.user_id === user.id || l === user.id)) 
+                : post.is_liked; 
+            setIsLiked(!!userHasLiked);
+        }
+    }, [user, post]);
 
-            return newPost;
-        });
+    // 4. Like Handler
+    const handleLike = async (e) => {
+        e && e.stopPropagation();
+        if (!user) return;
+
+        const previousLiked = isLiked;
+        setIsLiked(!previousLiked);
+        setLikeCount(prev => !previousLiked ? prev + 1 : prev - 1);
+        
+        if (!previousLiked) triggerHeartAnimation();
+
+        try {
+            if (!previousLiked) {
+                await supabase.from('likes').insert({ user_id: user.id, post_id: post.id });
+            } else {
+                await supabase.from('likes').delete().match({ user_id: user.id, post_id: post.id });
+            }
+        } catch (err) {
+            setIsLiked(previousLiked);
+            setLikeCount(prev => previousLiked ? prev + 1 : prev - 1);
+        }
     };
 
-    const handleLike = () => {
-        toggleLike(localPost.id, localPost.is_liked, 'post', handleUpdate);
+    const handleSave = (e) => {
+        e.stopPropagation();
+        setIsSaved(!isSaved);
+        // Supabase save logic would go here
     };
 
-    const handleSave = () => {
-        toggleSave(localPost.id, localPost.is_saved, 'post', handleUpdate);
+    const triggerHeartAnimation = () => {
+        setHeartAnim(true);
+        setTimeout(() => setHeartAnim(false), 1000);
     };
 
-    const handleComment = () => {
-        setShowComments(true);
-    };
+    const timeAgo = post.created_at 
+        ? formatDistanceToNow(new Date(post.created_at), { addSuffix: true }).replace('about ', '') 
+        : 'Just now';
 
     return (
-        <>
-            <Card className={styles.postCard}>
-                {/* Header */}
-                <div className={styles.header}>
-                    <div className={styles.userInfo}>
-                        <Avatar src={localPost.profiles?.avatar_url} size="md" />
-                        <div className={styles.userMeta}>
-                            <span className={styles.username}>
-                                {localPost.profiles?.username}
-                                {localPost.profiles?.is_verified && <Icon name="BadgeCheck" size={14} className={styles.verifiedBadge} />}
-                            </span>
-                            <span className={styles.timeAgo}>{formatTimeAgo(localPost.created_at)}</span>
-                        </div>
-                    </div>
-                    <Button variant="ghost" size="sm" icon={<Icon name="MoreHorizontal" size={20} />} />
-                </div>
-
-                {/* Content */}
-                <div className={styles.content}>
-                    {localPost.content && <p className={styles.caption}>{localPost.content}</p>}
-                    {localPost.media_urls && localPost.media_urls.length > 0 && (
-                        <div className={styles.mediaContainer}>
-                            <img
-                                src={localPost.media_urls[0]}
-                                alt="Post content"
-                                className={styles.media}
-                                onError={(e) => {
-                                    e.target.src = '/placeholder-image.png';
-                                }}
+        <article className={styles.card}>
+            {/* Header */}
+            <header className={styles.header}>
+                <div className={styles.userInfo} onClick={() => navigate(`/profile/${username}`)}>
+                    <div className={styles.avatarContainer}>
+                        {avatarUrl && !imageError ? (
+                            <img 
+                                src={avatarUrl} 
+                                alt={username} 
+                                className={styles.avatar}
+                                onError={() => setImageError(true)}
                             />
+                        ) : (
+                            <div className={styles.avatarFallback}>
+                                {username.slice(0, 2).toUpperCase()}
+                            </div>
+                        )}
+                    </div>
+                    <div className={styles.meta}>
+                        <div className={styles.nameRow}>
+                            <span className={styles.username}>{username}</span>
+                            {isVerified && <BadgeCheck size={16} className={styles.verified} fill="#0095f6" color="white" />}
                         </div>
-                    )}
-                </div>
-
-                {/* Actions */}
-                <div className={styles.actions}>
-                    <div className={styles.leftActions}>
-                        <Button
-                            variant="ghost"
-                            className={`${styles.actionBtn} ${localPost.is_liked ? styles.liked : ''}`}
-                            onClick={handleLike}
-                        >
-                            <Icon name="Heart" size={24} fill={localPost.is_liked ? "currentColor" : "none"} />
-                            <span>{localPost.likes_count || 0}</span>
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            className={styles.actionBtn}
-                            onClick={handleComment}
-                        >
-                            <Icon name="MessageCircle" size={24} />
-                            <span>{localPost.comments_count || 0}</span>
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            className={styles.actionBtn}
-                        >
-                            <Icon name="Send" size={24} />
-                        </Button>
-                    </div>
-                    <div className={styles.rightActions}>
-                        <Button
-                            variant="ghost"
-                            className={`${styles.actionBtn} ${localPost.is_saved ? styles.saved : ''}`}
-                            onClick={handleSave}
-                        >
-                            <Icon name="Bookmark" size={24} fill={localPost.is_saved ? "currentColor" : "none"} />
-                        </Button>
+                        <span className={styles.timestamp}>{timeAgo}</span>
                     </div>
                 </div>
+                <button className={styles.moreBtn}>
+                    <MoreHorizontal size={20} />
+                </button>
+            </header>
 
-                {/* Heart Animation */}
-                {showHeartAnimation && (
-                    <div className={styles.heartAnimation}>
-                        <Icon name="Heart" size={80} fill="currentColor" />
+            {/* Content */}
+            <div className={styles.content}>
+                {post.caption && <p className={styles.caption}>{post.caption}</p>}
+                
+                {(post.media_url || (post.media_urls && post.media_urls.length > 0)) && (
+                    <div className={styles.mediaWrapper} onDoubleClick={handleLike}>
+                        {post.media_type === 'video' ? (
+                            <video 
+                                src={post.media_url || post.media_urls[0]} 
+                                controls 
+                                className={styles.media} 
+                            />
+                        ) : (
+                            <img 
+                                src={post.media_url || post.media_urls[0]} 
+                                alt="Post content" 
+                                className={styles.media}
+                                loading="lazy"
+                            />
+                        )}
+                        <div className={`${styles.popHeart} ${heartAnim ? styles.pop : ''}`}>
+                            <Heart size={90} fill="#ff3040" color="#ff3040" />
+                        </div>
                     </div>
                 )}
-            </Card>
+            </div>
 
-            {/* Comments Modal */}
-            {showComments && (
-                <CommentsSection
-                    postId={localPost.id}
-                    onClose={() => setShowComments(false)}
-                />
-            )}
-        </>
+            {/* Footer / Interaction Bar */}
+            <footer className={styles.footer}>
+                <div className={styles.actionsLeft}>
+                    <button onClick={handleLike} className={styles.actionBtn}>
+                        <Heart 
+                            size={26} 
+                            className={`${styles.icon} ${isLiked ? styles.likedHeart : ''}`}
+                            fill={isLiked ? "#ff3040" : "none"}
+                            color={isLiked ? "#ff3040" : "white"}
+                        />
+                        {/* COUNT IS HERE - ENSURE TEXT COLOR IS WHITE IN CSS */}
+                        <span className={styles.count}>{likeCount > 0 ? likeCount : ''}</span>
+                    </button>
+
+                    <button className={styles.actionBtn} onClick={() => navigate(`/post/${post.id}`)}>
+                        <MessageCircle size={26} className={styles.icon} />
+                        <span className={styles.count}>{post.comments_count || ''}</span>
+                    </button>
+
+                    <button className={styles.actionBtn} onClick={() => onShare && onShare(post)}>
+                        <Send size={26} className={styles.icon} />
+                    </button>
+                </div>
+
+                <div className={styles.actionsRight}>
+                    <button onClick={handleSave} className={styles.actionBtn}>
+                        <Bookmark 
+                            size={26} 
+                            className={styles.icon} 
+                            fill={isSaved ? "white" : "none"} 
+                        />
+                    </button>
+                </div>
+            </footer>
+        </article>
     );
 };
 
-// Helper function to format time ago
-const formatTimeAgo = (timestamp) => {
-    if (!timestamp) return '';
-
-    const now = new Date();
-    const postTime = new Date(timestamp);
-    const diffMs = now - postTime;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return 'now';
-    if (diffMins < 60) return `${diffMins}m`;
-    if (diffHours < 24) return `${diffHours}h`;
-    if (diffDays < 7) return `${diffDays}d`;
-    return `${Math.floor(diffDays / 7)}w`;
-};
-
 export default PostCard;
-

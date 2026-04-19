@@ -1,132 +1,91 @@
-/**
- * Settings Page - Ultimate Lavender Theme v3.0
- * Settings with lavender gradient title
- */
+/* ==========================================================
+   Settings Page — Focus App | Premium Two-Column Layout
+   ========================================================== */
 
+/* ── Page wrapper ──────────────────────────────────────────── */
 .settingsPage {
     display: flex;
-    gap: var(--space-8);
-    max-width: var(--container-2xl);
-    margin: 0 auto;
-    padding: var(--space-6);
     min-height: 100vh;
+    max-width: 1000px;
+    margin: 0 auto;
+    gap: 0;
+    background: transparent;
 }
 
-.settingsContent {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-6);
-    max-width: 900px;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   HEADER - Lavender Gradient Title
-   ═══════════════════════════════════════════════════════════════ */
-
-.header {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-}
-
-.title {
-    font-size: var(--font-4xl);
-    font-weight: var(--font-bold);
-    background: var(--lavender-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin: 0;
-}
-
-.subtitle {
-    font-size: var(--font-lg);
-    color: var(--text-secondary);
-    margin: 0;
-}
-
-.sections {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-6);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   LOADING & ERROR STATES
-   ═══════════════════════════════════════════════════════════════ */
-
+/* ── Loading & Error states ──────────────────────────────── */
 .loadingContainer,
 .errorContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: var(--space-4);
     min-height: 60vh;
-    padding: var(--space-8);
+    gap: 16px;
+    padding: 40px;
 }
 
 .loadingText {
-    font-size: var(--font-lg);
-    color: var(--text-secondary);
-    margin: 0;
+    color: var(--text-muted, #666);
+    font-size: 0.9rem;
 }
 
-.errorIcon {
-    font-size: 64px;
-}
-
-.errorTitle {
-    font-size: var(--font-2xl);
-    font-weight: var(--font-bold);
-    color: var(--error);
-    margin: 0;
-}
-
-.errorMessage {
-    font-size: var(--font-base);
-    color: var(--text-secondary);
+.errorContainer {
     text-align: center;
+}
+.errorIcon { font-size: 2.5rem; }
+.errorTitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary, #fff);
     margin: 0;
-    max-width: 500px;
+}
+.errorMessage { font-size: 0.88rem; color: var(--text-muted, #666); margin: 0; }
+
+/* ── Settings Content ────────────────────────────────────── */
+.settingsContent {
+    flex: 1;
+    padding: 28px 24px 80px;
+    min-width: 0;
+    max-width: 680px;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   RESPONSIVE DESIGN
-   ═══════════════════════════════════════════════════════════════ */
+.header {
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-subtle, rgba(255,255,255,0.07));
+}
 
+.title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0 0 6px;
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    font-size: 0.875rem;
+    color: var(--text-muted, #777);
+    margin: 0;
+}
+
+/* ── Sections container ──────────────────────────────────── */
+.sections {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* ── Mobile responsive ───────────────────────────────────── */
 @media (max-width: 1024px) {
     .settingsPage {
         flex-direction: column;
-        padding: var(--space-4);
-        gap: var(--space-6);
     }
-
     .settingsContent {
-        max-width: 100%;
+        padding: 20px 16px 80px;
     }
-
-    .title {
-        font-size: var(--font-3xl);
-    }
-
-    .subtitle {
-        font-size: var(--font-base);
-    }
-}
-
-@media (max-width: 640px) {
-    .settingsPage {
-        padding: var(--space-3);
-        gap: var(--space-4);
-    }
-
-    .sections {
-        gap: var(--space-4);
-    }
-
-    .title {
-        font-size: var(--font-2xl);
-    }
+    .title { font-size: 1.3rem; }
 }

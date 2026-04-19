@@ -1,22 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import styles from './Sidebar.module.css';
 import Icon from '../ui/Icon';
 import Avatar from '../ui/Avatar';
 import Button from '../ui/Button';
 import { ROUTES } from '../../utils/constants';
-import { useAuth } from '../../hooks/useAuth';
-import { supabase } from '../../lib/supabase';
-import { getUserAvatarUrl } from '../../utils/avatarManager';
+import { useFocusUser } from '../../context/FocusUserContext';
+import { useFocusIdentity } from '../../context/FocusIdentityContext';
+
+
 
 const Sidebar = () => {
-    const { user, profile, signOut } = useAuth();
+    const { user, signOut } = useFocusUser();
+    const { avatarUrl, displayName, handle, isVerified } = useFocusIdentity();
     const navigate = useNavigate();
-
-    // Redirect to onboarding if profile is missing (and not loading)
-    // Note: We rely on useOnboardingRedirect hook for this mostly, 
-    // but this is a secondary check if needed.
-    // For now, we'll trust the global hook and just render what we have.
 
     const navItems = [
         { icon: 'Home', label: 'Home', path: ROUTES.HOME },
@@ -58,14 +55,17 @@ const Sidebar = () => {
             <div className={styles.footer}>
                 {user && (
                     <div className={styles.userProfile}>
-                        <Avatar src={getUserAvatarUrl(user, profile)} size="sm" />
+                        <Avatar
+                            src={avatarUrl}
+                            username={handle}
+                            fullName={displayName}
+                            size="sm"
+                            eager
+                            isVerified={isVerified}
+                        />
                         <div className={styles.userInfo}>
-                            <span className={styles.username}>
-                                {profile?.full_name || user.user_metadata?.full_name || user.user_metadata?.username || 'User'}
-                            </span>
-                            <span className={styles.handle}>
-                                @{profile?.username || user.user_metadata?.username || user.email?.split('@')[0] || 'user'}
-                            </span>
+                            <span className={styles.username}>{displayName}</span>
+                            <span className={styles.handle}>@{handle}</span>
                         </div>
                     </div>
                 )}
@@ -78,3 +78,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+

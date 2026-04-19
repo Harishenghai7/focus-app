@@ -1,3 +1,5 @@
+/* Auth Page - Royal Lavender Theme */
+
 .authPage {
     min-height: 100vh;
     display: flex;
@@ -12,7 +14,7 @@
 .authBg {
     position: absolute;
     inset: 0;
-    z-index: 0;
+    z-index: var(--z-base);
 }
 
 .authBg::before {
@@ -22,9 +24,7 @@
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle at center,
-            var(--primary-lavender-100) 0%,
-            transparent 50%);
+    background: radial-gradient(circle at center, rgba(124, 58, 237, 0.1) 0%, transparent 50%);
     animation: rotate 20s linear infinite;
 }
 
@@ -45,7 +45,7 @@
     max-width: 440px;
     padding: var(--space-8);
     background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
+    backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-2xl);
     box-shadow: var(--shadow-xl);
@@ -65,7 +65,7 @@
 .authTitle {
     font-size: var(--font-3xl);
     font-weight: var(--font-bold);
-    background: var(--gradient-primary);
+    background: var(--gradient-royal);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -85,83 +85,83 @@
 }
 
 .authFooter a {
-    color: var(--primary-lavender);
+    color: var(--royal-purple);
     font-weight: var(--font-semibold);
     text-decoration: none;
-    transition: color 0.2s;
+    transition: color var(--transition-base);
 }
 
 .authFooter a:hover {
-    color: var(--primary-lavender-light);
+    color: var(--neon-lavender);
 }
 
 /* Verify Email Page */
 .verifyContainer {
     text-align: center;
-    padding: 2rem;
+    padding: var(--space-8);
 }
 
 .verifyIcon {
-    color: var(--lavender-400, #c4b5fd);
-    margin-bottom: 1.5rem;
+    color: var(--neon-lavender);
+    margin-bottom: var(--space-6);
     animation: pulse 2s ease-in-out infinite;
 }
 
 .verifyTitle {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--lavender-300, #ddd6fe);
-    margin-bottom: 1rem;
+    font-size: var(--font-4xl);
+    font-weight: var(--font-bold);
+    color: var(--neon-lavender);
+    margin-bottom: var(--space-4);
 }
 
 .verifyText {
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
     line-height: 1.6;
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-4);
 }
 
 .emailDisplay {
-    background: rgba(196, 181, 253, 0.1);
-    border: 1px solid rgba(196, 181, 253, 0.3);
-    border-radius: 12px;
-    padding: 1rem 1.5rem;
-    margin: 1.5rem 0;
+    background: rgba(124, 58, 237, 0.1);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4) var(--space-6);
+    margin: var(--space-6) 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
+    gap: var(--space-3);
 }
 
 .emailIcon {
-    color: var(--lavender-400, #c4b5fd);
-    font-size: 1.25rem;
+    color: var(--neon-lavender);
+    font-size: var(--font-xl);
 }
 
 .emailDisplay span {
-    color: white;
-    font-weight: 500;
-    font-size: 1.05rem;
+    color: var(--text-primary);
+    font-weight: var(--font-medium);
+    font-size: var(--font-lg);
 }
 
 .verifyActions {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    margin-top: 2rem;
+    gap: var(--space-4);
+    margin-top: var(--space-8);
 }
 
 .verifyTips {
-    margin-top: 2rem;
-    padding: 1.5rem;
+    margin-top: var(--space-8);
+    padding: var(--space-6);
     background: rgba(255, 255, 255, 0.03);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     text-align: left;
 }
 
 .verifyTips h4 {
-    color: var(--lavender-300, #ddd6fe);
-    font-size: 1.1rem;
-    margin-bottom: 0.75rem;
+    color: var(--neon-lavender);
+    font-size: var(--font-lg);
+    margin-bottom: var(--space-3);
 }
 
 .verifyTips ul {
@@ -170,9 +170,9 @@
 }
 
 .verifyTips li {
-    color: rgba(255, 255, 255, 0.7);
-    padding: 0.5rem 0;
-    padding-left: 1.5rem;
+    color: var(--text-secondary);
+    padding: var(--space-2) 0;
+    padding-left: var(--space-6);
     position: relative;
 }
 
@@ -180,104 +180,104 @@
     content: '✓';
     position: absolute;
     left: 0;
-    color: var(--lavender-400, #c4b5fd);
+    color: var(--neon-lavender);
 }
 
 /* Forgot Password Page */
 .forgotContainer,
 .resetContainer,
 .successContainer {
-    padding: 1rem;
+    padding: var(--space-4);
     text-align: center;
 }
 
 .forgotTitle,
 .resetTitle,
 .successTitle {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--lavender-300, #ddd6fe);
-    margin-bottom: 0.75rem;
+    font-size: var(--font-3xl);
+    font-weight: var(--font-bold);
+    color: var(--neon-lavender);
+    margin-bottom: var(--space-3);
 }
 
 .forgotSubtitle,
 .resetSubtitle,
 .successText {
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
     line-height: 1.6;
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--space-6);
 }
 
 .forgotForm,
 .resetForm {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
-    margin-bottom: 1.5rem;
+    gap: var(--space-5);
+    margin-bottom: var(--space-6);
 }
 
 .backLink {
     display: inline-block;
-    color: var(--lavender-400, #c4b5fd);
+    color: var(--neon-lavender);
     text-decoration: none;
-    margin-top: 1rem;
-    transition: color 0.2s ease;
+    margin-top: var(--space-4);
+    transition: color var(--transition-base);
 }
 
 .backLink:hover {
-    color: var(--lavender-300, #ddd6fe);
+    color: var(--text-primary);
 }
 
 .eyeButton {
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--text-muted);
     cursor: pointer;
     padding: 0;
     display: flex;
     align-items: center;
-    transition: color 0.2s ease;
+    transition: color var(--transition-base);
 }
 
 .eyeButton:hover {
-    color: white;
+    color: var(--text-primary);
 }
 
 /* Success State */
 .successIcon {
     color: #22c55e;
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--space-6);
     animation: scaleIn 0.5s ease;
 }
 
 .resetIcon {
-    color: var(--lavender-400, #c4b5fd);
-    margin-bottom: 1.5rem;
+    color: var(--neon-lavender);
+    margin-bottom: var(--space-6);
 }
 
 .helpText {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: var(--space-6);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border-subtle);
 }
 
 .helpText p {
-    color: rgba(255, 255, 255, 0.7);
-    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-2);
 }
 
 .resendButton {
     background: none;
     border: none;
-    color: var(--lavender-400, #c4b5fd);
+    color: var(--neon-lavender);
     cursor: pointer;
-    font-weight: 500;
+    font-weight: var(--font-medium);
     text-decoration: underline;
-    transition: color 0.2s ease;
+    transition: color var(--transition-base);
 }
 
 .resendButton:hover {
-    color: var(--lavender-300, #ddd6fe);
+    color: var(--text-primary);
 }
 
 /* Animations */
@@ -312,18 +312,18 @@
     .forgotContainer,
     .resetContainer,
     .successContainer {
-        padding: 0.5rem;
+        padding: var(--space-2);
     }
 
     .verifyTitle,
     .forgotTitle,
     .resetTitle,
     .successTitle {
-        font-size: 1.5rem;
+        font-size: var(--font-2xl);
     }
 
     .emailDisplay {
-        padding: 0.75rem 1rem;
-        font-size: 0.9rem;
+        padding: var(--space-3) var(--space-4);
+        font-size: var(--font-sm);
     }
 }

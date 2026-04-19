@@ -1,4 +1,5 @@
-/* Mobile-First Global Styles */
+/* Mobile-First Global Styles - Royal Lavender Theme */
+
 * {
     box-sizing: border-box;
     -webkit-font-smoothing: antialiased;
@@ -13,9 +14,9 @@ html {
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #0a0a0a;
-    color: #fff;
+    font-family: var(--font-primary);
+    background: var(--bg-primary);
+    color: var(--text-primary);
     overflow-x: hidden;
 }
 
@@ -25,9 +26,7 @@ body {
     display: flex;
     flex-direction: column;
     padding-top: 60px;
-    /* Header height */
     padding-bottom: 56px;
-    /* Bottom nav height */
 }
 
 /* Safe area support */
@@ -52,12 +51,12 @@ body {
 .page-wrapper {
     width: 100%;
     min-height: 100%;
-    padding: 16px;
+    padding: var(--space-4);
 }
 
 /* Mobile-optimized spacing */
 .section {
-    margin-bottom: 24px;
+    margin-bottom: var(--space-6);
 }
 
 .section:last-child {
@@ -69,8 +68,7 @@ input,
 textarea,
 select,
 button {
-    font-size: 16px;
-    /* Prevents zoom on iOS */
+    font-size: var(--font-base);
     -webkit-appearance: none;
     appearance: none;
 }
@@ -79,8 +77,8 @@ input:focus,
 textarea:focus,
 select:focus {
     outline: none;
-    border-color: #9b87f5;
-    box-shadow: 0 0 0 3px rgba(155, 135, 245, 0.1);
+    border-color: var(--royal-purple);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
 }
 
 /* Prevent pull-to-refresh on scroll */
@@ -107,13 +105,13 @@ body {
 
 /* Card spacing on mobile */
 .card {
-    margin-bottom: 16px;
+    margin-bottom: var(--space-4);
 }
 
 /* Mobile-optimized grids */
 .grid {
     display: grid;
-    gap: 12px;
+    gap: var(--space-3);
 }
 
 .grid-2 {
@@ -127,7 +125,7 @@ body {
 /* Tablet adjustments */
 @media (min-width: 640px) {
     .page-wrapper {
-        padding: 24px;
+        padding: var(--space-6);
     }
 
     .main-content {
@@ -135,15 +133,15 @@ body {
     }
 
     .section {
-        margin-bottom: 32px;
+        margin-bottom: var(--space-8);
     }
 
     .card {
-        margin-bottom: 24px;
+        margin-bottom: var(--space-6);
     }
 
     .grid {
-        gap: 16px;
+        gap: var(--space-4);
     }
 }
 
@@ -153,7 +151,6 @@ body {
         padding-top: 60px;
         padding-bottom: 0;
         padding-left: 240px;
-        /* Sidebar width */
     }
 
     .main-content {
@@ -161,7 +158,7 @@ body {
     }
 
     .page-wrapper {
-        padding: 32px;
+        padding: var(--space-8);
     }
 }
 
@@ -173,19 +170,19 @@ body {
 
 /* Accessible focus states */
 *:focus-visible {
-    outline: 2px solid #9b87f5;
+    outline: 2px solid var(--royal-purple);
     outline-offset: 2px;
 }
 
 /* Loading states */
 .skeleton {
     background: linear-gradient(90deg,
-            rgba(139, 92, 246, 0.1) 25%,
-            rgba(139, 92, 246, 0.2) 50%,
-            rgba(139, 92, 246, 0.1) 75%);
+            rgba(124, 58, 237, 0.1) 25%,
+            rgba(124, 58, 237, 0.2) 50%,
+            rgba(124, 58, 237, 0.1) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
 }
 
 @keyframes shimmer {

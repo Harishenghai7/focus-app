@@ -35,31 +35,31 @@ const AdminTrustShield = () => {
                 </div>
                 <nav style={styles.nav}>
                     <button
-                        style={{ ...styles.navItem, background: activeTab === 'overview' ? '#e0e7ff' : 'transparent' }}
+                        style={{ ...styles.navItem, background: activeTab === 'overview' ? 'rgba(124,58,237,0.2)' : 'transparent' }}
                         onClick={() => setActiveTab('overview')}
                     >
                         <FaChartLine /> Overview
                     </button>
                     <button
-                        style={{ ...styles.navItem, background: activeTab === 'flagged' ? '#e0e7ff' : 'transparent' }}
+                        style={{ ...styles.navItem, background: activeTab === 'flagged' ? 'rgba(124,58,237,0.2)' : 'transparent' }}
                         onClick={() => setActiveTab('flagged')}
                     >
                         <FaUserSlash /> Flagged Accounts
                     </button>
                     <button
-                        style={{ ...styles.navItem, background: activeTab === 'scores' ? '#e0e7ff' : 'transparent' }}
+                        style={{ ...styles.navItem, background: activeTab === 'scores' ? 'rgba(124,58,237,0.2)' : 'transparent' }}
                         onClick={() => setActiveTab('scores')}
                     >
                         <FaShieldAlt /> Trust Scores
                     </button>
                     <button
-                        style={{ ...styles.navItem, background: activeTab === 'verifications' ? '#e0e7ff' : 'transparent' }}
+                        style={{ ...styles.navItem, background: activeTab === 'verifications' ? 'rgba(124,58,237,0.2)' : 'transparent' }}
                         onClick={() => setActiveTab('verifications')}
                     >
                         <FaCheckDouble /> Verifications
                     </button>
                     <button
-                        style={{ ...styles.navItem, background: activeTab === 'bots' ? '#e0e7ff' : 'transparent' }}
+                        style={{ ...styles.navItem, background: activeTab === 'bots' ? 'rgba(124,58,237,0.2)' : 'transparent' }}
                         onClick={() => setActiveTab('bots')}
                     >
                         <FaRobot /> Bot Detection
@@ -72,6 +72,9 @@ const AdminTrustShield = () => {
                     <h2 style={styles.pageTitle}>
                         {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
                     </h2>
+                    {activeTab === 'flagged' && (
+                        <p style={styles.pageSubTitle}>Global ban updates tear down live access instantly.</p>
+                    )}
                 </header>
                 <div style={styles.content}>
                     {renderContent()}
@@ -85,12 +88,13 @@ const styles = {
     container: {
         display: 'flex',
         minHeight: '100vh',
-        background: '#f1f5f9'
+        background: 'var(--bg-primary)'
     },
     sidebar: {
         width: '240px',
-        background: 'white',
-        borderRight: '1px solid #e2e8f0',
+        background: 'rgba(126, 87, 194, 0.1)',
+        backdropFilter: 'blur(25px)',
+        borderRight: '1px solid rgba(255,255,255,0.15)',
         padding: '20px',
         display: 'flex',
         flexDirection: 'column'
@@ -101,7 +105,7 @@ const styles = {
         gap: '10px',
         fontSize: '20px',
         fontWeight: '700',
-        color: '#1e293b',
+        color: '#fff',
         marginBottom: '40px',
         padding: '0 10px'
     },
@@ -118,7 +122,7 @@ const styles = {
         borderRadius: '8px',
         border: 'none',
         background: 'transparent',
-        color: '#475569',
+        color: '#d8c7ff',
         fontSize: '14px',
         fontWeight: '600',
         cursor: 'pointer',
@@ -131,15 +135,21 @@ const styles = {
         flexDirection: 'column'
     },
     header: {
-        background: 'white',
+        background: 'rgba(126, 87, 194, 0.08)',
+        backdropFilter: 'blur(25px)',
         padding: '20px 32px',
-        borderBottom: '1px solid #e2e8f0'
+        borderBottom: '1px solid rgba(255,255,255,0.15)'
     },
     pageTitle: {
         fontSize: '24px',
         fontWeight: '700',
-        color: '#1e293b',
+        color: '#fff',
         margin: 0
+    },
+    pageSubTitle: {
+        margin: '8px 0 0 0',
+        color: '#c4b5fd',
+        fontSize: '0.85rem',
     },
     content: {
         padding: '32px',

@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { supabase, supabaseUrl, supabaseAnonKey } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 import { focusToast } from '../utils/focusToast';
+import { playMessageSent } from '../utils/audioFX';
 
 export const useMessageSend = (senderId, receiverId, session) => {
     const [sending, setSending] = useState(false);
@@ -88,28 +89,20 @@ export const useMessageSend = (senderId, receiverId, session) => {
 
             console.log('📦 Final payload:', payload);
 
-            const response = await fetch(`${supabaseUrl}/rest/v1/messages`, {
-                method: 'POST',
-                headers: {
-                    'apikey': supabaseAnonKey,
-                    'Authorization': `Bearer ${session.access_token}`,
-                    'Content-Type': 'application/json',
-                    'Prefer': 'return=representation'
-                },
-                body: JSON.stringify(payload)
-            });
+            // Use native Supabase JS SDK
+            const { data, error: insertErr } = await supabase
+                .from('messages')
+                .insert([payload])
+                .select()
+                .single();
 
-            console.log('📥 Fetch completed! Status:', response.status);
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('❌ REST API error:', response.status, errorText);
-                throw new Error(`HTTP ${response.status}: ${errorText}`);
+            if (insertErr) {
+                console.error('❌ SDK error:', insertErr.message);
+                throw new Error(insertErr.message);
             }
 
-            const data = await response.json();
-
             console.log('✅ Message sent successfully:', data);
+            playMessageSent();
 
             return data;
         } catch (err) {

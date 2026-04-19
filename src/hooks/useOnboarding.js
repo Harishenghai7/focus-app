@@ -4,7 +4,7 @@ import { useAuth } from './useAuth';
 import { saveOnboardingData } from '../utils/saveOnboardingData';
 import { uploadImage } from '../utils/uploadImage';
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
 
 const useOnboarding = () => {
     const { user, refreshProfile, updateProfileState } = useAuth();

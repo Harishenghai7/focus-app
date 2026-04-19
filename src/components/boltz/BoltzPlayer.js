@@ -14,6 +14,8 @@ const BoltzPlayer = ({
     isActive,
     playing,
     muted,
+    preload = 'none',
+    released = false,
     onTogglePlay,
     onToggleMute,
     onLike,
@@ -29,6 +31,9 @@ const BoltzPlayer = ({
 }) => {
     const [lastTap, setLastTap] = useState(0);
     const [progress, setProgress] = useState(0);
+    const [videoReady, setVideoReady] = useState(false);
+    const [videoErrored, setVideoErrored] = useState(false);
+    const posterSrc = boltz.thumbnail_url || boltz.poster_url || boltz.preview_image || null;
 
     useViewTracking(boltz.id, isActive);
 
@@ -55,24 +60,37 @@ const BoltzPlayer = ({
 
     return (
         <div className={styles.container}>
-            <video
-                ref={videoRef}
-                src={boltz.video_url}
-                className={styles.video}
-                loop
-                playsInline
-                muted={muted}
-                autoPlay={playing}
-                onClick={handleVideoTap}
-                onTimeUpdate={handleTimeUpdate}
-            />
+            {released ? (
+                <div className={styles.videoPlaceholder} />
+            ) : (
+                <video
+                    ref={videoRef}
+                    src={boltz.video_url}
+                    className={styles.video}
+                    loop
+                    playsInline
+                    muted={muted}
+                    autoPlay={playing}
+                    preload={preload}
+                    onClick={handleVideoTap}
+                    onTimeUpdate={handleTimeUpdate}
+                    onLoadedData={() => setVideoReady(true)}
+                    onError={() => setVideoErrored(true)}
+                />
+            )}
+            {!released && !videoReady && posterSrc && (
+                <img src={posterSrc} alt="" className={styles.poster} loading="lazy" />
+            )}
+            {!released && videoErrored && (
+                <div className={styles.focuslyPlaceholder}>Focusly</div>
+            )}
 
             <BoltzOverlay />
 
             <BoltzUserInfo
-                user={boltz.user}
+                user={boltz.profiles || boltz.user}
                 caption={boltz.caption}
-                onFollow={() => onFollow(boltz.user.id)}
+                onFollow={() => onFollow(boltz.profiles?.id || boltz.user?.id)}
                 isOwnContent={currentUserId === boltz.user_id}
             />
 

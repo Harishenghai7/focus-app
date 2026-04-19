@@ -3,6 +3,59 @@
     margin-bottom: var(--space-8);
 }
 
+.logoMark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--space-4);
+}
+
+.logoIcon {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    filter: drop-shadow(var(--glow-strong));
+    animation: floatLogo 3s ease-in-out infinite;
+}
+
+@keyframes floatLogo {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+}
+
+.securityNote {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    margin-top: var(--space-6);
+    padding: var(--space-3) var(--space-5);
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--blur-sm);
+    -webkit-backdrop-filter: var(--blur-sm);
+    border-radius: var(--radius-full);
+    transition: all var(--transition-base);
+}
+.securityNote:hover {
+    background: var(--glass-surface-hover);
+    border-color: var(--glass-border-hover);
+    box-shadow: var(--shadow-sm);
+}
+
+.securityIcon {
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.securityText {
+    font-size: var(--font-xs, 0.75rem);
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.4;
+    text-align: center;
+}
+
 .title {
     font-size: var(--font-3xl);
     font-weight: var(--font-bold);

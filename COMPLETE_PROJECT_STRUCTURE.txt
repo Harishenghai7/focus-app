@@ -1,0 +1,708 @@
+================================================================================
+FOCUS APP - COMPLETE DIRECTORY & FILE STRUCTURE
+================================================================================
+Generated: 2026-02-01
+Project Root: c:\Users\ELCOT\focus-app
+================================================================================
+
+📁 ROOT LEVEL STRUCTURE
+================================================================================
+
+📂 CONFIGURATION FILES
+├── .env                          - Environment variables
+├── .env.example                  - Environment template
+├── .env.focusly                  - Focusly-specific config
+├── .env.government-id-verification
+├── .env.production               - Production environment
+├── .gitignore                    - Git ignore rules
+├── package.json                  - NPM dependencies & scripts
+├── package-lock.json             - Locked dependencies
+├── netlify.toml                  - Netlify deployment config
+├── vercel.json                   - Vercel deployment config
+├── cypress.config.js             - Cypress testing config
+├── jest.config.js                - Jest testing config
+├── playwright.config.js          - Playwright testing config
+├── lighthouserc.js               - Lighthouse CI config
+└── config-overrides.js           - Webpack config overrides
+
+📂 DOCUMENTATION FILES (Root Level - 500+ files)
+├── README.md                     - Main project documentation
+├── TODO.md                       - Project tasks
+├── FOCUS_README.md               - Focus-specific docs
+├── START-HERE.md                 - Getting started guide
+├── QUICK-START.md                - Quick start guide
+├── DEPLOYMENT-GUIDE.md           - Deployment instructions
+├── TESTING-GUIDE.md              - Testing documentation
+├── DATABASE_SETUP.md             - Database setup guide
+├── SUPABASE_SETUP_GUIDE.md       - Supabase configuration
+├── IMPLEMENTATION-COMPLETE.md    - Implementation status
+├── FEATURE-AUDIT-COMPLETE.md     - Feature audit report
+├── PRODUCTION-READINESS-REPORT.md
+├── COMPREHENSIVE_LAUNCH_AUDIT.md
+└── [400+ additional .md documentation files]
+
+📂 SQL MIGRATION FILES (Root Level)
+├── FOCUS_DATABASE_SCHEMA.sql     - Main database schema
+├── SUPABASE-SETUP.sql            - Supabase setup
+├── complete-schema.sql           - Complete schema
+├── database-setup.sql            - Database initialization
+├── production-database-setup.sql - Production DB setup
+├── ADD-MISSING-INDEXES.sql       - Index additions
+├── FIX_RLS_POLICIES.sql          - RLS policy fixes
+├── CREATE-FLASH-TABLE.sql        - Flash feature table
+├── CREATE-REPORTS-TABLE.sql      - Reports table
+└── [50+ additional .sql files]
+
+📂 JAVASCRIPT UTILITY FILES (Root Level)
+├── BROWSER_TEST.js               - Browser testing
+├── verify-focusly-ai.js          - AI verification
+├── setup-database.js             - Database setup script
+├── run-ai-tests.js               - AI testing runner
+├── check-connections.js          - Connection checker
+└── [20+ additional .js files]
+
+================================================================================
+📁 MAIN DIRECTORIES
+================================================================================
+
+📂 .gemini/                       - Gemini AI configuration
+📂 .github/                       - GitHub workflows & actions
+📂 .husky/                        - Git hooks
+📂 .vscode/                       - VS Code settings
+📂 .amazonq/                      - Amazon Q configuration
+📂 .bolt/                         - Bolt configuration
+📂 .kiro/                         - Kiro configuration
+
+📂 ai-testing-system/             - AI testing framework
+   ├── tests/
+   ├── reports/
+   └── config/
+
+📂 build/                         - Production build output
+   └── [Compiled application files]
+
+📂 cypress/                       - Cypress E2E tests
+   ├── e2e/
+   ├── fixtures/
+   ├── support/
+   └── [42 test-related files]
+
+📂 database/                      - Database migrations & schemas
+   ├── migrations/
+   ├── schemas/
+   ├── triggers/
+   ├── functions/
+   └── [70+ SQL files]
+
+📂 db/                            - Database utilities
+   └── migrations/
+
+📂 docs/                          - Additional documentation
+   ├── API.md
+   ├── ARCHITECTURE.md
+   ├── COMPONENTS.md
+   └── [18 documentation files]
+
+📂 e2e/                           - End-to-end tests
+   ├── auth.spec.js
+   ├── posts.spec.js
+   ├── messages.spec.js
+   └── [11 test files]
+
+📂 LAUNCH_DAY_SQL/                - Launch day SQL scripts
+   ├── final-checks.sql
+   ├── production-setup.sql
+   └── [5 SQL files]
+
+📂 migrations/                    - Database migration scripts
+   ├── 001_initial_schema.sql
+   ├── 002_add_features.sql
+   └── [39 migration files]
+
+📂 playwright-report/             - Playwright test reports
+   └── index.html
+
+📂 public/                        - Static public assets
+   ├── index.html                 - Main HTML file
+   ├── manifest.json              - PWA manifest
+   ├── robots.txt                 - SEO robots file
+   ├── favicon.ico                - Favicon
+   ├── logo192.png                - App logo (192px)
+   ├── logo512.png                - App logo (512px)
+   ├── assets/                    - Static assets
+   │   ├── images/
+   │   ├── icons/
+   │   ├── sounds/
+   │   └── fonts/
+   └── [18 total files]
+
+📂 reports/                       - Test & audit reports
+   ├── automated-test-report.json
+   ├── production-grade-report.json
+   └── [4 report files]
+
+📂 scripts/                       - Build & utility scripts
+   ├── build.js
+   ├── test.js
+   ├── deploy.js
+   ├── migrate.js
+   └── [33 script files]
+
+📂 server/                        - Server-side code
+   ├── index.js
+   ├── routes/
+   ├── middleware/
+   ├── controllers/
+   └── [6 server files]
+
+📂 supabase/                      - Supabase configuration
+   ├── functions/                 - Edge functions
+   │   ├── send-message/
+   │   ├── create-post/
+   │   └── [Additional functions]
+   ├── migrations/                - Supabase migrations
+   ├── config.toml                - Supabase config
+   └── [36 total files]
+
+📂 test-results/                  - Test execution results
+   └── [Test output files]
+
+📂 tests/                         - Unit & integration tests
+   ├── unit/
+   ├── integration/
+   └── [4 test directories]
+
+================================================================================
+📁 SRC/ DIRECTORY - MAIN APPLICATION CODE
+================================================================================
+
+📂 src/                           - Source code root
+   │
+   ├── App.js                     - Main application component
+   ├── App.css                    - Global app styles
+   ├── index.js                   - Application entry point
+   ├── index.css                  - Global CSS styles
+   ├── reportWebVitals.js         - Performance monitoring
+   ├── setupTests.js              - Test configuration
+   ├── testDirectSend.js          - Direct send testing
+   │
+   ├── 📂 components/             - React components (200+ files)
+   │   │
+   │   ├── 📂 auth/               - Authentication components
+   │   │   ├── LoginForm.js
+   │   │   ├── LoginForm.module.css
+   │   │   ├── SignupForm.js
+   │   │   ├── SignupForm.module.css
+   │   │   ├── ForgotPassword.js
+   │   │   ├── ResetPassword.js
+   │   │   └── AuthLayout.js
+   │   │
+   │   ├── 📂 boltz/              - Boltz (Stories) feature
+   │   │   ├── BoltzViewer.js
+   │   │   ├── BoltzViewer.module.css
+   │   │   ├── BoltzCreator.js
+   │   │   ├── BoltzCreator.module.css
+   │   │   ├── BoltzCard.js
+   │   │   ├── BoltzRing.js
+   │   │   └── BoltzProgress.js
+   │   │
+   │   ├── 📂 calls/              - Video/Audio calls
+   │   │   ├── CallInterface.js
+   │   │   ├── CallInterface.module.css
+   │   │   ├── CallControls.js
+   │   │   ├── VideoStream.js
+   │   │   ├── AudioStream.js
+   │   │   └── CallNotification.js
+   │   │
+   │   ├── 📂 comments/           - Comment system
+   │   │   ├── CommentSection.js
+   │   │   ├── CommentSection.module.css
+   │   │   ├── CommentItem.js
+   │   │   ├── CommentInput.js
+   │   │   ├── CommentList.js
+   │   │   └── ReplyThread.js
+   │   │
+   │   ├── 📂 common/             - Shared/common components
+   │   │   ├── Button.js
+   │   │   ├── Button.module.css
+   │   │   ├── Input.js
+   │   │   ├── Input.module.css
+   │   │   ├── Modal.js
+   │   │   ├── Modal.module.css
+   │   │   ├── Loader.js
+   │   │   ├── Loader.module.css
+   │   │   ├── Avatar.js
+   │   │   ├── Avatar.module.css
+   │   │   ├── Badge.js
+   │   │   ├── Card.js
+   │   │   ├── Dropdown.js
+   │   │   ├── Tabs.js
+   │   │   ├── Toast.js
+   │   │   ├── Tooltip.js
+   │   │   └── [30+ common components]
+   │   │
+   │   ├── 📂 create/             - Content creation
+   │   │   ├── CreatePost.js
+   │   │   ├── CreatePost.module.css
+   │   │   ├── MediaUploader.js
+   │   │   ├── MediaUploader.module.css
+   │   │   ├── ImageEditor.js
+   │   │   ├── VideoEditor.js
+   │   │   ├── CaptionEditor.js
+   │   │   ├── FilterSelector.js
+   │   │   ├── MusicSelector.js
+   │   │   └── PostPreview.js
+   │   │
+   │   ├── 📂 explore/            - Explore/Discovery page
+   │   │   ├── ExploreGrid.js
+   │   │   ├── ExploreGrid.module.css
+   │   │   ├── CategoryTabs.js
+   │   │   ├── CategoryTabs.module.css
+   │   │   ├── TrendingSection.js
+   │   │   ├── SearchBar.js
+   │   │   └── ExploreCard.js
+   │   │
+   │   ├── 📂 flash/              - Flash (Quick posts) feature
+   │   │   ├── FlashViewer.js
+   │   │   ├── FlashViewer.module.css
+   │   │   ├── FlashCreator.js
+   │   │   ├── FlashCard.js
+   │   │   └── FlashTimer.js
+   │   │
+   │   ├── 📂 home/               - Home feed components
+   │   │   ├── Feed.js
+   │   │   ├── Feed.module.css
+   │   │   ├── PostCard.js
+   │   │   ├── PostCard.module.css
+   │   │   ├── InteractionBar.js
+   │   │   ├── InteractionBar.module.css
+   │   │   ├── StoryBar.js
+   │   │   ├── SuggestedUsers.js
+   │   │   └── FeedSkeleton.js
+   │   │
+   │   ├── 📂 layout/             - Layout components
+   │   │   ├── Header.js
+   │   │   ├── Header.module.css
+   │   │   ├── Sidebar.js
+   │   │   ├── Sidebar.module.css
+   │   │   ├── RightSidebar.js
+   │   │   ├── RightSidebar.module.css
+   │   │   ├── Navigation.js
+   │   │   ├── Navigation.module.css
+   │   │   ├── MobileNav.js
+   │   │   └── Footer.js
+   │   │
+   │   ├── 📂 messages/           - Messaging system
+   │   │   ├── ChatList.js
+   │   │   ├── ChatList.module.css
+   │   │   ├── ChatThread.js
+   │   │   ├── ChatThread.module.css
+   │   │   ├── MessageInput.js
+   │   │   ├── MessageInput.module.css
+   │   │   ├── MessageBubble.js
+   │   │   ├── MessageBubble.module.css
+   │   │   ├── GroupChat.js
+   │   │   ├── VoiceMessage.js
+   │   │   ├── StickerPicker.js
+   │   │   ├── EmojiPicker.js
+   │   │   └── [20+ message components]
+   │   │
+   │   ├── 📂 notifications/      - Notifications
+   │   │   ├── NotificationList.js
+   │   │   ├── NotificationList.module.css
+   │   │   ├── NotificationItem.js
+   │   │   ├── NotificationBadge.js
+   │   │   └── NotificationDropdown.js
+   │   │
+   │   ├── 📂 onboarding/         - User onboarding
+   │   │   ├── OnboardingWizard.js
+   │   │   ├── OnboardingWizard.module.css
+   │   │   ├── WelcomeStep.js
+   │   │   ├── ProfileSetup.js
+   │   │   ├── InterestsSelection.js
+   │   │   ├── FollowSuggestions.js
+   │   │   └── OnboardingComplete.js
+   │   │
+   │   ├── 📂 profile/            - Profile components
+   │   │   ├── ProfileHeader.js
+   │   │   ├── ProfileHeader.module.css
+   │   │   ├── ProfileStats.js
+   │   │   ├── ProfileBio.js
+   │   │   ├── ProfileTabs.js
+   │   │   ├── ProfileGrid.js
+   │   │   ├── EditProfile.js
+   │   │   ├── EditProfile.module.css
+   │   │   ├── FollowersList.js
+   │   │   ├── FollowingList.js
+   │   │   └── [15+ profile components]
+   │   │
+   │   ├── 📂 search/             - Search functionality
+   │   │   ├── SearchBar.js
+   │   │   ├── SearchBar.module.css
+   │   │   ├── SearchResults.js
+   │   │   ├── SearchFilters.js
+   │   │   ├── UserSearchResult.js
+   │   │   ├── PostSearchResult.js
+   │   │   └── TrendingSearches.js
+   │   │
+   │   ├── 📂 settings/           - Settings components
+   │   │   ├── SettingsLayout.js
+   │   │   ├── SettingsLayout.module.css
+   │   │   ├── AccountSettings.js
+   │   │   ├── PrivacySettings.js
+   │   │   ├── NotificationSettings.js
+   │   │   ├── SecuritySettings.js
+   │   │   ├── ThemeSettings.js
+   │   │   ├── BlockedUsers.js
+   │   │   └── [10+ settings components]
+   │   │
+   │   ├── 📂 skeleton/           - Loading skeletons
+   │   │   ├── PostSkeleton.js
+   │   │   ├── PostSkeleton.module.css
+   │   │   ├── ProfileSkeleton.js
+   │   │   ├── FeedSkeleton.js
+   │   │   ├── CardSkeleton.js
+   │   │   └── ListSkeleton.js
+   │   │
+   │   ├── 📂 stickers/           - Sticker system
+   │   │   ├── StickerPicker.js
+   │   │   ├── StickerPicker.module.css
+   │   │   ├── StickerGrid.js
+   │   │   ├── StickerCategory.js
+   │   │   └── StickerPreview.js
+   │   │
+   │   └── 📂 trust-shield/       - Trust & Safety
+   │       ├── TrustShieldBadge.js
+   │       ├── VerificationBadge.js
+   │       ├── ReportModal.js
+   │       ├── ContentModeration.js
+   │       └── SafetyCenter.js
+   │
+   ├── 📂 contexts/               - React contexts (15+ files)
+   │   ├── AuthContext.js         - Authentication state
+   │   ├── ThemeContext.js        - Theme management
+   │   ├── NotificationContext.js - Notifications
+   │   ├── SocketContext.js       - WebSocket connections
+   │   ├── PostContext.js         - Post state
+   │   ├── MessageContext.js      - Message state
+   │   ├── UserContext.js         - User data
+   │   ├── SettingsContext.js     - App settings
+   │   ├── SearchContext.js       - Search state
+   │   └── [Additional contexts]
+   │
+   ├── 📂 hooks/                  - Custom React hooks (50+ files)
+   │   ├── useAuth.js             - Authentication hook
+   │   ├── usePosts.js            - Posts management
+   │   ├── useMessages.js         - Messages handling
+   │   ├── useNotifications.js    - Notifications
+   │   ├── useWebSocket.js        - WebSocket connection
+   │   ├── useInfiniteScroll.js   - Infinite scrolling
+   │   ├── useDebounce.js         - Debouncing
+   │   ├── useLocalStorage.js     - Local storage
+   │   ├── useMediaQuery.js       - Responsive design
+   │   ├── useImageUpload.js      - Image uploads
+   │   ├── useVideoUpload.js      - Video uploads
+   │   ├── useRealtime.js         - Realtime updates
+   │   ├── useFollow.js           - Follow/unfollow
+   │   ├── useLike.js             - Like functionality
+   │   ├── useComment.js          - Comments
+   │   ├── useShare.js            - Sharing
+   │   ├── useSearch.js           - Search
+   │   ├── useProfile.js          - Profile data
+   │   ├── useSettings.js         - Settings
+   │   ├── useTrustShield.js      - Trust & safety
+   │   └── [30+ additional hooks]
+   │
+   ├── 📂 pages/                  - Page components (30+ files)
+   │   ├── 📂 Auth/
+   │   │   ├── Auth.js
+   │   │   ├── Auth.module.css
+   │   │   ├── Login.js
+   │   │   ├── Signup.js
+   │   │   └── ForgotPassword.js
+   │   │
+   │   ├── 📂 Home/
+   │   │   ├── Home.js
+   │   │   ├── Home.module.css
+   │   │   └── HomeSkeleton.js
+   │   │
+   │   ├── 📂 Explore/
+   │   │   ├── Explore.js
+   │   │   ├── Explore.module.css
+   │   │   └── ExploreSkeleton.js
+   │   │
+   │   ├── 📂 Profile/
+   │   │   ├── Profile.js
+   │   │   ├── Profile.module.css
+   │   │   ├── EditProfile.js
+   │   │   └── ProfileSkeleton.js
+   │   │
+   │   ├── 📂 Messages/
+   │   │   ├── Messages.js
+   │   │   ├── Messages.module.css
+   │   │   └── MessagesSkeleton.js
+   │   │
+   │   ├── 📂 Notifications/
+   │   │   ├── Notifications.js
+   │   │   ├── Notifications.module.css
+   │   │   └── NotificationsSkeleton.js
+   │   │
+   │   ├── 📂 Create/
+   │   │   ├── Create.js
+   │   │   ├── Create.module.css
+   │   │   └── CreateEditor.js
+   │   │
+   │   ├── 📂 Settings/
+   │   │   ├── Settings.js
+   │   │   ├── Settings.module.css
+   │   │   ├── Account.js
+   │   │   ├── Privacy.js
+   │   │   ├── Security.js
+   │   │   └── Preferences.js
+   │   │
+   │   ├── 📂 PostDetail/
+   │   │   ├── PostDetail.js
+   │   │   ├── PostDetail.module.css
+   │   │   └── PostDetailSkeleton.js
+   │   │
+   │   ├── 📂 Search/
+   │   │   ├── Search.js
+   │   │   ├── Search.module.css
+   │   │   └── SearchResults.js
+   │   │
+   │   ├── 📂 Saved/
+   │   │   ├── Saved.js
+   │   │   └── Saved.module.css
+   │   │
+   │   ├── 📂 Likes/
+   │   │   ├── Likes.js
+   │   │   └── Likes.module.css
+   │   │
+   │   ├── 📂 Archive/
+   │   │   ├── Archive.js
+   │   │   └── Archive.module.css
+   │   │
+   │   ├── 📂 Calls/
+   │   │   ├── Calls.js
+   │   │   └── Calls.module.css
+   │   │
+   │   ├── 📂 Admin/
+   │   │   ├── AdminDashboard.js
+   │   │   ├── UserManagement.js
+   │   │   ├── ContentModeration.js
+   │   │   └── Analytics.js
+   │   │
+   │   └── 📂 TrustShield/
+   │       ├── TrustShield.js
+   │       ├── Verification.js
+   │       └── SafetyCenter.js
+   │
+   ├── 📂 services/               - API & service layer (30+ files)
+   │   ├── api.js                 - Base API service
+   │   ├── supabase.js            - Supabase client
+   │   ├── authService.js         - Authentication API
+   │   ├── postService.js         - Posts API
+   │   ├── messageService.js      - Messages API
+   │   ├── userService.js         - User API
+   │   ├── notificationService.js - Notifications API
+   │   ├── uploadService.js       - File uploads
+   │   ├── searchService.js       - Search API
+   │   ├── commentService.js      - Comments API
+   │   ├── likeService.js         - Likes API
+   │   ├── followService.js       - Follow API
+   │   ├── settingsService.js     - Settings API
+   │   ├── realtimeService.js     - Realtime subscriptions
+   │   ├── analyticsService.js    - Analytics
+   │   ├── reportService.js       - Reporting
+   │   ├── moderationService.js   - Content moderation
+   │   ├── storageService.js      - File storage
+   │   ├── cacheService.js        - Caching
+   │   └── [Additional services]
+   │
+   ├── 📂 utils/                  - Utility functions (100+ files)
+   │   ├── formatDate.js          - Date formatting
+   │   ├── formatDuration.js      - Duration formatting
+   │   ├── formatNotificationText.js
+   │   ├── formatDateDivider.js
+   │   ├── validateEmail.js       - Email validation
+   │   ├── validatePassword.js    - Password validation
+   │   ├── uploadImage.js         - Image upload helper
+   │   ├── avatarManager.js       - Avatar management
+   │   ├── checkUsername.js       - Username validation
+   │   ├── supabaseAuth.js        - Supabase auth utils
+   │   ├── supabaseRest.js        - Supabase REST utils
+   │   ├── supabaseBadges.js      - Badge system
+   │   ├── supabaseReports.js     - Reporting utils
+   │   ├── supabaseSupport.js     - Support system
+   │   ├── trustScore.js          - Trust score calculation
+   │   ├── trustScoreCalculator.js
+   │   ├── trustShieldInit.js     - Trust Shield init
+   │   ├── toxicityScorer.js      - Content toxicity
+   │   ├── behaviorAnalyzer.js    - User behavior
+   │   ├── profileAuthenticityChecker.js
+   │   ├── rateLimiter.js         - Rate limiting
+   │   ├── reportValidator.js     - Report validation
+   │   ├── reportPriority.js      - Report prioritization
+   │   ├── reportCategories.js    - Report categories
+   │   ├── badgeRules.js          - Badge rules
+   │   ├── badgeFormatter.js      - Badge formatting
+   │   ├── badgeCriteriaChecker.js
+   │   ├── badgeNotification.js   - Badge notifications
+   │   ├── ageValidation.js       - Age validation
+   │   ├── ageVerification.js     - Age verification
+   │   ├── alertNotifier.js       - Alert notifications
+   │   ├── activityLogger.js      - Activity logging
+   │   ├── userPreferences.js     - User preferences
+   │   ├── UndoManager.js         - Undo/redo
+   │   ├── BatchActions.js        - Batch operations
+   │   ├── SmartPreloader.js      - Smart preloading
+   │   ├── smartFallbacks.js      - Fallback handling
+   │   ├── stickerAssets.js       - Sticker assets
+   │   ├── soundLibrary.js        - Sound library
+   │   ├── soundReactions.js      - Sound reactions
+   │   ├── sttEngine.js           - Speech-to-text
+   │   ├── ttsEngine.js           - Text-to-speech
+   │   ├── visemeMapper.js        - Viseme mapping
+   │   ├── videoFilters.js        - Video filters
+   │   ├── videoExport.js         - Video export
+   │   ├── supportCategories.js   - Support categories
+   │   ├── saveOnboardingData.js  - Onboarding data
+   │   └── [50+ additional utilities]
+   │
+   ├── 📂 styles/                 - Global styles (20+ files)
+   │   ├── variables.css          - CSS variables
+   │   ├── colors.css             - Color palette
+   │   ├── typography.css         - Typography
+   │   ├── animations.css         - Animations
+   │   ├── responsive.css         - Responsive breakpoints
+   │   ├── themes.css             - Theme definitions
+   │   ├── utilities.css          - Utility classes
+   │   └── [Additional style files]
+   │
+   ├── 📂 assets/                 - Static assets
+   │   ├── 📂 images/             - Image files
+   │   ├── 📂 icons/              - Icon files
+   │   ├── 📂 sounds/             - Sound effects
+   │   ├── 📂 fonts/              - Custom fonts
+   │   └── 📂 animations/         - Animation files
+   │
+   ├── 📂 config/                 - Configuration files
+   │   ├── constants.js           - App constants
+   │   ├── routes.js              - Route definitions
+   │   ├── api.config.js          - API configuration
+   │   ├── theme.config.js        - Theme configuration
+   │   └── feature.flags.js       - Feature flags
+   │
+   └── 📂 types/                  - TypeScript types (if applicable)
+       ├── user.types.js
+       ├── post.types.js
+       ├── message.types.js
+       └── [Type definitions]
+
+📂 src_legacy/                    - Legacy source code (backup)
+   └── [1037 legacy files - archived previous version]
+
+================================================================================
+📊 PROJECT STATISTICS
+================================================================================
+
+TOTAL DIRECTORIES:
+├── Root level: ~30 directories
+├── src/: ~50 subdirectories
+├── src/components/: ~25 component folders
+├── src/pages/: ~15 page folders
+└── Total: ~120+ directories
+
+TOTAL FILES:
+├── Root documentation: ~500+ .md files
+├── Root SQL files: ~50+ .sql files
+├── Root JS utilities: ~20+ .js files
+├── src/ files: ~1000+ files
+│   ├── Components (JS + CSS): ~400 files
+│   ├── Pages (JS + CSS): ~60 files
+│   ├── Hooks: ~50 files
+│   ├── Utils: ~100 files
+│   ├── Services: ~30 files
+│   ├── Contexts: ~15 files
+│   └── Other: ~345 files
+├── src_legacy/: ~1037 files
+├── Public assets: ~18 files
+├── Configuration: ~15 files
+└── Total: ~2,700+ files
+
+CODE FILE BREAKDOWN (JS + CSS):
+├── JavaScript (.js): ~800 files
+├── CSS Modules (.module.css): ~200 files
+├── Regular CSS (.css): ~50 files
+├── SQL (.sql): ~150 files
+├── JSON (.json): ~30 files
+├── Markdown (.md): ~500 files
+└── Other formats: ~970 files
+
+KEY FEATURES IMPLEMENTED:
+✅ Authentication & Authorization
+✅ User Profiles & Settings
+✅ Post Creation & Editing
+✅ Image & Video Upload
+✅ Home Feed with Infinite Scroll
+✅ Explore & Discovery
+✅ Search Functionality
+✅ Comments System
+✅ Likes & Saves
+✅ Follow System
+✅ Messaging (DM & Group)
+✅ Voice & Video Calls
+✅ Notifications (Realtime)
+✅ Stories (Boltz)
+✅ Flash Posts
+✅ Sticker System
+✅ Trust Shield (Safety)
+✅ Admin Dashboard
+✅ Content Moderation
+✅ Analytics
+✅ Onboarding Flow
+✅ Skeleton Loaders
+✅ Responsive Design
+✅ Dark/Light Themes
+✅ PWA Support
+
+================================================================================
+TECHNOLOGY STACK
+================================================================================
+
+Frontend:
+├── React 18.x
+├── React Router v6
+├── CSS Modules
+├── WebRTC (for calls)
+└── Service Workers (PWA)
+
+Backend/Services:
+├── Supabase (Database & Auth)
+├── Supabase Realtime
+├── Supabase Storage
+├── Edge Functions
+└── PostgreSQL
+
+Testing:
+├── Jest (Unit tests)
+├── Cypress (E2E tests)
+├── Playwright (E2E tests)
+└── Lighthouse (Performance)
+
+Build Tools:
+├── Create React App
+├── Webpack
+├── Babel
+└── PostCSS
+
+Deployment:
+├── Netlify
+├── Vercel
+└── GitHub Actions (CI/CD)
+
+================================================================================
+END OF DIRECTORY STRUCTURE
+================================================================================
+Generated: 2026-02-01T20:41:43+05:30
+Total Lines: 800+

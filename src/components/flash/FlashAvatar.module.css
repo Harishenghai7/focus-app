@@ -1,0 +1,114 @@
+/* ==========================================================
+   FlashAvatar — Focus App v2.0
+   ========================================================== */
+
+@keyframes ringPulse {
+    0%   { box-shadow: 0 0 0 0 rgba(126, 87, 194, 0.6); }
+    70%  { box-shadow: 0 0 0 6px rgba(126, 87, 194, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(126, 87, 194, 0); }
+}
+
+@keyframes flashFadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Wrapper (button) ─────────────────────────────────────── */
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+    animation: flashFadeIn 0.2s ease both;
+    position: relative;
+}
+
+.wrapper:hover  { transform: scale(1.06); }
+.wrapper:active { transform: scale(0.97); opacity: 0.8; }
+
+/* Own-story wrapper */
+.ownWrapper { order: -1; }
+
+/* ── Sizes ───────────────────────────────────────────────── */
+.size-sm { --ring-size: 52px; --ring-pad: 3px; }
+.size-md { --ring-size: 64px; --ring-pad: 3px; }
+.size-lg { --ring-size: 80px; --ring-pad: 3.5px; }
+
+/* ── Ring ────────────────────────────────────────────────── */
+.ring {
+    width: var(--ring-size, 64px);
+    height: var(--ring-size, 64px);
+    border-radius: 50%;
+    padding: var(--ring-pad, 3px);
+    position: relative;
+    flex-shrink: 0;
+}
+
+/* Unseen — gradient ring */
+.ringUnseen {
+    background: linear-gradient(135deg, #7E57C2, #EC4899, #F97316);
+}
+
+/* Pulse on unseen ring */
+.ringPulse {
+    animation: ringPulse 2.4s ease infinite;
+}
+
+/* Watched — subtle grey ring */
+.ringWatched {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Inner: the actual avatar container */
+.ringInner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--bg-primary, #1a0f2e);
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* ── Label ───────────────────────────────────────────────── */
+.label {
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: var(--text-secondary, #e9d5ff);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 68px;
+    text-align: center;
+}
+
+/* ── Add badge (+) ───────────────────────────────────────── */
+.addBadge {
+    position: absolute;
+    bottom: 22px;   /* above the label */
+    right: 4px;
+    width: 20px;
+    height: 20px;
+    background: var(--royal-purple, #7E57C2);
+    border: 2.5px solid var(--bg-primary, #1a0f2e);
+    border-radius: 50%;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    box-shadow: 0 0 8px rgba(126, 87, 194, 0.6);
+}

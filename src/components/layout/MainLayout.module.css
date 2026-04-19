@@ -13,19 +13,26 @@
 .main {
     flex: 1;
     width: 100%;
-    max-width: var(--container-xl);
-    margin: 0 auto;
+    min-width: 0;
+    min-height: 0;
     padding-bottom: 60px;
 }
 
 @media (min-width: 1024px) {
     .layout {
         flex-direction: row;
+        align-items: stretch;
+        min-height: 100vh;
+        min-height: 100dvh;
     }
 
     .main {
+        flex: 1;
+        min-width: 0;
         margin-left: 280px;
-        padding: var(--space-6);
+        padding: 0;
         padding-bottom: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
     }
 }

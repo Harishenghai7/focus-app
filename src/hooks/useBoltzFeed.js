@@ -1,203 +1,257 @@
-import { useState, useCallback } from 'react';
-import { fetchBoltz, supabaseFetch } from '../utils/supabaseRest';
-import { useAuth } from './useAuth';
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
+import { useFocusUser } from '../context/FocusUserContext';
 import { useRobustQuery } from './useRobustQuery';
 import { useRealtimeSubscription } from './useRealtimeSubscription';
+import { normalizeHydratedProfile } from '../utils/identityHydration';
+import { assertTrustShieldVerified } from '../utils/trustShieldAccess';
 
 export const useBoltzFeed = (tab = 'foryou') => {
-    const { user } = useAuth();
-    const [boltz, setBoltz] = useState([]);
-    const [hasMore, setHasMore] = useState(true);
-    const [page, setPage] = useState(0);
-    const [moreLoading, setMoreLoading] = useState(false);
-    const ITEMS_PER_PAGE = 10;
+  const { user } = useFocusUser();
+  const [boltz, setBoltz] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(0);
+  const [moreLoading, setMoreLoading] = useState(false);
+  const ITEMS_PER_PAGE = 10;
+  const isMissingTable = (err) => /does not exist|Could not find the table|42P01|PGRST205/i.test(
+    `${err?.message || ''}${err?.details || ''}${err?.hint || ''}${err?.code || ''}`
+  );
 
-    // 1. Initial Fetch with Robust Query (using REST API)
-    const fetchInitialBoltz = useCallback(async () => {
-        console.log('🎬 Fetching initial Boltz via REST API:', { tab });
+  const resolveBoltzSaveTable = useCallback(async () => {
+    const primary = await supabase.from('saved_boltz').select('boltz_id').limit(1);
+    if (!primary.error || !isMissingTable(primary.error)) return 'saved_boltz';
+    const fallback = await supabase.from('boltz_saves').select('boltz_id').limit(1);
+    if (!fallback.error || !isMissingTable(fallback.error)) return 'boltz_saves';
+    return 'saved_boltz';
+  }, []);
 
-        try {
-            let boltzData;
+  // ── Use ref for user so fetchInitialBoltz is STABLE (only tab dep) ──
+  const userRef = useRef(user);
+  useEffect(() => { userRef.current = user; }, [user]);
 
-            if (tab === 'following' && user) {
-                // Get following list first
-                const followingData = await supabaseFetch(
-                    `/follows?select=following_id&follower_id=eq.${user.id}`
-                ).catch(() => []);
+  // ── Initial Fetch — fetchInitialBoltz only changes when `tab` changes ─
+  const fetchInitialBoltz = useCallback(async () => {
+    const currentUser = userRef.current;
+    let boltzData = [];
 
-                const followingIds = followingData?.map(f => f.following_id) || [];
+    if (tab === 'following' && currentUser?.id) {
+      const { data: followingData } = await supabase
+        .from('follows')
+        .select('following_id')
+        .eq('follower_id', currentUser.id);
 
-                if (followingIds.length === 0) {
-                    console.log('⚠️ No following users');
-                    return [];
-                }
+      const followingIds = followingData?.map((f) => f.following_id) || [];
+      if (followingIds.length === 0) return [];
 
-                // Fetch boltz from following users
-                boltzData = await fetchBoltz({
-                    limit: ITEMS_PER_PAGE,
-                    offset: 0
-                });
+      const { data, error } = await supabase
+        .from('boltz')
+        .select('*, profiles:user_id(id, username, full_name, avatar_url, is_verified)')
+        .in('user_id', followingIds)
+        .order('created_at', { ascending: false })
+        .limit(ITEMS_PER_PAGE);
 
-                // Filter client-side for now (could optimize with query params)
-                boltzData = boltzData.filter(b => followingIds.includes(b.user_id));
-            } else {
-                // For You tab - fetch all boltz
-                boltzData = await fetchBoltz({
-                    limit: ITEMS_PER_PAGE,
-                    offset: 0
-                });
-            }
+      if (error) throw error;
+      boltzData = data || [];
+    } else {
+      if (currentUser?.id) {
+        await assertTrustShieldVerified(currentUser.id);
+      }
 
-            // Fetch user interactions (likes/saves) if user is logged in
-            let userInteractions = { likes: [], saves: [] };
-            if (user) {
-                const boltzIds = boltzData.map(b => b.id);
-                if (boltzIds.length > 0) {
-                    const [likesRes, savesRes] = await Promise.all([
-                        supabaseFetch(`/boltz_likes?user_id=eq.${user.id}&boltz_id=in.(${boltzIds.join(',')})`),
-                        supabaseFetch(`/boltz_saves?user_id=eq.${user.id}&boltz_id=in.(${boltzIds.join(',')})`)
-                    ]);
-                    userInteractions.likes = likesRes.map(l => l.boltz_id);
-                    userInteractions.saves = savesRes.map(s => s.boltz_id);
-                }
-            }
+      const { data: secureData, error: secureError } = currentUser?.id
+        ? await supabase.rpc('get_boltz_feed_secure', {
+            p_user_id: currentUser.id,
+            p_limit: ITEMS_PER_PAGE,
+            p_offset: 0,
+          })
+        : { data: null, error: new Error('UNAUTHENTICATED') };
 
-            console.log(`✅ Fetched ${boltzData.length} boltz`);
+      // For You — public boltz, no auth required
+      const { data, error } = !secureError
+        ? { data: secureData, error: null }
+        : await supabase
+            .from('boltz')
+            .select('*, profiles:user_id(id, username, full_name, avatar_url, is_verified)')
+            .order('created_at', { ascending: false })
+            .limit(ITEMS_PER_PAGE);
 
-            // Merge interactions
-            return boltzData.map(item => ({
-                ...item,
-                likes_count: item.likes_count || 0,
-                comments_count: item.comments_count || 0,
-                is_liked: userInteractions.likes.includes(item.id),
-                is_saved: userInteractions.saves.includes(item.id),
-            }));
-        } catch (error) {
-            console.error('❌ Error fetching boltz:', error);
-            throw error;
-        }
-    }, [tab, user]);
+      if (error) throw error;
+      boltzData = data || [];
+    }
 
-    const {
-        data: initialData,
-        loading: initialLoading,
-        error: initialError,
-        refetch: refetchInitial
-    } = useRobustQuery(fetchInitialBoltz, {
-        enabled: !!user || tab === 'foryou',
-        retries: 3,
-        onSuccess: (data) => {
-            console.log('✅ Boltz loaded:', data?.length);
-            setBoltz(data || []);
-            setPage(0);
-            setHasMore((data || []).length === ITEMS_PER_PAGE);
-        }
+    // Fetch interactions (non-blocking, never fails the whole fetch)
+    let userLikes = [];
+    let userSaves = [];
+    if (currentUser?.id && boltzData.length > 0) {
+      const boltzIds = boltzData.map((b) => b.id);
+      const saveTable = await resolveBoltzSaveTable();
+      const [likesRes, savesRes] = await Promise.allSettled([
+        supabase.from('boltz_likes').select('boltz_id').eq('user_id', currentUser.id).in('boltz_id', boltzIds),
+        supabase.from(saveTable).select('boltz_id').eq('user_id', currentUser.id).in('boltz_id', boltzIds),
+      ]);
+      if (likesRes.status === 'fulfilled') {
+        userLikes = likesRes.value?.data?.map((l) => l.boltz_id) || [];
+      }
+      if (savesRes.status === 'fulfilled') {
+        userSaves = savesRes.value?.data?.map((s) => s.boltz_id) || [];
+      }
+    }
+
+    return boltzData.map((item) => {
+      const profileObj =
+        (Array.isArray(item.profiles) ? item.profiles[0] : item.profiles) ||
+        {
+          id: item.user_id,
+          username: item.username,
+          full_name: item.full_name,
+          avatar_url: item.avatar_url,
+          is_verified: item.is_verified,
+        };
+      const safeProfile = normalizeHydratedProfile(profileObj, item.user_id);
+      return {
+        ...item,
+        user: safeProfile,
+        profiles: safeProfile,
+        likes_count:    item.likes_count    || 0,
+        comments_count: item.comments_count || 0,
+        saves_count:    item.saves_count    || 0,
+        shares_count:   item.shares_count   || 0,
+        is_liked:       userLikes.includes(item.id),
+        is_saved:       userSaves.includes(item.id),
+        thumbnail_url:  item.thumbnail_url || item.poster_url || item.preview_image || item.cover_url || null,
+      };
     });
+  }, [tab, resolveBoltzSaveTable]); // ← ONLY tab dep + stable helpers.
 
-    // 2. Load More (using REST API)
-    const loadMore = async () => {
-        if (moreLoading || !hasMore || initialLoading) return;
-        setMoreLoading(true);
+  const {
+    loading: initialLoading,
+    error:   initialError,
+    refetch: refetchInitial,
+  } = useRobustQuery(fetchInitialBoltz, {
+    enabled:    true,
+    retries:    2,
+    retryDelay: 1500,
+    timeout:    12000,
+    onSuccess: (data) => {
+      setBoltz(data || []);
+      setPage(0);
+      setHasMore((data || []).length >= ITEMS_PER_PAGE);
+    },
+  });
 
-        try {
-            const nextPage = page + 1;
-            const offset = nextPage * ITEMS_PER_PAGE;
-            console.log('🎬 Loading more Boltz page:', nextPage);
+  // ── Load More ─────────────────────────────────────────────────────────
+  const loadMore = async () => {
+    if (moreLoading || !hasMore || initialLoading) return;
+    setMoreLoading(true);
 
-            let attempts = 0;
-            let success = false;
-            let newItems = [];
+    try {
+      const currentUser = userRef.current;
+      const nextPage = page + 1;
+      const offset   = nextPage * ITEMS_PER_PAGE;
+      let newItems   = [];
 
-            while (attempts < 3 && !success) {
-                try {
-                    if (tab === 'following' && user) {
-                        // Get following list
-                        const followingData = await supabaseFetch(
-                            `/follows?select=following_id&follower_id=eq.${user.id}`
-                        ).catch(() => []);
+      if (tab === 'following' && currentUser?.id) {
+        const { data: followingData } = await supabase
+          .from('follows')
+          .select('following_id')
+          .eq('follower_id', currentUser.id);
 
-                        const followingIds = followingData?.map(f => f.following_id) || [];
+        const ids = followingData?.map((f) => f.following_id) || [];
+        if (ids.length === 0) { setHasMore(false); return; }
 
-                        if (followingIds.length === 0) {
-                            success = true;
-                            break;
-                        }
+        const { data } = await supabase
+          .from('boltz')
+          .select('*, profiles:user_id(id, username, full_name, avatar_url, is_verified)')
+          .in('user_id', ids)
+          .order('created_at', { ascending: false })
+          .range(offset, offset + ITEMS_PER_PAGE - 1);
 
-                        // Fetch boltz
-                        const boltzData = await fetchBoltz({
-                            limit: ITEMS_PER_PAGE,
-                            offset
-                        });
-
-                        // Filter for following
-                        newItems = boltzData.filter(b => followingIds.includes(b.user_id));
-                    } else {
-                        // For You tab
-                        newItems = await fetchBoltz({
-                            limit: ITEMS_PER_PAGE,
-                            offset
-                        });
-                    }
-
-                    success = true;
-                } catch (err) {
-                    attempts++;
-                    console.warn(`⚠️ Load more attempt ${attempts} failed:`, err);
-                    await new Promise(r => setTimeout(r, 1000));
-                }
-            }
-
-            if (success) {
-                // Fetch user interactions for new items
-                let userInteractions = { likes: [], saves: [] };
-                if (user && newItems.length > 0) {
-                    const boltzIds = newItems.map(b => b.id);
-                    const [likesRes, savesRes] = await Promise.all([
-                        supabaseFetch(`/boltz_likes?user_id=eq.${user.id}&boltz_id=in.(${boltzIds.join(',')})`),
-                        supabaseFetch(`/boltz_saves?user_id=eq.${user.id}&boltz_id=in.(${boltzIds.join(',')})`)
-                    ]);
-                    userInteractions.likes = likesRes.map(l => l.boltz_id);
-                    userInteractions.saves = savesRes.map(s => s.boltz_id);
-                }
-
-                const processedData = newItems.map(item => ({
-                    ...item,
-                    likes_count: item.likes_count || 0,
-                    comments_count: item.comments_count || 0,
-                    is_liked: userInteractions.likes.includes(item.id),
-                    is_saved: userInteractions.saves.includes(item.id),
-                }));
-                setBoltz(prev => [...prev, ...processedData]);
-                setPage(nextPage);
-                setHasMore(newItems.length === ITEMS_PER_PAGE);
-                console.log(`✅ Loaded ${newItems.length} more boltz`);
-            } else {
-                setHasMore(false);
-                console.log('⚠️ No more boltz to load');
-            }
-        } finally {
-            setMoreLoading(false);
+        newItems = data || [];
+      } else {
+        if (currentUser?.id) {
+          await assertTrustShieldVerified(currentUser.id);
         }
-    };
+        const { data: secureData, error: secureError } = currentUser?.id
+          ? await supabase.rpc('get_boltz_feed_secure', {
+              p_user_id: currentUser.id,
+              p_limit: ITEMS_PER_PAGE,
+              p_offset: offset,
+            })
+          : { data: null, error: new Error('UNAUTHENTICATED') };
 
-    // 3. Realtime Subscription
-    useRealtimeSubscription({
-        channelName: 'boltz-feed-updates',
-        table: 'boltz',
-        event: 'INSERT',
-        enabled: tab === 'foryou',
-        onEvent: (payload) => {
-            console.log('🔔 New boltz detected');
-            // Could optimistically add: setBoltz(prev => [payload.new, ...prev]);
-        }
-    });
+        const { data } = await supabase
+          .from('boltz')
+          .select('*, profiles:user_id(id, username, full_name, avatar_url, is_verified)')
+          .order('created_at', { ascending: false })
+          .range(offset, offset + ITEMS_PER_PAGE - 1);
 
-    return {
-        boltz,
-        loading: initialLoading || moreLoading,
-        hasMore,
-        loadMore,
-        refresh: refetchInitial,
-        setBoltz
-    };
+        newItems = secureError ? (data || []) : (secureData || []);
+      }
+
+      let userLikes = [], userSaves = [];
+      if (userRef.current?.id && newItems.length > 0) {
+        const boltzIds = newItems.map((b) => b.id);
+        const saveTable = await resolveBoltzSaveTable();
+        const [likesRes, savesRes] = await Promise.allSettled([
+          supabase.from('boltz_likes').select('boltz_id').eq('user_id', userRef.current.id).in('boltz_id', boltzIds),
+          supabase.from(saveTable).select('boltz_id').eq('user_id', userRef.current.id).in('boltz_id', boltzIds),
+        ]);
+        if (likesRes.status === 'fulfilled') userLikes = likesRes.value?.data?.map((l) => l.boltz_id) || [];
+        if (savesRes.status === 'fulfilled') userSaves = savesRes.value?.data?.map((s) => s.boltz_id) || [];
+      }
+
+      const processed = newItems.map((item) => {
+        const p =
+          (Array.isArray(item.profiles) ? item.profiles[0] : item.profiles) ||
+          {
+            id: item.user_id,
+            username: item.username,
+            full_name: item.full_name,
+            avatar_url: item.avatar_url,
+            is_verified: item.is_verified,
+          };
+        const safeProfile = normalizeHydratedProfile(p, item.user_id);
+        return {
+          ...item,
+          user:           safeProfile,
+          profiles:       safeProfile,
+          likes_count:    item.likes_count    || 0,
+          comments_count: item.comments_count || 0,
+          saves_count:    item.saves_count    || 0,
+          shares_count:   item.shares_count   || 0,
+          is_liked:       userLikes.includes(item.id),
+          is_saved:       userSaves.includes(item.id),
+          thumbnail_url:  item.thumbnail_url || item.poster_url || item.preview_image || item.cover_url || null,
+        };
+      });
+
+      setBoltz((prev) => [...prev, ...processed]);
+      setPage(nextPage);
+      setHasMore(newItems.length >= ITEMS_PER_PAGE);
+    } catch (err) {
+      console.warn('Load more boltz failed:', err);
+      setHasMore(false);
+    } finally {
+      setMoreLoading(false);
+    }
+  };
+
+  // ── Realtime: new boltz in for-you tab ───────────────────────────────
+  useRealtimeSubscription({
+    channelName: 'boltz-feed-updates',
+    table:       'boltz',
+    event:       'INSERT',
+    enabled:     tab === 'foryou',
+    onEvent:     () => { /* Could show "New boltz" banner */ },
+  });
+
+  return {
+    boltz,
+    loading: initialLoading || moreLoading,
+    initialLoading,
+    error:   initialError,
+    hasMore,
+    loadMore,
+    refresh: refetchInitial,
+    setBoltz,
+  };
 };

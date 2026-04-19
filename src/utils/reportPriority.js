@@ -157,10 +157,13 @@ export const shouldAutoEscalate = (report) => {
     return false;
 };
 
-export default {
+const _defaultModule = {
     calculatePriority,
     calculateTicketPriority,
     getExistingReportCount,
     getUserTrustScore,
     shouldAutoEscalate
 };
+
+
+export default _defaultModule;

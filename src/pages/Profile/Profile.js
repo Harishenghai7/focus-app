@@ -1,35 +1,44 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import MainLayout from '../../components/layout/MainLayout';
-import ProfileHeader from '../../components/profile/ProfileHeader';
-import HighlightCarousel from '../../components/profile/HighlightCarousel';
-import ProfileTabs from '../../components/profile/ProfileTabs';
-import ProfileGrid from '../../components/profile/ProfileGrid';
-import FollowersModal from '../../components/profile/FollowersModal';
-import FollowingModal from '../../components/profile/FollowingModal';
+import ProfileHeader from '../../components/Profile/ProfileHeader';
+import HighlightCarousel from '../../components/Profile/HighlightCarousel';
+import ProfileTabs from '../../components/Profile/ProfileTabs';
+import ProfileGrid from '../../components/Profile/ProfileGrid';
+import FollowersModal from '../../components/Profile/FollowersModal';
+import FollowingModal from '../../components/Profile/FollowingModal';
 import PostDetailModal from '../../components/modals/PostDetailModal';
-import BoltzDetailModal from '../../components/profile/BoltzDetailModal';
-import HighlightsViewerModal from '../../components/profile/HighlightsViewerModal';
+import BoltzDetailModal from '../../components/Profile/BoltzDetailModal';
+import HighlightsViewerModal from '../../components/Profile/HighlightsViewerModal';
 import LoadingSkeleton from '../../components/shared/LoadingSkeleton';
 import { useProfile } from '../../hooks/useProfile';
 import { useProfileTabs } from '../../hooks/useProfileTabs';
 import { useProfileGrid } from '../../hooks/useProfileGrid';
 import { useHighlights } from '../../hooks/useHighlights';
 import { useAuth } from '../../hooks/useAuth';
+import { triggerHaptic } from '../../utils/haptics';
 import styles from './Profile.module.css';
 
 const Profile = () => {
     const { username } = useParams();
-    const { user: currentUser, loading: authLoading } = useAuth();
+    const navigate = useNavigate();
+    const { user: currentUser, profile: authProfile, loading: authLoading } = useAuth();
 
     // Determine the profile to load
     const profileUsername = username || currentUser?.id;
 
-    // Determine if viewing own profile - compare with user ID for reliability
-    const isOwnProfile = !username || (currentUser && profileUsername === currentUser.id);
-
     // Fetch profile data - always call hooks
     const { profile, loading: profileLoading, error, currentUserRelation, updateFollowStatus } = useProfile(profileUsername);
+
+    const isOwnProfile = useMemo(() => {
+        if (!currentUser) return false;
+        if (!username) return true;
+        if (username === currentUser.id) return true;
+        if (authProfile?.username && username === authProfile.username) return true;
+        if (profile?.id && profile.id === currentUser.id) return true;
+        return false;
+    }, [currentUser, username, authProfile?.username, profile?.id]);
 
     // Tab management
     const { activeTab, changeTab, availableTabs } = useProfileTabs(isOwnProfile);
@@ -65,8 +74,7 @@ const Profile = () => {
     };
 
     const handleAddHighlight = () => {
-        // TODO: Implement add highlight functionality
-        console.log('Add highlight');
+        navigate('/create?tab=post');
     };
 
     const handlePostNavigation = (direction) => {
@@ -195,20 +203,33 @@ const Profile = () => {
 
                 <ProfileTabs
                     activeTab={activeTab}
-                    onTabChange={changeTab}
+                    onTabChange={(tab) => {
+                        triggerHaptic(8);
+                        changeTab(tab);
+                    }}
                     availableTabs={availableTabs}
                 />
 
                 <div className={styles.content}>
-                    <ProfileGrid
-                        items={items}
-                        loading={gridLoading}
-                        hasMore={hasMore}
-                        onLoadMore={loadMore}
-                        onItemClick={handleItemClick}
-                        emptyMessage={getEmptyMessage()}
-                        emptyIcon={getEmptyIcon()}
-                    />
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={activeTab}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -8 }}
+                            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        >
+                            <ProfileGrid
+                                items={items}
+                                loading={gridLoading}
+                                hasMore={hasMore}
+                                onLoadMore={loadMore}
+                                onItemClick={handleItemClick}
+                                emptyMessage={getEmptyMessage()}
+                                emptyIcon={getEmptyIcon()}
+                            />
+                        </motion.div>
+                    </AnimatePresence>
                 </div>
 
                 {/* Modals */}

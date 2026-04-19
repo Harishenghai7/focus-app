@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { supabase, supabaseAnonKey } from '../lib/supabase';
 import { useAuth } from './useAuth';
+import { playPublish } from '../utils/audioFX';
+import { runPreUploadSafetyCheck } from '../utils/uploadSafetyMiddleware';
 
 export const usePublish = () => {
     const { user } = useAuth();
@@ -15,6 +17,16 @@ export const usePublish = () => {
         try {
             if (!user) throw new Error('You must be logged in to publish.');
             console.log('✅ User authenticated:', user.id);
+
+            const moderationResult = await runPreUploadSafetyCheck({
+                userId: user.id,
+                caption: details?.caption || '',
+                mediaFiles,
+            });
+
+            if (moderationResult.blocked) {
+                throw new Error(moderationResult.reason || 'Upload blocked by Focus Content Filter');
+            }
 
             const uploadedMedia = [];
 
@@ -127,6 +139,29 @@ export const usePublish = () => {
             }
 
 
+            const uploadDataUrlToStorage = async (dataUrl, folder = 'thumbs') => {
+                if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) return null;
+                const [meta, b64] = dataUrl.split(',');
+                const mime = (meta.match(/data:(.*?);base64/) || [])[1] || 'image/jpeg';
+                const ext = mime.split('/')[1] || 'jpg';
+                const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+                const filePath = `${user.id}/${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+                const uploadUrl = `${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/posts/${filePath}`;
+                const { data: { session } } = await supabase.auth.getSession();
+                const token = session?.access_token || supabaseAnonKey;
+                const response = await fetch(uploadUrl, {
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        apikey: supabaseAnonKey,
+                        'Content-Type': mime,
+                    },
+                    body: bytes,
+                });
+                if (!response.ok) return null;
+                return `${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/public/posts/${filePath}`;
+            };
+
             // 2. Insert Record using REST API (bypassing SDK)
             console.log('💾 Inserting post record via REST API...');
 
@@ -168,12 +203,19 @@ export const usePublish = () => {
             };
 
             if (createMode === 'boltz') {
+                const selectedThumb =
+                    details?.thumbnail ||
+                    details?.thumbnailDataUrl ||
+                    mediaFiles?.[0]?.thumbnail ||
+                    null;
+                const uploadedThumb = await uploadDataUrlToStorage(selectedThumb, 'boltz-thumbs');
                 tableName = 'boltz';
                 postData = {
                     user_id: user.id,
                     description: details.caption,
                     video_url: uploadedMedia[0].url,
-                    thumbnail_url: uploadedMedia[0].url,
+                    thumbnail_url: uploadedThumb,
+                    poster_url: uploadedThumb,
                     music_url: music?.audio || null,
                     duration: uploadedMedia[0].duration || null
                 };
@@ -217,6 +259,7 @@ export const usePublish = () => {
             console.log('🎉 PUBLISH SUCCESS!');
             const { focusToast } = require('../utils/focusToast');
             focusToast.success(`${createMode === 'boltz' ? 'Boltz' : (createMode === 'flash' ? 'Flash' : 'Post')} published successfully!`);
+            playPublish();
 
             return true;
         } catch (err) {

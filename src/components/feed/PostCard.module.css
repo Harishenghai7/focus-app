@@ -1,146 +1,242 @@
-.postCard {
-    padding: 0;
-    overflow: hidden;
+/* PostCard.module.css - Royal Lavender Theme */
+
+/* --- CARD CONTAINER --- */
+.card {
+    background: var(--glass-surface);
+    backdrop-filter: var(--blur-md);
+    -webkit-backdrop-filter: var(--blur-md);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-2xl);
     margin-bottom: var(--space-6);
     position: relative;
+    width: 100%;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-bounce), box-shadow var(--transition-base), border-color var(--transition-base);
 }
 
+/* Desktop Hover Effect */
+@media (min-width: 768px) {
+    .card:hover {
+        border-color: var(--border-medium);
+        box-shadow: var(--glow-purple);
+    }
+}
+
+/* --- HEADER --- */
 .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    background: transparent;
 }
 
 .userInfo {
     display: flex;
     align-items: center;
     gap: var(--space-3);
+    cursor: pointer;
 }
 
-.userMeta {
-    display: flex;
-    flex-direction: column;
+.avatarContainer {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-full);
+    padding: 2px;
+    background: var(--gradient-royal);
 }
 
-.username {
-    font-weight: var(--font-bold);
-    font-size: var(--font-sm);
-    color: var(--text-primary);
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-}
-
-.verifiedBadge {
-    color: var(--primary-lavender);
-}
-
-.timeAgo {
-    font-size: var(--font-xs);
-    color: var(--text-muted);
-}
-
-.content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-}
-
-.caption {
-    padding: 0 var(--space-4);
-    font-size: var(--font-base);
-    color: var(--text-primary);
-    white-space: pre-wrap;
-}
-
-.mediaContainer {
+.avatar {
     width: 100%;
-    aspect-ratio: 1 / 1;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--bg-primary);
+    background: var(--bg-primary);
+}
+
+.avatarFallback {
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-full);
     background: var(--bg-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
+    font-weight: var(--font-bold);
+    color: var(--neon-lavender);
+    border: 2px solid var(--bg-primary);
+    font-size: var(--font-sm);
+}
+
+.meta {
+    display: flex;
+    flex-direction: column;
+}
+
+.nameRow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.username {
+    font-weight: var(--font-bold);
+    font-size: var(--font-base);
+    color: var(--text-primary);
+    letter-spacing: 0.3px;
+}
+
+.verified {
+    color: var(--neon-lavender);
+}
+
+.timestamp {
+    font-size: var(--font-xs);
+    color: var(--text-secondary);
+}
+
+.moreBtn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: var(--space-2);
+    cursor: pointer;
+    transition: color var(--transition-base);
+}
+
+.moreBtn:hover {
+    color: var(--neon-lavender);
+}
+
+/* --- CONTENT --- */
+.content {
+    display: flex;
+    flex-direction: column;
+}
+
+.caption {
+    padding: 0 var(--space-4) var(--space-3);
+    font-size: var(--font-base);
+    line-height: 1.5;
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+}
+
+.mediaWrapper {
+    width: 100%;
+    background: var(--bg-primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    min-height: 300px;
+    max-height: 600px;
 }
 
 .media {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    object-fit: contain;
+    max-height: 600px;
 }
 
-.actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--space-3) var(--space-4);
-}
-
-.leftActions {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-}
-
-.actionBtn {
-    padding: var(--space-2);
-    color: var(--text-secondary);
-    gap: var(--space-2);
-    transition: all 0.2s ease;
-}
-
-.actionBtn:hover {
-    color: var(--text-primary);
-    background: transparent;
-    transform: scale(1.1);
-}
-
-.liked {
-    color: var(--error);
-    animation: likeAnimation 0.3s ease;
-}
-
-.saved {
-    color: var(--primary-lavender);
-}
-
-/* Heart Animation */
-.heartAnimation {
+/* Heart Pop Animation */
+.popHeart {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    color: var(--error);
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
     pointer-events: none;
-    animation: heartPop 1s ease-out forwards;
-    z-index: 10;
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
 }
 
-@keyframes heartPop {
+.popHeart.pop {
+    animation: popUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes popUp {
     0% {
-        opacity: 0;
         transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
     }
 
-    50% {
-        opacity: 1;
+    20% {
         transform: translate(-50%, -50%) scale(1.3);
+        opacity: 1;
     }
 
     100% {
+        transform: translate(-50%, -50%) scale(0);
         opacity: 0;
-        transform: translate(-50%, -50%) scale(1);
     }
 }
 
-@keyframes likeAnimation {
+/* --- FOOTER (Interaction Bar) --- */
+.footer {
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: transparent;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.actionsLeft {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+}
+
+.actionBtn {
+    background: transparent;
+    border: none;
+    padding: var(--space-1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--text-primary);
+    transition: transform var(--transition-fast);
+}
+
+.actionBtn:active {
+    transform: scale(0.9);
+}
+
+.icon {
+    stroke-width: 2px;
+    transition: all var(--transition-base);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.count {
+    font-weight: var(--font-semibold);
+    font-size: var(--font-sm);
+    color: var(--text-primary);
+    min-width: 12px;
+}
+
+/* Active States */
+.likedHeart {
+    filter: drop-shadow(0 0 8px #ff3040);
+    animation: bounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.actionBtn:hover .icon {
+    color: var(--neon-lavender);
+    transform: translateY(-2px);
+}
+
+@keyframes bounce {
     0% {
         transform: scale(1);
     }
 
     50% {
-        transform: scale(1.3);
+        transform: scale(1.4);
     }
 
     100% {

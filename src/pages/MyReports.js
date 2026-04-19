@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useReportHistory } from '../hooks/useReportHistory';
 import ReportHistoryCard from '../components/report/ReportHistoryCard';
+import PageShell from '../components/layout/PageShell';
 import styles from './MyReports.module.css';
 
 const MyReports = () => {
@@ -11,6 +12,7 @@ const MyReports = () => {
     );
 
     return (
+        <PageShell>
         <div className={styles.myReportsPage}>
             <div className={styles.pageHeader}>
                 <h1 className={styles.pageTitle}>My Reports</h1>
@@ -45,6 +47,7 @@ const MyReports = () => {
                 )}
             </div>
         </div>
+        </PageShell>
     );
 };
 

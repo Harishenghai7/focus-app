@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import PageShell from '../components/layout/PageShell';
 import { useTrustScore } from '../hooks/useTrustScore';
 import { useDeviceFingerprint } from '../hooks/useDeviceFingerprint';
 import TrustScoreGauge from '../components/trustShield/TrustScoreGauge';
@@ -18,10 +19,17 @@ const SecurityCenter = () => {
     const { score, tier, breakdown, loading: scoreLoading } = useTrustScore(user);
     const { fingerprint } = useDeviceFingerprint(user);
 
-    if (authLoading) return <div className={styles.loading}>Loading...</div>;
+    if (authLoading) {
+        return (
+            <PageShell>
+                <div className={styles.loading}>Loading…</div>
+            </PageShell>
+        );
+    }
     if (!user) return <Navigate to="/auth" replace />;
 
     return (
+        <PageShell>
         <div className={styles.page}>
             <div className={styles.header}>
                 <h1 className={styles.title}>Security Center</h1>
@@ -93,6 +101,7 @@ const SecurityCenter = () => {
                 </div>
             </div>
         </div>
+        </PageShell>
     );
 };
 

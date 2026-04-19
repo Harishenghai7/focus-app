@@ -2,11 +2,16 @@ import React, { useEffect } from 'react';
 import SettingsSection from './SettingsSection';
 import Toggle from '../shared/Toggle';
 import Select from '../shared/Select';
-import { useUpdateSetting } from '../../hooks/useUpdateSetting';
+import { triggerHaptic } from '../../utils/haptics';
+import { playSave } from '../../utils/audioFX';
 import styles from './AppearanceSection.module.css';
 
-const AppearanceSection = ({ isExpanded, onToggle, settings }) => {
-    const { updateSetting } = useUpdateSetting();
+const AppearanceSection = ({ isExpanded, onToggle, settings, onUpdateSetting, saving = false }) => {
+    const applySetting = async (key, value) => {
+        triggerHaptic(10);
+        const result = await onUpdateSetting?.(key, value);
+        if (result?.success) playSave();
+    };
 
     // Apply theme to document root immediately
     useEffect(() => {
@@ -114,7 +119,7 @@ const AppearanceSection = ({ isExpanded, onToggle, settings }) => {
                     label="Theme"
                     description="Choose your preferred color scheme"
                     value={settings?.theme || 'dark'}
-                    onChange={(value) => updateSetting('theme', value)}
+                    onChange={(value) => applySetting('theme', value)}
                     options={themeOptions}
                 />
                 <div className={styles.themePreview}>
@@ -122,7 +127,7 @@ const AppearanceSection = ({ isExpanded, onToggle, settings }) => {
                         <div
                             key={theme.value}
                             className={`${styles.themeCard} ${settings?.theme === theme.value ? styles.active : ''}`}
-                            onClick={() => updateSetting('theme', theme.value)}
+                            onClick={() => applySetting('theme', theme.value)}
                         >
                             <div className={`${styles.themePreviewBox} ${styles[theme.value]}`}>
                                 <div className={styles.previewContent}>
@@ -146,7 +151,7 @@ const AppearanceSection = ({ isExpanded, onToggle, settings }) => {
                     label="Font Size"
                     description="Adjust text size for better readability"
                     value={settings?.font_size || 'medium'}
-                    onChange={(value) => updateSetting('font_size', value)}
+                    onChange={(value) => applySetting('font_size', value)}
                     options={fontSizeOptions}
                 />
                 <div className={styles.fontPreview} data-size={settings?.font_size || 'medium'}>
@@ -160,14 +165,16 @@ const AppearanceSection = ({ isExpanded, onToggle, settings }) => {
                 label="Glassmorphism Effects"
                 description="Enable glass-like transparency effects throughout the app"
                 checked={settings?.glassmorphism_enabled ?? true}
-                onChange={(value) => updateSetting('glassmorphism_enabled', value)}
+                onChange={(value) => applySetting('glassmorphism_enabled', value)}
+                disabled={saving}
             />
 
             <Toggle
                 label="High Contrast Mode"
                 description="Increase contrast for better visibility"
                 checked={settings?.high_contrast_mode ?? false}
-                onChange={(value) => updateSetting('high_contrast_mode', value)}
+                onChange={(value) => applySetting('high_contrast_mode', value)}
+                disabled={saving}
             />
 
             <div className={styles.divider} />
@@ -177,10 +184,10 @@ const AppearanceSection = ({ isExpanded, onToggle, settings }) => {
                 description="How long you have to undo actions like likes and saves"
                 value={settings?.undoTimeout || 3}
                 onChange={(value) => {
-                    updateSetting('undoTimeout', parseInt(value));
+                    applySetting('undoTimeout', parseInt(value, 10));
                     // Update localStorage for immediate effect
                     const currentSettings = JSON.parse(localStorage.getItem('focus_settings') || '{}');
-                    currentSettings.undoTimeout = parseInt(value);
+                    currentSettings.undoTimeout = parseInt(value, 10);
                     localStorage.setItem('focus_settings', JSON.stringify(currentSettings));
                 }}
                 options={[

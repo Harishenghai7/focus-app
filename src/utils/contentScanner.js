@@ -232,10 +232,13 @@ export const isPhishingUrl = (url) => {
     }
 };
 
-export default {
+const _defaultModule = {
     scanTextContent,
     scanImageContent,
     autoModerateContent,
     checkSuspiciousBehavior,
     isPhishingUrl
 };
+
+
+export default _defaultModule;

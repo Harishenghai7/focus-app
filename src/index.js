@@ -1,10 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
+
+// CRITICAL: Import theme.css FIRST before any other styles
+import './styles/theme.css';
 import './styles/reset.css';
 import './styles/globals.css';
 import './styles/design-system.css';
-import './styles/theme.css';
 import './styles/mobile.css';
 
 import { BrowserRouter } from 'react-router-dom';

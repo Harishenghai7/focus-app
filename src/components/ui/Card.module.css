@@ -1,41 +1,41 @@
-/* Card Component - Design System Compliant */
+/* Card Component - Royal Lavender Theme */
 
 .card {
-    background: #1a1a1a;
-    border: 1px solid rgba(139, 92, 246, 0.2);
-    border-radius: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
     padding: var(--space-4);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-card);
+    transition: var(--transition-slow);
 }
 
 .card:hover {
-    border-color: rgba(139, 92, 246, 0.4);
+    border-color: var(--border-medium);
     transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-lg);
 }
 
 /* GLASS VARIANT */
 .glassCard {
-    background: rgba(26, 26, 26, 0.7);
+    background: var(--glass-bg);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(139, 92, 246, 0.2);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-xl);
     padding: var(--space-6);
     box-shadow: var(--shadow-md);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: var(--transition-slow);
 }
 
 .glassCard:hover {
-    border-color: rgba(139, 92, 246, 0.4);
+    border-color: var(--border-medium);
     box-shadow: var(--shadow-lg);
     transform: translateY(-2px);
 }
 
 /* ELEVATED VARIANT */
 .elevated {
-    box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2);
+    box-shadow: var(--glow-purple);
 }
 
 /* INTERACTIVE VARIANT */

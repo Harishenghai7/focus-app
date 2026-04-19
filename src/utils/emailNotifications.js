@@ -168,9 +168,12 @@ export const sendAdminActionNotification = async (report, user, action, notes) =
   return sendEmail(templateParams);
 };
 
-export default {
+const _defaultModule = {
   sendReportConfirmation,
   sendTicketConfirmation,
   sendTicketUpdate,
   sendAdminActionNotification
 };
+
+
+export default _defaultModule;

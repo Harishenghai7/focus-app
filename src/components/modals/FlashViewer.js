@@ -1,52 +1,92 @@
-// FlashViewer - Instagram Stories Pro-Grade
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
-import { useAuth } from '../../hooks/useAuth';
-import { toast } from 'react-toastify';
+import { useAuth } from '../../context/AuthContext';
 import FlashComments from '../comments/FlashComments';
-import FlashInsights from './FlashInsights';
 import ShareModal from '../posts/ShareModal';
+import { X, MoreHorizontal, Volume2, VolumeX } from 'lucide-react'; 
 import styles from './FlashViewer.module.css';
 
-const FlashViewer = ({ isOpen, onClose, storyGroup, allStoryGroups = [], currentGroupIndex = 0 }) => {
+const FlashViewer = ({ isOpen, onClose, storyGroup }) => {
     const { user } = useAuth();
     const navigate = useNavigate();
 
+    // --- 1. HOOKS (MUST BE AT THE TOP) ---
     const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
-    const [currentGroupIdx, setCurrentGroupIdx] = useState(currentGroupIndex);
     const [progress, setProgress] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
-    const [showComments, setShowComments] = useState(false);
-    const [showShareModal, setShowShareModal] = useState(false);
-    const [showInsights, setShowInsights] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
-    const [showOptions, setShowOptions] = useState(false);
+    const [showComments, setShowComments] = useState(false);
+    const [showShare, setShowShare] = useState(false);
 
     const videoRef = useRef(null);
     const timerRef = useRef(null);
-    const touchStartRef = useRef(null);
 
-    const currentGroup = allStoryGroups[currentGroupIdx] || storyGroup;
-    const currentStory = currentGroup?.stories?.[currentStoryIndex];
-    const isOwner = user?.id === currentGroup?.user?.id;
-    const STORY_DURATION = 5000; // 5 seconds
+    // Safe Data Extraction (Default to empty to prevent crashes)
+    const stories = storyGroup?.stories || [];
+    const currentStory = stories[currentStoryIndex];
+    const imageDurationMs = 5000;
+    const [activeDurationMs, setActiveDurationMs] = useState(imageDurationMs);
+    const prefetchedRef = useRef(new Set());
+    const sortedStories = useMemo(
+        () => [...stories].sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0)),
+        [stories]
+    );
+    const current = sortedStories[currentStoryIndex];
 
-    // Reset on open
+    // --- 2. EFFECTS ---
+    
+    // Reset when opening a new group
     useEffect(() => {
-        if (!isOpen) return;
-        setCurrentStoryIndex(0);
-        setCurrentGroupIdx(currentGroupIndex);
-        setProgress(0);
-        setShowComments(false);
-        setShowOptions(false);
-    }, [isOpen, currentGroupIndex]);
+        if (isOpen) {
+            setCurrentStoryIndex(0);
+            setProgress(0);
+            setIsPaused(false);
+            setActiveDurationMs(imageDurationMs);
+        }
+    }, [isOpen, storyGroup]);
 
-    // Auto-progress timer
+    const prefetchStoryAsset = useCallback((story) => {
+        if (!story?.media_url || prefetchedRef.current.has(story.media_url)) return;
+        if (story.media_type === 'video') {
+            const v = document.createElement('video');
+            v.preload = 'metadata';
+            v.src = story.media_url;
+        } else {
+            const img = new Image();
+            img.src = story.media_url;
+        }
+        prefetchedRef.current.add(story.media_url);
+    }, []);
+
     useEffect(() => {
-        if (!isOpen || isPaused || showComments || !currentStory) return;
+        const next = sortedStories[currentStoryIndex + 1];
+        const prev = sortedStories[currentStoryIndex - 1];
+        prefetchStoryAsset(next);
+        prefetchStoryAsset(prev);
+    }, [currentStoryIndex, sortedStories, prefetchStoryAsset]);
 
-        const increment = 100 / (STORY_DURATION / 50);
+    const handleNext = useCallback(() => {
+        if (currentStoryIndex < sortedStories.length - 1) {
+            setCurrentStoryIndex(prev => prev + 1);
+            setProgress(0);
+        } else {
+            onClose();
+        }
+    }, [currentStoryIndex, sortedStories.length, onClose]);
+
+    const handlePrev = useCallback(() => {
+        if (currentStoryIndex > 0) {
+            setCurrentStoryIndex(prev => prev - 1);
+            setProgress(0);
+        } else {
+            setProgress(0);
+        }
+    }, [currentStoryIndex]);
+
+    useEffect(() => {
+        if (!isOpen || isPaused || showComments || showShare || !current) return;
+        const step = 100 / (activeDurationMs / 50);
 
         timerRef.current = setInterval(() => {
             setProgress(prev => {
@@ -54,326 +94,121 @@ const FlashViewer = ({ isOpen, onClose, storyGroup, allStoryGroups = [], current
                     handleNext();
                     return 0;
                 }
-                return prev + increment;
+                return prev + step;
             });
         }, 50);
 
-        return () => {
-            if (timerRef.current) clearInterval(timerRef.current);
-        };
-    }, [isOpen, isPaused, showComments, currentStoryIndex, currentGroupIdx]);
+        return () => clearInterval(timerRef.current);
+    }, [isOpen, isPaused, showComments, showShare, currentStoryIndex, current, activeDurationMs, handleNext]);
 
-    // Video handling
-    useEffect(() => {
-        if (videoRef.current) {
-            if (isPaused || showComments) {
-                videoRef.current.pause();
-            } else {
-                videoRef.current.play().catch(() => { });
-            }
-        }
-    }, [isPaused, showComments]);
-
-    const handleNext = () => {
-        if (currentStoryIndex < currentGroup.stories.length - 1) {
-            setCurrentStoryIndex(prev => prev + 1);
-            setProgress(0);
-        } else if (currentGroupIdx < allStoryGroups.length - 1) {
-            // Next story group
-            setCurrentGroupIdx(prev => prev + 1);
-            setCurrentStoryIndex(0);
-            setProgress(0);
-        } else {
-            onClose();
-        }
-    };
-
-    const handlePrevious = () => {
-        if (progress > 10 || currentStoryIndex === 0) {
-            // Restart current story
-            setProgress(0);
-        } else {
-            // Previous story
-            setCurrentStoryIndex(prev => prev - 1);
-            setProgress(0);
-        }
-    };
-
-    const handlePreviousGroup = () => {
-        if (currentGroupIdx > 0) {
-            setCurrentGroupIdx(prev => prev - 1);
-            setCurrentStoryIndex(0);
-            setProgress(0);
-        }
-    };
-
-    const handleNextGroup = () => {
-        if (currentGroupIdx < allStoryGroups.length - 1) {
-            setCurrentGroupIdx(prev => prev + 1);
-            setCurrentStoryIndex(0);
-            setProgress(0);
-        } else {
-            onClose();
-        }
-    };
-
-    // Touch handlers for mobile
-    const handleTouchStart = (e) => {
-        touchStartRef.current = {
-            x: e.touches[0].clientX,
-            y: e.touches[0].clientY,
-            time: Date.now()
-        };
-    };
-
-    const handleTouchEnd = (e) => {
-        if (!touchStartRef.current) return;
-
-        const touchEnd = {
-            x: e.changedTouches[0].clientX,
-            y: e.changedTouches[0].clientY,
-            time: Date.now()
-        };
-
-        const deltaX = touchEnd.x - touchStartRef.current.x;
-        const deltaY = touchEnd.y - touchStartRef.current.y;
-        const deltaTime = touchEnd.time - touchStartRef.current.time;
-
-        // Swipe detection
-        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-            if (deltaX > 0) {
-                // Swipe right - previous group
-                handlePreviousGroup();
-            } else {
-                // Swipe left - next group
-                handleNextGroup();
-            }
-        } else if (deltaTime < 200) {
-            // Quick tap
-            const tapX = touchEnd.x / window.innerWidth;
-            if (tapX < 0.3) {
-                handlePrevious();
-            } else if (tapX > 0.7) {
-                handleNext();
-            }
-        }
-
-        touchStartRef.current = null;
-    };
-
-    const handleLongPress = () => {
-        setIsPaused(true);
-    };
-
-    const handleLongPressEnd = () => {
-        setIsPaused(false);
-    };
-
-    const handleDelete = async () => {
-        if (!window.confirm('Delete this flash?')) return;
-
-        // TODO: Implement delete API
-        toast.success('Flash deleted');
-        handleNext();
-    };
-
-    const handleViewers = () => {
-        setShowInsights(true);
-        setShowOptions(false);
-    };
-
-    if (!currentGroup || !currentStory) return null;
-
-    const timeAgo = formatDistanceToNow(new Date(currentStory.created_at), { addSuffix: true });
+    // --- 4. SAFETY CHECK (ONLY RETURN NULL HERE) ---
+    if (!storyGroup || !storyGroup.stories || !current) return null;
 
     return (
         <div className={`${styles.overlay} ${isOpen ? styles.open : ''}`}>
-            <div
-                className={styles.viewer}
-                onTouchStart={handleTouchStart}
-                onTouchEnd={handleTouchEnd}
-                onMouseDown={handleLongPress}
-                onMouseUp={handleLongPressEnd}
-                onMouseLeave={handleLongPressEnd}
-            >
-                {/* Progress Bars */}
+            <div className={styles.viewer}>
+                
+                {/* --- PROGRESS BARS --- */}
                 <div className={styles.progressBars}>
-                    {currentGroup.stories.map((_, idx) => (
+                    {sortedStories.map((_, idx) => (
                         <div key={idx} className={styles.progressBar}>
-                            <div
+                            <div 
                                 className={styles.progressFill}
                                 style={{
-                                    width: idx < currentStoryIndex ? '100%'
-                                        : idx === currentStoryIndex ? `${progress}%`
-                                            : '0%'
+                                    width: idx < currentStoryIndex ? '100%' : idx === currentStoryIndex ? `${progress}%` : '0%'
                                 }}
                             />
                         </div>
                     ))}
                 </div>
 
-                {/* Header */}
+                {/* --- HEADER --- */}
                 <div className={styles.header}>
-                    <div className={styles.userInfo} onClick={() => {
-                        navigate(`/profile/${currentGroup.user.username}`);
-                        onClose();
-                    }}>
-                        <img
-                            src={currentGroup.user.avatar_url || '/default-avatar.png'}
-                            alt={currentGroup.user.username}
-                            className={styles.avatar}
-                        />
-                        <div className={styles.userDetails}>
-                            <span className={styles.username}>
-                                {currentGroup.user.username}
-                                {currentGroup.user.verified && <span className={styles.verified}>✓</span>}
-                            </span>
-                            <span className={styles.time}>{timeAgo}</span>
-                        </div>
+                    <div className={styles.userInfo} onClick={() => navigate(`/profile/${storyGroup.user.username}`)}>
+                        <img src={storyGroup.user.avatar_url} className={styles.avatar} alt="User" />
+                        <span className={styles.username}>{storyGroup.user.username}</span>
+                        <span className={styles.time}>
+                            {current.created_at && formatDistanceToNow(new Date(current.created_at), { addSuffix: true })}
+                        </span>
                     </div>
-
+                    
                     <div className={styles.headerActions}>
-                        {isPaused && <span className={styles.pausedIndicator}>⏸</span>}
-
-                        {currentStory.media_type === 'video' && (
-                            <button
-                                className={styles.iconBtn}
-                                onClick={() => {
-                                    setIsMuted(!isMuted);
-                                    if (videoRef.current) videoRef.current.muted = !isMuted;
-                                }}
-                            >
-                                {isMuted ? '🔇' : '🔊'}
-                            </button>
-                        )}
-
-                        {isOwner && (
-                            <button
-                                className={styles.iconBtn}
-                                onClick={() => setShowOptions(!showOptions)}
-                            >
-                                ⋯
-                            </button>
-                        )}
-
-                        <button className={styles.iconBtn} onClick={onClose}>
-                            ✕
+                        <button onClick={() => setIsMuted(!isMuted)}>
+                            {isMuted ? <VolumeX color="white" /> : <Volume2 color="white" />}
                         </button>
+                        <button onClick={onClose}><X color="white" /></button>
                     </div>
-
-                    {/* Options Menu */}
-                    {showOptions && isOwner && (
-                        <div className={styles.optionsMenu}>
-                            <button onClick={handleDelete}>
-                                🗑️ Delete Flash
-                            </button>
-                            <button onClick={handleViewers}>
-                                👁️ View Insights
-                            </button>
-                        </div>
-                    )}
                 </div>
 
-                {/* Media */}
-                <div className={styles.mediaContainer}>
-                    {currentStory.media_type === 'video' ? (
+                {/* --- MEDIA CONTENT --- */}
+                <div
+                    className={styles.mediaContainer}
+                    onMouseDown={() => setIsPaused(true)}
+                    onMouseUp={() => setIsPaused(false)}
+                    onTouchStart={() => setIsPaused(true)}
+                    onTouchEnd={() => setIsPaused(false)}
+                >
+                    {current.media_type === 'video' ? (
                         <video
                             ref={videoRef}
-                            src={currentStory.media_url}
+                            src={current.media_url}
                             className={styles.media}
                             autoPlay
-                            loop
                             muted={isMuted}
                             playsInline
+                            onEnded={handleNext}
+                            onLoadedMetadata={(e) => {
+                                const durationMs = Number.isFinite(e.currentTarget.duration)
+                                    ? Math.max(1500, e.currentTarget.duration * 1000)
+                                    : imageDurationMs;
+                                setActiveDurationMs(durationMs);
+                            }}
                         />
                     ) : (
                         <img
-                            src={currentStory.media_url}
-                            alt="Flash"
+                            src={current.media_url}
                             className={styles.media}
+                            alt="Story"
+                            loading="lazy"
+                            onLoad={() => setActiveDurationMs(imageDurationMs)}
                         />
                     )}
                 </div>
 
-                {/* Tap Areas for Navigation */}
+                {/* --- TAP ZONES --- */}
                 <div className={styles.tapAreas}>
-                    <div
-                        className={styles.tapLeft}
-                        onClick={handlePrevious}
+                    <button className={styles.tapLeft} onClick={handlePrev} aria-label="Previous story segment" />
+                    <button
+                        className={styles.tapCenter}
+                        onClick={() => setIsPaused((prev) => !prev)}
+                        aria-label={isPaused ? 'Resume story' : 'Pause story'}
                     />
-                    <div
-                        className={styles.tapRight}
-                        onClick={handleNext}
-                    />
+                    <button className={styles.tapRight} onClick={handleNext} aria-label="Next story segment" />
                 </div>
 
-                {/* Bottom Actions */}
+                {/* --- FOOTER ACTIONS --- */}
                 <div className={styles.bottomActions}>
-                    <button
-                        className={styles.actionBtn}
-                        onClick={() => setShowComments(!showComments)}
-                    >
-                        💬 Reply
-                    </button>
-
-                    <button
-                        className={styles.actionBtn}
-                        onClick={() => setShowShareModal(true)}
-                    >
-                        ➤ Share
-                    </button>
+                     <div className={styles.actionBtn} onClick={() => setShowComments(true)}>
+                        Send Message...
+                     </div>
+                     <button className={styles.actionBtn} onClick={() => setShowShare(true)}><MoreHorizontal color="white" /></button>
                 </div>
 
-                {/* Comments Overlay */}
+                {/* --- MODALS --- */}
                 {showComments && (
-                    <FlashComments
-                        flashId={currentStory.id}
-                        flashOwnerId={currentGroup.user.id}
-                        onClose={() => setShowComments(false)}
+                    <FlashComments 
+                        flashId={current.id}
+                        onClose={() => setShowComments(false)} 
                     />
                 )}
-
-                {/* Share Modal */}
-                {showShareModal && (
-                    <ShareModal
-                        post={currentStory}
-                        type="flash"
-                        onClose={() => setShowShareModal(false)}
+                {showShare && (
+                    <ShareModal 
+                        item={current}
+                        type="flash" 
+                        onClose={() => setShowShare(false)} 
                     />
-                )}
-
-                {/* Navigation Buttons */}
-                {allStoryGroups.length > 1 && (
-                    <>
-                        {currentGroupIdx > 0 && (
-                            <button
-                                className={styles.navBtn + ' ' + styles.navPrev}
-                                onClick={handlePreviousGroup}
-                                title="Previous story"
-                            >
-                                ‹
-                            </button>
-                        )}
-                        {currentGroupIdx < allStoryGroups.length - 1 && (
-                            <button
-                                className={styles.navBtn + ' ' + styles.navNext}
-                                onClick={handleNextGroup}
-                                title="Next story"
-                            >
-                                ›
-                            </button>
-                        )}
-                    </>
                 )}
             </div>
-
-            {/* Insights Modal */}
-            {showInsights && (
-                <FlashInsights
-                    flashId={currentStory.id}
-                    onClose={() => setShowInsights(false)}
-                />
-            )}
         </div>
     );
 };

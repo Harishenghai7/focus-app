@@ -23,25 +23,35 @@ export const useSave = () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error('Please login to save posts');
 
-            const tableName = contentType === 'boltz' ? 'boltz_saves' : 'saved_posts';
-            const idField = contentType === 'boltz' ? 'boltz_id' : 'post_id';
-
-            if (newSaved) {
-                const { error } = await supabase.from(tableName).insert({
-                    [idField]: contentId,
-                    user_id: user.id
+            let rpcResult = null;
+            if (contentType === 'post') {
+                const { data, error } = await supabase.rpc('toggle_post_save_rpc', {
+                    p_post_id: contentId,
+                    p_user_id: user.id,
+                    p_should_save: newSaved,
                 });
                 if (error) throw error;
-                toast.success('Saved to collection');
+                rpcResult = data;
             } else {
-                const { error } = await supabase
-                    .from(tableName)
-                    .delete()
-                    .eq(idField, contentId)
-                    .eq('user_id', user.id);
+                const { data, error } = await supabase.rpc('toggle_boltz_save_rpc', {
+                    p_boltz_id: contentId,
+                    p_user_id: user.id,
+                    p_should_save: newSaved,
+                });
                 if (error) throw error;
-                toast.info('Removed from saved');
+                rpcResult = data;
             }
+
+            if (onUpdate && rpcResult) {
+                onUpdate(contentId, {
+                    is_saved: Boolean(rpcResult.is_saved ?? rpcResult.is_active ?? newSaved),
+                    saves_count: typeof rpcResult.saves_count === 'number'
+                        ? rpcResult.saves_count
+                        : (typeof rpcResult.count === 'number' ? rpcResult.count : undefined),
+                });
+            }
+            toast[newSaved ? 'success' : 'info'](newSaved ? 'Saved to collection' : 'Removed from saved');
+            return { data: rpcResult, error: null };
         } catch (error) {
             console.error('❌ [SAVE] Error:', error);
             toast.error(error.message || 'Failed to update save');
@@ -53,6 +63,7 @@ export const useSave = () => {
                     saves_count_delta: isSaved ? 1 : -1
                 });
             }
+            return { data: null, error };
         } finally {
             setLoading(false);
         }

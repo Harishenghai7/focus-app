@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSupport } from '../hooks/useSupport';
 import { SUPPORT_CATEGORIES } from '../utils/supportCategories';
+import PageShell from '../components/layout/PageShell';
 import styles from './SubmitTicket.module.css';
 
 const SubmitTicket = () => {
@@ -21,7 +22,7 @@ const SubmitTicket = () => {
         const result = await createTicket(formData);
 
         if (result.success) {
-            navigate('/my-tickets');
+            navigate('/support', { replace: true });
         }
     };
 
@@ -30,6 +31,7 @@ const SubmitTicket = () => {
     };
 
     return (
+        <PageShell>
         <div className={styles.submitTicketPage}>
             <div className={styles.pageHeader}>
                 <button className={styles.backButton} onClick={() => navigate('/support')}>
@@ -106,6 +108,7 @@ const SubmitTicket = () => {
                 </div>
             </form>
         </div>
+        </PageShell>
     );
 };
 

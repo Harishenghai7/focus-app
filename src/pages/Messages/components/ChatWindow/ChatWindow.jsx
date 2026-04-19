@@ -169,7 +169,7 @@ const ChatWindow = ({
 
     // Handle delete
     const handleDelete = async (messageId) => {
-        if (confirm('Delete this message for you?')) {
+        if (window.confirm('Delete this message for you?')) {
             try {
                 await deleteMessageForMe(messageId);
             } catch (error) {
@@ -181,7 +181,7 @@ const ChatWindow = ({
 
     // Handle unsend
     const handleUnsend = async (messageId) => {
-        if (confirm('Unsend this message for everyone?')) {
+        if (window.confirm('Unsend this message for everyone?')) {
             try {
                 await unsendMessage(messageId);
             } catch (error) {

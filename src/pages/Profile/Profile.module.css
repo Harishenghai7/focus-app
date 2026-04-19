@@ -1,7 +1,4 @@
-/**
- * Profile Page - Ultimate Lavender Theme v3.0
- * User profile with lavender accents
- */
+/* Profile Page - Royal Lavender Theme */
 
 .profileContainer {
     max-width: 1200px;
@@ -27,7 +24,7 @@
 .error h2 {
     font-size: var(--font-3xl);
     font-weight: var(--font-bold);
-    background: var(--lavender-gradient);
+    background: var(--gradient-royal);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

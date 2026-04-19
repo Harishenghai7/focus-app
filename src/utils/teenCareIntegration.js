@@ -254,7 +254,7 @@ export const shouldShowAgeVerification = async (userId) => {
     }
 };
 
-export default {
+const _defaultModule = {
     analyzePostContent,
     logPostActivity,
     analyzeMessageContent,
@@ -262,3 +262,6 @@ export default {
     logUnfollowActivity,
     shouldShowAgeVerification
 };
+
+
+export default _defaultModule;

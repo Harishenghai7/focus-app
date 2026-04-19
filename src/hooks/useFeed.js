@@ -15,7 +15,6 @@ export const useFeed = () => {
     // 1. Initial Fetch with Robust Query
     const fetchInitialFeed = useCallback(async () => {
         if (!user) return [];
-        console.log('🏠 Fetching initial feed...');
         return await generateFeed(user.id, 0, 10);
     }, [user]);
 
@@ -28,7 +27,6 @@ export const useFeed = () => {
         enabled: !!user,
         retries: 3,
         onSuccess: (data) => {
-            console.log('✅ Initial feed loaded:', data?.length);
             setPosts(data || []);
             setPage(0);
             setHasMore((data || []).length === 10);
@@ -42,7 +40,6 @@ export const useFeed = () => {
 
         try {
             const nextPage = page + 1;
-            console.log('🏠 Loading more page:', nextPage);
 
             // Simple retry logic for load more
             let attempts = 0;
@@ -55,7 +52,6 @@ export const useFeed = () => {
                     success = true;
                 } catch (err) {
                     attempts++;
-                    console.warn(`⚠️ Load more failed (Attempt ${attempts}):`, err);
                     await new Promise(r => setTimeout(r, 1000));
                 }
             }
@@ -83,14 +79,11 @@ export const useFeed = () => {
         event: 'INSERT',
         enabled: !!user,
         onEvent: (payload) => {
-            // In a real app, we might filter this more strictly
-            console.log('🔔 New post detected in feed');
             setNewPostsCount(prev => prev + 1);
         }
     });
 
     const refresh = () => {
-        console.log('🔄 Refreshing feed...');
         setNewPostsCount(0);
         refetchInitial();
     };

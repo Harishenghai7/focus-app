@@ -30,10 +30,11 @@ const BoltzActionsSidebar = ({
                 onClick={onComment}
             />
 
-            <ShareButton onClick={onShare} />
+            <ShareButton count={boltz.shares_count} onClick={onShare} />
 
             <SaveButton
                 isSaved={boltz.is_saved}
+                count={boltz.saves_count}
                 onClick={onSave}
             />
 

@@ -239,7 +239,7 @@ export const getActivitiesByType = async (teenId, activityType, limit = 50) => {
     }
 };
 
-export default {
+const _defaultModule = {
     logActivity,
     logPostCreated,
     logPostDeleted,
@@ -255,3 +255,6 @@ export default {
     getRecentActivities,
     getActivitiesByType
 };
+
+
+export default _defaultModule;

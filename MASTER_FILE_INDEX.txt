@@ -1,0 +1,506 @@
+================================================================================
+📋 FOCUS APP - MASTER FILE INDEX
+================================================================================
+Created: 2026-02-01 20:42
+Purpose: Complete reference guide for all project files and directories
+================================================================================
+
+🎯 QUICK REFERENCE - DOCUMENTATION FILES CREATED
+================================================================================
+
+1. ✅ COMPLETE_PROJECT_STRUCTURE.txt
+   - Full directory tree structure
+   - All folders and subfolders
+   - File organization overview
+   - Technology stack summary
+   - ~800 lines
+
+2. ✅ CODE_FILES_INVENTORY.txt
+   - Detailed list of all JS and CSS files
+   - Organized by directory
+   - File naming conventions
+   - Component breakdown
+   - ~600 lines
+
+3. ✅ JS_CSS_FILES_LIST.csv
+   - CSV format listing
+   - Full file paths
+   - File sizes
+   - Last modified dates
+   - Excel-compatible
+
+4. ✅ PROJECT_DIRECTORY_STRUCTURE.txt
+   - Windows tree command output
+   - Complete file listing
+   - Full hierarchy
+
+================================================================================
+📁 PROJECT ROOT STRUCTURE SUMMARY
+================================================================================
+
+TOTAL PROJECT SIZE:
+├── ~2,700+ total files
+├── ~120+ directories
+├── ~800 code files (JS + CSS)
+├── ~500+ documentation files (.md)
+├── ~150+ SQL files
+└── ~1,037 legacy files (archived)
+
+MAIN DIRECTORIES:
+├── 📂 src/                    - Main application code (1000+ files)
+├── 📂 src_legacy/             - Archived legacy code (1037 files)
+├── 📂 public/                 - Static assets (18 files)
+├── 📂 database/               - Database schemas (70+ files)
+├── 📂 migrations/             - DB migrations (39 files)
+├── 📂 supabase/               - Supabase config (36 files)
+├── 📂 cypress/                - E2E tests (42 files)
+├── 📂 e2e/                    - Additional tests (11 files)
+├── 📂 scripts/                - Build scripts (33 files)
+├── 📂 docs/                   - Documentation (18 files)
+├── 📂 server/                 - Server code (6 files)
+├── 📂 tests/                  - Unit tests (4 directories)
+├── 📂 reports/                - Test reports (4 files)
+├── 📂 build/                  - Production build
+└── 📂 node_modules/           - Dependencies (excluded from count)
+
+================================================================================
+📂 SRC/ DIRECTORY BREAKDOWN (1000+ FILES)
+================================================================================
+
+SRC ROOT FILES (7 files):
+├── App.js                     - Main application component
+├── App.css                    - Global app styles
+├── index.js                   - Application entry point
+├── index.css                  - Global CSS
+├── reportWebVitals.js         - Performance monitoring
+├── setupTests.js              - Test configuration
+└── testDirectSend.js          - Testing utility
+
+SRC SUBDIRECTORIES:
+
+📂 src/components/             - ~250 files (125 JS + 125 CSS)
+   ├── auth/                   - 10 files
+   ├── boltz/                  - 12 files
+   ├── calls/                  - 12 files
+   ├── comments/               - 10 files
+   ├── common/                 - 30 files
+   ├── create/                 - 18 files
+   ├── explore/                - 12 files
+   ├── flash/                  - 10 files
+   ├── home/                   - 14 files
+   ├── layout/                 - 14 files
+   ├── messages/               - 24 files
+   ├── notifications/          - 8 files
+   ├── onboarding/             - 14 files
+   ├── profile/                - 20 files
+   ├── search/                 - 14 files
+   ├── settings/               - 16 files
+   ├── skeleton/               - 12 files
+   ├── stickers/               - 10 files
+   └── trust-shield/           - 12 files
+
+📂 src/pages/                  - ~60 files (30 JS + 30 CSS)
+   ├── Auth/                   - Login, Signup, Password reset
+   ├── Home/                   - Main feed
+   ├── Explore/                - Discovery page
+   ├── Profile/                - User profiles
+   ├── Messages/               - Chat interface
+   ├── Notifications/          - Notification center
+   ├── Create/                 - Content creation
+   ├── Settings/               - User settings
+   ├── PostDetail/             - Individual post view
+   ├── Search/                 - Search results
+   ├── Saved/                  - Saved posts
+   ├── Likes/                  - Liked posts
+   ├── Archive/                - Archived content
+   ├── Calls/                  - Call history
+   ├── Admin/                  - Admin dashboard
+   └── TrustShield/            - Safety features
+
+📂 src/hooks/                  - ~50 JS files
+   Custom React hooks for:
+   ├── Authentication          - useAuth.js
+   ├── Data fetching           - usePosts.js, useMessages.js
+   ├── Real-time updates       - useRealtime.js, useWebSocket.js
+   ├── Media handling          - useImageUpload.js, useVideoUpload.js
+   ├── UI interactions         - useDebounce.js, useInfiniteScroll.js
+   ├── State management        - useLocalStorage.js, useToggle.js
+   └── Performance             - usePerformance.js, useAsync.js
+
+📂 src/services/               - ~30 JS files
+   API and service layer:
+   ├── api.js                  - Base API client
+   ├── supabase.js             - Supabase client
+   ├── authService.js          - Authentication
+   ├── postService.js          - Posts CRUD
+   ├── messageService.js       - Messaging
+   ├── userService.js          - User management
+   ├── uploadService.js        - File uploads
+   ├── realtimeService.js      - Real-time subscriptions
+   ├── analyticsService.js     - Analytics tracking
+   └── [20+ additional services]
+
+📂 src/utils/                  - ~100 JS files
+   Utility functions:
+   ├── Date & Time (6 files)   - formatDate.js, timeAgo.js
+   ├── Validation (6 files)    - validateEmail.js, validatePassword.js
+   ├── Upload & Media (8 files)- uploadImage.js, videoFilters.js
+   ├── Supabase (6 files)      - supabaseAuth.js, supabaseRest.js
+   ├── Trust & Safety (9 files)- trustScore.js, toxicityScorer.js
+   ├── Badge System (4 files)  - badgeRules.js, badgeFormatter.js
+   ├── User & Activity (5 files)- userPreferences.js, activityLogger.js
+   ├── UI & Interaction (5 files)- UndoManager.js, BatchActions.js
+   ├── Audio & Voice (5 files) - sttEngine.js, ttsEngine.js
+   └── [50+ additional utilities]
+
+📂 src/contexts/               - ~15 JS files
+   React Context providers:
+   ├── AuthContext.js          - Authentication state
+   ├── ThemeContext.js         - Theme management
+   ├── NotificationContext.js  - Notifications
+   ├── SocketContext.js        - WebSocket connections
+   ├── PostContext.js          - Post state
+   ├── MessageContext.js       - Message state
+   └── [9+ additional contexts]
+
+📂 src/styles/                 - ~12 CSS files
+   Global stylesheets:
+   ├── index.css               - Global styles
+   ├── variables.css           - CSS variables
+   ├── colors.css              - Color palette
+   ├── typography.css          - Typography
+   ├── animations.css          - Animations
+   ├── responsive.css          - Media queries
+   └── [6+ additional styles]
+
+📂 src/config/                 - ~7 JS files
+   Configuration:
+   ├── constants.js            - App constants
+   ├── routes.js               - Route definitions
+   ├── api.config.js           - API configuration
+   ├── theme.config.js         - Theme settings
+   └── feature.flags.js        - Feature flags
+
+📂 src/assets/                 - Static assets
+   ├── images/                 - Image files
+   ├── icons/                  - Icon files
+   ├── sounds/                 - Sound effects
+   ├── fonts/                  - Custom fonts
+   └── animations/             - Animation files
+
+================================================================================
+📄 ROOT LEVEL FILES SUMMARY
+================================================================================
+
+CONFIGURATION FILES (15 files):
+├── package.json               - NPM dependencies
+├── package-lock.json          - Locked dependencies
+├── .env                       - Environment variables
+├── .env.example               - Env template
+├── .env.production            - Production env
+├── .gitignore                 - Git ignore rules
+├── netlify.toml               - Netlify config
+├── vercel.json                - Vercel config
+├── cypress.config.js          - Cypress config
+├── jest.config.js             - Jest config
+├── playwright.config.js       - Playwright config
+├── lighthouserc.js            - Lighthouse config
+├── config-overrides.js        - Webpack overrides
+└── [Additional config files]
+
+DOCUMENTATION FILES (500+ .md files):
+├── README.md                  - Main documentation
+├── TODO.md                    - Task list
+├── START-HERE.md              - Getting started
+├── QUICK-START.md             - Quick start guide
+├── DEPLOYMENT-GUIDE.md        - Deployment instructions
+├── DATABASE_SETUP.md          - Database setup
+├── TESTING-GUIDE.md           - Testing documentation
+├── IMPLEMENTATION-COMPLETE.md - Implementation status
+├── FEATURE-AUDIT-COMPLETE.md  - Feature audit
+├── PRODUCTION-READINESS-REPORT.md
+└── [490+ additional .md files]
+
+SQL FILES (150+ files):
+├── FOCUS_DATABASE_SCHEMA.sql  - Main schema
+├── SUPABASE-SETUP.sql         - Supabase setup
+├── complete-schema.sql        - Complete schema
+├── database-setup.sql         - DB initialization
+├── production-database-setup.sql
+├── ADD-MISSING-INDEXES.sql    - Index additions
+├── FIX_RLS_POLICIES.sql       - RLS policies
+└── [140+ additional .sql files]
+
+JAVASCRIPT UTILITIES (20+ files):
+├── verify-focusly-ai.js       - AI verification
+├── setup-database.js          - DB setup script
+├── run-ai-tests.js            - AI testing
+├── check-connections.js       - Connection checker
+└── [16+ additional .js files]
+
+================================================================================
+🔍 FILE TYPE BREAKDOWN
+================================================================================
+
+CODE FILES:
+├── JavaScript (.js, .jsx)     - ~550 files
+├── CSS (.css, .module.css)    - ~250 files
+└── Total Code Files           - ~800 files
+
+CONFIGURATION:
+├── JSON (.json)               - ~30 files
+├── Config (.config.js)        - ~10 files
+└── Environment (.env)         - ~5 files
+
+DATABASE:
+├── SQL (.sql)                 - ~150 files
+└── Migrations                 - ~39 files
+
+DOCUMENTATION:
+├── Markdown (.md)             - ~500 files
+└── Text (.txt)                - ~50 files
+
+TESTING:
+├── Test files (.spec.js)      - ~50 files
+├── Test reports (.json, .html)- ~10 files
+└── Test configs               - ~5 files
+
+ASSETS:
+├── Images (.png, .jpg, .svg)  - ~30 files
+├── Icons (.svg, .ico)         - ~20 files
+└── Other assets               - ~10 files
+
+================================================================================
+🎨 COMPONENT ARCHITECTURE
+================================================================================
+
+TOTAL COMPONENTS: ~125 React components
+
+BY CATEGORY:
+├── Layout Components          - 7 components
+├── Common/Shared Components   - 15 components
+├── Auth Components            - 5 components
+├── Home Feed Components       - 7 components
+├── Profile Components         - 10 components
+├── Messaging Components       - 12 components
+├── Create/Upload Components   - 9 components
+├── Explore Components         - 6 components
+├── Search Components          - 7 components
+├── Settings Components        - 8 components
+├── Notification Components    - 4 components
+├── Boltz (Stories) Components - 6 components
+├── Flash Components           - 5 components
+├── Call Components            - 6 components
+├── Sticker Components         - 5 components
+├── Trust Shield Components    - 6 components
+└── Skeleton Components        - 6 components
+
+BY FILE TYPE:
+├── Component JS files         - ~125 files
+├── Component CSS modules      - ~125 files
+└── Total Component Files      - ~250 files
+
+================================================================================
+🔧 HOOKS & UTILITIES
+================================================================================
+
+CUSTOM HOOKS: ~50 files
+├── Data Hooks                 - 15 hooks (useAuth, usePosts, etc.)
+├── UI Hooks                   - 10 hooks (useDebounce, useToggle, etc.)
+├── Media Hooks                - 8 hooks (useImageUpload, useCamera, etc.)
+├── Performance Hooks          - 7 hooks (useAsync, usePerformance, etc.)
+└── Utility Hooks              - 10 hooks (useLocalStorage, useClipboard, etc.)
+
+UTILITY FUNCTIONS: ~100 files
+├── Date/Time Utils            - 6 files
+├── Validation Utils           - 6 files
+├── Media Utils                - 8 files
+├── Supabase Utils             - 6 files
+├── Trust & Safety Utils       - 9 files
+├── Badge System Utils         - 4 files
+├── Audio/Voice Utils          - 5 files
+└── General Utils              - 56 files
+
+SERVICES: ~30 files
+├── API Services               - 10 services
+├── Supabase Services          - 8 services
+├── Real-time Services         - 5 services
+└── Utility Services           - 7 services
+
+================================================================================
+📊 PROJECT STATISTICS
+================================================================================
+
+LINES OF CODE (Estimated):
+├── JavaScript                 - ~80,000 lines
+├── CSS                        - ~25,000 lines
+├── SQL                        - ~15,000 lines
+├── Configuration              - ~2,000 lines
+└── Total                      - ~122,000 lines
+
+FILE SIZES (Estimated):
+├── Source code                - ~15 MB
+├── Documentation              - ~10 MB
+├── Dependencies (node_modules)- ~500 MB
+├── Build output               - ~5 MB
+└── Total (excluding node_modules) - ~30 MB
+
+DEVELOPMENT TIME:
+├── Components                 - ~200 hours
+├── Pages                      - ~80 hours
+├── Hooks & Utils              - ~100 hours
+├── Services & API             - ~80 hours
+├── Styling                    - ~60 hours
+├── Testing                    - ~40 hours
+├── Documentation              - ~40 hours
+└── Total                      - ~600 hours
+
+================================================================================
+🚀 FEATURES IMPLEMENTED
+================================================================================
+
+CORE FEATURES (25):
+✅ User Authentication & Authorization
+✅ User Profiles & Customization
+✅ Post Creation (Image/Video/Text)
+✅ Home Feed with Infinite Scroll
+✅ Explore & Discovery
+✅ Search (Users, Posts, Hashtags)
+✅ Comments System
+✅ Likes & Reactions
+✅ Save/Bookmark Posts
+✅ Follow/Unfollow System
+✅ Direct Messaging (1-on-1)
+✅ Group Messaging
+✅ Voice Messages
+✅ Video/Audio Calls
+✅ Real-time Notifications
+✅ Stories (Boltz Feature)
+✅ Flash Posts (Quick Posts)
+✅ Sticker System
+✅ Emoji Reactions
+✅ Share Functionality
+✅ Archive Posts
+✅ Trust Shield (Safety System)
+✅ Content Moderation
+✅ Admin Dashboard
+✅ Analytics & Insights
+
+ADVANCED FEATURES (15):
+✅ Onboarding Wizard
+✅ Interest Selection
+✅ Follow Suggestions
+✅ Trending Content
+✅ Hashtag System
+✅ Mention System
+✅ Media Filters
+✅ Image Editing
+✅ Video Editing
+✅ Music Selection
+✅ Skeleton Loaders
+✅ Dark/Light Themes
+✅ Responsive Design
+✅ PWA Support
+✅ Offline Mode
+
+================================================================================
+🛠️ TECHNOLOGY STACK
+================================================================================
+
+FRONTEND:
+├── React 18.x                 - UI framework
+├── React Router v6            - Routing
+├── CSS Modules                - Styling
+├── WebRTC                     - Video/Audio calls
+└── Service Workers            - PWA
+
+BACKEND/SERVICES:
+├── Supabase                   - Backend as a Service
+├── PostgreSQL                 - Database
+├── Supabase Auth              - Authentication
+├── Supabase Storage           - File storage
+├── Supabase Realtime          - Real-time updates
+└── Edge Functions             - Serverless functions
+
+TESTING:
+├── Jest                       - Unit testing
+├── Cypress                    - E2E testing
+├── Playwright                 - E2E testing
+└── Lighthouse                 - Performance testing
+
+BUILD & DEPLOY:
+├── Create React App           - Build tool
+├── Webpack                    - Module bundler
+├── Babel                      - JavaScript compiler
+├── Netlify                    - Hosting
+├── Vercel                     - Hosting
+└── GitHub Actions             - CI/CD
+
+================================================================================
+📝 NAMING CONVENTIONS
+================================================================================
+
+JAVASCRIPT FILES:
+├── Components                 - PascalCase (PostCard.js)
+├── Hooks                      - camelCase with 'use' (useAuth.js)
+├── Services                   - camelCase + 'Service' (authService.js)
+├── Utils                      - camelCase (formatDate.js)
+├── Contexts                   - PascalCase + 'Context' (AuthContext.js)
+└── Pages                      - PascalCase (Home.js)
+
+CSS FILES:
+├── Component Modules          - ComponentName.module.css
+├── Global Styles              - lowercase-hyphen (variables.css)
+└── Page Modules               - PageName.module.css
+
+DIRECTORIES:
+├── Components                 - lowercase (auth/, profile/)
+├── Pages                      - PascalCase (Home/, Profile/)
+└── Root                       - lowercase (src/, public/)
+
+================================================================================
+🔗 QUICK NAVIGATION GUIDE
+================================================================================
+
+TO FIND:                       LOOK IN:
+├── Main app logic             → src/App.js
+├── Entry point                → src/index.js
+├── Routing                    → src/config/routes.js
+├── API calls                  → src/services/
+├── Reusable components        → src/components/common/
+├── Page components            → src/pages/
+├── Custom hooks               → src/hooks/
+├── Utility functions          → src/utils/
+├── Global state               → src/contexts/
+├── Styling                    → src/styles/
+├── Configuration              → src/config/
+├── Database schema            → database/ or FOCUS_DATABASE_SCHEMA.sql
+├── Tests                      → cypress/, e2e/, tests/
+├── Documentation              → docs/ or root .md files
+└── Build scripts              → scripts/
+
+================================================================================
+📞 SUPPORT & RESOURCES
+================================================================================
+
+DOCUMENTATION FILES:
+├── README.md                  - Project overview
+├── START-HERE.md              - Getting started
+├── QUICK-START.md             - Quick setup
+├── DEPLOYMENT-GUIDE.md        - Deployment
+├── TESTING-GUIDE.md           - Testing
+└── DATABASE_SETUP.md          - Database setup
+
+REFERENCE FILES (Created Today):
+├── COMPLETE_PROJECT_STRUCTURE.txt    - Full directory tree
+├── CODE_FILES_INVENTORY.txt          - Detailed code file list
+├── JS_CSS_FILES_LIST.csv             - CSV file listing
+└── PROJECT_DIRECTORY_STRUCTURE.txt   - Tree command output
+
+================================================================================
+✨ END OF MASTER FILE INDEX
+================================================================================
+Last Updated: 2026-02-01 20:42
+Total Documentation Size: ~4 comprehensive reference files
+Purpose: Complete project navigation and reference guide
+================================================================================

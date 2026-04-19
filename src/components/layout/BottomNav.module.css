@@ -2,26 +2,27 @@
 
 .bottomNav {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 56px;
-    background: #1a1a1a;
-    border-top: 1px solid rgba(139, 92, 246, 0.2);
+    bottom: var(--space-4);
+    left: var(--space-4);
+    right: var(--space-4);
+    height: 64px;
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-full);
     display: flex;
     align-items: center;
     justify-content: space-around;
-    padding: 0 8px;
+    padding: 0 var(--space-2);
     z-index: 1000;
-    backdrop-filter: blur(20px) saturate(180%);
-    background: rgba(26, 26, 26, 0.95);
+    backdrop-filter: var(--blur-xl);
+    -webkit-backdrop-filter: var(--blur-xl);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), inset 0 2px 10px rgba(255,255,255,0.05);
 }
 
-/* Safe area padding for devices with notch */
+/* Safe area padding adjustments for edge cases */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
     .bottomNav {
-        padding-bottom: env(safe-area-inset-bottom);
-        height: calc(56px + env(safe-area-inset-bottom));
+        bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
     }
 }
 
@@ -45,27 +46,30 @@
 }
 
 .navItem:active {
-    transform: scale(0.95);
-    background: rgba(139, 92, 246, 0.1);
+    transform: scale(0.92);
 }
 
 .navIconWrapper {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--transition-bounce);
+    color: var(--text-secondary);
 }
 
 .active .navIconWrapper {
-    background: rgba(139, 92, 246, 0.1);
+    background: var(--glass-surface-hover);
+    color: var(--primary-lavender);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+    transform: translateY(-2px);
 }
 
 .special .navIconWrapper {
-    background: linear-gradient(135deg, #9b87f5, #7c3aed);
-    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+    background: var(--gradient-brand);
+    box-shadow: var(--shadow-purple);
 }
 
 .special:active .navIconWrapper {
@@ -75,10 +79,10 @@
 .navLabel {
     font-size: 10px;
     font-weight: 500;
-    color: #9b87f5;
+    color: var(--primary-light);
     letter-spacing: 0.02em;
     margin-top: -2px;
-    animation: labelFadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: labelFadeIn var(--transition-base);
 }
 
 @keyframes labelFadeIn {

@@ -371,7 +371,7 @@ export const getSeverityLevel = (issues) => {
     return 'low';
 };
 
-export default {
+const _defaultModule = {
     analyzeContent,
     analyzeTextContent,
     detectCyberbullying,
@@ -383,3 +383,6 @@ export default {
     getSeverityLevel,
     ALERT_TYPES
 };
+
+
+export default _defaultModule;

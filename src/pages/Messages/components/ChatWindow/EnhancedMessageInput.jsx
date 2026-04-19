@@ -33,6 +33,7 @@ const EnhancedMessageInput = ({
     const [mediaFile, setMediaFile] = useState(null);
     const [mediaPreview, setMediaPreview] = useState(null);
     const [uploading, setUploading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
 
     const textareaRef = useRef(null);
     const fileInputRef = useRef(null);
@@ -166,7 +167,9 @@ const EnhancedMessageInput = ({
                 const uploadFn = isImage ? uploadImage : uploadVideo;
 
                 console.log('📤 Uploading media:', mediaFile.name);
-                const attachmentData = await uploadFn(mediaFile, currentUserId);
+                const attachmentData = await uploadFn(mediaFile, currentUserId, (percent) => {
+                    setUploadProgress(percent);
+                });
                 console.log('✅ Upload complete:', attachmentData);
 
                 messageData.type = isImage ? 'image' : 'video';
@@ -192,6 +195,7 @@ const EnhancedMessageInput = ({
             alert('Failed to send message: ' + error.message);
         } finally {
             setUploading(false);
+            setUploadProgress(0);
         }
     };
 
@@ -239,16 +243,18 @@ const EnhancedMessageInput = ({
             )}
 
 
-            {/* Media Preview - DISABLED FOR LAUNCH
+            {/* Media Preview */}
             {mediaPreview && !uploading && (
                 <div className={styles.mediaPreview}>
                     <div className={styles.previewThumbnail}>
                         {mediaPreview.type === 'image' ? (
                             <img src={mediaPreview.url} alt="Preview" />
                         ) : (
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <polygon points="5 3 19 12 5 21 5 3" />
-                            </svg>
+                            <div className={styles.videoPreviewIcon}>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <polygon points="5 3 19 12 5 21 5 3" />
+                                </svg>
+                            </div>
                         )}
                     </div>
                     <div className={styles.previewInfo}>
@@ -265,14 +271,22 @@ const EnhancedMessageInput = ({
                     </button>
                 </div>
             )}
-            */}
 
 
             {/* Uploading State */}
             {uploading && (
                 <div className={styles.uploading}>
                     <div className={styles.uploadSpinner}></div>
-                    <div className={styles.uploadText}>Sending...</div>
+                    <div className={styles.uploadText}>
+                        {uploadProgress > 0 && uploadProgress < 100 
+                            ? `Uploading ${uploadProgress}%...` 
+                            : 'Sending...'}
+                    </div>
+                    {uploadProgress > 0 && uploadProgress < 100 && (
+                        <div className={styles.progressBar}>
+                            <div className={styles.progressFill} style={{ width: `${uploadProgress}%` }}></div>
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -280,7 +294,7 @@ const EnhancedMessageInput = ({
             <div className={styles.inputRow}>
                 {/* Media Buttons */}
                 <div className={styles.mediaButtons}>
-                    {/* Image/Video Upload - DISABLED FOR LAUNCH, WILL ADD IN v2.0
+                    {/* Image/Video Upload */}
                     <button
                         className={styles.actionButton}
                         onClick={() => fileInputRef.current?.click()}
@@ -300,7 +314,6 @@ const EnhancedMessageInput = ({
                         onChange={handleFileSelect}
                         style={{ display: 'none' }}
                     />
-                    */}
 
                     {/* GIF Button */}
                     <button

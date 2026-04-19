@@ -5,24 +5,30 @@ import Toggle from '../shared/Toggle';
 import Select from '../shared/Select';
 import BlockedUsers from './BlockedUsers';
 import SessionManager from './SessionManager';
-import { useUpdateSetting } from '../../hooks/useUpdateSetting';
 import { useTrustScore } from '../../hooks/useTrustScore';
 import { useVerifications } from '../../hooks/useVerifications';
 import { useAuth } from '../../hooks/useAuth';
 import { dataExport } from '../../utils/DataExport';
 import TrustScoreCard from '../trustShield/TrustScoreCard';
 import VerificationCard from '../trustShield/VerificationCard';
-import { toast } from 'react-toastify';
+import { focusToast } from '../../utils/focusToast';
+import { triggerHaptic } from '../../utils/haptics';
+import { playSave } from '../../utils/audioFX';
 import styles from './PrivacySection.module.css';
 
-const PrivacySection = ({ isExpanded, onToggle, settings }) => {
+const PrivacySection = ({ isExpanded, onToggle, settings, onUpdateSetting, saving = false }) => {
     const navigate = useNavigate();
-    const { updateSetting } = useUpdateSetting();
     const [show2FASetup, setShow2FASetup] = useState(false);
 
     const { user } = useAuth();
     const { score, loading: scoreLoading } = useTrustScore(user);
     const { verifications } = useVerifications();
+    const applySetting = async (key, value) => {
+        triggerHaptic(10);
+        const result = await onUpdateSetting?.(key, value);
+        if (result?.success) playSave();
+        return result?.success;
+    };
 
     const visibilityOptions = [
         { value: 'everyone', label: 'Everyone', description: 'Anyone can see' },
@@ -82,7 +88,8 @@ const PrivacySection = ({ isExpanded, onToggle, settings }) => {
                 label="Public Account"
                 description="Allow anyone to see your profile and posts"
                 checked={settings?.account_visibility === 'public'}
-                onChange={(value) => updateSetting('account_visibility', value ? 'public' : 'private')}
+                onChange={(value) => applySetting('account_visibility', value ? 'public' : 'private')}
+                disabled={saving}
             />
 
             <div className={styles.divider} />
@@ -95,9 +102,10 @@ const PrivacySection = ({ isExpanded, onToggle, settings }) => {
                     if (value) {
                         setShow2FASetup(true);
                     } else {
-                        updateSetting('two_factor_enabled', false);
+                        applySetting('two_factor_enabled', false);
                     }
                 }}
+                disabled={saving}
             />
 
             {show2FASetup && (
@@ -115,28 +123,28 @@ const PrivacySection = ({ isExpanded, onToggle, settings }) => {
                 <Select
                     label="Profile"
                     value={settings?.who_can_view_profile || 'everyone'}
-                    onChange={(value) => updateSetting('who_can_view_profile', value)}
+                    onChange={(value) => applySetting('who_can_view_profile', value)}
                     options={visibilityOptions}
                 />
 
                 <Select
                     label="Posts"
                     value={settings?.who_can_view_posts || 'everyone'}
-                    onChange={(value) => updateSetting('who_can_view_posts', value)}
+                    onChange={(value) => applySetting('who_can_view_posts', value)}
                     options={visibilityOptions}
                 />
 
                 <Select
                     label="Stories"
                     value={settings?.who_can_view_stories || 'everyone'}
-                    onChange={(value) => updateSetting('who_can_view_stories', value)}
+                    onChange={(value) => applySetting('who_can_view_stories', value)}
                     options={visibilityOptions}
                 />
 
                 <Select
                     label="Boltz"
                     value={settings?.who_can_view_boltz || 'everyone'}
-                    onChange={(value) => updateSetting('who_can_view_boltz', value)}
+                    onChange={(value) => applySetting('who_can_view_boltz', value)}
                     options={visibilityOptions}
                 />
             </div>
@@ -147,7 +155,8 @@ const PrivacySection = ({ isExpanded, onToggle, settings }) => {
                 label="Activity Status"
                 description="Let others see when you're online"
                 checked={settings?.show_activity_status ?? true}
-                onChange={(value) => updateSetting('show_activity_status', value)}
+                onChange={(value) => applySetting('show_activity_status', value)}
+                disabled={saving}
             />
 
             <div className={styles.divider} />
@@ -164,14 +173,14 @@ const PrivacySection = ({ isExpanded, onToggle, settings }) => {
                 <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
                     <button
                         onClick={async () => {
-                            toast.info('Preparing your data export...');
+                            focusToast.info('Preparing your data export...');
                             try {
                                 const data = await dataExport.exportAllData(user.id);
                                 dataExport.downloadJSON(data, `focus-data-${Date.now()}.json`);
-                                toast.success('Data exported successfully!');
+                                focusToast.success('Data exported successfully!');
                             } catch (error) {
                                 console.error('Export failed:', error);
-                                toast.error('Failed to export data');
+                                focusToast.error('Failed to export data');
                             }
                         }}
                         style={{
@@ -189,14 +198,14 @@ const PrivacySection = ({ isExpanded, onToggle, settings }) => {
                     </button>
                     <button
                         onClick={async () => {
-                            toast.info('Preparing your data export...');
+                            focusToast.info('Preparing your data export...');
                             try {
                                 const data = await dataExport.exportAllData(user.id);
                                 dataExport.downloadCSV(data, `focus-data-${Date.now()}.csv`);
-                                toast.success('Data exported successfully!');
+                                focusToast.success('Data exported successfully!');
                             } catch (error) {
                                 console.error('Export failed:', error);
-                                toast.error('Failed to export data');
+                                focusToast.error('Failed to export data');
                             }
                         }}
                         style={{

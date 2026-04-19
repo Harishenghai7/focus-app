@@ -1,5 +1,5 @@
 import React from 'react';
-import Avatar from '../shared/Avatar';
+import UserAvatar from '../ui/Avatar';
 import VerifiedBadge from '../shared/VerifiedBadge';
 import ProfileStats from './ProfileStats';
 import ProfileBio from './ProfileBio';
@@ -13,27 +13,52 @@ const ProfileHeader = ({
     hasStories = false,
     onFollowStatusChange,
     onFollowersClick,
-    onFollowingClick
+    onFollowingClick,
 }) => {
     if (!profile) return null;
 
     return (
         <div className={styles.header}>
+            <div className={styles.bannerSurface} aria-hidden="true">
+                {profile.banner_url || profile.cover_url ? (
+                    <img src={profile.banner_url || profile.cover_url} alt="" className={styles.bannerImage} />
+                ) : (
+                    <div className={styles.bannerFallback}>
+                        <span className={styles.bannerMark}>F</span>
+                        <span className={styles.bannerText}>FocuslyMascot</span>
+                    </div>
+                )}
+            </div>
+            {/* ── Avatar ──────────────────────────────────── */}
             <div className={styles.avatarSection}>
-                <Avatar
+                <UserAvatar
                     src={profile.avatar_url}
-                    alt={profile.username}
-                    size="xxl"
-                    hasStories={hasStories}
+                    username={profile.username}
+                    fullName={profile.full_name}
+                    size="3xl"
+                    hasStory={hasStories}
+                    className={styles.avatar}
                 />
             </div>
 
+            {/* ── Info ────────────────────────────────────── */}
             <div className={styles.infoSection}>
+                {/* Name + actions row */}
                 <div className={styles.topRow}>
-                    <div className={styles.usernameRow}>
-                        <h2 className={styles.username}>{profile.username}</h2>
-                        {profile.verified && <VerifiedBadge size={20} />}
+                    <div className={styles.nameGroup}>
+                        <div className={styles.usernameRow}>
+                            <h2 className={styles.username}>
+                                {profile.username}
+                            </h2>
+                            {profile.is_verified && (
+                                <VerifiedBadge size={18} />
+                            )}
+                        </div>
+                        {profile.full_name && (
+                            <p className={styles.fullName}>{profile.full_name}</p>
+                        )}
                     </div>
+
                     <ProfileActions
                         profile={profile}
                         isOwnProfile={isOwnProfile}
@@ -42,6 +67,7 @@ const ProfileHeader = ({
                     />
                 </div>
 
+                {/* Stats */}
                 <ProfileStats
                     postsCount={profile.posts_count}
                     followersCount={profile.followers_count}
@@ -50,6 +76,7 @@ const ProfileHeader = ({
                     onFollowingClick={onFollowingClick}
                 />
 
+                {/* Bio */}
                 <ProfileBio
                     fullName={profile.full_name}
                     bio={profile.bio}

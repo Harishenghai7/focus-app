@@ -1,0 +1,294 @@
+/* ==========================================================
+   PostCard — Focus App v2.0 | Glassmorphism 2.0
+   ========================================================== */
+
+/* ── Glass Card ───────────────────────────────────────────── */
+.card {
+    background: var(--glass-bg, rgba(42, 26, 66, 0.72));
+    backdrop-filter: var(--glass-blur-md, blur(16px));
+    -webkit-backdrop-filter: var(--glass-blur-md, blur(16px));
+    border-radius: var(--radius-xl, 20px);
+    border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.10));
+    overflow: hidden;
+    transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.15s ease;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+    position: relative;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+        135deg,
+        rgba(126, 87, 194, 0.04) 0%,
+        transparent 60%
+    );
+    pointer-events: none;
+    z-index: 0;
+}
+
+.card:hover {
+    border-color: var(--glass-border-hover, rgba(126, 87, 194, 0.5));
+    box-shadow: var(--glass-glow, 0 0 24px rgba(126, 87, 194, 0.22), 0 8px 32px rgba(0,0,0,0.4));
+    transform: translateY(-1px);
+}
+
+/* Ensure children stack above the pseudo gradient */
+.card > * { position: relative; z-index: 1; }
+
+/* ── Header ────────────────────────────────────────────────── */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px 10px;
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    min-width: 0;
+    transition: opacity 0.15s;
+}
+.userInfo:hover { opacity: 0.88; }
+
+.meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.nameRow {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.username {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-primary, #fff);
+    transition: color 0.15s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+}
+.userInfo:hover .username { color: var(--royal-purple, #7E57C2); }
+
+.verified {
+    color: #7E57C2;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 4px rgba(126, 87, 194, 0.7));
+}
+
+.timestamp {
+    font-size: 0.72rem;
+    color: var(--text-muted, #a78bfa);
+    margin-top: 2px;
+}
+
+.moreBtn {
+    background: none;
+    border: none;
+    color: var(--text-muted, #a78bfa);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: var(--radius-sm, 8px);
+    display: flex;
+    align-items: center;
+    transition: color 0.15s, background 0.15s;
+    flex-shrink: 0;
+}
+.moreBtn:hover {
+    color: var(--text-primary, #fff);
+    background: rgba(255,255,255,0.07);
+}
+
+/* ── Caption ───────────────────────────────────────────────── */
+.caption {
+    padding: 0 16px 12px;
+    font-size: 0.9rem;
+    color: var(--text-secondary, #e9d5ff);
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* @mention highlight */
+.caption :global(.mention) {
+    color: var(--neon-lavender, #c4b5fd);
+    font-weight: 600;
+    cursor: pointer;
+}
+.caption :global(.mention):hover { text-decoration: underline; }
+
+/* #hashtag highlight */
+.caption :global(.hashtag) {
+    color: var(--electric-violet, #a78bfa);
+    cursor: pointer;
+}
+
+/* ── Media ──────────────────────────────────────────────────── */
+.mediaWrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    cursor: pointer;
+    background: #0d0018;
+    max-height: 540px;
+}
+
+.media {
+    width: 100%;
+    height: auto;
+    max-height: 540px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+}
+.mediaWrapper:hover .media { transform: scale(1.01); }
+
+/* Double-tap heart burst */
+.heartBurst {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    pointer-events: none;
+    color: #fff;
+    filter: drop-shadow(0 0 20px rgba(255, 48, 64, 0.9));
+    transition: none;
+    z-index: 10;
+}
+.burst {
+    animation: heartBurstAnim 0.9s cubic-bezier(0.17, 0.67, 0.35, 1.2) forwards;
+}
+@keyframes heartBurstAnim {
+    0%   { transform: translate(-50%,-50%) scale(0);   opacity: 0; }
+    25%  { transform: translate(-50%,-50%) scale(1.4); opacity: 1; }
+    55%  { transform: translate(-50%,-50%) scale(1.1); opacity: 1; }
+    100% { transform: translate(-50%,-50%) scale(0.8); opacity: 0; }
+}
+
+/* Particle rings on burst */
+.heartBurst::before,
+.heartBurst::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 48, 64, 0.6);
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+}
+.burst::before {
+    width: 80px; height: 80px;
+    animation: ringExpand 0.7s ease 0.1s forwards;
+}
+.burst::after {
+    width: 140px; height: 140px;
+    animation: ringExpand 0.8s ease 0.2s forwards;
+}
+@keyframes ringExpand {
+    0%   { transform: translate(-50%,-50%) scale(0); opacity: 0.8; }
+    100% { transform: translate(-50%,-50%) scale(1); opacity: 0; }
+}
+
+/* ── Footer / Actions ───────────────────────────────────────── */
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.actionsLeft {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.actionBtn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    color: var(--text-muted, #a78bfa);
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm, 8px);
+    font-size: 0.82rem;
+    font-weight: 500;
+    font-family: inherit;
+    transition: color 0.15s, background 0.15s, transform 0.12s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+.actionBtn:hover {
+    color: var(--text-primary, #fff);
+    background: rgba(255,255,255,0.06);
+}
+.actionBtn:active { transform: scale(0.92); }
+
+.iconWrap {
+    display: flex;
+    align-items: center;
+    line-height: 0;
+    transition: transform 0.15s;
+}
+
+.count {
+    font-size: 0.82rem;
+    color: var(--text-muted, #a78bfa);
+    transition: color 0.2s;
+    min-width: 14px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Like state ─────────────────────────────────────────────── */
+.liked { color: #ff3040 !important; }
+.countLiked { color: #ff3040 !important; }
+
+/* ── Save state ─────────────────────────────────────────────── */
+.saved { color: var(--royal-purple, #7E57C2) !important; }
+
+/* ── Heart pop animation ────────────────────────────────────── */
+@keyframes heartPop {
+    0%   { transform: scale(1); }
+    30%  { transform: scale(1.45); }
+    60%  { transform: scale(0.9); }
+    80%  { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+.heartPop { animation: heartPop 0.42s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
+
+/* ── Save pop animation ─────────────────────────────────────── */
+@keyframes savePop {
+    0%  { transform: scale(1) rotate(0deg); }
+    40% { transform: scale(1.35) rotate(-10deg); }
+    70% { transform: scale(0.95) rotate(0deg); }
+    100% { transform: scale(1); }
+}
+.savePop { animation: savePop 0.38s ease both; }
+
+/* ── Location tag ───────────────────────────────────────────── */
+.locationTag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72rem;
+    color: var(--text-muted, #a78bfa);
+    padding: 0 16px 8px;
+    cursor: pointer;
+}
+.locationTag:hover { color: var(--neon-lavender, #c4b5fd); }

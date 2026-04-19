@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FAQ_DATA, searchFAQs } from '../utils/supportCategories';
+import PageShell from '../components/layout/PageShell';
 import styles from './SupportCenter.module.css';
 
 const SupportCenter = () => {
@@ -18,6 +19,7 @@ const SupportCenter = () => {
     };
 
     return (
+        <PageShell>
         <div className={styles.supportPage}>
             <div className={styles.pageHeader}>
                 <h1 className={styles.pageTitle}>Help & Support</h1>
@@ -101,6 +103,7 @@ const SupportCenter = () => {
                 </button>
             </div>
         </div>
+        </PageShell>
     );
 };
 

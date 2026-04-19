@@ -3,47 +3,39 @@ import { useNavigate } from 'react-router-dom';
 import styles from './BoltzUserInfo.module.css';
 import VerifiedBadge from '../shared/VerifiedBadge';
 import BoltzCaption from './BoltzCaption';
-import { getUserAvatarUrl } from '../../utils/avatarManager';
+import UserAvatar from '../ui/Avatar';
+
+const FALLBACK_AVATAR = 'https://api.dicebear.com/7.x/bottts/svg?seed=Focusly';
 
 const BoltzUserInfo = ({ user, caption, onFollow, isOwnContent }) => {
     const navigate = useNavigate();
 
-    if (!user) {
-        return null;
-    }
-
-    // Get avatar URL with proper fallback
-    const avatarUrl = getUserAvatarUrl(null, { username: user.username, avatar_url: user.avatar_url });
+    if (!user) return null;
+    const safeHandle = user.username || `focusly_${(user.actual_user_id || user.id || 'guest').toString().slice(0, 6)}`;
 
     const handleProfileClick = (e) => {
         e.stopPropagation();
-        if (user?.username) {
-            navigate(`/profile/${user.username}`);
-        }
+        if (user?.username) navigate(`/profile/${user.username}`);
     };
 
     return (
         <div className={styles.container}>
             <div className={styles.userRow}>
-                <img
-                    src={avatarUrl}
-                    alt={user.username}
-                    className={styles.avatar}
+                <UserAvatar
+                    src={user.avatar_url || FALLBACK_AVATAR}
+                    username={safeHandle}
+                    fullName={user.full_name || safeHandle}
+                    size="md"
                     onClick={handleProfileClick}
+                    className={styles.avatar}
                 />
                 <div className={styles.userDetails}>
-                    <div
-                        className={styles.username}
-                        onClick={handleProfileClick}
-                    >
-                        @{user.username || 'Unknown User'}
-                        {user.is_verified && <VerifiedBadge size={14} />}
+                    <div className={styles.username} onClick={handleProfileClick}>
+                        @{safeHandle}
+                        {(user.is_verified || (user.trust_tier || 0) >= 4) && <VerifiedBadge size={14} />}
                     </div>
                     {!user.is_following && !isOwnContent && (
-                        <button
-                            onClick={onFollow}
-                            className={styles.followBtn}
-                        >
+                        <button onClick={onFollow} className={styles.followBtn}>
                             Follow
                         </button>
                     )}

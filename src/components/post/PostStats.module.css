@@ -1,0 +1,10 @@
+.stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.trust {
+  color: var(--accent);
+}

@@ -1,129 +1,153 @@
-import React, { useState } from 'react';
-import Button from '../ui/Button';
-import LoadingSkeleton from '../shared/LoadingSkeleton';
-import { useSessions } from '../../hooks/useSessions';
+/**
+ * SessionManager — Focus App Settings
+ *
+ * Displays active OAuth sessions and provides "Sign out from all devices".
+ * Used inside the Account section of Settings.
+ */
+
+import React, { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
-import { focusToast } from '../../utils/focusToast';
-import { formatTimeAgo } from '../../utils/formatTimeAgo';
+import { useSessions } from '../../hooks/useSessions';
+import UserAvatar from '../ui/Avatar';
+import { useFocusIdentity } from '../../context/FocusIdentityContext';
 import styles from './SessionManager.module.css';
+
+const SESSION_ICONS = {
+    google: '🔵',
+    github: '⚫',
+    azure: '🔷',
+    microsoft: '🟦',
+    default: '🌐',
+};
+
+const getProviderIcon = (provider = '') => {
+    const p = provider.toLowerCase();
+    return SESSION_ICONS[p] || SESSION_ICONS.default;
+};
 
 const SessionManager = () => {
     const { signOut } = useAuth();
-    const { sessions, loading, endSession, endAllOtherSessions } = useSessions();
-    const [revoking, setRevoking] = useState(null);
+    const { avatarUrl, displayName, handle } = useFocusIdentity();
+    const { sessions = [], loading, endSession } = useSessions();
+    const navigate = useNavigate();
+    const [signingOutAll, setSigningOutAll] = useState(false);
+    const [confirming, setConfirming] = useState(false);
 
-    const handleRevokeSession = async (sessionId) => {
-        setRevoking(sessionId);
-        try {
-            const result = await endSession(sessionId);
-            if (result.success) {
-                focusToast.success('Session revoked successfully');
-            } else {
-                focusToast.error('Failed to revoke session');
-            }
-        } catch (error) {
-            console.error('Error revoking session:', error);
-            focusToast.error('Failed to revoke session');
-        } finally {
-            setRevoking(null);
+    const handleSignOutAll = useCallback(async () => {
+        if (!confirming) {
+            setConfirming(true);
+            return;
         }
-    };
 
-    const handleSignOutEverywhere = async () => {
+        setSigningOutAll(true);
         try {
-            const result = await endAllOtherSessions();
-            if (result.success) {
-                focusToast.success('Signed out from all devices');
-                await signOut();
-            } else {
-                focusToast.error('Failed to sign out from all devices');
-            }
-        } catch (error) {
-            console.error('Error signing out everywhere:', error);
-            focusToast.error('Failed to sign out from all devices');
+            await supabase.auth.signOut({ scope: 'global' });
+            navigate('/auth', { replace: true });
+        } catch (err) {
+            console.error('Global sign out error:', err);
+            setSigningOutAll(false);
+            setConfirming(false);
         }
-    };
+    }, [confirming, navigate]);
 
-    const getDeviceIcon = (deviceType) => {
-        if (!deviceType) return '💻';
-        const type = deviceType.toLowerCase();
-        if (type.includes('mobile') || type.includes('android') || type.includes('iphone')) return '📱';
-        if (type.includes('tablet') || type.includes('ipad')) return '📱';
-        return '💻';
-    };
-
-    if (loading) {
-        return (
-            <div className={styles.container}>
-                <h3 className={styles.title}>Active Sessions</h3>
-                <LoadingSkeleton count={2} height={80} />
-            </div>
-        );
-    }
+    const handleSignOutThis = useCallback(async () => {
+        await signOut();
+        navigate('/auth', { replace: true });
+    }, [signOut, navigate]);
 
     return (
         <div className={styles.container}>
-            <div className={styles.header}>
-                <div>
-                    <h3 className={styles.title}>Active Sessions</h3>
-                    <p className={styles.description}>
-                        Manage devices where you're currently signed in
-                    </p>
+            {/* Current identity */}
+            <div className={styles.identityCard}>
+                <UserAvatar
+                    src={avatarUrl}
+                    username={handle}
+                    fullName={displayName}
+                    size="lg"
+                    eager
+                />
+                <div className={styles.identityInfo}>
+                    <span className={styles.identityName}>{displayName}</span>
+                    <span className={styles.identityHandle}>@{handle}</span>
+                    <span className={styles.oauthBadge}>🔐 OAuth Only — Secure</span>
                 </div>
-                {sessions.length > 1 && (
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleSignOutEverywhere}
-                        className={styles.signOutAllButton}
+            </div>
+
+            {/* Active sessions */}
+            {!loading && sessions.length > 0 && (
+                <div className={styles.sessionsBlock}>
+                    <p className={styles.sectionLabel}>Linked OAuth Providers</p>
+                    <div className={styles.sessionList}>
+                        {sessions.map((session, i) => (
+                            <div key={session.id || i} className={styles.sessionItem}>
+                                <span className={styles.sessionIcon}>
+                                    {getProviderIcon(session.provider)}
+                                </span>
+                                <div className={styles.sessionDetails}>
+                                    <span className={styles.sessionProvider}>
+                                        {session.provider || 'OAuth'}
+                                    </span>
+                                    {session.created_at && (
+                                        <span className={styles.sessionDate}>
+                                            Connected {new Date(session.created_at).toLocaleDateString()}
+                                        </span>
+                                    )}
+                                </div>
+                                {session.is_current ? (
+                                    <span className={styles.sessionActive}>Current</span>
+                                ) : (
+                                    <button
+                                        className={styles.cancelBtn}
+                                        onClick={() => endSession(session.id)}
+                                    >
+                                        Kill
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Sign out actions */}
+            <div className={styles.actions}>
+                <button
+                    className={styles.signOutBtn}
+                    onClick={handleSignOutThis}
+                >
+                    <span>🚪</span>
+                    Sign out this device
+                </button>
+
+                <button
+                    className={[styles.signOutAllBtn, confirming ? styles.confirmState : ''].join(' ')}
+                    onClick={handleSignOutAll}
+                    disabled={signingOutAll}
+                >
+                    {signingOutAll ? (
+                        <>⏳ Signing out…</>
+                    ) : confirming ? (
+                        <>⚠️ Tap again to confirm — this signs out all devices</>
+                    ) : (
+                        <>🔴 Sign out from all devices</>
+                    )}
+                </button>
+
+                {confirming && !signingOutAll && (
+                    <button
+                        className={styles.cancelBtn}
+                        onClick={() => setConfirming(false)}
                     >
-                        Sign Out Everywhere
-                    </Button>
+                        Cancel
+                    </button>
                 )}
             </div>
 
-            {sessions.length === 0 ? (
-                <div className={styles.emptyState}>
-                    <span className={styles.emptyIcon}>🔒</span>
-                    <p className={styles.emptyText}>No active sessions</p>
-                </div>
-            ) : (
-                <div className={styles.sessionList}>
-                    {sessions.map((session) => (
-                        <div key={session.id} className={styles.sessionItem}>
-                            <div className={styles.sessionInfo}>
-                                <span className={styles.deviceIcon}>
-                                    {getDeviceIcon(session.device_info)}
-                                </span>
-                                <div className={styles.sessionDetails}>
-                                    <span className={styles.deviceName}>
-                                        {session.device_info?.userAgent || 'Unknown Device'}
-                                    </span>
-                                    <div className={styles.sessionMeta}>
-                                        {session.ip_address && (
-                                            <span className={styles.metaItem}>
-                                                📍 {session.ip_address}
-                                            </span>
-                                        )}
-                                        <span className={styles.metaItem}>
-                                            🕐 {formatTimeAgo(session.last_active)}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleRevokeSession(session.id)}
-                                loading={revoking === session.id}
-                                className={styles.revokeButton}
-                            >
-                                Revoke
-                            </Button>
-                        </div>
-                    ))}
-                </div>
-            )}
+            <p className={styles.securityNote}>
+                🛡️ Focus uses OAuth-only authentication. Your passwords are never stored on our servers.
+            </p>
         </div>
     );
 };

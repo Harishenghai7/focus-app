@@ -1,81 +1,195 @@
-.avatar {
-    position: relative;
-    display: inline-block;
-    border-radius: var(--radius-full);
-    overflow: visible;
-    /* Changed from hidden to show status indicator */
-    flex-shrink: 0;
-    cursor: pointer;
+/* ==========================================================
+   UserAvatar — Universal Avatar Component Styles
+   Focus App | Royal Lavender Theme
+   ========================================================== */
+
+/* ── Shimmer animation ───────────────────────────────────── */
+@keyframes avatarShimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
 }
 
-.avatar img {
+@keyframes fadeInAvatar {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ── Wrapper ─────────────────────────────────────────────── */
+.wrapper {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+    border-radius: 50%;
+}
+
+.clickable {
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.clickable:hover  { opacity: 0.88; transform: scale(1.04); }
+.clickable:active { transform: scale(0.97); }
+
+/* ── Inner image container ───────────────────────────────── */
+.avatarInner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--bg-tertiary, #2d1f42);
+    position: relative;
+}
+
+/* ── Shimmer placeholder ─────────────────────────────────── */
+.shimmer {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: linear-gradient(
+        90deg,
+        rgba(139, 92, 246, 0.08) 25%,
+        rgba(196, 181, 253, 0.16) 50%,
+        rgba(139, 92, 246, 0.08) 75%
+    );
+    background-size: 200% 100%;
+    animation: avatarShimmer 1.4s ease infinite;
+    z-index: 2;
+}
+
+/* Initials shown underneath the shimmer for instant content */
+.initialsUnderShimmer {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 0.02em;
+    font-family: inherit;
+    user-select: none;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+/* ── Loaded image ────────────────────────────────────────── */
+.image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: var(--radius-full);
+    border-radius: 50%;
+    display: block;
+    transition: opacity 0.2s ease;
+    position: relative;
+    z-index: 3;
 }
 
-/* SIZES */
-.avatar-xs {
-    width: 24px;
-    height: 24px;
+/* ── Initials fallback ───────────────────────────────────── */
+.initials {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.02em;
+    font-family: inherit;
+    user-select: none;
+    border-radius: 50%;
+    animation: fadeInAvatar 0.2s ease;
 }
 
-.avatar-sm {
-    width: 32px;
-    height: 32px;
+/* ── Sizes ───────────────────────────────────────────────── */
+.size-xs   { width: 24px;  height: 24px;  }
+.size-xs  .initials,
+.size-xs  .initialsUnderShimmer { font-size: 8px; }
+
+.size-sm   { width: 32px;  height: 32px;  }
+.size-sm  .initials,
+.size-sm  .initialsUnderShimmer { font-size: 11px; }
+
+.size-md   { width: 40px;  height: 40px;  }
+.size-md  .initials,
+.size-md  .initialsUnderShimmer { font-size: 13px; }
+
+.size-lg   { width: 48px;  height: 48px;  }
+.size-lg  .initials,
+.size-lg  .initialsUnderShimmer { font-size: 16px; }
+
+.size-xl   { width: 64px;  height: 64px;  }
+.size-xl  .initials,
+.size-xl  .initialsUnderShimmer { font-size: 22px; }
+
+.size-2xl  { width: 96px;  height: 96px;  }
+.size-2xl .initials,
+.size-2xl .initialsUnderShimmer { font-size: 32px; }
+
+.size-3xl  { width: 120px; height: 120px; }
+.size-3xl .initials,
+.size-3xl .initialsUnderShimmer { font-size: 40px; }
+
+/* ── Story ring ──────────────────────────────────────────── */
+.storyNew {
+    padding: 2.5px;
+    background: linear-gradient(135deg, #7C3AED, #EC4899, #F97316);
+    border-radius: 50%;
+}
+.storyNew .avatarInner {
+    border: 2.5px solid var(--bg-primary, #1a0f2e);
 }
 
-.avatar-md {
-    width: 40px;
-    height: 40px;
+.storyWatched {
+    padding: 2.5px;
+    background: var(--border-subtle, rgba(139,92,246,0.2));
+    border-radius: 50%;
+}
+.storyWatched .avatarInner {
+    border: 2.5px solid var(--bg-primary, #1a0f2e);
 }
 
-.avatar-lg {
-    width: 48px;
-    height: 48px;
-}
-
-.avatar-xl {
-    width: 64px;
-    height: 64px;
-}
-
-.avatar-2xl {
-    width: 96px;
-    height: 96px;
-}
-
-.avatar-3xl {
-    width: 150px;
-    height: 150px;
-}
-
-/* STATUS - Instagram Style */
-.status {
+/* ── Online dot ──────────────────────────────────────────── */
+.onlineDot {
     position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 35%;
-    height: 35%;
-    min-width: 16px;
-    min-height: 16px;
-    border-radius: var(--radius-full);
-    border: 3px solid var(--bg-secondary);
-    /* Cutout effect */
-    box-sizing: border-box;
-    z-index: 10;
-}
-
-.online {
+    bottom: 1px;
+    right: 1px;
+    width: 28%;
+    height: 28%;
+    min-width: 8px;
+    min-height: 8px;
+    max-width: 14px;
+    max-height: 14px;
     background: #22c55e;
+    border-radius: 50%;
+    border: 2px solid var(--bg-primary, #1a0f2e);
+    z-index: 4;
+    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.3), 0 0 8px rgba(34, 197, 94, 0.4);
+    animation: fadeInAvatar 0.3s ease;
 }
 
-.away {
-    background: #f59e0b;
+/* ── Verified Badge ────────────────────────────────────────── */
+.verifiedBadge {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 32%;
+    height: 32%;
+    min-width: 14px;
+    min-height: 14px;
+    max-width: 24px;
+    max-height: 24px;
+    background: #7E57C2;
+    border-radius: 50%;
+    border: 2px solid var(--bg-primary, #1a0f2e);
+    z-index: 5;
+    box-shadow: 0 0 0 1px rgba(126, 87, 194, 0.3), 0 0 8px rgba(126, 87, 194, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    animation: fadeInAvatar 0.3s ease;
 }
 
-.offline {
-    display: none;
-    /* Hide offline indicator like Instagram */
+.verifiedBadge svg {
+    width: 65%;
+    height: 65%;
 }

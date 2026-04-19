@@ -164,6 +164,17 @@
     white-space: pre-wrap;
 }
 
+.mention {
+    color: #c4b5fd;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.mention:hover {
+    color: #ddd6fe;
+    text-decoration: underline;
+}
+
 .editContainer {
     margin-bottom: 8px;
 }

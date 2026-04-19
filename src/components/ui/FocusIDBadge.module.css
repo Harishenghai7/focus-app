@@ -1,0 +1,31 @@
+/* FocusIDBadge — Focus App v2.0 */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    vertical-align: middle;
+    cursor: default;
+    transition: transform 0.15s, filter 0.15s;
+    flex-shrink: 0;
+}
+
+.badge:hover { transform: scale(1.15); }
+
+/* Sizes */
+.size-xs .icon { font-size: 10px; }
+.size-sm .icon { font-size: 13px; }
+.size-md .icon { font-size: 16px; }
+.size-lg .icon { font-size: 22px; }
+
+.icon { line-height: 1; }
+
+.label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+/* Large with label variant */
+.size-lg .label { font-size: 0.85rem; }

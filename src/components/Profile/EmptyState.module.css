@@ -9,7 +9,7 @@
 }
 
 .iconContainer {
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-4);
 }
 
 .icon {
@@ -21,6 +21,33 @@
     font-size: var(--font-lg);
     color: var(--text-secondary);
     margin: 0 0 var(--space-6) 0;
+}
+
+.mascot {
+    display: grid;
+    gap: 8px;
+    justify-items: center;
+    margin-bottom: 14px;
+}
+
+.mascotOrb {
+    width: 72px;
+    height: 72px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-weight: 800;
+    font-size: 1.5rem;
+    background: linear-gradient(135deg, rgba(126, 87, 194, 0.85), rgba(69, 39, 160, 0.95));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 14px 30px rgba(69, 39, 160, 0.3);
+}
+
+.mascotLabel {
+    font-size: 0.75rem;
+    color: var(--text-faint);
+    letter-spacing: 0.02em;
 }
 
 .action {

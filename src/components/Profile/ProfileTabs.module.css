@@ -21,6 +21,7 @@
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    overflow: hidden;
 }
 
 .tab:hover {
@@ -32,15 +33,33 @@
     border-top-color: var(--primary-lavender);
 }
 
+.activePill {
+    position: absolute;
+    inset: 6px 8px;
+    border-radius: 10px;
+    background: rgba(126, 87, 194, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    z-index: 0;
+}
+
+.tab :global(svg),
+.label {
+    position: relative;
+    z-index: 1;
+}
+
 .tab.active::before {
     content: '';
     position: absolute;
-    top: -2px;
+    top: -1px;
     left: 0;
     right: 0;
-    height: 2px;
-    background: var(--gradient-primary);
-    animation: slideIn 0.3s ease;
+    height: 3px;
+    background: var(--gradient-brand);
+    animation: slideIn var(--transition-bounce);
+    transform-origin: center;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 4px 10px rgba(139, 92, 246, 0.5);
 }
 
 @keyframes slideIn {

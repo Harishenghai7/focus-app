@@ -10,15 +10,15 @@
 }
 
 .title {
-    color: #8B5CF6;
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 8px;
+    color: var(--primary);
+    font-size: var(--font-3xl);
+    font-weight: var(--font-bold);
+    margin-bottom: var(--space-2);
 }
 
 .subtitle {
-    color: #6B7280;
-    font-size: 16px;
+    color: var(--text-secondary);
+    font-size: var(--font-base);
 }
 
 .form {
@@ -33,30 +33,33 @@
 
 .bioTextarea {
     width: 100%;
-    padding: 12px 16px;
-    border: 2px solid #E5E7EB;
-    border-radius: 12px;
-    font-size: 15px;
+    padding: var(--space-3) var(--space-4);
+    border: 2px solid var(--border-subtle);
+    background: var(--glass-surface);
+    color: var(--text-primary);
+    border-radius: var(--radius-md);
+    font-size: var(--font-base);
     font-family: inherit;
     resize: vertical;
-    transition: all 0.3s;
+    transition: all var(--transition-base);
 }
 
 .bioTextarea:focus {
     outline: none;
-    border-color: #8B5CF6;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-dim);
+    background: var(--glass-surface-hover);
 }
 
 .charCount {
     position: absolute;
-    bottom: 8px;
-    right: 12px;
-    font-size: 12px;
-    color: #9CA3AF;
-    background: white;
+    bottom: var(--space-2);
+    right: var(--space-3);
+    font-size: var(--font-xs);
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
     padding: 2px 6px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 }
 
 .actions {

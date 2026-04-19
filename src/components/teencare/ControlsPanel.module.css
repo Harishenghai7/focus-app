@@ -135,6 +135,13 @@
     text-align: right;
 }
 
+.helperText {
+    margin-top: 8px;
+    margin-bottom: 0;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+}
+
 .settingsList {
     display: flex;
     flex-direction: column;

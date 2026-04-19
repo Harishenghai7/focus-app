@@ -7,7 +7,9 @@
     display: flex;
     height: 100vh;
     width: 100%;
-    background: #000000;
+    background: var(--bg-primary);
+    background-image: var(--gradient-mesh);
+    background-attachment: fixed;
     color: #FFFFFF;
     overflow: hidden;
     margin: 0;
@@ -21,8 +23,10 @@
 .sidebar {
     width: 400px;
     flex-shrink: 0;
-    background: #000000;
-    border-right: 1px solid rgba(139, 92, 246, 0.1);
+    background: var(--glass-surface);
+    backdrop-filter: var(--blur-xl);
+    -webkit-backdrop-filter: var(--blur-xl);
+    border-right: 1px solid var(--glass-border);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -113,7 +117,9 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, #8B5CF6 0%, #A78BFA 100%);
+    background: var(--gradient-brand);
+    border-radius: 2px 2px 0 0;
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
 }
 
 /* Search */
@@ -134,21 +140,25 @@
 .searchInput {
     width: 100%;
     padding: 10px 16px 10px 40px;
-    background: rgba(139, 92, 246, 0.05);
-    border: none;
-    border-radius: 8px;
+    background: var(--glass-surface);
+    backdrop-filter: var(--blur-sm);
+    -webkit-backdrop-filter: var(--blur-sm);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
     color: #FFFFFF;
     font-size: 14px;
     outline: none;
-    transition: all 0.2s ease;
+    transition: all var(--transition-base);
 }
 
 .searchInput::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.35);
 }
 
 .searchInput:focus {
-    background: rgba(139, 92, 246, 0.1);
+    background: var(--glass-surface-hover);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-dim);
 }
 
 /* Story Circles */
@@ -232,18 +242,22 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 8px 20px;
+    padding: 10px 20px;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: background var(--transition-base), transform var(--transition-fast);
+    border-radius: var(--radius-lg);
+    margin: 2px 8px;
 }
 
 .conversationItem:hover {
-    background: rgba(139, 92, 246, 0.05);
+    background: var(--glass-surface);
+    transform: translateX(3px);
 }
 
 .conversationItem.active {
-    background: rgba(139, 92, 246, 0.1);
-    border-left: 3px solid #8B5CF6;
+    background: var(--glass-surface-hover);
+    border-left: 3px solid var(--primary);
+    box-shadow: inset 4px 0 12px rgba(139, 92, 246, 0.1);
 }
 
 .avatarContainer {
@@ -314,7 +328,7 @@
 }
 
 .unreadBadge {
-    background: #8B5CF6;
+    background: var(--gradient-brand);
     color: #FFFFFF;
     font-size: 12px;
     font-weight: 700;
@@ -322,6 +336,7 @@
     border-radius: 12px;
     min-width: 20px;
     text-align: center;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
 }
 
 /* Loading & Empty States */
@@ -357,10 +372,11 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: #000000;
+    background: transparent;
     min-width: 0;
     height: 100vh;
     overflow: hidden;
+    position: relative;
 }
 
 /* When mainPanel contains empty state, center it */
@@ -399,24 +415,25 @@
 }
 
 .sendMessageBtn {
-    padding: 8px 24px;
-    background: #5B51D8;
+    padding: 10px 28px;
+    background: var(--gradient-brand);
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-full);
     color: #FFFFFF;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-bounce);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
 }
 
 .sendMessageBtn:hover {
-    background: #6D63E8;
-    transform: translateY(-1px);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
 }
 
 .sendMessageBtn:active {
-    transform: translateY(0);
+    transform: translateY(0) scale(0.97);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════ */
@@ -436,7 +453,7 @@
         right: 0;
         bottom: 0;
         z-index: 100;
-        background: #000000;
+        background: var(--bg-primary);
     }
 
     /* Hide sidebar when chat is open on mobile */

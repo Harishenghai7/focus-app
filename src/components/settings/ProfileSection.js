@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import SettingsSection from './SettingsSection';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
-import Avatar from '../ui/Avatar';
+import UserAvatar from '../ui/Avatar';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import { toast } from 'react-toastify';
@@ -163,25 +163,79 @@ const ProfileSection = ({ isExpanded, onToggle }) => {
         }
     };
 
+    const bioLength = (formData.bio || '').length;
+    const BIO_MAX = 150;
+
     return (
         <SettingsSection id="profile" title="Profile" description="Manage your public profile information" icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>} isExpanded={isExpanded} onToggle={onToggle}>
             <ContentFilter ref={contentFilterRef} contentType="profile_bio" />
             <form onSubmit={updateProfile} className={styles.form}>
+                {/* Avatar Upload */}
                 <div className={styles.avatarSection}>
-                    <Avatar src={formData.avatar_url} alt="Profile" size="xl" />
-                    <div className={styles.avatarActions}>
-                        <label className={styles.uploadButton}>
-                            {uploading ? 'Uploading...' : 'Change Photo'}
+                    <div className={styles.avatarWrapper}>
+                        <UserAvatar
+                            src={formData.avatar_url}
+                            username={formData.username}
+                            fullName={formData.full_name}
+                            size="2xl"
+                        />
+                        <label className={styles.avatarOverlay} title="Change photo">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                                <circle cx="12" cy="13" r="4" />
+                            </svg>
                             <input type="file" accept="image/*" onChange={handleAvatarUpload} disabled={uploading} style={{ display: 'none' }} />
                         </label>
+                        {uploading && <div className={styles.uploadingOverlay}><div className={styles.uploadSpinner} /></div>}
+                    </div>
+                    <div className={styles.avatarInfo}>
+                        <p className={styles.avatarHint}>Click the camera icon to change your photo</p>
+                        <p className={styles.avatarSubHint}>JPG, PNG or GIF · Max 5MB</p>
                     </div>
                 </div>
-                <div className={styles.field}><label className={styles.label}>Full Name</label><Input name="full_name" value={formData.full_name || ''} onChange={(e) => setFormData({ ...formData, full_name: e.target.value })} placeholder="Your full name" /></div>
-                <div className={styles.field}><label className={styles.label}>Username</label><Input name="username" value={formData.username || ''} onChange={(e) => setFormData({ ...formData, username: e.target.value })} placeholder="Username" /></div>
-                <div className={styles.field}><label className={styles.label}>Bio</label><textarea name="bio" value={formData.bio || ''} onChange={(e) => setFormData({ ...formData, bio: e.target.value })} placeholder="Tell us about yourself" className={styles.textarea} rows={4} /></div>
-                <div className={styles.field}><label className={styles.label}>Website</label><Input name="website" value={formData.website || ''} onChange={(e) => setFormData({ ...formData, website: e.target.value })} placeholder="https://your-website.com" /></div>
-                <div className={styles.field}><label className={styles.label}>Location</label><Input name="location" value={formData.location || ''} onChange={(e) => setFormData({ ...formData, location: e.target.value })} placeholder="City, Country" /></div>
-                <div className={styles.actions}><Button type="submit" loading={loading} disabled={loading}>Save Changes</Button></div>
+
+                {/* Fields */}
+                <div className={styles.fieldGrid}>
+                    <div className={styles.field}>
+                        <label className={styles.label}>Full Name</label>
+                        <Input name="full_name" value={formData.full_name || ''} onChange={(e) => setFormData({ ...formData, full_name: e.target.value })} placeholder="Your full name" />
+                    </div>
+                    <div className={styles.field}>
+                        <label className={styles.label}>Username</label>
+                        <Input name="username" value={formData.username || ''} onChange={(e) => setFormData({ ...formData, username: e.target.value })} placeholder="username" />
+                    </div>
+                </div>
+
+                <div className={styles.field}>
+                    <div className={styles.labelRow}>
+                        <label className={styles.label}>Bio</label>
+                        <span className={`${styles.charCount} ${bioLength > BIO_MAX ? styles.charOver : ''}`}>{bioLength}/{BIO_MAX}</span>
+                    </div>
+                    <textarea
+                        name="bio"
+                        value={formData.bio || ''}
+                        onChange={(e) => setFormData({ ...formData, bio: e.target.value.slice(0, BIO_MAX) })}
+                        placeholder="Tell the Focus community about yourself…"
+                        className={styles.textarea}
+                        rows={3}
+                        maxLength={BIO_MAX}
+                    />
+                </div>
+
+                <div className={styles.fieldGrid}>
+                    <div className={styles.field}>
+                        <label className={styles.label}>Website</label>
+                        <Input name="website" value={formData.website || ''} onChange={(e) => setFormData({ ...formData, website: e.target.value })} placeholder="https://your-website.com" />
+                    </div>
+                    <div className={styles.field}>
+                        <label className={styles.label}>Location</label>
+                        <Input name="location" value={formData.location || ''} onChange={(e) => setFormData({ ...formData, location: e.target.value })} placeholder="City, Country" />
+                    </div>
+                </div>
+
+                <div className={styles.actions}>
+                    <Button type="submit" loading={loading} disabled={loading || uploading}>Save Changes</Button>
+                </div>
             </form>
         </SettingsSection>
     );

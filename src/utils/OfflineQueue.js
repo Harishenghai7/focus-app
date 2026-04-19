@@ -210,7 +210,7 @@ class OfflineQueue {
 
         const { error } = await supabase
             .from('post_comments')
-            .insert({ post_id: postId, user_id: userId, content });
+            .insert({ post_id: postId, user_id: userId, text: content });
         if (error) throw error;
     }
 
@@ -219,11 +219,12 @@ class OfflineQueue {
      */
     async executeShare(payload) {
         const { supabase } = await import('../lib/supabase');
-        const { postId, shareType } = payload;
-
-        const { error } = await supabase.rpc('increment_post_shares', {
-            post_uuid: postId,
-            increment_value: 1
+        const { postId, userId, shareType, recipientId = null } = payload;
+        const { error } = await supabase.rpc('register_post_share_rpc', {
+            p_post_id: postId,
+            p_user_id: userId,
+            p_share_type: shareType,
+            p_recipient_id: recipientId
         });
         if (error) throw error;
     }

@@ -101,36 +101,22 @@ export const useChatThread = (currentUserId, conversationId, session) => {
                 return;
             }
 
-            // Import config
-            const { supabaseUrl, supabaseAnonKey } = await import('../lib/supabase');
+            // Use native Supabase JS SDK
+            console.log('📡 Fetching via SDK...');
+            const { data, error: fetchErr } = await supabase
+                .from('messages')
+                .select('*')
+                .eq('conversation_id', conversationId)
+                .order('created_at', { ascending: true });
 
-            // Use direct REST API (same as INSERT)
-            console.log('📡 Fetching via REST API...');
-            const response = await fetch(
-                `${supabaseUrl}/rest/v1/messages?conversation_id=eq.${conversationId}&order=created_at.asc`,
-                {
-                    headers: {
-                        'apikey': supabaseAnonKey,
-                        'Authorization': `Bearer ${session.access_token}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-
-            console.log('📥 Response status:', response.status);
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('❌ Fetch error:', response.status, errorText);
-                throw new Error(`HTTP ${response.status}: ${errorText}`);
+            if (fetchErr) {
+                console.error('❌ Fetch error:', fetchErr.message);
+                throw new Error(fetchErr.message);
             }
-
-            const data = await response.json();
 
             console.log('📨 Fetch result:', {
                 messageCount: data?.length || 0,
                 conversationId,
-                messages: data
             });
 
             setMessages(data || []);
@@ -149,14 +135,11 @@ export const useChatThread = (currentUserId, conversationId, session) => {
 
     const markMessagesAsRead = async () => {
         try {
-            // DISABLED: This was causing 400 errors
-            // await supabase
-            //     .from('messages')
-            //     .update({ is_read: true })
-            //     .eq('conversation_id', conversationId)
-            //     .neq('sender_id', currentUserId)
-            //     .eq('is_read', false);
-            console.log('📖 markMessagesAsRead disabled to prevent errors');
+            await supabase.rpc('mark_messages_as_read', {
+                p_conversation_id: conversationId,
+                p_user_id: currentUserId,
+                p_message_id: null
+            });
         } catch (err) {
             console.error('Error marking messages as read:', err);
         }
@@ -229,7 +212,13 @@ export const useChatThread = (currentUserId, conversationId, session) => {
     };
 
     // Compute the other user from participants
-    const otherUser = participants.find(p => p.user_id !== currentUserId)?.profile || null;
+    const rawOtherUser = participants.find(p => p.user_id !== currentUserId)?.profile || null;
+    const otherUser = rawOtherUser ? {
+        ...rawOtherUser,
+        username: rawOtherUser.username || `focusly_${rawOtherUser.id?.slice?.(0, 6) || 'user'}`,
+        full_name: rawOtherUser.full_name || rawOtherUser.username || 'Focusly User',
+        avatar_url: rawOtherUser.avatar_url || 'https://api.dicebear.com/7.x/bottts/svg?seed=Focusly',
+    } : null;
 
     return {
         messages,

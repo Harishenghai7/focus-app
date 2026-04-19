@@ -1,8 +1,9 @@
 import React from 'react';
 import styles from './SaveButton.module.css';
 import { Bookmark } from 'lucide-react';
+import { formatNumber } from '../../utils/formatNumber';
 
-const SaveButton = ({ isSaved, onClick }) => {
+const SaveButton = ({ isSaved, count = 0, onClick }) => {
     const handleClick = (e) => {
         e.stopPropagation();
         console.log('Save button clicked!', { isSaved });
@@ -20,6 +21,7 @@ const SaveButton = ({ isSaved, onClick }) => {
                     color="white"
                 />
             </div>
+            <span className={styles.count}>{formatNumber(count)}</span>
         </button>
     );
 };

@@ -4,7 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import styles from './CommentInput.module.css';
 
 const CommentInput = ({ onSubmit, placeholder = "Add a comment...", replyingTo = null, onCancelReply }) => {
-    const { user } = useAuth();
+    const { user, profile } = useAuth();
     const [text, setText] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const inputRef = useRef(null);
@@ -51,10 +51,10 @@ const CommentInput = ({ onSubmit, placeholder = "Add a comment...", replyingTo =
             )}
 
             <div className={styles.inputWrapper}>
-                {user?.avatar_url && (
+                {(profile?.avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture) && (
                     <img
-                        src={user.avatar_url}
-                        alt={user.username}
+                        src={profile?.avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture}
+                        alt={profile?.username || user?.email || 'user'}
                         className={styles.avatar}
                     />
                 )}

@@ -1,7 +1,7 @@
 // BoltzCommentsSheet - Updated with new CommentsSection
 import React from 'react';
 import styles from './BoltzCommentsSheet.module.css';
-import CommentsSection from '../comments/CommentsSection';
+import CommentsDrawer from '../post/CommentsDrawer';
 import { X } from 'lucide-react';
 
 const BoltzCommentsSheet = ({ boltzId, boltzOwnerId, onClose, onCommentCountChange }) => {
@@ -16,12 +16,7 @@ const BoltzCommentsSheet = ({ boltzId, boltzOwnerId, onClose, onCommentCountChan
                 </div>
 
                 <div className={styles.commentsContainer}>
-                    <CommentsSection
-                        targetId={boltzId}
-                        targetType="boltz"
-                        postOwnerId={boltzOwnerId}
-                        onCommentCountChange={onCommentCountChange}
-                    />
+                    <CommentsDrawer targetId={boltzId} targetType="boltz" onClose={onClose} />
                 </div>
             </div>
         </div>

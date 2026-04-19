@@ -1,0 +1,104 @@
+/* HomeSkeleton - Royal Lavender Theme */
+
+.skeletonContainer {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: var(--space-4);
+    background: var(--bg-primary);
+}
+
+/* Shimmer Animation */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.shimmer {
+    background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-secondary) 50%, var(--bg-card) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* Story Bar */
+.storyBar {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+    overflow-x: hidden;
+}
+
+.storyCircle {
+    width: 65px;
+    height: 65px;
+    border-radius: var(--radius-full);
+    background: var(--bg-card);
+    composes: shimmer;
+    flex-shrink: 0;
+}
+
+/* Post Card */
+.card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-5);
+    padding-bottom: var(--space-3);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    padding: var(--space-3);
+    gap: var(--space-3);
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    background: var(--bg-card);
+    composes: shimmer;
+}
+
+.meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.lineLg {
+    width: 120px;
+    height: 12px;
+    background: var(--bg-card);
+    border-radius: var(--radius-sm);
+    composes: shimmer;
+}
+
+.lineSm {
+    width: 80px;
+    height: 10px;
+    background: var(--bg-card);
+    border-radius: var(--radius-sm);
+    composes: shimmer;
+}
+
+.media {
+    width: 100%;
+    height: 300px;
+    background: var(--bg-card);
+    composes: shimmer;
+}
+
+.actions {
+    height: 40px;
+    margin: var(--space-3);
+    background: var(--bg-card);
+    border-radius: var(--radius-sm);
+    composes: shimmer;
+}

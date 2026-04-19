@@ -3,12 +3,12 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../lib/supabase';
-import { useAuth } from './useAuth';
+import { useFocusUser } from '../context/FocusUserContext';
 import { toast } from 'react-toastify';
+import { setPostLikeDb } from '../utils/postInteractions';
 
 export const usePostLike = () => {
-    const { user } = useAuth();
+    const { user } = useFocusUser();
     const queryClient = useQueryClient();
 
     const toggleLike = useMutation({
@@ -17,34 +17,20 @@ export const usePostLike = () => {
 
             console.log(`${isLiked ? 'Unliking' : 'Liking'} post:`, postId);
 
-            if (isLiked) {
-                // Unlike
-                const { error } = await supabase
-                    .from('post_likes')
-                    .delete()
-                    .match({ post_id: postId, user_id: user.id });
-
-                if (error) throw error;
-            } else {
-                // Like
-                const { error } = await supabase
-                    .from('post_likes')
-                    .insert({ post_id: postId, user_id: user.id });
-
-                if (error) throw error;
-            }
+            const result = await setPostLikeDb(user.id, postId, !isLiked);
 
             console.log('✅ Like action completed');
-            return { postId, isLiked: !isLiked };
+            return {
+                postId,
+                isLiked: result?.is_liked ?? !isLiked,
+                likesCount: result?.likes_count,
+            };
         },
         onMutate: async ({ postId, isLiked }) => {
-            // Cancel outgoing refetches
             await queryClient.cancelQueries({ queryKey: ['posts'] });
 
-            // Snapshot previous value
-            const previousPosts = queryClient.getQueryData(['posts']);
+            const previousEntries = queryClient.getQueriesData({ queryKey: ['posts'] });
 
-            // Optimistically update
             queryClient.setQueriesData({ queryKey: ['posts'] }, (old) => {
                 if (!old) return old;
 
@@ -65,19 +51,35 @@ export const usePostLike = () => {
                 };
             });
 
-            return { previousPosts };
+            return { previousEntries };
         },
         onError: (err, variables, context) => {
-            // Rollback on error
-            if (context?.previousPosts) {
-                queryClient.setQueryData(['posts'], context.previousPosts);
+            if (context?.previousEntries?.length) {
+                context.previousEntries.forEach(([key, data]) => {
+                    queryClient.setQueryData(key, data);
+                });
             }
             toast.error('Failed to update like');
             console.error('❌ Like error:', err);
         },
-        onSuccess: () => {
-            // Invalidate to refetch fresh data
-            queryClient.invalidateQueries({ queryKey: ['posts'] });
+        // Do not invalidate the whole posts feed here: refetch can reset `is_liked` if
+        // `post_likes` SELECT is blocked or flaky. Optimistic `onMutate` is the source of truth.
+        onSuccess: (result) => {
+            if (typeof result?.likesCount !== 'number') return;
+            queryClient.setQueriesData({ queryKey: ['posts'] }, (old) => {
+                if (!old) return old;
+                return {
+                    ...old,
+                    pages: old.pages.map(page => ({
+                        ...page,
+                        posts: page.posts.map(post =>
+                            post.id === result.postId
+                                ? { ...post, likes_count: result.likesCount, is_liked: result.isLiked }
+                                : post
+                        ),
+                    })),
+                };
+            });
         },
     });
 

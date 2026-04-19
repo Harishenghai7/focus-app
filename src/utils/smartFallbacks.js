@@ -154,7 +154,10 @@ const randomFrom = (array) => {
     return array[Math.floor(Math.random() * array.length)];
 };
 
-export default {
+const _defaultModule = {
     getSmartFallback,
     FALLBACK_RESPONSES
 };
+
+
+export default _defaultModule;

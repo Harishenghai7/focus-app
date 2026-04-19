@@ -6,7 +6,8 @@ import styles from './EnhancedExploreTile.module.css';
 const EnhancedExploreTile = ({ post, onClick }) => {
     const [imageLoaded, setImageLoaded] = useState(false);
 
-    const mediaUrl = post.media_urls?.[0] || post.video_url || post.thumbnail_url || post.media_url;
+    const mediaUrl = post.media_urls?.[0] || post.video_url || post.media_url;
+    const posterUrl = post.thumbnail_url || post.poster_url || post.preview_image || mediaUrl;
     const isVideo = post.type === 'boltz' || post.media_types?.[0] === 'video';
     const hasMultiple = post.media_urls?.length > 1;
 
@@ -22,16 +23,22 @@ const EnhancedExploreTile = ({ post, onClick }) => {
                     <div className={styles.skeleton} />
                 )}
                 {isVideo ? (
-                    <video
-                        src={mediaUrl}
-                        className={styles.media}
-                        onLoadedData={() => setImageLoaded(true)}
-                        muted
-                        playsInline
-                    />
+                    mediaUrl ? (
+                        <video
+                            src={mediaUrl}
+                            poster={posterUrl}
+                            className={styles.media}
+                            onLoadedData={() => setImageLoaded(true)}
+                            muted
+                            playsInline
+                            preload="metadata"
+                        />
+                    ) : (
+                        <div className={styles.media}>Focusly</div>
+                    )
                 ) : (
                     <img
-                        src={mediaUrl}
+                        src={posterUrl}
                         alt="Post"
                         className={styles.media}
                         onLoad={() => setImageLoaded(true)}

@@ -1,7 +1,7 @@
 // EnhancedSearchBar - Pro-Grade Search with Suggestions
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabaseUrl, supabaseAnonKey } from '../../lib/supabase';
+import { supabase } from '../../lib/supabase';
 import styles from './EnhancedSearchBar.module.css';
 
 const EnhancedSearchBar = ({ onSearch, onFocus, onBlur }) => {
@@ -27,14 +27,17 @@ const EnhancedSearchBar = ({ onSearch, onFocus, onBlur }) => {
     };
 
     const loadTrendingSearches = () => {
-        // Mock trending for now - TODO: Implement real trending
-        setTrendingSearches([
-            { query: 'travel', count: 1234 },
-            { query: 'photography', count: 987 },
-            { query: 'food', count: 856 },
-            { query: 'art', count: 745 },
-            { query: 'nature', count: 623 }
-        ]);
+        supabase
+            .from('trending_hashtags_24h_v')
+            .select('hashtag, post_count')
+            .limit(5)
+            .then(({ data }) => {
+                setTrendingSearches((data || []).map((item) => ({
+                    query: `#${item.hashtag}`,
+                    count: item.post_count || 0
+                })));
+            })
+            .catch(() => setTrendingSearches([]));
     };
 
     const saveToRecent = (searchQuery) => {
@@ -58,20 +61,18 @@ const EnhancedSearchBar = ({ onSearch, onFocus, onBlur }) => {
         setLoading(true);
 
         try {
-            // Search users
-            const usersUrl = `${supabaseUrl}/rest/v1/profiles?or=(username.ilike.*${searchQuery}*,full_name.ilike.*${searchQuery}*)&limit=5`;
-            const usersRes = await fetch(usersUrl, {
-                headers: {
-                    'apikey': supabaseAnonKey,
-                    'Authorization': `Bearer ${supabaseAnonKey}`,
-                }
-            });
-            const users = await usersRes.json();
+            const { data: users } = await supabase
+                .from('profiles')
+                .select('id, username, full_name, avatar_url, is_verified, trust_tier')
+                .or(`username.ilike.%${searchQuery}%,full_name.ilike.%${searchQuery}%`)
+                .limit(8);
 
-            // Search hashtags (mock for now)
-            const hashtags = searchQuery.startsWith('#')
-                ? [{ tag: searchQuery, count: 123 }]
-                : [];
+            const normalizedTag = searchQuery.startsWith('#') ? searchQuery.slice(1).toLowerCase() : searchQuery.toLowerCase();
+            const { data: hashtags } = await supabase
+                .from('trending_hashtags_24h_v')
+                .select('hashtag, post_count')
+                .ilike('hashtag', `%${normalizedTag}%`)
+                .limit(5);
 
             setSuggestions({
                 users: users || [],
@@ -190,7 +191,7 @@ const EnhancedSearchBar = ({ onSearch, onFocus, onBlur }) => {
                                             <div className={styles.userInfo}>
                                                 <div className={styles.username}>
                                                     {user.username}
-                                                    {user.verified && <span className={styles.verified}>✓</span>}
+                                                    {(user.is_verified || (user.trust_tier || 0) >= 4) && <span className={styles.verified}>✓</span>}
                                                 </div>
                                                 {user.full_name && (
                                                     <div className={styles.fullName}>{user.full_name}</div>
@@ -209,12 +210,12 @@ const EnhancedSearchBar = ({ onSearch, onFocus, onBlur }) => {
                                         <div
                                             key={idx}
                                             className={styles.suggestionItem}
-                                            onClick={() => handleHashtagClick(tag.tag)}
+                                            onClick={() => handleHashtagClick(`#${tag.hashtag}`)}
                                         >
                                             <span className={styles.hashIcon}>#</span>
                                             <div className={styles.tagInfo}>
-                                                <div className={styles.tagName}>{tag.tag.replace('#', '')}</div>
-                                                <div className={styles.tagCount}>{tag.count} posts</div>
+                                                <div className={styles.tagName}>{tag.hashtag}</div>
+                                                <div className={styles.tagCount}>{tag.post_count} posts</div>
                                             </div>
                                         </div>
                                     ))}

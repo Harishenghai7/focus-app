@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import Icon from '../ui/Icon';
 import styles from './ProfileTabs.module.css';
 
@@ -22,6 +23,13 @@ const ProfileTabs = ({ activeTab, onTabChange, availableTabs }) => {
                     aria-label={tab.label}
                     aria-current={activeTab === tab.id ? 'page' : undefined}
                 >
+                    {activeTab === tab.id && (
+                        <motion.span
+                            layoutId="profile-tab-pill"
+                            className={styles.activePill}
+                            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                        />
+                    )}
                     <Icon name={tab.icon} size={20} />
                     <span className={styles.label}>{tab.label}</span>
                 </button>

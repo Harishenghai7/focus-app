@@ -1,0 +1,12 @@
+﻿
+C:\Users\ELCOT\focus-app\src\pages\Messages\components\ChatWindow\ChatWindow.jsx
+  172:13  error  Unexpected use of 'confirm'  no-restricted-globals
+  184:13  error  Unexpected use of 'confirm'  no-restricted-globals
+
+C:\Users\ELCOT\focus-app\src\pages\Messages\components\Modals\ConversationSettingsModal.jsx
+  71:13  error  Unexpected use of 'confirm'  no-restricted-globals
+  78:13  error  Unexpected use of 'confirm'  no-restricted-globals
+  85:13  error  Unexpected use of 'confirm'  no-restricted-globals
+
+Γ£û 5 problems (5 errors, 0 warnings)
+

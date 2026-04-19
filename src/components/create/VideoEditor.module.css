@@ -10,7 +10,7 @@
 .previewWrapper {
     width: 50%;
     position: relative;
-    background: black;
+    background: var(--bg-primary);
     display: flex;
     flex-direction: column;
     border-right: 2px solid var(--border-default);

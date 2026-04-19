@@ -68,21 +68,21 @@ const ConversationSettingsModal = ({ onClose, conversationId, currentUserId }) =
 
     const handleArchive = async () => {
         // Archive conversation (hide from list)
-        if (confirm('Archive this conversation?')) {
+        if (window.confirm('Archive this conversation?')) {
             await updateSetting('archived', true);
             onClose();
         }
     };
 
     const handleBlock = async () => {
-        if (confirm('Block this user? You won\'t receive messages from them.')) {
+        if (window.confirm('Block this user? You won\'t receive messages from them.')) {
             // Implement block functionality
             alert('Block feature coming soon!');
         }
     };
 
     const handleReport = async () => {
-        if (confirm('Report this conversation?')) {
+        if (window.confirm('Report this conversation?')) {
             // Implement report functionality
             alert('Report feature coming soon!');
         }

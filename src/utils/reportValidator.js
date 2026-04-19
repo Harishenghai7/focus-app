@@ -1,6 +1,41 @@
 // Report validation utilities
 import { getCategoriesByType, getSeverityLevel } from './reportCategories';
 
+const SAFETY_CATEGORIES = new Set([
+    'hate_speech',
+    'violence',
+    'nsfw',
+    'self_harm',
+    'harassment',
+    'underage',
+    'scam',
+    'unwanted_contact',
+    'bypass_attempt',
+]);
+
+const BUG_CATEGORIES = new Set(['bug', 'app_bug', 'technical_issue', 'crash', 'performance']);
+
+const IMPERSONATION_CATEGORIES = new Set(['impersonation', 'fake_account']);
+
+const normalizeCategory = (category) => String(category || '').trim().toLowerCase();
+
+export const getReportTriageType = (category) => {
+    const normalized = normalizeCategory(category);
+    if (IMPERSONATION_CATEGORIES.has(normalized)) return 'Impersonation';
+    if (BUG_CATEGORIES.has(normalized)) return 'Bug';
+    return 'Safety';
+};
+
+export const getEscalationPriority = (category, contentType) => {
+    const normalized = normalizeCategory(category);
+    if (normalized === 'bypass_attempt') return 'critical';
+    if (SAFETY_CATEGORIES.has(normalized)) {
+        const severity = getSeverityLevel(normalized, contentType);
+        return severity === 'urgent' ? 'critical' : 'high';
+    }
+    return 'medium';
+};
+
 /**
  * Validate report submission data
  * @param {Object} reportData - Report data to validate
@@ -133,6 +168,9 @@ export const validateTicket = (ticketData) => {
  * @returns {Object} - Sanitized report data
  */
 export const sanitizeReportData = (reportData) => {
+    const triageType = getReportTriageType(reportData.category);
+    const escalationPriority = getEscalationPriority(reportData.category, reportData.content_type);
+
     return {
         reporter_id: reportData.reporter_id,
         reported_user_id: reportData.reported_user_id || null,
@@ -141,8 +179,10 @@ export const sanitizeReportData = (reportData) => {
         category: reportData.category,
         description: reportData.description?.trim() || '',
         evidence_urls: reportData.evidence_urls || [],
+        triage_type: triageType,
         status: 'pending',
-        priority: reportData.priority || 'medium'
+        priority: reportData.priority || escalationPriority,
+        escalation_level: escalationPriority
     };
 };
 
@@ -163,9 +203,12 @@ export const sanitizeTicketData = (ticketData) => {
     };
 };
 
-export default {
+const _defaultModule = {
     validateReport,
     validateTicket,
     sanitizeReportData,
     sanitizeTicketData
 };
+
+
+export default _defaultModule;

@@ -279,7 +279,7 @@ export const ADMIN_ACTIONS = [
     }
 ];
 
-export default {
+const _defaultModule = {
     REPORT_CATEGORIES,
     getCategoriesByType,
     getCategoryById,
@@ -288,3 +288,6 @@ export default {
     REPORT_STATUSES,
     ADMIN_ACTIONS
 };
+
+
+export default _defaultModule;

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import styles from './Create.module.css';
 import MainLayout from '../../components/layout/MainLayout';
 import TypeSelect from './TypeSelect';
@@ -6,19 +7,30 @@ import MediaSelect from './MediaSelect';
 import EditMedia from './EditMedia';
 import AddMusic from './AddMusic';
 import PreviewPost from './PreviewPost';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import CreateStepper from '../../components/create/CreateStepper';
+import DetailsStep from './DetailsStep';
 
 const STEPS = {
     TYPE: 0,
     MEDIA: 1,
     EDIT: 2,
     MUSIC: 3,
-    PREVIEW: 4
+    DETAILS: 4,
+    PREVIEW: 5
 };
 
 const Create = () => {
-    const [step, setStep] = useState(STEPS.TYPE);
-    const [createMode, setCreateMode] = useState(null); // 'post', 'boltz', 'flash'
+    const location = useLocation();
+    const initialMode = useMemo(() => {
+        const params = new URLSearchParams(location.search);
+        const tab = params.get('tab');
+        if (tab === 'flash' || tab === 'post' || tab === 'boltz') return tab;
+        return null;
+    }, [location.search]);
+
+    const [step, setStep] = useState(initialMode ? STEPS.MEDIA : STEPS.TYPE);
+    const [createMode, setCreateMode] = useState(initialMode); // 'post', 'boltz', 'flash'
     const [mediaFiles, setMediaFiles] = useState([]);
     const [selectedMusic, setSelectedMusic] = useState(null);
     const [postDetails, setPostDetails] = useState({
@@ -48,56 +60,119 @@ const Create = () => {
         <MainLayout>
             <div className={styles.container}>
                 <div className={styles.wizard}>
+                    <div className={styles.stepperShell}>
+                        <CreateStepper
+                            currentStep={Math.max(0, step - 1)}
+                            completedSteps={Array.from({ length: Math.max(0, step - 1) }, (_, i) => i)}
+                        />
+                    </div>
                     <AnimatePresence mode="wait">
                         {step === STEPS.TYPE && (
-                            <TypeSelect
+                            <motion.div
                                 key="type"
-                                onSelect={(type) => {
-                                    setCreateMode(type);
-                                    handleNext();
-                                }}
-                            />
+                                className={styles.stepFrame}
+                                initial={{ opacity: 0, x: 24 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -18 }}
+                                transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+                            >
+                                <TypeSelect
+                                    onSelect={(type) => {
+                                        setCreateMode(type);
+                                        handleNext();
+                                    }}
+                                />
+                            </motion.div>
                         )}
                         {step === STEPS.MEDIA && (
-                            <MediaSelect
+                            <motion.div
                                 key="media"
-                                mode={createMode}
-                                onNext={(files) => {
-                                    setMediaFiles(files);
-                                    handleNext();
-                                }}
-                                onBack={handleBack}
-                            />
+                                className={styles.stepFrame}
+                                initial={{ opacity: 0, x: 24 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -18 }}
+                                transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+                            >
+                                <MediaSelect
+                                    mode={createMode}
+                                    onNext={(files) => {
+                                        setMediaFiles(files);
+                                        handleNext();
+                                    }}
+                                    onBack={handleBack}
+                                />
+                            </motion.div>
                         )}
                         {step === STEPS.EDIT && (
-                            <EditMedia
+                            <motion.div
                                 key="edit"
-                                mode={createMode}
-                                mediaFiles={mediaFiles}
-                                onUpdateMedia={updateMedia}
-                                onNext={handleNext}
-                                onBack={handleBack}
-                            />
+                                className={styles.stepFrame}
+                                initial={{ opacity: 0, x: 24 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -18 }}
+                                transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+                            >
+                                <EditMedia
+                                    mode={createMode}
+                                    mediaFiles={mediaFiles}
+                                    onUpdateMedia={updateMedia}
+                                    onNext={handleNext}
+                                    onBack={handleBack}
+                                />
+                            </motion.div>
                         )}
                         {step === STEPS.MUSIC && (
-                            <AddMusic
+                            <motion.div
                                 key="music"
-                                selectedMusic={selectedMusic}
-                                onSelect={setSelectedMusic}
-                                onNext={handleNext}
-                                onBack={handleBack}
-                            />
+                                className={styles.stepFrame}
+                                initial={{ opacity: 0, x: 24 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -18 }}
+                                transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+                            >
+                                <AddMusic
+                                    selectedMusic={selectedMusic}
+                                    onSelect={setSelectedMusic}
+                                    onNext={handleNext}
+                                    onBack={handleBack}
+                                />
+                            </motion.div>
+                        )}
+                        {step === STEPS.DETAILS && (
+                            <motion.div
+                                key="details"
+                                className={styles.stepFrame}
+                                initial={{ opacity: 0, x: 24 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -18 }}
+                                transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+                            >
+                                <DetailsStep
+                                    details={postDetails}
+                                    onUpdateDetails={setPostDetails}
+                                    onNext={handleNext}
+                                    onBack={handleBack}
+                                />
+                            </motion.div>
                         )}
                         {step === STEPS.PREVIEW && (
-                            <PreviewPost
+                            <motion.div
                                 key="preview"
-                                mediaFiles={mediaFiles}
-                                details={postDetails}
-                                music={selectedMusic}
-                                createMode={createMode}
-                                onBack={handleBack}
-                                onUpdateDetails={setPostDetails}
-                            />
+                                className={styles.stepFrame}
+                                initial={{ opacity: 0, x: 24 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -18 }}
+                                transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+                            >
+                                <PreviewPost
+                                    mediaFiles={mediaFiles}
+                                    details={postDetails}
+                                    music={selectedMusic}
+                                    createMode={createMode}
+                                    onBack={handleBack}
+                                    onUpdateDetails={setPostDetails}
+                                />
+                            </motion.div>
                         )}
                     </AnimatePresence>
                 </div>

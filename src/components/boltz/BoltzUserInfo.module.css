@@ -27,24 +27,18 @@
 }
 
 .avatar {
-    width: 32px !important;
-    height: 32px !important;
+    width: 36px !important;
+    height: 36px !important;
     border-radius: 50%;
-    object-fit: cover;
     border: 2px solid #ffffff;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
     flex-shrink: 0;
 }
 
-.avatar:hover {
-    transform: scale(1.1);
-}
-
-.avatar:active {
-    transform: scale(0.95);
-}
+.avatar:hover { transform: scale(1.1); }
+.avatar:active { transform: scale(0.95); }
 
 .username {
     font-size: 14px;

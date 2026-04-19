@@ -22,10 +22,12 @@ export const useRobustQuery = (fetchFn, options = {}) => {
     const [error, setError] = useState(null);
     const [retryCount, setRetryCount] = useState(0);
 
-    // Use a ref to track if component is mounted to prevent state updates on unmount
+    // Track mount for Strict Mode: cleanup sets false; we must reset true on each mount
+    // or the second mount's fetch will never call setLoading(false).
     const isMounted = useRef(true);
 
     useEffect(() => {
+        isMounted.current = true;
         return () => {
             isMounted.current = false;
         };

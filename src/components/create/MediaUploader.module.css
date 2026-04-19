@@ -41,7 +41,7 @@
     width: 100%;
     border-radius: var(--radius-xl);
     overflow: hidden;
-    background: black;
+    background: var(--bg-primary);
     display: flex;
     align-items: center;
     justify-content: center;

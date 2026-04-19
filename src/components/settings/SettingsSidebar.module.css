@@ -3,14 +3,16 @@
     top: var(--space-6);
     width: 280px;
     height: fit-content;
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-xl);
+    background: var(--glass-surface);
+    backdrop-filter: var(--blur-xl);
+    -webkit-backdrop-filter: var(--blur-xl);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-2xl);
     padding: var(--space-6);
     display: flex;
     flex-direction: column;
     gap: var(--space-6);
+    box-shadow: var(--shadow-sm);
 }
 
 .sidebarHeader {
@@ -19,13 +21,14 @@
 }
 
 .title {
-    font-size: var(--font-2xl);
-    font-weight: var(--font-bold);
-    background: var(--gradient-primary);
+    font-size: var(--font-3xl);
+    font-weight: 900;
+    background: var(--gradient-brand);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
+    -webkit-text-fill-color: transparent;
     margin: 0;
+    letter-spacing: -0.02em;
 }
 
 .nav {
@@ -41,32 +44,34 @@
     padding: var(--space-3) var(--space-4);
     background: transparent;
     border: 1px solid transparent;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     color: var(--text-secondary);
     font-size: var(--font-base);
-    font-weight: var(--font-medium);
+    font-weight: var(--font-semibold);
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--transition-bounce);
     text-align: left;
 }
 
 .navItem:hover {
-    background: var(--primary-lavender-50);
-    border-color: var(--border-hover);
+    background: var(--glass-surface-hover);
+    border-color: var(--primary-dim);
     color: var(--text-primary);
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
 }
 
 .navItem:focus-visible {
     outline: none;
     border-color: var(--primary-lavender);
-    box-shadow: var(--shadow-focus);
+    box-shadow: 0 0 0 3px var(--primary-dim);
 }
 
 .navItem.active {
-    background: var(--primary-lavender-200);
-    border-color: var(--primary-lavender);
-    color: var(--primary-lavender);
-    box-shadow: var(--shadow-sm);
+    background: var(--gradient-brand);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+    transform: scale(1.02);
 }
 
 .navIcon {

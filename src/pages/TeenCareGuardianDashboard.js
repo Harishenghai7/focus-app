@@ -11,6 +11,7 @@ import { getActivitySummary } from '../utils/activityLogger';
 import ActivityOverview from '../components/teencare/ActivityOverview';
 import SafetyAlertsPanel from '../components/teencare/SafetyAlertsPanel';
 import ControlsPanel from '../components/teencare/ControlsPanel';
+import PageShell from '../components/layout/PageShell';
 import styles from './TeenCareGuardianDashboard.module.css';
 
 const TeenCareGuardianDashboard = () => {
@@ -68,46 +69,38 @@ const TeenCareGuardianDashboard = () => {
 
     const { alerts, unreadCount } = useSafetyAlerts(selectedTeen?.teen_id);
 
-    // Debug logging
-    useEffect(() => {
-        console.log('🔍 Guardian Dashboard Debug:', {
-            teensLoading,
-            teensCount: teens?.length,
-            selectedTeen,
-            alerts: alerts?.length,
-            unreadCount,
-            activityData
-        });
-    }, [teensLoading, teens, selectedTeen, alerts, unreadCount, activityData]);
-
     if (teensLoading) {
         return (
-            <div className={`${styles.guardianDashboard} ${styles.loading}`}>
-                <div className={styles.loaderContainer}>
-                    <div className={styles.loader}></div>
-                    <p>Loading dashboard...</p>
+            <PageShell>
+                <div className={`${styles.guardianDashboard} ${styles.loading}`}>
+                    <div className={styles.loaderContainer}>
+                        <div className={styles.loader}></div>
+                        <p>Loading dashboard...</p>
+                    </div>
                 </div>
-            </div>
+            </PageShell>
         );
     }
 
     if (!teens || teens.length === 0) {
-        console.log('⚠️ No teens found for guardian');
         return (
-            <div className={`${styles.guardianDashboard} ${styles.empty}`}>
-                <div className={styles.emptyState}>
-                    <div className={styles.emptyIcon}>👨‍👩‍👧</div>
-                    <h2>No Teen Accounts Linked</h2>
-                    <p>You haven't linked any teen accounts yet. Send an invitation to get started.</p>
-                    <button className={styles.inviteBtn} onClick={() => navigate('/guardian/invite')}>
-                        Send Invitation
-                    </button>
+            <PageShell>
+                <div className={`${styles.guardianDashboard} ${styles.empty}`}>
+                    <div className={styles.emptyState}>
+                        <div className={styles.emptyIcon}>👨‍👩‍👧</div>
+                        <h2>No Teen Accounts Linked</h2>
+                        <p>You have not linked any teen accounts yet. Use Settings to send an invite when Teen Care is enabled for your region.</p>
+                        <button className={styles.inviteBtn} onClick={() => navigate('/settings')}>
+                            Open Settings
+                        </button>
+                    </div>
                 </div>
-            </div>
+            </PageShell>
         );
     }
 
     return (
+        <PageShell>
         <div className={styles.guardianDashboard}>
             {/* Header */}
             <div className={styles.dashboardHeader}>
@@ -220,6 +213,7 @@ const TeenCareGuardianDashboard = () => {
                 )}
             </div>
         </div>
+        </PageShell>
     );
 };
 

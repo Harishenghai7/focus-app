@@ -237,7 +237,7 @@ export const searchFAQs = (query) => {
     return results;
 };
 
-export default {
+const _defaultModule = {
     SUPPORT_CATEGORIES,
     FAQ_DATA,
     TICKET_STATUSES,
@@ -246,3 +246,6 @@ export default {
     getFAQsByCategory,
     searchFAQs
 };
+
+
+export default _defaultModule;

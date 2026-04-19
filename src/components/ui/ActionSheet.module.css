@@ -1,0 +1,95 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 10, 30, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: var(--z-modal, 1200);
+}
+
+.sheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--glass-bg-solid, rgba(23, 13, 48, 0.95));
+    backdrop-filter: var(--glass-blur, blur(25px));
+    border-top: 1px solid var(--glass-border, rgba(255,255,255,0.12));
+    border-radius: var(--radius-2xl, 24px) var(--radius-2xl, 24px) 0 0;
+    padding: var(--space-4, 16px) var(--space-4, 16px) calc(var(--space-4, 16px) + env(safe-area-inset-bottom));
+    z-index: calc(var(--z-modal, 1200) + 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.handle {
+    width: 40px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    margin: 0 auto var(--space-4, 16px);
+}
+
+.optionsList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1, 4px);
+}
+
+.optionBtn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3, 12px);
+    padding: var(--space-4, 16px);
+    background: transparent;
+    border: none;
+    color: var(--text-primary, #ffffff);
+    font-size: var(--font-base, 16px);
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: var(--radius-lg, 12px);
+    transition: background 0.2s;
+}
+
+.optionBtn:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.optionBtn.danger {
+    color: var(--error, #ef4444);
+}
+
+.optionBtn.danger:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* Desktop sizing adjustments */
+@media (min-width: 768px) {
+    .sheet[data-mode='dropdown'] {
+        position: fixed;
+        bottom: auto;
+        top: 72px;
+        right: 20px;
+        left: auto;
+        transform: none !important;
+        width: 340px;
+        border-radius: var(--radius-xl, 20px);
+        border: 1px solid var(--glass-border);
+    }
+
+    .sheet[data-mode='sheet'] {
+        left: 0;
+        right: 0;
+        top: auto;
+    }
+
+    .sheet[data-mode='dropdown'] .handle {
+        display: none;
+    }
+}

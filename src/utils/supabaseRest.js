@@ -88,19 +88,22 @@ export const fetchPosts = async (options = {}) => {
         userId = null
     } = options;
 
-    let endpoint = `/posts?select=*,user:profiles!posts_user_id_fkey(id,username,full_name,avatar_url,verified)`;
-    endpoint += `&order=${orderBy}.${ascending ? 'asc' : 'desc'}`;
-    endpoint += `&limit=${limit}&offset=${offset}`;
+    let query = supabase.from('posts').select('*, profiles(*)');
 
     if (userId) {
-        endpoint += `&user_id=eq.${userId}`;
+        query = query.eq('user_id', userId);
     }
 
     if (options.userIds && options.userIds.length > 0) {
-        endpoint += `&user_id=in.(${options.userIds.join(',')})`;
+        query = query.in('user_id', options.userIds);
     }
 
-    return supabaseFetch(endpoint);
+    const { data, error } = await query
+        .order(orderBy, { ascending })
+        .range(offset, offset + limit - 1);
+
+    if (error) throw error;
+    return data;
 };
 
 /**
@@ -113,19 +116,22 @@ export const fetchBoltz = async (options = {}) => {
         userId = null
     } = options;
 
-    let endpoint = `/boltz?select=*,user:profiles!boltz_user_id_fkey(id,username,full_name,avatar_url,verified)`;
-    endpoint += `&order=created_at.desc`;
-    endpoint += `&limit=${limit}&offset=${offset}`;
+    let query = supabase.from('boltz').select('*, profiles(*)');
 
     if (userId) {
-        endpoint += `&user_id=eq.${userId}`;
+        query = query.eq('user_id', userId);
     }
 
     if (options.userIds && options.userIds.length > 0) {
-        endpoint += `&user_id=in.(${options.userIds.join(',')})`;
+        query = query.in('user_id', options.userIds);
     }
 
-    return supabaseFetch(endpoint);
+    const { data, error } = await query
+        .order('created_at', { ascending: false })
+        .range(offset, offset + limit - 1);
+
+    if (error) throw error;
+    return data;
 };
 
 /**
@@ -133,23 +139,39 @@ export const fetchBoltz = async (options = {}) => {
  * Only fetches stories from last 24 hours
  */
 export const fetchStories = async (options = {}) => {
-    const {
-        userId = null
-    } = options;
+    const { userId = null } = options;
 
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
-    // Query flash table instead of stories
-    let endpoint = `/flash?select=*,user:profiles!flash_user_id_fkey(id,username,full_name,avatar_url,verified)`;
-    endpoint += `&created_at=gte.${twentyFourHoursAgo}`;
-    endpoint += `&expires_at=gt.${new Date().toISOString()}`; // Only non-expired
-    endpoint += `&order=created_at.desc`;
+    const buildBase = () => {
+        let q = supabase
+            .from('flash')
+            .select('*, profiles(*)')
+            .gte('created_at', twentyFourHoursAgo)
+            .order('created_at', { ascending: false });
+        if (userId) q = q.eq('user_id', userId);
+        return q;
+    };
 
-    if (userId) {
-        endpoint += `&user_id=eq.${userId}`;
+    let query = buildBase().gt('expires_at', new Date().toISOString());
+    let { data, error } = await query;
+
+    if (error) {
+        const simple = await buildBase().limit(80);
+        data = simple.data;
+        error = simple.error;
     }
 
-    return supabaseFetch(endpoint);
+    if (error) throw error;
+
+    return (data || []).map((item) => {
+        const raw = item.profiles;
+        const prof = Array.isArray(raw) ? raw[0] : raw;
+        return {
+            ...item,
+            user: prof || null,
+        };
+    });
 };
 
 /**
@@ -211,13 +233,16 @@ export const fetchTrendingHashtags = async (limit = 10) => {
 /**
  * Search posts by query
  */
-export const searchPosts = async (query, limit = 20) => {
-    let endpoint = `/posts?select=*,user:profiles!posts_user_id_fkey(id,username,full_name,avatar_url,verified)`;
-    endpoint += `&or=(caption.ilike.*${query}*,location.ilike.*${query}*)`;
-    endpoint += `&order=created_at.desc`;
-    endpoint += `&limit=${limit}`;
+export const searchPosts = async (queryStr, limit = 20) => {
+    const { data, error } = await supabase
+        .from('posts')
+        .select('*, profiles(*)')
+        .or(`caption.ilike.%${queryStr}%,location.ilike.%${queryStr}%`)
+        .order('created_at', { ascending: false })
+        .limit(limit);
 
-    return supabaseFetch(endpoint);
+    if (error) throw error;
+    return data;
 };
 
 /**
@@ -382,12 +407,15 @@ export const unsaveBoltz = async (boltzId, userId) => {
 export const fetchComments = async (postId, options = {}) => {
     const { limit = 50, offset = 0 } = options;
 
-    let endpoint = `/comments?select=*,user:profiles!comments_user_id_fkey(id,username,avatar_url,verified)`;
-    endpoint += `&post_id=eq.${postId}`;
-    endpoint += `&order=created_at.desc`;
-    endpoint += `&limit=${limit}&offset=${offset}`;
+    const { data, error } = await supabase
+        .from('comments')
+        .select('*, profiles(*)')
+        .eq('post_id', postId)
+        .order('created_at', { ascending: false })
+        .range(offset, offset + limit - 1);
 
-    return supabaseFetch(endpoint);
+    if (error) throw error;
+    return data;
 };
 
 /**

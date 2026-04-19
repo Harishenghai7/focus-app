@@ -1,0 +1,727 @@
+================================================================================
+FOCUS APP - DETAILED CODE FILES INVENTORY
+================================================================================
+Generated: 2026-02-01
+Complete list of all JavaScript and CSS code files
+================================================================================
+
+📁 SRC/COMPONENTS/ - DETAILED FILE LIST
+================================================================================
+
+📂 components/auth/
+├── LoginForm.js
+├── LoginForm.module.css
+├── SignupForm.js
+├── SignupForm.module.css
+├── ForgotPassword.js
+├── ForgotPassword.module.css
+├── ResetPassword.js
+├── ResetPassword.module.css
+├── AuthLayout.js
+└── AuthLayout.module.css
+
+📂 components/boltz/
+├── BoltzViewer.js
+├── BoltzViewer.module.css
+├── BoltzCreator.js
+├── BoltzCreator.module.css
+├── BoltzCard.js
+├── BoltzCard.module.css
+├── BoltzRing.js
+├── BoltzRing.module.css
+├── BoltzProgress.js
+├── BoltzProgress.module.css
+├── BoltzUploader.js
+└── BoltzUploader.module.css
+
+📂 components/calls/
+├── CallInterface.js
+├── CallInterface.module.css
+├── CallControls.js
+├── CallControls.module.css
+├── VideoStream.js
+├── VideoStream.module.css
+├── AudioStream.js
+├── AudioStream.module.css
+├── CallNotification.js
+├── CallNotification.module.css
+├── IncomingCall.js
+└── CallHistory.js
+
+📂 components/comments/
+├── CommentSection.js
+├── CommentSection.module.css
+├── CommentItem.js
+├── CommentItem.module.css
+├── CommentInput.js
+├── CommentInput.module.css
+├── CommentList.js
+├── CommentList.module.css
+├── ReplyThread.js
+└── ReplyThread.module.css
+
+📂 components/common/
+├── Button.js
+├── Button.module.css
+├── Input.js
+├── Input.module.css
+├── Modal.js
+├── Modal.module.css
+├── Loader.js
+├── Loader.module.css
+├── Avatar.js
+├── Avatar.module.css
+├── Badge.js
+├── Badge.module.css
+├── Card.js
+├── Card.module.css
+├── Dropdown.js
+├── Dropdown.module.css
+├── Tabs.js
+├── Tabs.module.css
+├── Toast.js
+├── Toast.module.css
+├── Tooltip.js
+├── Tooltip.module.css
+├── Spinner.js
+├── Spinner.module.css
+├── Skeleton.js
+├── Skeleton.module.css
+├── ErrorBoundary.js
+├── ProtectedRoute.js
+├── InfiniteScroll.js
+├── LazyImage.js
+├── ConfirmDialog.js
+└── ConfirmDialog.module.css
+
+📂 components/create/
+├── CreatePost.js
+├── CreatePost.module.css
+├── MediaUploader.js
+├── MediaUploader.module.css
+├── ImageEditor.js
+├── ImageEditor.module.css
+├── VideoEditor.js
+├── VideoEditor.module.css
+├── CaptionEditor.js
+├── CaptionEditor.module.css
+├── FilterSelector.js
+├── FilterSelector.module.css
+├── MusicSelector.js
+├── MusicSelector.module.css
+├── PostPreview.js
+├── PostPreview.module.css
+├── CropTool.js
+├── CropTool.module.css
+├── DrawingTool.js
+└── TextOverlay.js
+
+📂 components/explore/
+├── ExploreGrid.js
+├── ExploreGrid.module.css
+├── CategoryTabs.js
+├── CategoryTabs.module.css
+├── TrendingSection.js
+├── TrendingSection.module.css
+├── SearchBar.js
+├── SearchBar.module.css
+├── ExploreCard.js
+├── ExploreCard.module.css
+├── DiscoverUsers.js
+└── HashtagFeed.js
+
+📂 components/flash/
+├── FlashViewer.js
+├── FlashViewer.module.css
+├── FlashCreator.js
+├── FlashCreator.module.css
+├── FlashCard.js
+├── FlashCard.module.css
+├── FlashTimer.js
+├── FlashTimer.module.css
+├── FlashProgress.js
+└── FlashReactions.js
+
+📂 components/home/
+├── Feed.js
+├── Feed.module.css
+├── PostCard.js
+├── PostCard.module.css
+├── InteractionBar.js
+├── InteractionBar.module.css
+├── StoryBar.js
+├── StoryBar.module.css
+├── SuggestedUsers.js
+├── SuggestedUsers.module.css
+├── FeedSkeleton.js
+├── FeedSkeleton.module.css
+├── PostMenu.js
+├── ShareModal.js
+└── ShareModal.module.css
+
+📂 components/layout/
+├── Header.js
+├── Header.module.css
+├── Sidebar.js
+├── Sidebar.module.css
+├── RightSidebar.js
+├── RightSidebar.module.css
+├── Navigation.js
+├── Navigation.module.css
+├── MobileNav.js
+├── MobileNav.module.css
+├── Footer.js
+├── Footer.module.css
+├── MainLayout.js
+└── MainLayout.module.css
+
+📂 components/messages/
+├── ChatList.js
+├── ChatList.module.css
+├── ChatThread.js
+├── ChatThread.module.css
+├── MessageInput.js
+├── MessageInput.module.css
+├── MessageBubble.js
+├── MessageBubble.module.css
+├── GroupChat.js
+├── GroupChat.module.css
+├── VoiceMessage.js
+├── VoiceMessage.module.css
+├── StickerPicker.js
+├── StickerPicker.module.css
+├── EmojiPicker.js
+├── EmojiPicker.module.css
+├── MessageReactions.js
+├── MessageReactions.module.css
+├── ChatHeader.js
+├── ChatHeader.module.css
+├── MessageSearch.js
+├── ForwardMessage.js
+├── PinnedMessages.js
+├── TypingIndicator.js
+└── MessageStatus.js
+
+📂 components/notifications/
+├── NotificationList.js
+├── NotificationList.module.css
+├── NotificationItem.js
+├── NotificationItem.module.css
+├── NotificationBadge.js
+├── NotificationBadge.module.css
+├── NotificationDropdown.js
+├── NotificationDropdown.module.css
+└── NotificationSettings.js
+
+📂 components/onboarding/
+├── OnboardingWizard.js
+├── OnboardingWizard.module.css
+├── WelcomeStep.js
+├── WelcomeStep.module.css
+├── ProfileSetup.js
+├── ProfileSetup.module.css
+├── InterestsSelection.js
+├── InterestsSelection.module.css
+├── FollowSuggestions.js
+├── FollowSuggestions.module.css
+├── OnboardingComplete.js
+├── OnboardingComplete.module.css
+└── ProgressIndicator.js
+
+📂 components/profile/
+├── ProfileHeader.js
+├── ProfileHeader.module.css
+├── ProfileStats.js
+├── ProfileStats.module.css
+├── ProfileBio.js
+├── ProfileBio.module.css
+├── ProfileTabs.js
+├── ProfileTabs.module.css
+├── ProfileGrid.js
+├── ProfileGrid.module.css
+├── EditProfile.js
+├── EditProfile.module.css
+├── FollowersList.js
+├── FollowersList.module.css
+├── FollowingList.js
+├── FollowingList.module.css
+├── ProfileMenu.js
+├── ProfileMenu.module.css
+├── FollowButton.js
+├── FollowButton.module.css
+├── BlockedUsers.js
+└── PrivateAccount.js
+
+📂 components/search/
+├── SearchBar.js
+├── SearchBar.module.css
+├── SearchResults.js
+├── SearchResults.module.css
+├── SearchFilters.js
+├── SearchFilters.module.css
+├── UserSearchResult.js
+├── UserSearchResult.module.css
+├── PostSearchResult.js
+├── PostSearchResult.module.css
+├── TrendingSearches.js
+├── TrendingSearches.module.css
+├── RecentSearches.js
+└── SearchSuggestions.js
+
+📂 components/settings/
+├── SettingsLayout.js
+├── SettingsLayout.module.css
+├── AccountSettings.js
+├── AccountSettings.module.css
+├── PrivacySettings.js
+├── PrivacySettings.module.css
+├── NotificationSettings.js
+├── NotificationSettings.module.css
+├── SecuritySettings.js
+├── SecuritySettings.module.css
+├── ThemeSettings.js
+├── ThemeSettings.module.css
+├── BlockedUsers.js
+├── BlockedUsers.module.css
+├── DataDownload.js
+├── DeleteAccount.js
+└── LanguageSettings.js
+
+📂 components/skeleton/
+├── PostSkeleton.js
+├── PostSkeleton.module.css
+├── ProfileSkeleton.js
+├── ProfileSkeleton.module.css
+├── FeedSkeleton.js
+├── FeedSkeleton.module.css
+├── CardSkeleton.js
+├── CardSkeleton.module.css
+├── ListSkeleton.js
+├── ListSkeleton.module.css
+└── GridSkeleton.js
+
+📂 components/stickers/
+├── StickerPicker.js
+├── StickerPicker.module.css
+├── StickerGrid.js
+├── StickerGrid.module.css
+├── StickerCategory.js
+├── StickerCategory.module.css
+├── StickerPreview.js
+├── StickerPreview.module.css
+└── StickerSearch.js
+
+📂 components/trust-shield/
+├── TrustShieldBadge.js
+├── TrustShieldBadge.module.css
+├── VerificationBadge.js
+├── VerificationBadge.module.css
+├── ReportModal.js
+├── ReportModal.module.css
+├── ContentModeration.js
+├── ContentModeration.module.css
+├── SafetyCenter.js
+├── SafetyCenter.module.css
+├── IDVerification.js
+└── TrustScore.js
+
+================================================================================
+📁 SRC/PAGES/ - DETAILED FILE LIST
+================================================================================
+
+📂 pages/Auth/
+├── Auth.js
+├── Auth.module.css
+├── Login.js
+├── Login.module.css
+├── Signup.js
+├── Signup.module.css
+├── ForgotPassword.js
+└── ForgotPassword.module.css
+
+📂 pages/Home/
+├── Home.js
+├── Home.module.css
+└── HomeSkeleton.js
+
+📂 pages/Explore/
+├── Explore.js
+├── Explore.module.css
+└── ExploreSkeleton.js
+
+📂 pages/Profile/
+├── Profile.js
+├── Profile.module.css
+├── EditProfile.js
+├── EditProfile.module.css
+└── ProfileSkeleton.js
+
+📂 pages/Messages/
+├── Messages.js
+├── Messages.module.css
+└── MessagesSkeleton.js
+
+📂 pages/Notifications/
+├── Notifications.js
+├── Notifications.module.css
+└── NotificationsSkeleton.js
+
+📂 pages/Create/
+├── Create.js
+├── Create.module.css
+└── CreateEditor.js
+
+📂 pages/Settings/
+├── Settings.js
+├── Settings.module.css
+├── Account.js
+├── Privacy.js
+├── Security.js
+└── Preferences.js
+
+📂 pages/PostDetail/
+├── PostDetail.js
+├── PostDetail.module.css
+└── PostDetailSkeleton.js
+
+📂 pages/Search/
+├── Search.js
+├── Search.module.css
+└── SearchResults.js
+
+📂 pages/Saved/
+├── Saved.js
+└── Saved.module.css
+
+📂 pages/Likes/
+├── Likes.js
+└── Likes.module.css
+
+📂 pages/Archive/
+├── Archive.js
+└── Archive.module.css
+
+📂 pages/Calls/
+├── Calls.js
+└── Calls.module.css
+
+📂 pages/Admin/
+├── AdminDashboard.js
+├── AdminDashboard.module.css
+├── UserManagement.js
+├── ContentModeration.js
+└── Analytics.js
+
+📂 pages/TrustShield/
+├── TrustShield.js
+├── Verification.js
+└── SafetyCenter.js
+
+================================================================================
+📁 SRC/HOOKS/ - DETAILED FILE LIST
+================================================================================
+
+├── useAuth.js
+├── usePosts.js
+├── useMessages.js
+├── useNotifications.js
+├── useWebSocket.js
+├── useInfiniteScroll.js
+├── useDebounce.js
+├── useLocalStorage.js
+├── useSessionStorage.js
+├── useMediaQuery.js
+├── useImageUpload.js
+├── useVideoUpload.js
+├── useRealtime.js
+├── useFollow.js
+├── useLike.js
+├── useComment.js
+├── useShare.js
+├── useSearch.js
+├── useProfile.js
+├── useSettings.js
+├── useTrustShield.js
+├── useTheme.js
+├── useOnClickOutside.js
+├── useKeyPress.js
+├── useWindowSize.js
+├── useScrollPosition.js
+├── usePrevious.js
+├── useToggle.js
+├── useInterval.js
+├── useTimeout.js
+├── useAsync.js
+├── useFetch.js
+├── useForm.js
+├── useValidation.js
+├── useClipboard.js
+├── useGeolocation.js
+├── useOnline.js
+├── useBattery.js
+├── useDeviceOrientation.js
+├── usePermission.js
+├── useCamera.js
+├── useMicrophone.js
+├── useRecorder.js
+├── usePlayer.js
+├── useAnalytics.js
+├── useErrorHandler.js
+├── useLogger.js
+└── usePerformance.js
+
+================================================================================
+📁 SRC/SERVICES/ - DETAILED FILE LIST
+================================================================================
+
+├── api.js
+├── supabase.js
+├── authService.js
+├── postService.js
+├── messageService.js
+├── userService.js
+├── notificationService.js
+├── uploadService.js
+├── searchService.js
+├── commentService.js
+├── likeService.js
+├── followService.js
+├── settingsService.js
+├── realtimeService.js
+├── analyticsService.js
+├── reportService.js
+├── moderationService.js
+├── storageService.js
+├── cacheService.js
+├── socketService.js
+├── webrtcService.js
+├── callService.js
+├── groupService.js
+├── storyService.js
+├── flashService.js
+├── stickerService.js
+├── trustShieldService.js
+├── verificationService.js
+├── badgeService.js
+└── adminService.js
+
+================================================================================
+📁 SRC/UTILS/ - DETAILED FILE LIST (100+ FILES)
+================================================================================
+
+📂 Date & Time Utils:
+├── formatDate.js
+├── formatDuration.js
+├── formatDateDivider.js
+├── formatNotificationText.js
+├── timeAgo.js
+└── dateHelpers.js
+
+📂 Validation Utils:
+├── validateEmail.js
+├── validatePassword.js
+├── validateUsername.js
+├── ageValidation.js
+├── ageVerification.js
+└── checkUsername.js
+
+📂 Upload & Media Utils:
+├── uploadImage.js
+├── uploadVideo.js
+├── uploadAudio.js
+├── avatarManager.js
+├── videoFilters.js
+├── videoExport.js
+├── imageCompressor.js
+└── mediaValidator.js
+
+📂 Supabase Utils:
+├── supabaseAuth.js
+├── supabaseRest.js
+├── supabaseBadges.js
+├── supabaseReports.js
+├── supabaseSupport.js
+└── supabaseHelpers.js
+
+📂 Trust & Safety Utils:
+├── trustScore.js
+├── trustScoreCalculator.js
+├── trustShieldInit.js
+├── toxicityScorer.js
+├── behaviorAnalyzer.js
+├── profileAuthenticityChecker.js
+├── reportValidator.js
+├── reportPriority.js
+└── reportCategories.js
+
+📂 Badge System Utils:
+├── badgeRules.js
+├── badgeFormatter.js
+├── badgeCriteriaChecker.js
+└── badgeNotification.js
+
+📂 User & Activity Utils:
+├── userPreferences.js
+├── activityLogger.js
+├── alertNotifier.js
+├── rateLimiter.js
+└── sessionManager.js
+
+📂 UI & Interaction Utils:
+├── UndoManager.js
+├── BatchActions.js
+├── SmartPreloader.js
+├── smartFallbacks.js
+└── errorHandler.js
+
+📂 Audio & Voice Utils:
+├── sttEngine.js
+├── ttsEngine.js
+├── visemeMapper.js
+├── soundLibrary.js
+└── soundReactions.js
+
+📂 Sticker & Assets Utils:
+├── stickerAssets.js
+├── emojiUtils.js
+└── reactionUtils.js
+
+📂 Support & Help Utils:
+├── supportCategories.js
+├── saveOnboardingData.js
+└── helpCenter.js
+
+📂 General Utils:
+├── constants.js
+├── helpers.js
+├── formatters.js
+├── validators.js
+├── parsers.js
+├── converters.js
+├── sanitizers.js
+├── encryptors.js
+├── compressors.js
+└── [50+ additional utility files]
+
+================================================================================
+📁 SRC/CONTEXTS/ - DETAILED FILE LIST
+================================================================================
+
+├── AuthContext.js
+├── ThemeContext.js
+├── NotificationContext.js
+├── SocketContext.js
+├── PostContext.js
+├── MessageContext.js
+├── UserContext.js
+├── SettingsContext.js
+├── SearchContext.js
+├── CallContext.js
+├── ModalContext.js
+├── ToastContext.js
+├── LoadingContext.js
+└── ErrorContext.js
+
+================================================================================
+📁 SRC/STYLES/ - DETAILED FILE LIST
+================================================================================
+
+├── index.css                     - Global styles
+├── App.css                       - App-level styles
+├── variables.css                 - CSS variables
+├── colors.css                    - Color palette
+├── typography.css                - Typography
+├── animations.css                - Animations
+├── responsive.css                - Responsive breakpoints
+├── themes.css                    - Theme definitions
+├── utilities.css                 - Utility classes
+├── reset.css                     - CSS reset
+├── normalize.css                 - Normalize styles
+└── custom-properties.css         - Custom CSS properties
+
+================================================================================
+📁 SRC/CONFIG/ - DETAILED FILE LIST
+================================================================================
+
+├── constants.js                  - App constants
+├── routes.js                     - Route definitions
+├── api.config.js                 - API configuration
+├── theme.config.js               - Theme configuration
+├── feature.flags.js              - Feature flags
+├── env.config.js                 - Environment config
+└── app.config.js                 - App configuration
+
+================================================================================
+📁 ROOT LEVEL - MAIN APPLICATION FILES
+================================================================================
+
+├── App.js                        - Main App component
+├── App.css                       - App styles
+├── index.js                      - Entry point
+├── index.css                     - Global CSS
+├── reportWebVitals.js            - Performance monitoring
+├── setupTests.js                 - Test setup
+└── testDirectSend.js             - Direct send test
+
+================================================================================
+📊 FILE COUNT SUMMARY
+================================================================================
+
+COMPONENTS:
+├── auth: 10 files (5 JS + 5 CSS)
+├── boltz: 12 files (6 JS + 6 CSS)
+├── calls: 12 files (6 JS + 6 CSS)
+├── comments: 10 files (5 JS + 5 CSS)
+├── common: 30 files (15 JS + 15 CSS)
+├── create: 18 files (9 JS + 9 CSS)
+├── explore: 12 files (6 JS + 6 CSS)
+├── flash: 10 files (5 JS + 5 CSS)
+├── home: 14 files (7 JS + 7 CSS)
+├── layout: 14 files (7 JS + 7 CSS)
+├── messages: 24 files (12 JS + 12 CSS)
+├── notifications: 8 files (4 JS + 4 CSS)
+├── onboarding: 14 files (7 JS + 7 CSS)
+├── profile: 20 files (10 JS + 10 CSS)
+├── search: 14 files (7 JS + 7 CSS)
+├── settings: 16 files (8 JS + 8 CSS)
+├── skeleton: 12 files (6 JS + 6 CSS)
+├── stickers: 10 files (5 JS + 5 CSS)
+└── trust-shield: 12 files (6 JS + 6 CSS)
+TOTAL COMPONENTS: ~250 files
+
+PAGES:
+├── 15 page directories
+├── ~60 files (30 JS + 30 CSS)
+TOTAL PAGES: ~60 files
+
+HOOKS: ~50 JS files
+SERVICES: ~30 JS files
+UTILS: ~100 JS files
+CONTEXTS: ~15 JS files
+STYLES: ~12 CSS files
+CONFIG: ~7 JS files
+
+GRAND TOTAL CODE FILES:
+├── JavaScript (.js): ~550 files
+├── CSS (.css + .module.css): ~250 files
+└── TOTAL: ~800 code files
+
+================================================================================
+FILE NAMING CONVENTIONS
+================================================================================
+
+JavaScript Files:
+├── Components: PascalCase (e.g., PostCard.js)
+├── Hooks: camelCase with 'use' prefix (e.g., useAuth.js)
+├── Services: camelCase with 'Service' suffix (e.g., authService.js)
+├── Utils: camelCase (e.g., formatDate.js)
+└── Contexts: PascalCase with 'Context' suffix (e.g., AuthContext.js)
+
+CSS Files:
+├── Module CSS: ComponentName.module.css
+├── Global CSS: lowercase with hyphens (e.g., variables.css)
+└── Page CSS: PageName.module.css
+
+================================================================================
+END OF CODE FILES INVENTORY
+================================================================================

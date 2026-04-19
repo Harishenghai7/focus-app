@@ -1,23 +1,36 @@
+/* Create Page - Royal Lavender Theme */
+
 .container {
     height: calc(100vh - 60px);
-    /* Adjust for navbar */
     display: flex;
     justify-content: center;
     align-items: center;
     background: var(--bg-primary);
+    background-image: var(--gradient-mesh);
 }
 
 .wizard {
     width: 100%;
     max-width: 1000px;
     height: 90%;
-    background: var(--bg-secondary);
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    background: var(--glass-surface);
+    backdrop-filter: var(--blur-xl);
+    -webkit-backdrop-filter: var(--blur-xl);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-2xl);
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--border-default);
+    border: 1px solid var(--glass-border);
+}
+
+.stepperShell {
+    padding: 18px 20px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stepFrame {
+    height: calc(100% - 84px);
 }
 
 @media (max-width: 768px) {

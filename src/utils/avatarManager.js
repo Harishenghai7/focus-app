@@ -6,18 +6,24 @@ import { supabase } from '../lib/supabase';
  */
 export const getUserAvatarUrl = (user, profile) => {
     // 1. Check profile table first (highest priority)
-    if (profile?.avatar_url) {
-        return profile.avatar_url;
+    if (profile?.avatar_url && String(profile.avatar_url).trim() !== '') {
+        return String(profile.avatar_url).trim();
     }
 
     // 2. Check OAuth metadata (second priority)
-    if (user?.user_metadata?.avatar_url) {
-        return user.user_metadata.avatar_url;
+    const meta = user?.user_metadata || {};
+    const oauthAvatar =
+        meta.avatar_url ||
+        meta.picture ||
+        null;
+
+    if (oauthAvatar && String(oauthAvatar).trim() !== '') {
+        return String(oauthAvatar).trim();
     }
 
     // 3. Fallback to generated avatar
     const username = profile?.username || user?.user_metadata?.username || user?.email?.split('@')[0] || 'User';
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=B794F6&color=fff&size=128`;
+    return `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(username || 'focus')}`;
 };
 
 /**

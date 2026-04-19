@@ -335,7 +335,7 @@ export const checkRateLimit = async (teenId, alertType, windowMinutes = 60) => {
     }
 };
 
-export default {
+const _defaultModule = {
     sendPushNotification,
     sendEmailNotification,
     sendSMSNotification,
@@ -345,3 +345,6 @@ export default {
     createStrangerContactAlert,
     checkRateLimit
 };
+
+
+export default _defaultModule;

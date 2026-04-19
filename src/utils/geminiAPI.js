@@ -220,9 +220,12 @@ export const analyzeIntent = (message) => {
     };
 };
 
-export default {
+const _defaultModule = {
     generateResponse,
     generateStreamingResponse,
     getContextSuggestions,
     analyzeIntent
 };
+
+
+export default _defaultModule;

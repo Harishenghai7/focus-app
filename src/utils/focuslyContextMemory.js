@@ -393,7 +393,7 @@ export const importData = (data) => {
     }
 };
 
-export default {
+const _defaultModule = {
     saveMessage,
     getConversationHistory,
     clearConversationHistory,
@@ -415,3 +415,6 @@ export default {
     exportData,
     importData
 };
+
+
+export default _defaultModule;

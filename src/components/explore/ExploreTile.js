@@ -1,37 +1,45 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './ExploreTile.module.css';
 import Icon from '../ui/Icon';
 import { formatNumber } from '../../utils/formatNumber';
 
 const ExploreTile = ({ post, onClick }) => {
+    const [hasError, setHasError] = useState(false);
     const isVideo = post.type === 'video' || post.type === 'boltz';
     const isMultiple = (post.media_urls?.length > 1) || (post.media?.length > 1);
 
     const mediaUrl = post.media_urls?.[0] || post.media_url || post.media?.[0]?.url;
+    const posterUrl = post.thumbnail_url || post.poster_url || post.preview_image || mediaUrl;
 
     return (
         <div className={styles.tile} onClick={onClick}>
             <div className={styles.mediaWrapper}>
-                {isVideo ? (
+                {isVideo && !hasError ? (
                     <video
                         src={mediaUrl}
+                        poster={posterUrl}
                         className={styles.media}
                         muted
                         loop
                         playsInline
+                        preload="metadata"
                         onMouseOver={e => e.target.play()}
                         onMouseOut={e => {
                             e.target.pause();
                             e.target.currentTime = 0;
                         }}
+                        onError={() => setHasError(true)}
                     />
-                ) : (
+                ) : !hasError ? (
                     <img
-                        src={mediaUrl}
+                        src={posterUrl}
                         alt="Post content"
                         className={styles.media}
                         loading="lazy"
+                        onError={() => setHasError(true)}
                     />
+                ) : (
+                    <div className={styles.media}>Focusly</div>
                 )}
 
                 {/* Type Indicators */}

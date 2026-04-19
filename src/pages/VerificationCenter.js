@@ -5,6 +5,7 @@ import VerificationStep from '../components/trustShield/VerificationStep';
 import { useVerifications } from '../hooks/useVerifications';
 import { useAuth } from '../hooks/useAuth';
 import { toast } from 'react-toastify';
+import PageShell from '../components/layout/PageShell';
 import styles from './VerificationCenter.module.css';
 
 const VerificationCenter = () => {
@@ -19,7 +20,13 @@ const VerificationCenter = () => {
         }
     }, [authLoading, user, navigate]);
 
-    if (authLoading) return <div className={styles.loading}>Loading...</div>;
+    if (authLoading) {
+        return (
+            <PageShell>
+                <div className={styles.loading}>Loading…</div>
+            </PageShell>
+        );
+    }
     if (!user) return null;
 
     const handleEmailVerify = async () => {
@@ -53,14 +60,16 @@ const VerificationCenter = () => {
     };
 
     const steps = [
+
         {
-            id: 'email',
-            title: 'Email Verification',
-            description: `Verify your email address (${user?.email}) to secure your account.`,
-            icon: FaEnvelope,
-            points: 20,
-            status: verifications.email ? 'completed' : 'pending',
-            action: handleEmailVerify
+            id: 'trust-shield',
+            title: 'Focus Trust Shield Liveness',
+            description: 'Verify your human identity instantly using on-device AI liveness detection.',
+            icon: FaUser,
+            points: 200,
+            badge: 'Elite Security',
+            status: 'pending',
+            action: () => navigate('/verification/trust-shield')
         },
         {
             id: 'profile',
@@ -72,14 +81,14 @@ const VerificationCenter = () => {
             action: handleProfileVerify
         },
         {
-            id: 'government-id',
-            title: 'Government ID Verification',
-            description: 'Verify your identity with DigiLocker and face recognition',
+            id: 'focus-id',
+            title: 'Focus ID Authentication',
+            description: 'Level up your Focus Trust Tier using our multi-signal verification engine.',
             icon: FaFingerprint,
-            points: 50,
-            badge: 'Verified Human',
-            status: user?.digilocker_verified && user?.face_verified ? 'completed' : 'pending',
-            action: () => navigate('/verification/government-id')
+            points: 100,
+            badge: 'Trust Score',
+            status: user?.trust_tier >= 4 ? 'completed' : 'pending',
+            action: () => navigate('/verification/focus-id')
         },
         {
             id: 'oauth',
@@ -103,6 +112,7 @@ const VerificationCenter = () => {
 
 
     return (
+        <PageShell>
         <div className={styles.page}>
             <div className={styles.header}>
                 <h1 className={styles.title}>Verification Center</h1>
@@ -141,6 +151,7 @@ const VerificationCenter = () => {
                 ))}
             </div>
         </div>
+        </PageShell>
     );
 };
 

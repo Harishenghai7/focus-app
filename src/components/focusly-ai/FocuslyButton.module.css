@@ -1,0 +1,192 @@
+.button {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #a78bfa 0%, #c084fc 50%, #ee7bfa 100%);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+        0 8px 32px rgba(167, 139, 250, 0.4),
+        0 0 0 0 rgba(167, 139, 250, 0.7);
+    z-index: var(--z-focusly);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: float 3s ease-in-out infinite, pulse 2s ease-in-out infinite;
+    overflow: hidden;
+}
+
+.button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    padding: 3px;
+    background: linear-gradient(135deg, #a78bfa, #c084fc, #ee7bfa, #a78bfa);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: rotate 3s linear infinite;
+}
+
+.button:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow:
+        0 12px 48px rgba(167, 139, 250, 0.6),
+        0 0 0 8px rgba(167, 139, 250, 0.2);
+    animation: float 3s ease-in-out infinite, pulse 1s ease-in-out infinite;
+}
+
+.button:active {
+    transform: scale(1.05);
+}
+
+.iconWrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.icon {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+    animation: sparkle 2s ease-in-out infinite;
+}
+
+.glow {
+    position: absolute;
+    inset: -20px;
+    background: radial-gradient(circle, rgba(167, 139, 250, 0.4) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: glowPulse 2s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: linear-gradient(135deg, #ef4444 0%, #ff6b6b 100%);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid var(--bg-primary);
+    box-shadow: 0 2px 8px rgba(255, 83, 120, 0.5);
+    animation: bounce 2s ease-in-out infinite;
+    z-index: 3;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 8px 32px rgba(167, 139, 250, 0.4),
+            0 0 0 0 rgba(167, 139, 250, 0.7);
+    }
+
+    50% {
+        box-shadow:
+            0 8px 32px rgba(167, 139, 250, 0.6),
+            0 0 0 12px rgba(167, 139, 250, 0);
+    }
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes sparkle {
+
+    0%,
+    100% {
+        transform: scale(1) rotate(0deg);
+        filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) brightness(1);
+    }
+
+    50% {
+        transform: scale(1.05) rotate(5deg);
+        filter: drop-shadow(0 4px 12px rgba(167, 139, 250, 0.6)) brightness(1.2);
+    }
+}
+
+@keyframes glowPulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: scale(1.2);
+    }
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .button {
+        width: 60px;
+        height: 60px;
+        bottom: 20px;
+        right: 20px;
+    }
+
+    .icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .badge {
+        min-width: 20px;
+        height: 20px;
+        font-size: 0.65rem;
+    }
+}

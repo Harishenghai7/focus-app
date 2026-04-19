@@ -20,8 +20,10 @@ export const useProfile = (username) => {
     const fetchProfileData = useCallback(async () => {
         if (!username) throw new Error('No username provided');
 
-        console.log('🔍 Fetching profile:', username);
-        const isOwnProfile = currentUser && username === currentUser.id;
+        const isOwnProfile =
+            Boolean(currentUser) &&
+            (username === currentUser.id ||
+                (authProfile?.username && username === authProfile.username));
 
         // A. Own Profile
         if (isOwnProfile && authProfile) {
@@ -42,16 +44,18 @@ export const useProfile = (username) => {
 
         // B. Other Profile
         const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(username);
-        const queryParam = isUuid ? `id=eq.${username}` : `username=eq.${username}`;
-        const fetchUrl = `${supabaseUrl}/rest/v1/profiles?${queryParam}&select=*`;
+        
+        let query = supabase.from('profiles').select('*');
+        if (isUuid) {
+            query = query.eq('id', username);
+        } else {
+            query = query.eq('username', username);
+        }
 
-        const response = await fetch(fetchUrl, {
-            headers: { 'apikey': supabaseAnonKey, 'Authorization': `Bearer ${supabaseAnonKey}` }
-        });
-
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const rows = await response.json();
-        const data = rows[0];
+        const { data: rows, error: fetchError } = await query;
+        
+        if (fetchError) throw fetchError;
+        const data = rows?.[0];
         if (!data) throw new Error('Profile not found');
 
         // Fetch counts & relation

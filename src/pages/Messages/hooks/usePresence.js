@@ -10,6 +10,7 @@ export const usePresence = (currentUserId) => {
     const [presenceMap, setPresenceMap] = useState(new Map());
     const heartbeatIntervalRef = useRef(null);
     const subscriptionRef = useRef(null);
+    const realtimePresenceRef = useRef(null);
 
     // Update own presence
     const setOnline = useCallback(async (isOnline) => {
@@ -57,6 +58,36 @@ export const usePresence = (currentUserId) => {
 
     // Subscribe to presence updates
     useEffect(() => {
+        const realtimeChannel = supabase.channel('focus-messages-presence', {
+            config: { presence: { key: currentUserId || 'anonymous' } }
+        });
+        realtimePresenceRef.current = realtimeChannel;
+        realtimeChannel
+            .on('presence', { event: 'sync' }, () => {
+                const state = realtimeChannel.presenceState();
+                setPresenceMap((prev) => {
+                    const next = new Map(prev);
+                    Object.keys(state).forEach((userId) => {
+                        if (!userId) return;
+                        const rows = state[userId];
+                        const latest = rows?.[rows.length - 1];
+                        next.set(userId, {
+                            isOnline: true,
+                            lastSeenAt: latest?.last_seen_at || new Date().toISOString(),
+                        });
+                    });
+                    return next;
+                });
+            })
+            .subscribe(async (status) => {
+                if (status === 'SUBSCRIBED' && currentUserId) {
+                    await realtimeChannel.track({
+                        user_id: currentUserId,
+                        last_seen_at: new Date().toISOString(),
+                    });
+                }
+            });
+
         subscriptionRef.current = supabase
             .channel('user_presence')
             .on('postgres_changes', {
@@ -78,6 +109,10 @@ export const usePresence = (currentUserId) => {
             .subscribe();
 
         return () => {
+            if (realtimePresenceRef.current) {
+                realtimePresenceRef.current.untrack();
+                supabase.removeChannel(realtimePresenceRef.current);
+            }
             if (subscriptionRef.current) {
                 subscriptionRef.current.unsubscribe();
             }

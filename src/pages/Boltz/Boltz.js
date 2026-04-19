@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import MainLayout from '../../components/layout/MainLayout';
 import styles from './Boltz.module.css';
 import BoltzTabs from '../../components/boltz/BoltzTabs';
@@ -11,18 +11,19 @@ import BoltzOptionsModal from '../../components/modals/BoltzOptionsModal';
 import MusicPageModal from '../../components/modals/MusicPageModal';
 import LoadingSpinner from '../../components/shared/LoadingSpinner';
 import { useBoltzFeed } from '../../hooks/useBoltzFeed';
-import { useVideoPlayer } from '../../hooks/useVideoPlayer';
+import { useBoltzIntersection } from '../../hooks/useBoltzIntersection';
 import { useSwipeNavigation } from '../../hooks/useSwipeNavigation';
 import { useLike } from '../../hooks/useLike';
 import { useSave } from '../../hooks/useSave';
 import { useFollow } from '../../hooks/useFollow';
-import { useAuth } from '../../hooks/useAuth';
-import { preloadVideos } from '../../utils/preloadVideos';
+import { useFocusIdentity } from '../../context/FocusIdentityContext';
+import { useInteractions } from '../../hooks/useInteractions';
 
 const Boltz = () => {
-    const { id } = useParams(); // Get boltz ID from URL
+    const { id } = useParams();
+    const location = useLocation();
+    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('foryou');
-    const [currentIndex, setCurrentIndex] = useState(0);
     const [playing, setPlaying] = useState(true);
     const [muted, setMuted] = useState(true);
 
@@ -33,118 +34,109 @@ const Boltz = () => {
     const [showMusic, setShowMusic] = useState(false);
     const [selectedMusic, setSelectedMusic] = useState(null);
 
-    const { boltz, loading, hasMore, loadMore, setBoltz } = useBoltzFeed(activeTab);
-    const { setVideoRef } = useVideoPlayer(currentIndex, boltz, playing, muted);
+    const { boltz, loading, initialLoading, hasMore, loadMore, setBoltz } = useBoltzFeed(activeTab);
     const { toggleLike, showHeartAnimation } = useLike();
     const { toggleSave } = useSave();
     const { toggleFollow } = useFollow();
-    const { user } = useAuth();
+    const { userId } = useFocusIdentity();
 
-    const goNext = useCallback(() => {
-        if (currentIndex < boltz.length - 1) {
-            setCurrentIndex(prev => prev + 1);
-        } else if (hasMore) {
+    // ── IntersectionObserver engine ─────────────────────────
+    const {
+        registerRef,
+        activeIndex,
+        shouldPreload,
+        shouldRelease,
+    } = useBoltzIntersection(boltz.length, (newIndex) => {
+        // Load more when approaching end
+        if (newIndex > boltz.length - 5 && hasMore && !initialLoading && !loading) {
             loadMore();
         }
-    }, [currentIndex, boltz.length, hasMore, loadMore]);
 
-    const goPrevious = useCallback(() => {
-        if (currentIndex > 0) {
-            setCurrentIndex(prev => prev - 1);
-        }
-    }, [currentIndex]);
-
-    const containerRef = useSwipeNavigation(goNext, goPrevious, !showComments && !showShare && !showOptions && !showMusic);
-
-    // Preload videos
-    useEffect(() => {
-        if (boltz.length > 0) {
-            preloadVideos(boltz, currentIndex);
-        }
-    }, [currentIndex, boltz]);
-
-    // Load more when approaching end
-    useEffect(() => {
-        if (currentIndex > boltz.length - 5 && hasMore && !loading) {
-            loadMore();
-        }
-    }, [currentIndex, boltz.length, hasMore, loading, loadMore]);
-
-    // Reset index when tab changes
-    useEffect(() => {
-        setCurrentIndex(0);
-    }, [activeTab]);
-
-    // If ID is provided in URL, find and display that boltz
-    useEffect(() => {
+        // Jump to boltz deeplink if applicable
         if (id && boltz.length > 0) {
-            const index = boltz.findIndex(b => b.id === id);
-            if (index !== -1) {
-                setCurrentIndex(index);
-                console.log(`✅ [BOLTZ] Found boltz with ID ${id} at index ${index}`);
-            } else {
-                console.log(`⚠️ [BOLTZ] Boltz with ID ${id} not found in feed`);
+            const targetIdx = boltz.findIndex(b => b.id === id);
+            if (targetIdx !== -1 && targetIdx !== newIndex) {
+                const el = document.getElementById(`boltz-card-${targetIdx}`);
+                el?.scrollIntoView({ behavior: 'smooth' });
             }
         }
-    }, [id, boltz]);
+    });
+    const { registerShare } = useInteractions(boltz[activeIndex]?.id, 'boltz');
 
+    const containerRef = useSwipeNavigation(
+        () => {}, // Up/down handled by IntersectionObserver now
+        () => {},
+        !showComments && !showShare && !showOptions && !showMusic
+    );
+
+    // ── Handlers ────────────────────────────────────────────
     const handleUpdateBoltz = useCallback((boltzId, updates) => {
         setBoltz(prev => prev.map(b => {
-            if (b.id === boltzId) {
-                return {
-                    ...b,
-                    ...updates,
-                    likes_count: updates.likes_count_delta !== undefined
-                        ? b.likes_count + updates.likes_count_delta
-                        : b.likes_count,
-                    saves_count: updates.saves_count_delta !== undefined
-                        ? b.saves_count + updates.saves_count_delta
-                        : b.saves_count
-                };
-            }
-            return b;
+            if (b.id !== boltzId) return b;
+            return {
+                ...b,
+                ...updates,
+                likes_count: updates.likes_count_delta !== undefined
+                    ? b.likes_count + updates.likes_count_delta
+                    : (updates.likes_count ?? b.likes_count),
+                saves_count: updates.saves_count_delta !== undefined
+                    ? b.saves_count + updates.saves_count_delta
+                    : (updates.saves_count ?? b.saves_count),
+            };
         }));
     }, [setBoltz]);
 
-    const handleLike = () => {
-        const currentBoltz = boltz[currentIndex];
-        if (!currentBoltz) return;
-        toggleLike(currentBoltz.id, currentBoltz.is_liked, 'boltz', handleUpdateBoltz);
-    };
+    const handleLike = useCallback(() => {
+        const curr = boltz[activeIndex];
+        if (!curr) return;
+        toggleLike(curr.id, curr.is_liked, 'boltz', handleUpdateBoltz);
+    }, [boltz, activeIndex, toggleLike, handleUpdateBoltz]);
 
-    const handleSave = () => {
-        const currentBoltz = boltz[currentIndex];
-        if (!currentBoltz) return;
-        toggleSave(currentBoltz.id, currentBoltz.is_saved, 'boltz', handleUpdateBoltz);
-    };
+    const handleSave = useCallback(() => {
+        const curr = boltz[activeIndex];
+        if (!curr) return;
+        toggleSave(curr.id, curr.is_saved, 'boltz', handleUpdateBoltz);
+    }, [boltz, activeIndex, toggleSave, handleUpdateBoltz]);
 
-    const handleShare = () => {
-        console.log('handleShare called - setting showShare to true');
-        setShowShare(true);
-    };
+    const handleShareConfirmed = useCallback(async () => {
+        const curr = boltz[activeIndex];
+        if (!curr?.id || !userId) return;
 
-    const handleFollow = (userId) => {
-        toggleFollow(userId, false, (userId, updates) => {
+        await registerShare({ shareType: 'share' }, (id, updates) => {
+            handleUpdateBoltz(id, updates);
+        });
+    }, [boltz, activeIndex, userId, registerShare, handleUpdateBoltz]);
+
+    const handleFollow = useCallback((userId) => {
+        toggleFollow(userId, false, (uId, updates) => {
             setBoltz(prev => prev.map(b => {
-                if (b.user.id === userId) {
-                    return {
-                        ...b,
-                        user: { ...b.user, ...updates }
-                    };
+                const profileObj = b.profiles || b.user;
+                if (profileObj?.id === uId) {
+                    return { ...b, profiles: { ...profileObj, ...updates }, user: { ...profileObj, ...updates } };
                 }
                 return b;
             }));
         });
-    };
+    }, [toggleFollow, setBoltz]);
 
-    const handleOpenMusic = () => {
-        const currentBoltz = boltz[currentIndex];
-        if (currentBoltz.music) {
-            setSelectedMusic(currentBoltz.music);
+    const handleOpenMusic = useCallback(() => {
+        const curr = boltz[activeIndex];
+        if (curr?.music) {
+            setSelectedMusic(curr.music);
             setShowMusic(true);
         }
-    };
+    }, [boltz, activeIndex]);
 
+    useEffect(() => {
+        if (!location.state?.openComments || !id || boltz.length === 0) return;
+        const targetIdx = boltz.findIndex((item) => item.id === id);
+        if (targetIdx === activeIndex && boltz[activeIndex]?.id) {
+            setShowComments(true);
+            navigate(location.pathname, { replace: true, state: {} });
+        }
+    }, [location.state, location.pathname, id, boltz, activeIndex, navigate]);
+
+    // ── Loading / Empty states ───────────────────────────────
     if (loading && boltz.length === 0) {
         return (
             <MainLayout>
@@ -155,7 +147,7 @@ const Boltz = () => {
         );
     }
 
-    if (!loading && boltz.length === 0) {
+    if (!loading && (!boltz || boltz.length === 0)) {
         return (
             <MainLayout>
                 <BoltzEmptyState />
@@ -163,63 +155,69 @@ const Boltz = () => {
         );
     }
 
+    // ── Render ───────────────────────────────────────────────
     return (
         <MainLayout>
-            <BoltzTabs activeTab={activeTab} onTabChange={setActiveTab} />
+            <BoltzTabs activeTab={activeTab} onTabChange={(tab) => {
+                setActiveTab(tab);
+            }} />
 
             <div className={styles.container} ref={containerRef}>
                 <div className={styles.carousel}>
                     {boltz.map((boltzItem, index) => (
-                        <BoltzPlayer
+                        <div
                             key={boltzItem.id}
-                            boltz={boltzItem}
-                            isActive={index === currentIndex}
-                            playing={playing && index === currentIndex}
-                            muted={muted}
-                            onTogglePlay={() => setPlaying(!playing)}
-                            onToggleMute={() => setMuted(!muted)}
-                            onLike={handleLike}
-                            onComment={() => setShowComments(true)}
-                            onShare={handleShare}
-                            onSave={handleSave}
-                            onFollow={handleFollow}
-                            onOpenOptions={() => setShowOptions(true)}
-                            onOpenMusic={handleOpenMusic}
-                            showHeartAnimation={showHeartAnimation && index === currentIndex}
-                            videoRef={setVideoRef(index)}
-                            currentUserId={user?.id}
-                        />
+                            id={`boltz-card-${index}`}
+                            ref={el => registerRef(el, index)}
+                            className={styles.cardWrapper}
+                        >
+                            <BoltzPlayer
+                                boltz={boltzItem}
+                                isActive={index === activeIndex}
+                                playing={playing && index === activeIndex}
+                                muted={muted}
+                                preload={shouldPreload(index) ? 'auto' : 'none'}
+                                released={shouldRelease(index)}
+                                onTogglePlay={() => setPlaying(p => !p)}
+                                onToggleMute={() => setMuted(m => !m)}
+                                onLike={handleLike}
+                                onComment={() => setShowComments(true)}
+                                onShare={() => setShowShare(true)}
+                                onSave={handleSave}
+                                onFollow={handleFollow}
+                                onOpenOptions={() => setShowOptions(true)}
+                                onOpenMusic={handleOpenMusic}
+                                showHeartAnimation={showHeartAnimation && index === activeIndex}
+                                currentUserId={userId}
+                            />
+                        </div>
                     ))}
                 </div>
 
                 {showComments && (
                     <BoltzCommentsSheet
-                        boltzId={boltz[currentIndex]?.id}
+                        boltzId={boltz[activeIndex]?.id}
                         onClose={() => setShowComments(false)}
-                        onCommentCountChange={(count) => handleUpdateBoltz(boltz[currentIndex].id, { comments_count: count })}
+                        onCommentCountChange={(count) =>
+                            handleUpdateBoltz(boltz[activeIndex].id, { comments_count: count })
+                        }
                     />
                 )}
 
-                {console.log('showShare state:', showShare, 'currentBoltz:', boltz[currentIndex]?.id)}
-                {showShare && boltz[currentIndex] && (
-                    <>
-                        {console.log('Rendering ShareModal NOW with item:', boltz[currentIndex])}
-                        <ShareModal
-                            item={boltz[currentIndex]}
-                            type="boltz"
-                            onClose={() => {
-                                console.log('ShareModal closing');
-                                setShowShare(false);
-                            }}
-                        />
-                    </>
+                {showShare && boltz[activeIndex] && (
+                    <ShareModal
+                        item={boltz[activeIndex]}
+                        type="boltz"
+                        onShared={handleShareConfirmed}
+                        onClose={() => setShowShare(false)}
+                    />
                 )}
 
                 {showOptions && (
                     <BoltzOptionsModal
-                        boltzId={boltz[currentIndex]?.id}
-                        boltzData={boltz[currentIndex]}
-                        isOwn={false}
+                        boltzId={boltz[activeIndex]?.id}
+                        boltzData={boltz[activeIndex]}
+                        isOwn={boltz[activeIndex]?.user_id === userId}
                         onClose={() => setShowOptions(false)}
                     />
                 )}

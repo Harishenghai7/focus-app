@@ -4,6 +4,7 @@ import ProgressBar from './ProgressBar';
 import StepWelcome from './StepWelcome';
 import StepInterests from './StepInterests';
 import StepFollowUsers from './StepFollowUsers';
+import StepTrustShield from './StepTrustShield';
 import StepNotifications from './StepNotifications';
 import useOnboarding from '../../hooks/useOnboarding';
 import Toast from '../shared/Toast';
@@ -29,6 +30,8 @@ const OnboardingStepper = () => {
             case 3:
                 return <StepFollowUsers formData={formData} updateFormData={updateFormData} onNext={nextStep} onBack={prevStep} />;
             case 4:
+                return <StepTrustShield formData={formData} updateFormData={updateFormData} onNext={nextStep} onBack={prevStep} />;
+            case 5:
                 return <StepNotifications formData={formData} updateFormData={updateFormData} onNext={nextStep} onBack={prevStep} isSubmitting={isSubmitting} />;
             default:
                 return null;

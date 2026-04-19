@@ -9,7 +9,8 @@ import PrivacySection from '../../components/settings/PrivacySection';
 import NotificationSection from '../../components/settings/NotificationSection';
 import SupportSection from '../../components/settings/SupportSection';
 import AboutSection from '../../components/settings/AboutSection';
-import LogOutButton from '../../components/settings/LogOutButton';
+import LogOutButton from '../../components/settings/LogoutButton';
+import SessionManager from '../../components/settings/SessionManager';
 import LoadingSpinner from '../../components/shared/LoadingSpinner';
 import { useSettings } from '../../hooks/useSettings';
 import { useSections } from '../../hooks/useSections';
@@ -17,18 +18,21 @@ import useMediaQuery from '../../hooks/useMediaQuery';
 import styles from './Settings.module.css';
 
 const SECTIONS = [
-    { id: 'account', label: 'Account', icon: '👤' },
-    { id: 'profile', label: 'Profile', icon: '📝' },
-    { id: 'appearance', label: 'Appearance', icon: '🎨' },
-    { id: 'privacy', label: 'Privacy & Security', icon: '🔒' },
-    { id: 'notifications', label: 'Notifications', icon: '🔔' },
-    { id: 'support', label: 'Support', icon: '❓' },
-    { id: 'about', label: 'About', icon: 'ℹ️' }
+    { id: 'account',       label: 'Account',            icon: '👤' },
+    { id: 'profile',       label: 'Profile',             icon: '📝' },
+    { id: 'appearance',    label: 'Appearance',          icon: '🎨' },
+    { id: 'privacy',       label: 'Privacy & Security',  icon: '🔒' },
+    { id: 'notifications', label: 'Notifications',       icon: '🔔' },
+    { id: 'sessions',      label: 'Sessions & Sign Out', icon: '🔐' },
+    { id: 'focusid',       label: 'FocusID & Trust',     icon: '💜' },
+    { id: 'support',       label: 'Support',             icon: '❓' },
+    { id: 'about',         label: 'About',               icon: 'ℹ️' },
 ];
+
 
 const Settings = () => {
     const location = useLocation();
-    const { settings, loading, error } = useSettings();
+    const { settings, loading, error, updateSetting, saving } = useSettings();
     const { toggleSection, isSectionExpanded } = useSections(SECTIONS.map(s => s.id));
     const [activeSection, setActiveSection] = useState(location.state?.section || 'account');
     const isMobile = useMediaQuery('(max-width: 1024px)');
@@ -68,7 +72,7 @@ const Settings = () => {
                 <div className={styles.errorContainer}>
                     <span className={styles.errorIcon}>⚠️</span>
                     <h2 className={styles.errorTitle}>Failed to load settings</h2>
-                    <p className={styles.errorMessage}>{error}</p>
+                    <p className={styles.errorMessage}>{error?.message || String(error)}</p>
                 </div>
             </MainLayout>
         );
@@ -114,6 +118,8 @@ const Settings = () => {
                                 isExpanded={true}
                                 onToggle={toggleSection}
                                 settings={settings}
+                                onUpdateSetting={updateSetting}
+                                saving={saving}
                             />
                         )}
 
@@ -122,6 +128,8 @@ const Settings = () => {
                                 isExpanded={true}
                                 onToggle={toggleSection}
                                 settings={settings}
+                                onUpdateSetting={updateSetting}
+                                saving={saving}
                             />
                         )}
 
@@ -130,10 +138,51 @@ const Settings = () => {
                                 isExpanded={true}
                                 onToggle={toggleSection}
                                 settings={settings}
+                                onUpdateSetting={updateSetting}
+                                saving={saving}
                             />
                         )}
 
+                        {activeSection === 'sessions' && (
+                            <div id="sessions" style={{ padding: '4px 0' }}>
+                                <h2 style={{ color: 'var(--text-primary)', fontSize: '1.1rem', marginBottom: 16, fontWeight: 700 }}>
+                                    🔐 Sessions &amp; Sign Out
+                                </h2>
+                                <SessionManager />
+                            </div>
+                        )}
+
+                        {activeSection === 'focusid' && (
+                            <div id="focusid" style={{ padding: '4px 0' }}>
+                                <h2 style={{ color: 'var(--text-primary)', fontSize: '1.1rem', marginBottom: 8, fontWeight: 700 }}>
+                                    💜 FocusID &amp; Trust Score
+                                </h2>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: 16, lineHeight: 1.55 }}>
+                                    "Meet the real people; not the fake profiles"<br />
+                                    Build your authenticity score without a government ID.
+                                </p>
+                                <a
+                                    href="/verification/focus-id"
+                                    style={{
+                                        display: 'block',
+                                        padding: '14px 16px',
+                                        background: 'linear-gradient(135deg, #7E57C2, #4527A0)',
+                                        borderRadius: '14px',
+                                        color: '#fff',
+                                        fontWeight: 700,
+                                        textDecoration: 'none',
+                                        textAlign: 'center',
+                                        fontSize: '0.95rem',
+                                        boxShadow: '0 4px 20px rgba(126,87,194,0.4)',
+                                    }}
+                                >
+                                    View my FocusID Score →
+                                </a>
+                            </div>
+                        )}
+
                         {activeSection === 'support' && (
+
                             <SupportSection
                                 isExpanded={true}
                                 onToggle={toggleSection}

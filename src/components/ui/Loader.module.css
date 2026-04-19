@@ -1,7 +1,9 @@
+/* Loader Component - Royal Lavender Theme */
+
 .loader {
-    border: 3px solid rgba(155, 135, 245, 0.3);
-    border-radius: 50%;
-    border-top-color: var(--primary-lavender);
+    border: 3px solid rgba(124, 58, 237, 0.3);
+    border-radius: var(--radius-full);
+    border-top-color: var(--royal-purple);
     animation: spin 1s ease-in-out infinite;
 }
 

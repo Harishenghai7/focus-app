@@ -26,6 +26,11 @@ export const useMessageStatus = (conversationId, currentUserId) => {
                 .neq('sender_id', currentUserId); // Don't mark own messages
 
             if (error) throw error;
+            await supabase.channel(`message-status:${conversationId}`).send({
+                type: 'broadcast',
+                event: 'message_read',
+                payload: { messageId, readerId: currentUserId, readAt: new Date().toISOString() }
+            });
 
             // Update local state
             setMessageStatuses(prev => ({
@@ -83,6 +88,11 @@ export const useMessageStatus = (conversationId, currentUserId) => {
                 .neq('sender_id', currentUserId);
 
             if (error) throw error;
+            await supabase.channel(`message-status:${conversationId}`).send({
+                type: 'broadcast',
+                event: 'conversation_read',
+                payload: { conversationId, readerId: currentUserId, readAt: new Date().toISOString() }
+            });
         } catch (error) {
             console.error('Error marking all messages as read:', error);
         }
@@ -110,6 +120,22 @@ export const useMessageStatus = (conversationId, currentUserId) => {
                     }));
                 }
             )
+            .on('broadcast', { event: 'message_read' }, ({ payload }) => {
+                if (!payload?.messageId) return;
+                setMessageStatuses(prev => ({
+                    ...prev,
+                    [payload.messageId]: { ...(prev[payload.messageId] || {}), is_read: true, is_delivered: true }
+                }));
+            })
+            .on('broadcast', { event: 'conversation_read' }, () => {
+                setMessageStatuses(prev => {
+                    const next = { ...prev };
+                    Object.keys(next).forEach((messageId) => {
+                        next[messageId] = { ...(next[messageId] || {}), is_read: true, is_delivered: true };
+                    });
+                    return next;
+                });
+            })
             .subscribe();
 
         return () => {

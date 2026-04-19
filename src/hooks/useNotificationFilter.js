@@ -1,64 +1,79 @@
+/**
+ * useNotificationFilter — Focus App v2.0
+ *
+ * 4-category semantic notification tabs:
+ * All | Interactions | Security | Verification
+ */
 import { useState, useMemo } from 'react';
 
-export const useNotificationFilter = (notifications) => {
+/* ─── Category Map ─────────────────────────────────────────── */
+const CATEGORY_MAP = {
+    // Interactions — social actions from other users
+    interactions: [
+        'like', 'comment', 'follow', 'mention', 'tag',
+        'share', 'reply', 'react', 'boltz_like', 'boltz_comment',
+        'message_request', 'story_view', 'highlight_view',
+    ],
+    // Security — account safety events
+    security: [
+        'login_new_device', 'session_revoked', 'suspicious_login',
+        'password_change', 'oauth_linked', 'oauth_unlinked',
+        'account_locked', 'two_factor_enabled', 'two_factor_disabled',
+        'suspicious_activity', 'biometric_changed', 'security_alert',
+    ],
+    // Verification — identity & trust events
+    verification: [
+        'badge_granted', 'badge_revoked', 'trust_level_up', 'trust_level_down',
+        'vouched', 'vouched_received', 'guardian_action', 'teen_alert',
+        'government_id_update', 'focusid_upgrade', 'phone_verified',
+        'community_vouched', 'digilocker_update', 'verification_approved',
+        'verification_rejected', 'parent_consent_granted',
+    ],
+};
+
+const getCategoryForType = (type = '') => {
+    for (const [category, types] of Object.entries(CATEGORY_MAP)) {
+        if (types.includes(type)) return category;
+    }
+    return 'interactions'; // Default unmapped types to interactions
+};
+
+/* ─── Hook ──────────────────────────────────────────────────── */
+export const useNotificationFilter = (notifications = []) => {
     const [activeTab, setActiveTab] = useState('all');
 
-    // Calculate unread counts per type
+    /* Unread counts per category */
     const unreadCounts = useMemo(() => {
         const counts = {
             all: 0,
-            unread: 0,
-            mention: 0,
-            comment: 0,
-            like: 0,
-            follow: 0,
-            boltz: 0,
-            system: 0,
-            message_request: 0
+            interactions: 0,
+            security: 0,
+            verification: 0,
         };
 
-        notifications.forEach(notif => {
-            if (!notif.is_read) {
+        notifications.forEach(n => {
+            if (!n.is_read) {
                 counts.all++;
-                counts.unread++;
-
-                if (notif.type === 'mention') counts.mention++;
-                else if (notif.type === 'comment') counts.comment++;
-                else if (notif.type === 'like') counts.like++;
-                else if (notif.type === 'follow') counts.follow++;
-                else if (notif.type === 'boltz') counts.boltz++;
-                else if (notif.type === 'system') counts.system++;
-                else if (notif.type === 'message_request') counts.message_request++;
+                const category = getCategoryForType(n.type);
+                if (category in counts) counts[category]++;
             }
         });
 
         return counts;
     }, [notifications]);
 
-    // Filter notifications based on active tab
+    /* Filtered notifications for current tab */
     const filteredNotifications = useMemo(() => {
-        if (activeTab === 'all') {
-            return notifications;
-        }
-
-        if (activeTab === 'unread') {
-            return notifications.filter(notif => !notif.is_read);
-        }
-
-        return notifications.filter(notif => notif.type === activeTab);
+        if (activeTab === 'all') return notifications;
+        return notifications.filter(n => getCategoryForType(n.type) === activeTab);
     }, [notifications, activeTab]);
 
-    // Tab configuration
+    /* Tab config */
     const tabs = useMemo(() => [
-        { id: 'all', label: 'All', count: unreadCounts.all },
-        { id: 'unread', label: 'Unread', count: unreadCounts.unread },
-        { id: 'mention', label: 'Mentions', count: unreadCounts.mention },
-        { id: 'comment', label: 'Comments', count: unreadCounts.comment },
-        { id: 'like', label: 'Likes', count: unreadCounts.like },
-        { id: 'follow', label: 'Follows', count: unreadCounts.follow },
-        { id: 'boltz', label: 'Boltz', count: unreadCounts.boltz },
-        { id: 'system', label: 'System', count: unreadCounts.system },
-        { id: 'message_request', label: 'Requests', count: unreadCounts.message_request }
+        { id: 'all',           label: 'All',           icon: '🔔', count: unreadCounts.all },
+        { id: 'interactions',  label: 'Interactions',  icon: '❤️', count: unreadCounts.interactions },
+        { id: 'security',      label: 'Security',      icon: '🔒', count: unreadCounts.security },
+        { id: 'verification',  label: 'Verification',  icon: '✅', count: unreadCounts.verification },
     ], [unreadCounts]);
 
     return {
@@ -66,6 +81,7 @@ export const useNotificationFilter = (notifications) => {
         setActiveTab,
         filteredNotifications,
         unreadCounts,
-        tabs
+        tabs,
+        getCategoryForType, // expose for NotificationCard icon coloring
     };
 };

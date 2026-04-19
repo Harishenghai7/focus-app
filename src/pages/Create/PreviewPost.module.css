@@ -66,7 +66,7 @@
 .mediaWrapper {
     width: 100%;
     aspect-ratio: 1;
-    background: black;
+    background: var(--bg-primary);
 }
 
 .media {

@@ -1,0 +1,181 @@
+/* ==========================================================
+   InAppNotificationBanner — Focus App
+   Premium slide-in notification banners
+   ========================================================== */
+
+/* ── Host container ──────────────────────────────────────── */
+.host {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: var(--z-popover, 1300);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+    width: min(380px, calc(100vw - 32px));
+}
+
+/* ── Individual banner ───────────────────────────────────── */
+.banner {
+    pointer-events: all;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-2xl);
+    backdrop-filter: var(--blur-xl) saturate(200%);
+    -webkit-backdrop-filter: var(--blur-xl) saturate(200%);
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.4),
+        0 0 20px rgba(139, 92, 246, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+
+    /* Entry state */
+    transform: translateY(-16px) scale(0.96);
+    opacity: 0;
+    transition:
+        transform 0.32s cubic-bezier(0.32, 1.2, 0.5, 1),
+        opacity 0.28s ease;
+}
+
+.banner:hover {
+    border-color: var(--primary-dim);
+    background: var(--glass-surface-hover);
+    transform: translateY(0) scale(1.02);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 30px rgba(139, 92, 246, 0.25);
+}
+.banner:active { transform: scale(0.97) !important; }
+
+/* ── Visible / exit states ───────────────────────────────── */
+.banner.visible {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+.banner.exiting {
+    transform: translateY(-20px) scale(0.94);
+    opacity: 0;
+    transition:
+        transform 0.3s ease,
+        opacity 0.25s ease;
+    pointer-events: none;
+}
+
+/* ── Stacking offset (each extra banner shifts down slightly) */
+.banner {
+    transition-delay: calc(var(--stack, 0) * 0.04s);
+}
+
+/* ── Avatar wrap ─────────────────────────────────────────── */
+.avatarWrap {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.typeIcon {
+    position: absolute;
+    bottom: -3px;
+    right: -3px;
+    font-size: 12px;
+    background: var(--bg-secondary, #241738);
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--glass-border, rgba(139,92,246,0.25));
+}
+
+/* ── Text ────────────────────────────────────────────────── */
+.textWrap {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.notifText {
+    font-size: 0.82rem;
+    color: var(--text-primary, #fff);
+    font-weight: 500;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.notifText strong {
+    font-weight: 700;
+    color: var(--neon-lavender, #c4b5fd);
+}
+
+.appName {
+    font-size: 0.7rem;
+    color: var(--text-muted, #a78bfa);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+/* ── Close button ────────────────────────────────────────── */
+.closeBtn {
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.06);
+    border: none;
+    color: var(--text-muted, #a78bfa);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s;
+    line-height: 1;
+}
+.closeBtn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--text-primary, #fff);
+}
+
+/* ── Progress bar ────────────────────────────────────────── */
+.progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    background: var(--gradient-brand);
+    transform-origin: left;
+    animation: progressDrain 4.5s linear forwards;
+    border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
+}
+
+@keyframes progressDrain {
+    from { transform: scaleX(1); }
+    to   { transform: scaleX(0); }
+}
+
+/* ── Mobile adjustments ──────────────────────────────────── */
+@media (max-width: 480px) {
+    .host {
+        top: 12px;
+        right: 12px;
+        left: 12px;
+        width: auto;
+    }
+    .banner {
+        padding: 10px 12px;
+    }
+}

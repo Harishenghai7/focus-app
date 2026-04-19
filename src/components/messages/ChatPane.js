@@ -22,10 +22,9 @@ import EnhancedMessageInput from '../../pages/Messages/components/ChatWindow/Enh
 import GifPicker from '../../pages/Messages/components/Modals/GifPicker';
 import ShareToMessages from '../../pages/Messages/components/Modals/ShareToMessages';
 import { useRealtimeMessages } from '../../pages/Messages/hooks/useRealtimeMessages';
-import { useMessageReactions } from '../../pages/Messages/hooks/useMessageReactions';
 import { useChatThread } from '../../hooks/useChatThread';
 import { useMessageSend } from '../../hooks/useMessageSend';
-import { useTypingIndicator } from '../../hooks/useTypingIndicator';
+import { useTypingIndicator, useTypingUserDetails } from '../../hooks/useTypingIndicator';
 import { useMessageStatus } from '../../hooks/useMessageStatus';
 import { useCall } from '../../hooks/useCall';
 import { useAuth } from '../../hooks/useAuth';
@@ -54,25 +53,11 @@ const ChatPane = ({
     const [forwardMessage, setForwardMessage] = useState(null);
     const [editingMessage, setEditingMessage] = useState(null);
     const [deletingMessage, setDeletingMessage] = useState(null);
-    // eslint-disable-next-line no-unused-vars
-    const [showSearch, setShowSearch] = useState(false);
-    const [showPinned, setShowPinned] = useState(false);
-    // eslint-disable-next-line no-unused-vars
-    const [showSchedule, setShowSchedule] = useState(false);
-    const [showUserInfo, setShowUserInfo] = useState(false);
-
-    // New feature states
     const [showSearchPanel, setShowSearchPanel] = useState(false);
-    // eslint-disable-next-line no-unused-vars
-    const [showDisappearing, setShowDisappearing] = useState(false);
-    // eslint-disable-next-line no-unused-vars
-    const [showReadReceipts, setShowReadReceipts] = useState(false);
     const [showPollCreator, setShowPollCreator] = useState(false);
     const [showLocationPicker, setShowLocationPicker] = useState(false);
     const [showVideoRecorder, setShowVideoRecorder] = useState(false);
     const [showEventCreator, setShowEventCreator] = useState(false);
-    // eslint-disable-next-line no-unused-vars
-    const [showPINLock, setShowPINLock] = useState(false);
     const [silentMode, setSilentMode] = useState(false);
     // 🚀 NEW: Production messaging states
     const [showGifPicker, setShowGifPicker] = useState(false);
@@ -81,55 +66,33 @@ const ChatPane = ({
     const [useEnhancedInput, setUseEnhancedInput] = useState(true); // Toggle for new input
 
     const { user, session } = useAuth();
-    // eslint-disable-next-line no-unused-vars
-    const { messages, loading, otherUser: fetchedOtherUser, deleteMessage, editMessage, refetch } = useChatThread(currentUserId, conversationId, session);
+    const { messages, loading, otherUser: fetchedOtherUser, refetch } = useChatThread(currentUserId, conversationId, session);
     const { sendMessage, sending, optimisticMessages, clearOptimisticMessages } = useMessageSend(currentUserId, otherUserId, session);
 
-    // 🚀 NEW: Real-time messages hook (can be used alongside existing or replace it)
-    const {
-        messages: realtimeMessages,
-        loading: realtimeLoading,
-        sending: realtimeSending,
-        sendMessage: sendRealtimeMessage,
-        markAsSeen,
-        deleteMessage: deleteRealtimeMessage
-    } = useRealtimeMessages(conversationId, currentUserId);
-
     // NEW: Use pro-grade typing indicator hook
-    const { typingUsers, isTyping, handleTyping, stopTyping } = useTypingIndicator(
+    const { typingUsers: typingUserIds, isTyping, handleTyping, stopTyping } = useTypingIndicator(
         conversationId,
         null, // groupId (null for 1-on-1 chats)
         currentUserId
     );
 
-    // NEW: Use message status hook for read receipts
-    // eslint-disable-next-line no-unused-vars
-    const { markAllAsRead, markAsRead } = useMessageStatus(conversationId, currentUserId);
+    const typingUsers = useTypingUserDetails(typingUserIds);
 
-    // eslint-disable-next-line no-unused-vars
+    useMessageStatus(conversationId, currentUserId);
+
     const {
         activeCall,
-        incomingCall,
-        callStatus,
         callType,
         isInitiator,
         initiateCall,
         answerCall,
-        declineCall,
-        endCall,
-        localStream,
-        remoteStream,
-        isConnected,
-        toggleAudio,
-        toggleVideo
+        endCall
     } = useCall(conversationId, false); // Disable incoming call listening - handled by global listener
 
     // v2.0 ADVANCED HOOKS - Restored
     const { editing: isEditing, editMessage: editMsg, canEdit } = useMessageEdit();
-    // eslint-disable-next-line no-unused-vars
-    const { deleting: isDeleting, deleteForMe, deleteForEveryone, canDeleteForEveryone } = useMessageDelete();
-    // eslint-disable-next-line no-unused-vars
-    const { forwarding: isForwarding, forwardToMultiple, getForwardableChats } = useMessageForward();
+    const { deleting: isDeleting, deleteForMe, deleteForEveryone } = useMessageDelete();
+    const { forwardToMultiple } = useMessageForward();
     const { pinnedMessages, pinMessage, unpinMessage, isPinned, canPinMore } = usePinnedMessages(conversationId);
     const { uploadFile } = useAttachmentUpload();
 
@@ -559,11 +522,11 @@ const ChatPane = ({
                 onVideoCall={handleVideoCall}
                 onInfo={handleInfo}
                 onSearch={() => setShowSearchPanel(true)}
-                onShowPinned={() => setShowPinned(true)}
-                onSchedule={() => setShowSchedule(true)}
-                onDisappearingMessages={() => setShowDisappearing(true)}
-                onReadReceipts={() => setShowReadReceipts(true)}
-                onPINLock={() => setShowPINLock(true)}
+                onShowPinned={() => {}}
+                onSchedule={() => {}}
+                onDisappearingMessages={() => {}}
+                onReadReceipts={() => {}}
+                onPINLock={() => {}}
             />
 
             {/* v2.0 Pinned Messages Banner */}

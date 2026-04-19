@@ -1,0 +1,244 @@
+/* DistressResponse.module.css */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.overlayVisible { opacity: 1; }
+
+.modal {
+  background: linear-gradient(160deg, #0f1022 0%, #13142e 100%);
+  border: 1px solid rgba(124, 107, 254, 0.3);
+  border-radius: 28px;
+  padding: 36px 28px;
+  max-width: 460px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.8),
+              0 0 60px rgba(124, 107, 254, 0.1);
+  transform: scale(0.9) translateY(30px);
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modalVisible { transform: scale(1) translateY(0); }
+
+.closeBtn {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  background: rgba(255,255,255,0.06);
+  border: none;
+  color: #64748b;
+  font-size: 1.3rem;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.closeBtn:hover { background: rgba(255,255,255,0.12); color: #94a3b8; }
+
+.lionWrap {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.lion { width: 100%; height: 100%; }
+
+.shield {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  font-size: 1.2rem;
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.6));
+  animation: shieldPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes shieldPulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.15); }
+}
+
+.badge {
+  border: 1px solid;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #c4b5fd, #818cf8, #38bdf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  letter-spacing: -0.02em;
+}
+
+.message {
+  font-size: 0.92rem;
+  color: #94a3b8;
+  text-align: center;
+  line-height: 1.65;
+  max-width: 380px;
+}
+
+/* ── Helplines ────────────────────────────────────────────── */
+.helplinesSection {
+  width: 100%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.helplineTitle {
+  font-size: 0.82rem;
+  color: #7c6bfe;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.helplines {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.helpline {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.helpline:last-child { border-bottom: none; padding-bottom: 0; }
+
+.helplineFlag { font-size: 1.1rem; flex-shrink: 0; line-height: 1.4; }
+
+.helplineInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.helplineInfo strong { font-size: 0.88rem; color: #e2e8f0; }
+
+.helplineNumber {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #7c6bfe;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.helplineNumber:hover { color: #a78bfa; }
+
+.helplineInfo small { font-size: 0.72rem; color: #475569; }
+
+/* ── Breathing Exercise ───────────────────────────────────── */
+.breathBtn {
+  background: rgba(124, 107, 254, 0.08);
+  border: 1px solid rgba(124, 107, 254, 0.25);
+  color: #a78bfa;
+  padding: 11px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  transition: all 0.2s;
+}
+
+.breathBtn:hover { background: rgba(124, 107, 254, 0.15); }
+
+.breathingBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.breathCircle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: transform 4s ease-in-out, border-color 0.5s;
+}
+
+.breathLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.breathCount {
+  font-size: 0.65rem;
+  color: #64748b;
+}
+
+.breathingInstruction {
+  font-size: 0.75rem;
+  color: #475569;
+}
+
+/* ── Actions ──────────────────────────────────────────────── */
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.primaryBtn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #7c6bfe, #a78bfa);
+  border: none;
+  border-radius: 14px;
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.primaryBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(124, 107, 254, 0.35);
+}
+
+.disclaimer {
+  font-size: 0.78rem;
+  color: #475569;
+  text-align: center;
+  line-height: 1.5;
+}

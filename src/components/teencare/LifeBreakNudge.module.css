@@ -1,0 +1,243 @@
+/* LifeBreakNudge.module.css */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.overlayVisible { opacity: 1; }
+
+.card {
+  background: linear-gradient(160deg, #13142a 0%, #0d0f1e 100%);
+  border: 1px solid rgba(167, 139, 250, 0.25);
+  border-radius: 28px;
+  padding: 36px 28px;
+  max-width: 420px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.7), 0 0 60px rgba(124, 107, 254, 0.08);
+  transform: scale(0.9) translateY(30px);
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cardVisible { transform: scale(1) translateY(0); }
+
+.lionWrap {
+  position: relative;
+  width: 110px;
+  height: 110px;
+}
+
+.lion { width: 100%; height: 100%; }
+
+.heartBeat {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 1.4rem;
+  animation: heartbeat 1.4s ease-in-out infinite;
+}
+
+.badge {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: #fbbf24;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 5px 14px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  text-align: center;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.subtitle strong { color: #f1f5f9; }
+
+/* Activity card */
+.activityCard {
+  background: rgba(124, 107, 254, 0.08);
+  border: 1px solid rgba(124, 107, 254, 0.2);
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+}
+
+.activityEmoji { font-size: 2rem; flex-shrink: 0; line-height: 1; }
+
+.activityContent { flex: 1; }
+
+.activityTitle {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin-bottom: 4px;
+}
+
+.activityDesc {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+/* Cooldown ring */
+.cooldownBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.cooldownRing {
+  position: relative;
+  width: 70px;
+  height: 70px;
+}
+
+.cooldownSvg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.cooldownTrack {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 4;
+}
+
+.cooldownProgress {
+  fill: none;
+  stroke: url(#cooldownGrad);
+  stroke: #7c6bfe;
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dasharray 1s linear;
+}
+
+.cooldownTime {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #a78bfa;
+}
+
+.cooldownText {
+  font-size: 0.78rem;
+  color: #64748b;
+  text-align: center;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.acceptBtn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #7c6bfe, #a78bfa);
+  border: none;
+  border-radius: 14px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+  animation: acceptPulse 2s ease-in-out infinite;
+}
+
+.acceptBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(124, 107, 254, 0.4);
+}
+
+.snoozeBtn {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  color: #64748b;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.snoozeBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.snoozeBtn:not(:disabled):hover {
+  background: rgba(255,255,255,0.05);
+  color: #94a3b8;
+}
+
+.acceptedState {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.acceptedState p {
+  font-size: 1rem;
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.acceptedSub {
+  font-size: 0.85rem;
+  color: #94a3b8 !important;
+  font-weight: 400 !important;
+}
+
+/* ── Animations ── */
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.3); }
+  50% { transform: scale(1); }
+  75% { transform: scale(1.15); }
+}
+
+@keyframes acceptPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(124, 107, 254, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(124, 107, 254, 0); }
+}

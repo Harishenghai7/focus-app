@@ -3,6 +3,20 @@ import { supabase } from '../lib/supabase';
 import useDebounce from './useDebounce';
 
 const HISTORY_KEY = 'focus_search_history';
+const scoreSimilarity = (value, term) => {
+    const a = (value || '').toLowerCase();
+    const b = (term || '').toLowerCase();
+    if (!a || !b) return 0;
+    if (a === b) return 1;
+    if (a.startsWith(b)) return 0.9;
+    if (a.includes(b)) return 0.7;
+    const chars = b.split('');
+    let hits = 0;
+    chars.forEach((ch) => {
+        if (a.includes(ch)) hits += 1;
+    });
+    return hits / chars.length * 0.5;
+};
 
 export const useSearch = () => {
     const [query, setQuery] = useState('');
@@ -34,9 +48,9 @@ export const useSearch = () => {
                 const [usersRes, hashtagsRes, postsRes] = await Promise.all([
                     supabase
                         .from('profiles')
-                        .select('id, username, full_name, avatar_url, verified')
-                        .ilike('username', `%${debouncedQuery}%`)
-                        .limit(5),
+                        .select('id, username, full_name, avatar_url, is_verified, trust_tier')
+                        .or(`username.ilike.%${debouncedQuery}%,full_name.ilike.%${debouncedQuery}%`)
+                        .limit(25),
                     supabase
                         .from('hashtags') // Assuming table exists
                         .select('id, name, count')
@@ -44,13 +58,25 @@ export const useSearch = () => {
                         .limit(5),
                     supabase
                         .from('posts')
-                        .select('id, media, type')
+                        .select('id, media, type, caption')
                         .ilike('caption', `%${debouncedQuery}%`)
                         .limit(9)
                 ]);
 
+                const users = (usersRes.data || [])
+                    .map((user) => ({
+                        ...user,
+                        verified: Boolean(user.is_verified || (user.trust_tier || 0) >= 4),
+                        _score: Math.max(
+                            scoreSimilarity(user.username, debouncedQuery),
+                            scoreSimilarity(user.full_name, debouncedQuery)
+                        )
+                    }))
+                    .sort((a, b) => b._score - a._score)
+                    .slice(0, 8);
+
                 setResults({
-                    users: usersRes.data || [],
+                    users,
                     hashtags: hashtagsRes.data || [],
                     posts: postsRes.data || []
                 });

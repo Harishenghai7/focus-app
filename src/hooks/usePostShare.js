@@ -16,20 +16,13 @@ export const usePostShare = () => {
         mutationFn: async ({ postId, shareType, recipientId = null, postData }) => {
             if (!user) throw new Error('Must be logged in to share posts');
 
-            // Log share action
-            const { error: shareError } = await supabase
-                .from('post_shares')
-                .insert({
-                    post_id: postId,
-                    user_id: user.id,
-                    share_type: shareType,
-                    recipient_id: recipientId,
-                });
-
+            const { data: shareRpcData, error: shareError } = await supabase.rpc('register_post_share_rpc', {
+                p_post_id: postId,
+                p_user_id: user.id,
+                p_share_type: shareType,
+                p_recipient_id: recipientId,
+            });
             if (shareError) throw shareError;
-
-            // Increment analytics
-            await supabase.rpc('increment_post_shares', { post_uuid: postId });
 
             // Handle different share types
             switch (shareType) {
@@ -73,10 +66,45 @@ export const usePostShare = () => {
                     break;
             }
 
-            return { shareType };
+            return { shareType, postId, shareRpcData };
+        },
+        onMutate: async ({ postId }) => {
+            await queryClient.cancelQueries({ queryKey: ['posts'] });
+            const previousEntries = queryClient.getQueriesData({ queryKey: ['posts'] });
+            queryClient.setQueriesData({ queryKey: ['posts'] }, (old) => {
+                if (!old?.pages) return old;
+                return {
+                    ...old,
+                    pages: old.pages.map((page) => ({
+                        ...page,
+                        posts: (page.posts || []).map((post) =>
+                            post.id === postId
+                                ? { ...post, shares_count: (post.shares_count || 0) + 1 }
+                                : post
+                        ),
+                    })),
+                };
+            });
+            return { previousEntries };
         },
         onSuccess: (data) => {
-            queryClient.invalidateQueries({ queryKey: ['posts'] });
+            const serverCount = data?.shareRpcData?.shares_count ?? data?.shareRpcData?.count;
+            if (typeof serverCount === 'number') {
+                queryClient.setQueriesData({ queryKey: ['posts'] }, (old) => {
+                    if (!old?.pages) return old;
+                    return {
+                        ...old,
+                        pages: old.pages.map((page) => ({
+                            ...page,
+                            posts: (page.posts || []).map((post) =>
+                                post.id === data.postId
+                                    ? { ...post, shares_count: serverCount }
+                                    : post
+                            ),
+                        })),
+                    };
+                });
+            }
 
             const messages = {
                 story: 'Shared to your story!',
@@ -87,7 +115,12 @@ export const usePostShare = () => {
 
             toast.success(messages[data.shareType] || 'Shared!');
         },
-        onError: (error) => {
+        onError: (error, _variables, context) => {
+            if (context?.previousEntries?.length) {
+                context.previousEntries.forEach(([key, value]) => {
+                    queryClient.setQueryData(key, value);
+                });
+            }
             toast.error('Failed to share post');
             console.error('Share error:', error);
         },

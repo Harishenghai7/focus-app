@@ -3,12 +3,12 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../lib/supabase';
-import { useAuth } from './useAuth';
+import { useFocusUser } from '../context/FocusUserContext';
 import { toast } from 'react-toastify';
+import { setPostSaveDb } from '../utils/postInteractions';
 
 export const usePostSave = () => {
-    const { user } = useAuth();
+    const { user } = useFocusUser();
     const queryClient = useQueryClient();
 
     const toggleSave = useMutation({
@@ -17,34 +17,20 @@ export const usePostSave = () => {
 
             console.log(`${isSaved ? 'Unsaving' : 'Saving'} post:`, postId);
 
-            if (isSaved) {
-                // Unsave
-                const { error } = await supabase
-                    .from('saved_posts')
-                    .delete()
-                    .match({ post_id: postId, user_id: user.id });
-
-                if (error) throw error;
-            } else {
-                // Save
-                const { error } = await supabase
-                    .from('saved_posts')
-                    .insert({ post_id: postId, user_id: user.id });
-
-                if (error) throw error;
-            }
+            const result = await setPostSaveDb(user.id, postId, !isSaved);
 
             console.log('✅ Save action completed');
-            return { postId, isSaved: !isSaved };
+            return {
+                postId,
+                isSaved: result?.is_saved ?? !isSaved,
+                savesCount: result?.saves_count,
+            };
         },
         onMutate: async ({ postId, isSaved }) => {
-            // Cancel outgoing refetches
             await queryClient.cancelQueries({ queryKey: ['posts'] });
 
-            // Snapshot previous value
-            const previousPosts = queryClient.getQueryData(['posts']);
+            const previousEntries = queryClient.getQueriesData({ queryKey: ['posts'] });
 
-            // Optimistically update
             queryClient.setQueriesData({ queryKey: ['posts'] }, (old) => {
                 if (!old) return old;
 
@@ -65,22 +51,35 @@ export const usePostSave = () => {
                 };
             });
 
-            return { previousPosts };
+            return { previousEntries };
         },
         onError: (err, variables, context) => {
-            // Rollback on error
-            if (context?.previousPosts) {
-                queryClient.setQueryData(['posts'], context.previousPosts);
+            if (context?.previousEntries?.length) {
+                context.previousEntries.forEach(([key, data]) => {
+                    queryClient.setQueryData(key, data);
+                });
             }
             toast.error('Failed to update save');
             console.error('❌ Save error:', err);
         },
-        onSuccess: (_, variables) => {
-            // Show success message
-            toast.success(variables.isSaved ? 'Post removed from saved' : 'Post saved');
-
-            // Invalidate to refetch fresh data
-            queryClient.invalidateQueries({ queryKey: ['posts'] });
+        onSuccess: (result) => {
+            if (typeof result?.savesCount === 'number') {
+                queryClient.setQueriesData({ queryKey: ['posts'] }, (old) => {
+                    if (!old) return old;
+                    return {
+                        ...old,
+                        pages: old.pages.map(page => ({
+                            ...page,
+                            posts: page.posts.map(post =>
+                                post.id === result.postId
+                                    ? { ...post, saves_count: result.savesCount, is_saved: result.isSaved }
+                                    : post
+                            ),
+                        })),
+                    };
+                });
+            }
+            // Same as likes: avoid full feed refetch resetting `is_saved` / counts.
             queryClient.invalidateQueries({ queryKey: ['saved-posts'] });
         },
     });

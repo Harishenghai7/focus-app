@@ -7,14 +7,7 @@ import Icon from '../ui/Icon';
 import Input from '../ui/Input';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import LoadingSkeleton from '../shared/LoadingSkeleton';
-import { useFollowing } from '../../hooks/useFollowing';
-import { useFollow } from '../../hooks/useFollow';
-import styles from './FollowingModal.module.css';
-
-const FollowingModal = ({ isOpen, onClose, userId }) => {
-    const navigate = useNavigate();
-    const { following, loading, hasMore, searchQuery, setSearchQuery, loadMore, updateFollowingStatus, unfollowUser } = useFollowing(userId, isOpen);
-    const { toggleFollow } = useFollow();
+const { following, loading, hasMore, searchQuery, setSearchQuery, loadMore, unfollowUser } = useFollowing(userId, isOpen);
     const [actionLoading, setActionLoading] = useState({});
 
     const handleUnfollow = async (user) => {

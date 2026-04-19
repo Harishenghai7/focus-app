@@ -24,9 +24,9 @@ export const useComment = (targetId, targetType = 'post') => {
     const addComment = useCallback(async (content, parentId = null) => {
         if (!user) {
             toast.error('Please login to comment');
-            return;
+            return { error: new Error('Not logged in') };
         }
-        if (!content.trim()) return;
+        if (!content.trim()) return { error: new Error('Empty comment') };
 
         setPosting(true);
         const commentData = {
@@ -36,24 +36,40 @@ export const useComment = (targetId, targetType = 'post') => {
             [targetType === 'post' ? 'post_id' : targetType === 'boltz' ? 'boltz_id' : 'flash_id']: targetId
         };
 
+        // 1. Optimistic Update (<10ms UI reflection)
+        const tempId = `temp-${Date.now()}`;
+        const optimisticComment = {
+            id: tempId,
+            content,
+            created_at: new Date().toISOString(),
+            parent_id: parentId,
+            user_id: user.id,
+            user: {
+                id: user.id,
+                username: user.user_metadata?.username || 'You',
+                avatar_url: user.user_metadata?.avatar_url,
+                is_verified: user.user_metadata?.verified
+            },
+            likes_count: 0
+        };
+
+        setComments(prev => [optimisticComment, ...prev]);
+
+        // 2. Network Request
         const { data, error } = await postComment(commentData);
 
         if (error) {
+            // Rollback optimistic update
+            setComments(prev => prev.filter(c => c.id !== tempId));
             toast.error('Failed to post comment');
         } else {
-            // Add user info for immediate UI update
-            const newComment = {
+            // Replace optimistic data with real database object (with actual ID)
+            setComments(prev => prev.map(c => c.id === tempId ? {
                 ...data,
-                user: {
-                    id: user.id,
-                    username: user.user_metadata?.username || 'You',
-                    avatar_url: user.user_metadata?.avatar_url,
-                    verified: user.user_metadata?.verified
-                }
-            };
-            setComments(prev => [newComment, ...prev]);
-            toast.success('Comment posted');
+                user: optimisticComment.user
+            } : c));
         }
+        
         setPosting(false);
         return { data, error };
     }, [user, targetId, targetType]);

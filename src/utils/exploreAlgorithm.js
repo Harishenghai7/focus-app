@@ -79,7 +79,7 @@ export const getRecommendedPosts = async (userId, category = 'all', page = 0, pa
                     location,
                     created_at,
                     type,
-                    user:profiles!posts_user_id_fkey (
+                    profiles (
                         id,
                         username,
                         full_name,
@@ -116,10 +116,10 @@ export const getRecommendedPosts = async (userId, category = 'all', page = 0, pa
             data = data.map(post => ({
                 id: post.id,
                 user_id: post.user_id,
-                username: post.user?.username,
-                avatar_url: post.user?.avatar_url,
-                verified: post.user?.verified,
-                full_name: post.user?.full_name,
+                username: post.profiles?.username,
+                avatar_url: post.profiles?.avatar_url,
+                verified: post.profiles?.verified,
+                full_name: post.profiles?.full_name,
                 media_url: post.media_url,
                 media_type: post.media_type,
                 content: post.content,

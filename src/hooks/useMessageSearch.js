@@ -44,12 +44,48 @@ export const useMessageSearch = () => {
                 queryBuilder = queryBuilder.or(`sender_id.eq.${filters.userId},receiver_id.eq.${filters.userId}`);
             }
 
-            const { data, error } = await queryBuilder;
+            const [{ data: contentMatches, error }, { data: profileMatches, error: profileError }] = await Promise.all([
+                queryBuilder,
+                supabase
+                    .from('profiles')
+                    .select('id')
+                    .or(`username.ilike.%${query}%,full_name.ilike.%${query}%`)
+                    .limit(20)
+            ]);
 
             if (error) throw error;
+            if (profileError) throw profileError;
 
-            setResults(data || []);
-            return data || [];
+            let usernameMatches = [];
+            const profileIds = (profileMatches || []).map((p) => p.id).filter(Boolean);
+            if (profileIds.length > 0) {
+                let profileQuery = supabase
+                    .from('messages')
+                    .select(`
+                        *,
+                        sender:profiles!messages_sender_id_fkey(id, username, full_name, avatar_url),
+                        receiver:profiles!messages_receiver_id_fkey(id, username, full_name, avatar_url)
+                    `)
+                    .or(`sender_id.in.(${profileIds.join(',')}),receiver_id.in.(${profileIds.join(',')})`)
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+
+                if (filters.conversationId) {
+                    profileQuery = profileQuery.eq('conversation_id', filters.conversationId);
+                }
+                const { data: profileRows, error: profileRowsError } = await profileQuery;
+                if (profileRowsError) throw profileRowsError;
+                usernameMatches = profileRows || [];
+            }
+
+            const mergedMap = new Map();
+            [...(contentMatches || []), ...usernameMatches].forEach((item) => {
+                mergedMap.set(item.id, item);
+            });
+            const merged = Array.from(mergedMap.values()).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+            setResults(merged);
+            return merged;
         } catch (error) {
             console.error('Error searching messages:', error);
             setResults([]);

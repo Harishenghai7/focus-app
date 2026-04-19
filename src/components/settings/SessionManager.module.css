@@ -1,156 +1,211 @@
+/* ==========================================================
+   SessionManager — Focus App Settings
+   ========================================================== */
+
 .container {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
+    gap: 20px;
 }
 
-.header {
+.identityCard {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: var(--space-4);
-}
-
-.title {
-    font-size: var(--font-lg);
-    font-weight: var(--font-semibold);
-    color: var(--text-primary);
-    margin: 0;
-}
-
-.description {
-    font-size: var(--font-sm);
-    color: var(--text-secondary);
-    margin: var(--space-1) 0 0 0;
-    line-height: var(--leading-relaxed);
-}
-
-.signOutAllButton {
-    border-color: var(--error);
-    color: var(--error);
-    flex-shrink: 0;
-}
-
-.signOutAllButton:hover {
-    background: var(--error);
-    color: var(--text-primary);
-}
-
-.emptyState {
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: var(--space-3);
-    padding: var(--space-8);
-    background: var(--bg-secondary);
-    border: 1px dashed var(--border-default);
-    border-radius: var(--radius-lg);
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--glass-surface);
+    backdrop-filter: var(--blur-xl);
+    -webkit-backdrop-filter: var(--blur-xl);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-bounce);
+}
+.identityCard:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-dim);
 }
 
-.emptyIcon {
-    font-size: 48px;
-    opacity: 0.5;
+.identityInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.emptyText {
-    font-size: var(--font-sm);
-    color: var(--text-muted);
+.identityName {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary, #fff);
+}
+
+.identityHandle {
+    font-size: 0.83rem;
+    color: var(--text-muted, #a78bfa);
+}
+
+.oauthBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #22c55e;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    border-radius: var(--radius-full, 999px);
+    padding: 2px 8px;
+    margin-top: 2px;
+    width: fit-content;
+}
+
+.sessionsBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sectionLabel {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted, #a78bfa);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     margin: 0;
 }
 
-.sessionList {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-}
+.sessionList { display: flex; flex-direction: column; gap: 8px; }
 
 .sessionItem {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--space-4);
-    padding: var(--space-4);
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-lg);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    gap: 14px;
+    padding: 16px;
+    background: var(--glass-surface);
+    backdrop-filter: var(--blur-md);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    transition: all var(--transition-bounce);
 }
-
 .sessionItem:hover {
-    border-color: var(--border-hover);
-    box-shadow: var(--shadow-sm);
+    transform: translateX(4px);
+    border-color: var(--primary-dim);
+    background: var(--glass-surface-hover);
+    box-shadow: -4px 4px 16px rgba(139, 92, 246, 0.08);
 }
 
-.sessionInfo {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    flex: 1;
-}
-
-.deviceIcon {
-    font-size: var(--font-2xl);
-    flex-shrink: 0;
-}
+.sessionIcon { font-size: 20px; flex-shrink: 0; }
 
 .sessionDetails {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: var(--space-1);
-    flex: 1;
-    min-width: 0;
+    gap: 2px;
 }
 
-.deviceName {
-    font-size: var(--font-base);
-    font-weight: var(--font-medium);
-    color: var(--text-primary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.sessionProvider {
+    font-size: 0.87rem;
+    font-weight: 600;
+    color: var(--text-primary, #fff);
+    text-transform: capitalize;
 }
 
-.sessionMeta {
+.sessionDate { font-size: 0.75rem; color: var(--text-muted, #a78bfa); }
+
+.sessionActive {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #22c55e;
+    background: rgba(34, 197, 94, 0.12);
+    padding: 2px 8px;
+    border-radius: var(--radius-full, 999px);
+}
+
+.actions { display: flex; flex-direction: column; gap: 10px; }
+
+.signOutBtn {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3);
-}
-
-.metaItem {
-    font-size: var(--font-xs);
-    color: var(--text-secondary);
-}
-
-.revokeButton {
-    border-color: var(--error);
-    color: var(--error);
-    flex-shrink: 0;
-}
-
-.revokeButton:hover {
-    background: var(--error);
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    background: var(--glass-surface);
+    backdrop-filter: var(--blur-md);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-full);
     color: var(--text-primary);
+    font-size: var(--font-base);
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    transition: all var(--transition-bounce);
+}
+.signOutBtn:hover { 
+    background: var(--glass-surface-hover);
+    border-color: var(--primary-dim); 
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
 }
 
-@media (max-width: 640px) {
-    .header {
-        flex-direction: column;
-    }
+.signOutAllBtn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: var(--radius-full);
+    color: #ef4444;
+    font-size: var(--font-base);
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    transition: all var(--transition-bounce);
+    backdrop-filter: var(--blur-md);
+}
+.signOutAllBtn:hover:not(:disabled) { 
+    background: rgba(239, 68, 68, 0.15); 
+    border-color: rgba(239, 68, 68, 0.4); 
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
+}
+.signOutAllBtn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-    .signOutAllButton {
-        width: 100%;
-    }
+.signOutAllBtn.confirmState {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.6);
+    color: #fca5a5;
+    font-size: 0.82rem;
+    animation: shakePulse 0.4s ease;
+}
 
-    .sessionItem {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+@keyframes shakePulse {
+    0%,100% { transform: scale(1); }
+    30% { transform: scale(1.02); }
+    60% { transform: scale(0.99); }
+}
 
-    .sessionItem button {
-        width: 100%;
-    }
+.cancelBtn {
+    background: none;
+    border: none;
+    color: var(--text-muted, #a78bfa);
+    font-size: 0.83rem;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 4px;
+    text-decoration: underline;
+    align-self: center;
+}
+.cancelBtn:hover { color: var(--text-secondary, #e9d5ff); }
 
-    .deviceName {
-        white-space: normal;
-    }
+.securityNote {
+    font-size: 0.75rem;
+    color: var(--text-muted, #a78bfa);
+    margin: 0;
+    padding: 12px;
+    background: rgba(139, 92, 246, 0.06);
+    border-radius: var(--radius-sm, 8px);
+    border-left: 2px solid var(--royal-purple, #8b5cf6);
+    line-height: 1.5;
 }

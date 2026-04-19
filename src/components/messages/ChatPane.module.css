@@ -3,7 +3,7 @@
     flex-direction: column;
     height: 100%;
     width: 100%;
-    background: #000000;
+    background: var(--bg-primary);
     overflow: hidden;
     margin: 0;
     padding: 0;

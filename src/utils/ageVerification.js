@@ -291,7 +291,7 @@ export const getAgeVerificationStatus = async (userId) => {
     }
 };
 
-export default {
+const _defaultModule = {
     calculateAge,
     getAccountType,
     verifyAge,
@@ -300,3 +300,6 @@ export default {
     transitionToAdult,
     getAgeVerificationStatus
 };
+
+
+export default _defaultModule;

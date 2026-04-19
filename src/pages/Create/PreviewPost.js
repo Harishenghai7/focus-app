@@ -20,15 +20,17 @@ const PreviewPost = ({ mediaFiles, details, music, createMode, onBack, onUpdateD
 
     // Cleanup audio/video on unmount
     useEffect(() => {
+        const currentVideo = videoRef.current;
+        const currentAudio = audioRef.current;
         return () => {
             try {
-                if (videoRef.current) {
-                    videoRef.current.pause();
-                    videoRef.current.currentTime = 0;
+                if (currentVideo) {
+                    currentVideo.pause();
+                    currentVideo.currentTime = 0;
                 }
-                if (audioRef.current) {
-                    audioRef.current.pause();
-                    audioRef.current.currentTime = 0;
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio.currentTime = 0;
                 }
             } catch (err) {
                 console.log('Cleanup error:', err);
@@ -38,17 +40,19 @@ const PreviewPost = ({ mediaFiles, details, music, createMode, onBack, onUpdateD
 
     // Sync audio with video time (only while playing)
     useEffect(() => {
-        if (!videoRef.current || !audioRef.current || !music || !isPlaying) return;
+        const currentVideo = videoRef.current;
+        const currentAudio = audioRef.current;
+        if (!currentVideo || !currentAudio || !music || !isPlaying) return;
 
         let syncTimeout;
 
         const handleTimeUpdate = () => {
-            if (audioRef.current && videoRef.current && isPlaying) {
-                const timeDiff = Math.abs(audioRef.current.currentTime - videoRef.current.currentTime);
+            if (currentAudio && currentVideo && isPlaying) {
+                const timeDiff = Math.abs(currentAudio.currentTime - currentVideo.currentTime);
                 // Resync if drift is more than 1 second
                 if (timeDiff > 1) {
                     try {
-                        audioRef.current.currentTime = videoRef.current.currentTime;
+                        currentAudio.currentTime = currentVideo.currentTime;
                     } catch (err) {
                         // Ignore sync errors
                     }
@@ -56,11 +60,11 @@ const PreviewPost = ({ mediaFiles, details, music, createMode, onBack, onUpdateD
             }
         };
 
-        videoRef.current.addEventListener('timeupdate', handleTimeUpdate);
+        currentVideo.addEventListener('timeupdate', handleTimeUpdate);
 
         return () => {
-            if (videoRef.current) {
-                videoRef.current.removeEventListener('timeupdate', handleTimeUpdate);
+            if (currentVideo) {
+                currentVideo.removeEventListener('timeupdate', handleTimeUpdate);
             }
             if (syncTimeout) {
                 clearTimeout(syncTimeout);
@@ -70,18 +74,18 @@ const PreviewPost = ({ mediaFiles, details, music, createMode, onBack, onUpdateD
 
     // Handle video loading
     useEffect(() => {
-        if (videoRef.current && isVideo) {
-            const video = videoRef.current;
+        const currentVideo = videoRef.current;
+        if (currentVideo && isVideo) {
 
             const handleLoadedData = () => {
                 console.log('Video loaded successfully');
-                console.log('Video duration:', video.duration);
-                console.log('Video dimensions:', video.videoWidth, 'x', video.videoHeight);
+                console.log('Video duration:', currentVideo.duration);
+                console.log('Video dimensions:', currentVideo.videoWidth, 'x', currentVideo.videoHeight);
             };
 
             const handleError = (e) => {
                 console.error('Video loading error:', e);
-                console.error('Video error details:', video.error);
+                console.error('Video error details:', currentVideo.error);
                 setVideoError('Failed to load video. The exported file may be corrupted.');
             };
 
@@ -89,14 +93,14 @@ const PreviewPost = ({ mediaFiles, details, music, createMode, onBack, onUpdateD
                 console.log('Video can play');
             };
 
-            video.addEventListener('loadeddata', handleLoadedData);
-            video.addEventListener('error', handleError);
-            video.addEventListener('canplay', handleCanPlay);
+            currentVideo.addEventListener('loadeddata', handleLoadedData);
+            currentVideo.addEventListener('error', handleError);
+            currentVideo.addEventListener('canplay', handleCanPlay);
 
             return () => {
-                video.removeEventListener('loadeddata', handleLoadedData);
-                video.removeEventListener('error', handleError);
-                video.removeEventListener('canplay', handleCanPlay);
+                currentVideo.removeEventListener('loadeddata', handleLoadedData);
+                currentVideo.removeEventListener('error', handleError);
+                currentVideo.removeEventListener('canplay', handleCanPlay);
             };
         }
     }, [currentMedia, edits.file, isVideo]);

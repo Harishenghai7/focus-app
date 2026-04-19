@@ -149,7 +149,7 @@ export const generateVideoThumbnail = (file) => {
 // UPLOAD TO SUPABASE STORAGE
 // ═══════════════════════════════════════════════════════════════════════
 
-export const uploadToStorage = async (file, conversationId, type = 'image') => {
+export const uploadToStorage = async (file, conversationId, type = 'image', onProgress) => {
     try {
         // Generate unique filename
         const timestamp = Date.now();
@@ -162,7 +162,13 @@ export const uploadToStorage = async (file, conversationId, type = 'image') => {
             .from('message-media')
             .upload(filename, file, {
                 cacheControl: '3600',
-                upsert: false
+                upsert: false,
+                onUploadProgress: (progressEvent) => {
+                    if (onProgress && progressEvent.total) {
+                        const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                        onProgress(percent);
+                    }
+                }
             });
 
         if (error) throw error;
@@ -188,7 +194,7 @@ export const uploadToStorage = async (file, conversationId, type = 'image') => {
 // MAIN UPLOAD FUNCTIONS
 // ═══════════════════════════════════════════════════════════════════════
 
-export const uploadImage = async (file, conversationId) => {
+export const uploadImage = async (file, conversationId, onProgress) => {
     try {
         // Validate
         validateFileType(file, 'image');
@@ -201,7 +207,7 @@ export const uploadImage = async (file, conversationId) => {
         }
 
         // Upload
-        const result = await uploadToStorage(processedFile, conversationId, 'image');
+        const result = await uploadToStorage(processedFile, conversationId, 'image', onProgress);
 
         return {
             ...result,
@@ -214,7 +220,7 @@ export const uploadImage = async (file, conversationId) => {
     }
 };
 
-export const uploadVideo = async (file, conversationId) => {
+export const uploadVideo = async (file, conversationId, onProgress) => {
     try {
         // Validate
         validateFileType(file, 'video');
@@ -225,7 +231,7 @@ export const uploadVideo = async (file, conversationId) => {
         const thumbnailResult = await uploadToStorage(thumbnail, conversationId, 'thumbnail');
 
         // Upload video
-        const videoResult = await uploadToStorage(file, conversationId, 'video');
+        const videoResult = await uploadToStorage(file, conversationId, 'video', onProgress);
 
         return {
             ...videoResult,
@@ -251,7 +257,7 @@ export const uploadImages = async (files, conversationId) => {
 // EXPORTS
 // ═══════════════════════════════════════════════════════════════════════
 
-export default {
+const _defaultModule = {
     validateFileType,
     validateFileSize,
     formatFileSize,
@@ -262,3 +268,6 @@ export default {
     uploadImages,
     uploadToStorage
 };
+
+
+export default _defaultModule;

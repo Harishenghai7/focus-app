@@ -6,10 +6,14 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useGuardianship } from '../../hooks/useGuardianship';
+import { useGuardianDashboard } from '../../hooks/useGuardianDashboard';
+import { focusToast } from '../../utils/focusToast';
+import { triggerHaptic } from '../../utils/haptics';
 import styles from './ControlsPanel.module.css';
 
 const ControlsPanel = ({ teenId, relationship }) => {
     const { hasPermission } = useGuardianship();
+    const { updateScreenTimeLimits } = useGuardianDashboard(teenId);
     const [activeSection, setActiveSection] = useState('screen-time');
 
     // Screen Time State
@@ -39,6 +43,7 @@ const ControlsPanel = ({ teenId, relationship }) => {
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [focusTimerMinutes, setFocusTimerMinutes] = useState(45);
 
     // Fetch current settings
     useEffect(() => {
@@ -86,23 +91,21 @@ const ControlsPanel = ({ teenId, relationship }) => {
     // Save screen time settings
     const saveScreenTime = async () => {
         if (!hasPermission(relationship, 'set_screen_time')) {
-            alert('You don\'t have permission to modify screen time settings');
+            focusToast.error('You do not have permission to modify screen time settings');
             return;
         }
 
         setSaving(true);
         try {
-            await supabase
-                .from('screen_time_limits')
-                .upsert({
-                    teen_id: teenId,
-                    ...screenTimeSettings
-                });
-
-            alert('Screen time settings saved successfully!');
+            triggerHaptic(12);
+            await updateScreenTimeLimits(teenId, {
+                ...screenTimeSettings,
+                focus_timer_minutes: focusTimerMinutes,
+            });
+            focusToast.success('Screen time and focus timer settings saved.');
         } catch (error) {
             console.error('Error saving screen time:', error);
-            alert('Failed to save settings');
+            focusToast.error('Failed to save settings');
         } finally {
             setSaving(false);
         }
@@ -228,6 +231,25 @@ const ControlsPanel = ({ teenId, relationship }) => {
                                 {Math.floor(screenTimeSettings.daily_limit_minutes / 60)}h {screenTimeSettings.daily_limit_minutes % 60}m
                             </span>
                         </div>
+                    </div>
+
+                    <div className={styles.settingGroup}>
+                        <label>Focus Timer Session</label>
+                        <div className={styles.sliderContainer}>
+                            <input
+                                type="range"
+                                min="15"
+                                max="120"
+                                step="5"
+                                value={focusTimerMinutes}
+                                onChange={(e) => setFocusTimerMinutes(parseInt(e.target.value, 10))}
+                                className={styles.timeSlider}
+                            />
+                            <span className={styles.sliderValue}>{focusTimerMinutes}m</span>
+                        </div>
+                        <p className={styles.helperText}>
+                            Guardian-approved focus session duration used by Teen focus mode.
+                        </p>
                     </div>
 
                     <div className={styles.settingGroup}>

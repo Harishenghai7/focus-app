@@ -1,9 +1,10 @@
 // CommentItem Component - Individual comment with all features
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '../../hooks/useAuth';
-import { likeComment, unlikeComment, deleteComment, updateComment, togglePinComment } from '../../lib/commentApi';
+import { likeComment, unlikeComment, deleteComment, updateComment, togglePinComment, checkCommentLike } from '../../lib/commentApi';
+import { linkifyText } from '../../utils/linkifyText';
 import { toast } from 'react-toastify';
 import styles from './CommentItem.module.css';
 
@@ -25,6 +26,18 @@ const CommentItem = ({
     const [editText, setEditText] = useState(comment.content);
     const [showOptions, setShowOptions] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+
+    useEffect(() => {
+        let active = true;
+        if (!user?.id || !comment?.id) return undefined;
+        (async () => {
+            const { isLiked: liked } = await checkCommentLike(comment.id, user.id);
+            if (active) setIsLiked(Boolean(liked));
+        })();
+        return () => {
+            active = false;
+        };
+    }, [comment?.id, user?.id]);
 
     const isOwner = user?.id === comment.user_id;
     const canEdit = isOwner && !comment.deleted_at;
@@ -97,6 +110,9 @@ const CommentItem = ({
 
     const timeAgo = formatDistanceToNow(new Date(comment.created_at), { addSuffix: true });
     const isEdited = comment.updated_at && comment.updated_at !== comment.created_at;
+    const profileSlug = comment.user?.username || comment.user?.id || '';
+    const avatarSrc = comment.user?.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(profileSlug || comment.user_id || 'focus')}`;
+    const displayUsername = comment.user?.username || comment.user?.full_name || 'user';
 
     if (isDeleting) {
         return (
@@ -116,10 +132,10 @@ const CommentItem = ({
 
             <div className={styles.content}>
                 <img
-                    src={comment.user?.avatar_url || '/default-avatar.png'}
-                    alt={comment.user?.username}
+                    src={avatarSrc}
+                    alt={displayUsername}
                     className={styles.avatar}
-                    onClick={() => navigate(`/profile/${comment.user?.username}`)}
+                    onClick={() => profileSlug && navigate(`/profile/${profileSlug}`)}
                 />
 
                 <div className={styles.main}>
@@ -127,9 +143,9 @@ const CommentItem = ({
                         <div className={styles.userInfo}>
                             <span
                                 className={styles.username}
-                                onClick={() => navigate(`/profile/${comment.user?.username}`)}
+                                onClick={() => profileSlug && navigate(`/profile/${profileSlug}`)}
                             >
-                                {comment.user?.username}
+                                {displayUsername}
                                 {comment.user?.verified && <span className={styles.verified}>✓</span>}
                             </span>
                             <span className={styles.time}>
@@ -190,7 +206,7 @@ const CommentItem = ({
                             </div>
                         </div>
                     ) : (
-                        <p className={styles.text}>{comment.content}</p>
+                        <p className={styles.text}>{linkifyText(comment.content, styles.mention)}</p>
                     )}
 
                     <div className={styles.actions}>

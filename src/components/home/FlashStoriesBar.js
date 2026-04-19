@@ -1,39 +1,43 @@
 import React from 'react';
 import styles from './FlashStoriesBar.module.css';
 import StoryTile from './StoryTile';
-import { useStories } from '../../hooks/useStories';
-import { useAuth } from '../../hooks/useAuth';
-import Loader from '../ui/Loader';
+import { useStories } from '../../hooks/useStories'; // Ensure this hook exists
+import { useFocusIdentity } from '../../context/FocusIdentityContext';
 
 const FlashStoriesBar = ({ onStoryClick, onAddStory }) => {
-    const { user } = useAuth();
-    // Use stable empty array to prevent infinite loop
-    const [emptyArray] = React.useState([]);
-    const { stories, loading } = useStories(emptyArray);
+    const { userId, avatarUrl, displayName, handle, isVerified } = useFocusIdentity();
+    // Fixed: Removed the emptyArray state that was causing issues
+    const { stories = [], loading } = useStories(); 
 
-    // Filter stories to separate "My Story" from others
-    const myStory = user ? stories.find(s => s.user.id === user.id) : null;
-    const otherStories = user ? stories.filter(s => s.user.id !== user.id) : stories;
+    // Safe filtering
+    const myStory = userId ? stories.find((s) => s?.user?.id === userId) : null;
+    const otherStories = userId ? stories.filter((s) => s?.user?.id && s.user.id !== userId) : [];
 
     return (
         <div className={styles.container}>
             <div className={styles.scrollArea}>
+                {/* My Story Tile */}
                 <StoryTile
                     isOwn={true}
-                    story={myStory || { user }}
+                    story={myStory || { user: { id: userId, avatar_url: avatarUrl, username: handle, full_name: displayName, is_verified: isVerified } }}
                     onClick={myStory ? () => onStoryClick(myStory) : onAddStory}
                 />
 
+                {/* Other Stories */}
                 {loading ? (
-                    <div className={styles.loader}>
-                        <Loader size="sm" />
-                    </div>
+                    // Simple inline loader skeleton
+                    [1, 2, 3].map(i => (
+                        <div key={i} style={{ 
+                            width: 65, height: 65, borderRadius: '50%', 
+                            background: '#222', flexShrink: 0 
+                        }} />
+                    ))
                 ) : (
                     otherStories.map((storyGroup) => (
                         <StoryTile
                             key={storyGroup.user.id}
                             story={storyGroup}
-                            onClick={onStoryClick}
+                            onClick={() => onStoryClick(storyGroup)}
                         />
                     ))
                 )}

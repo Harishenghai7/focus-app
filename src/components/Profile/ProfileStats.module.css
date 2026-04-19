@@ -1,6 +1,10 @@
+/* ==========================================================
+   ProfileStats — Focus App Premium
+   ========================================================== */
+
 .stats {
     display: flex;
-    gap: var(--space-8);
+    gap: 32px;
     align-items: center;
 }
 
@@ -8,49 +12,49 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-1);
-    background: none;
-    border: none;
-    padding: 0;
+    gap: 2px;
+    background: var(--glass-surface);
+    backdrop-filter: var(--blur-md);
+    -webkit-backdrop-filter: var(--blur-md);
+    border: 1px solid var(--glass-border);
+    padding: var(--space-3) var(--space-4);
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: transform var(--transition-bounce), box-shadow var(--transition-base), opacity 0.15s;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    min-width: 80px;
 }
-
-.stat:hover {
-    transform: scale(1.05);
+.stat:hover { 
+    opacity: 0.9; 
+    transform: translateY(-4px); 
+    box-shadow: var(--shadow-md); 
+    border-color: var(--primary-dim); 
 }
-
-.stat:first-child {
-    cursor: default;
-}
-
-.stat:first-child:hover {
-    transform: none;
-}
+.stat:active { transform: scale(0.95); }
+.stat:first-child { cursor: default; }
+.stat:first-child:hover { opacity: 1; transform: translateY(-4px); }
 
 .statValue {
-    font-size: var(--font-lg);
-    font-weight: var(--font-bold);
-    color: var(--text-primary);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary, #fff);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
 }
 
 .statLabel {
-    font-size: var(--font-sm);
-    color: var(--text-secondary);
+    font-size: 0.78rem;
+    color: var(--text-muted, #888);
+    font-weight: 400;
+    text-transform: lowercase;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 640px) {
     .stats {
-        gap: var(--space-6);
+        gap: 0;
         width: 100%;
         justify-content: space-around;
     }
-
-    .statValue {
-        font-size: var(--font-base);
-    }
-
-    .statLabel {
-        font-size: var(--font-xs);
-    }
+    .statValue { font-size: 1rem; }
+    .statLabel  { font-size: 0.72rem; }
 }

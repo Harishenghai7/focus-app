@@ -1,4 +1,4 @@
-/* Input Component - Design System Compliant */
+/* Input Component - Royal Lavender Theme */
 
 .inputWrapper {
     position: relative;
@@ -10,38 +10,38 @@
 
 .label {
     display: block;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: var(--font-sm);
+    font-weight: var(--font-medium);
     color: var(--text-secondary);
     margin-bottom: var(--space-1);
 }
 
 .input {
     width: 100%;
-    padding: 12px 16px;
-    font-size: 14px;
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--font-sm);
     font-family: var(--font-primary);
     color: var(--text-primary);
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(139, 92, 246, 0.3);
-    border-radius: 8px;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    transition: var(--transition-base);
     outline: none;
     min-height: 44px;
 }
 
 .input::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    color: var(--text-disabled);
 }
 
 .input:hover:not(:disabled) {
-    border-color: rgba(139, 92, 246, 0.5);
+    border-color: var(--border-medium);
 }
 
 .input:focus {
-    border-color: #9b87f5;
-    box-shadow: 0 0 0 3px rgba(155, 135, 245, 0.1);
-    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--royal-purple);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+    background: var(--bg-tertiary);
 }
 
 .input:disabled {
@@ -51,7 +51,7 @@
 
 /* ERROR STATE */
 .inputError {
-    border-color: var(--error);
+    border-color: #ef4444;
 }
 
 .inputError:focus {
@@ -72,7 +72,7 @@
     pointer-events: none;
     display: flex;
     align-items: center;
-    font-size: 20px;
+    font-size: var(--font-xl);
 }
 
 .inputIconRight {
@@ -83,20 +83,20 @@
     color: var(--text-muted);
     display: flex;
     align-items: center;
-    font-size: 20px;
+    font-size: var(--font-xl);
 }
 
 /* ERROR MESSAGE */
 .errorMessage {
-    color: var(--error);
-    font-size: 12px;
+    color: #ef4444;
+    font-size: var(--font-xs);
     margin-top: var(--space-1);
 }
 
 /* HINT TEXT */
 .hint {
     color: var(--text-muted);
-    font-size: 12px;
+    font-size: var(--font-xs);
     margin-top: var(--space-1);
 }
 
@@ -109,6 +109,6 @@
 
 /* FOCUS VISIBLE */
 .input:focus-visible {
-    outline: 2px solid #9b87f5;
+    outline: 2px solid var(--royal-purple);
     outline-offset: 2px;
 }

@@ -5,11 +5,9 @@ let model = null;
 export const loadNSFWModel = async () => {
     if (model) return model;
     try {
-        console.log('Loading NSFW model...');
         // Load the model from a public URL or local files if available. 
         // Using default (S3 hosted) for now.
         model = await nsfwjs.load();
-        console.log('NSFW model loaded');
         return model;
     } catch (error) {
         console.error('Error loading NSFW model:', error);

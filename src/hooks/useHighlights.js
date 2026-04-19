@@ -21,7 +21,7 @@ export const useHighlights = (userId, isOwnProfile = false) => {
                     title,
                     cover_url,
                     created_at,
-                    stories:flash_stories(
+                    stories:flash(
                         id,
                         media_url,
                         media_type,

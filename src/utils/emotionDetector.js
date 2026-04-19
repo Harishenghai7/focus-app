@@ -273,7 +273,7 @@ export const analyzeSentiment = (text) => {
     return { polarity, score };
 };
 
-export default {
+const _defaultModule = {
     EmotionType,
     detectEmotion,
     getAvatarExpression,
@@ -282,3 +282,6 @@ export default {
     getSupportiveMessage,
     analyzeSentiment
 };
+
+
+export default _defaultModule;

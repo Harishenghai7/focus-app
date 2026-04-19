@@ -1,0 +1,14 @@
+.inner {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: var(--space-4, 1rem) var(--space-4, 1rem) var(--space-20, 5rem);
+    min-height: min(100vh, 100dvh);
+    box-sizing: border-box;
+}
+
+@media (min-width: 1024px) {
+    .inner {
+        padding-top: var(--space-6, 1.5rem);
+    }
+}

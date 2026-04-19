@@ -1,15 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import SettingsSection from './SettingsSection';
 import Toggle from '../shared/Toggle';
-import Select from '../shared/Select';
 import NotificationSoundPicker from './NotificationSoundPicker';
-import { useUpdateSetting } from '../../hooks/useUpdateSetting';
+import { triggerHaptic } from '../../utils/haptics';
+import { playSave } from '../../utils/audioFX';
 import styles from './NotificationSection.module.css';
 
-const NotificationSection = ({ isExpanded, onToggle, settings }) => {
-    const { updateSetting } = useUpdateSetting();
+const NotificationSection = ({ isExpanded, onToggle, settings, onUpdateSetting, saving = false }) => {
     const [showQuietHours, setShowQuietHours] = useState(settings?.quiet_hours_enabled ?? false);
     const [selectedSound, setSelectedSound] = useState(settings?.notification_sound || 'default');
+
+    const applySetting = async (key, value) => {
+        triggerHaptic(10);
+        const result = await onUpdateSetting?.(key, value);
+        if (result?.success) {
+            playSave();
+            return true;
+        }
+        return false;
+    };
 
     // Sync local state with settings prop
     useEffect(() => {
@@ -40,19 +49,22 @@ const NotificationSection = ({ isExpanded, onToggle, settings }) => {
                     label="Push Notifications"
                     description="Receive notifications on your device"
                     checked={settings?.push_notifications ?? true}
-                    onChange={(value) => updateSetting('push_notifications', value)}
+                    onChange={(value) => applySetting('push_notifications', value)}
+                    disabled={saving}
                 />
                 <Toggle
                     label="Email Notifications"
                     description="Receive notifications via email"
                     checked={settings?.email_notifications ?? true}
-                    onChange={(value) => updateSetting('email_notifications', value)}
+                    onChange={(value) => applySetting('email_notifications', value)}
+                    disabled={saving}
                 />
                 <Toggle
                     label="In-App Notifications"
                     description="See notifications within the app"
                     checked={settings?.in_app_notifications ?? true}
-                    onChange={(value) => updateSetting('in_app_notifications', value)}
+                    onChange={(value) => applySetting('in_app_notifications', value)}
+                    disabled={saving}
                 />
             </div>
 
@@ -66,43 +78,50 @@ const NotificationSection = ({ isExpanded, onToggle, settings }) => {
                     label="Likes"
                     description="When someone likes your content"
                     checked={settings?.notify_likes ?? true}
-                    onChange={(value) => updateSetting('notify_likes', value)}
+                    onChange={(value) => applySetting('notify_likes', value)}
+                    disabled={saving}
                 />
                 <Toggle
                     label="Comments"
                     description="When someone comments on your content"
                     checked={settings?.notify_comments ?? true}
-                    onChange={(value) => updateSetting('notify_comments', value)}
+                    onChange={(value) => applySetting('notify_comments', value)}
+                    disabled={saving}
                 />
                 <Toggle
                     label="New Followers"
                     description="When someone follows you"
                     checked={settings?.notify_followers ?? true}
-                    onChange={(value) => updateSetting('notify_followers', value)}
+                    onChange={(value) => applySetting('notify_followers', value)}
+                    disabled={saving}
                 />
                 <Toggle
                     label="Mentions"
                     description="When someone mentions you"
                     checked={settings?.notify_mentions ?? true}
-                    onChange={(value) => updateSetting('notify_mentions', value)}
+                    onChange={(value) => applySetting('notify_mentions', value)}
+                    disabled={saving}
                 />
                 <Toggle
                     label="Messages"
                     description="When you receive a new message"
                     checked={settings?.notify_messages ?? true}
-                    onChange={(value) => updateSetting('notify_messages', value)}
+                    onChange={(value) => applySetting('notify_messages', value)}
+                    disabled={saving}
                 />
                 <Toggle
                     label="Boltz"
                     description="Activity on your Boltz videos"
                     checked={settings?.notify_boltz ?? true}
-                    onChange={(value) => updateSetting('notify_boltz', value)}
+                    onChange={(value) => applySetting('notify_boltz', value)}
+                    disabled={saving}
                 />
                 <Toggle
                     label="Flash"
                     description="New Flash stories from people you follow"
                     checked={settings?.notify_flash ?? true}
-                    onChange={(value) => updateSetting('notify_flash', value)}
+                    onChange={(value) => applySetting('notify_flash', value)}
+                    disabled={saving}
                 />
             </div>
 
@@ -110,9 +129,11 @@ const NotificationSection = ({ isExpanded, onToggle, settings }) => {
 
             <NotificationSoundPicker
                 value={selectedSound}
-                onChange={(value) => {
-                    setSelectedSound(value); // Optimistic update
-                    updateSetting('notification_sound', value);
+                onChange={async (value) => {
+                    const prev = selectedSound;
+                    setSelectedSound(value);
+                    const ok = await applySetting('notification_sound', value);
+                    if (!ok) setSelectedSound(prev);
                 }}
             />
 
@@ -123,10 +144,13 @@ const NotificationSection = ({ isExpanded, onToggle, settings }) => {
                     label="Quiet Hours (Do Not Disturb)"
                     description="Mute notifications during specific hours"
                     checked={settings?.quiet_hours_enabled ?? false}
-                    onChange={(value) => {
-                        updateSetting('quiet_hours_enabled', value);
+                    onChange={async (value) => {
+                        const prev = showQuietHours;
                         setShowQuietHours(value);
+                        const ok = await applySetting('quiet_hours_enabled', value);
+                        if (!ok) setShowQuietHours(prev);
                     }}
+                    disabled={saving}
                 />
                 {showQuietHours && (
                     <div className={styles.quietHoursConfig}>
@@ -136,7 +160,7 @@ const NotificationSection = ({ isExpanded, onToggle, settings }) => {
                                 <input
                                     type="time"
                                     value={settings?.quiet_hours_start || '22:00'}
-                                    onChange={(e) => updateSetting('quiet_hours_start', e.target.value)}
+                                    onChange={(e) => applySetting('quiet_hours_start', e.target.value)}
                                     className={styles.timeField}
                                 />
                             </div>
@@ -145,7 +169,7 @@ const NotificationSection = ({ isExpanded, onToggle, settings }) => {
                                 <input
                                     type="time"
                                     value={settings?.quiet_hours_end || '08:00'}
-                                    onChange={(e) => updateSetting('quiet_hours_end', e.target.value)}
+                                    onChange={(e) => applySetting('quiet_hours_end', e.target.value)}
                                     className={styles.timeField}
                                 />
                             </div>

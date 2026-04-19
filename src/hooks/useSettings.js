@@ -36,6 +36,7 @@ const DEFAULT_SETTINGS = {
 export const useSettings = () => {
     const { user } = useAuth();
     const [settings, setSettings] = useState(null);
+    const [saving, setSaving] = useState(false);
 
     // 1. Fetch Settings Logic
     const fetchSettingsData = useCallback(async () => {
@@ -118,6 +119,7 @@ export const useSettings = () => {
         const updatedSettings = { ...settings, ...newSettings };
         setSettings(updatedSettings);
 
+        setSaving(true);
         try {
             const { data, error: updateError } = await supabase
                 .from('user_settings')
@@ -142,8 +144,10 @@ export const useSettings = () => {
             // Revert to previous settings on error
             setSettings(previousSettings);
             console.error('❌ Settings update error:', err);
-            focusToast.error('Failed to save settings. Please try again.');
+            focusToast.error('Failed to save settings. Changes were rolled back.');
             return { success: false, error: err.message };
+        } finally {
+            setSaving(false);
         }
     }, [user, settings]);
 
@@ -158,6 +162,7 @@ export const useSettings = () => {
         error,
         refetch,
         updateSettings,
-        updateSetting
+        updateSetting,
+        saving
     };
 };

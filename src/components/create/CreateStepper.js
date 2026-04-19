@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './CreateStepper.module.css';
 import { Check } from 'lucide-react';
 
-const STEPS = ['Media', 'Edit', 'Details', 'Preview'];
+const STEPS = ['Media', 'Edit', 'Music', 'Details', 'Preview'];
 
 const CreateStepper = ({ currentStep, completedSteps }) => {
     return (

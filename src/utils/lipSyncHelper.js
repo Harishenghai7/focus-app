@@ -257,7 +257,7 @@ export const createSimpleLipSync = (text) => {
     return timeline.length > 0 ? timeline : [VISEMES.NEUTRAL];
 };
 
-export default {
+const _defaultModule = {
     VISEMES,
     generateLipSyncTimeline,
     getCurrentViseme,
@@ -268,3 +268,6 @@ export default {
     getEmotionViseme,
     createSimpleLipSync
 };
+
+
+export default _defaultModule;

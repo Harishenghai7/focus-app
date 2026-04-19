@@ -290,7 +290,7 @@ export const getFrequentlyReportedContent = async (minReports = 3) => {
     }
 };
 
-export default {
+const _defaultModule = {
     submitReport,
     getReportsByUser,
     getReportQueue,
@@ -300,3 +300,6 @@ export default {
     scanAndModerateContent,
     getFrequentlyReportedContent
 };
+
+
+export default _defaultModule;

@@ -1,5 +1,15 @@
 // Comment API Functions - Direct REST API
 import { supabaseUrl, supabaseAnonKey } from './supabase';
+import { getAuthToken } from '../utils/supabaseRest';
+
+const authHeaders = async (withJson = false) => {
+    const token = await getAuthToken();
+    return {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${token}`,
+        ...(withJson ? { 'Content-Type': 'application/json', Prefer: 'return=representation' } : {}),
+    };
+};
 
 /**
  * Fetch comments for a post/boltz/flash
@@ -10,7 +20,12 @@ export const fetchComments = async (targetId, targetType = 'post', options = {})
 
         console.log(`💬 Fetching comments for ${targetType}:`, targetId);
 
-        let url = `${supabaseUrl}/rest/v1/comments?select=*,user:profiles!comments_user_id_fkey(id,username,full_name,avatar_url,verified)`;
+        const table = targetType === 'post' ? 'post_comments' : 'comments';
+        const userJoin =
+            targetType === 'post'
+                ? 'profiles:user_id!inner(id,username,full_name,avatar_url,is_verified)'
+                : 'user:profiles!comments_user_id_fkey(id,username,full_name,avatar_url,verified)';
+        let url = `${supabaseUrl}/rest/v1/${table}?select=*,${userJoin}`;
 
         // Filter by target type
         if (targetType === 'post') url += `&post_id=eq.${targetId}`;
@@ -18,10 +33,11 @@ export const fetchComments = async (targetId, targetType = 'post', options = {})
         else if (targetType === 'flash') url += `&flash_id=eq.${targetId}`;
 
         // Filter by parent (top-level or replies)
+        const parentField = targetType === 'post' ? 'parent_comment_id' : 'parent_id';
         if (parentId) {
-            url += `&parent_id=eq.${parentId}`;
+            url += `&${parentField}=eq.${parentId}`;
         } else {
-            url += `&parent_id=is.null`;
+            url += `&${parentField}=is.null`;
         }
 
         url += `&deleted_at=is.null`;
@@ -29,10 +45,7 @@ export const fetchComments = async (targetId, targetType = 'post', options = {})
         url += `&limit=${limit}&offset=${offset}`;
 
         const response = await fetch(url, {
-            headers: {
-                'apikey': supabaseAnonKey,
-                'Authorization': `Bearer ${supabaseAnonKey}`,
-            }
+            headers: await authHeaders()
         });
 
         if (!response.ok) {
@@ -60,12 +73,7 @@ export const postComment = async (commentData) => {
 
         const response = await fetch(url, {
             method: 'POST',
-            headers: {
-                'apikey': supabaseAnonKey,
-                'Authorization': `Bearer ${supabaseAnonKey}`,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=representation'
-            },
+            headers: await authHeaders(true),
             body: JSON.stringify(commentData)
         });
 
@@ -95,11 +103,7 @@ export const deleteComment = async (commentId) => {
 
         const response = await fetch(url, {
             method: 'PATCH',
-            headers: {
-                'apikey': supabaseAnonKey,
-                'Authorization': `Bearer ${supabaseAnonKey}`,
-                'Content-Type': 'application/json',
-            },
+            headers: await authHeaders(true),
             body: JSON.stringify({ deleted_at: new Date().toISOString() })
         });
 
@@ -127,12 +131,7 @@ export const updateComment = async (commentId, content) => {
 
         const response = await fetch(url, {
             method: 'PATCH',
-            headers: {
-                'apikey': supabaseAnonKey,
-                'Authorization': `Bearer ${supabaseAnonKey}`,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=representation'
-            },
+            headers: await authHeaders(true),
             body: JSON.stringify({
                 content,
                 updated_at: new Date().toISOString()
@@ -164,12 +163,7 @@ export const likeComment = async (commentId, userId) => {
 
         const response = await fetch(url, {
             method: 'POST',
-            headers: {
-                'apikey': supabaseAnonKey,
-                'Authorization': `Bearer ${supabaseAnonKey}`,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=representation'
-            },
+            headers: await authHeaders(true),
             body: JSON.stringify({ comment_id: commentId, user_id: userId })
         });
 
@@ -197,10 +191,7 @@ export const unlikeComment = async (commentId, userId) => {
 
         const response = await fetch(url, {
             method: 'DELETE',
-            headers: {
-                'apikey': supabaseAnonKey,
-                'Authorization': `Bearer ${supabaseAnonKey}`,
-            }
+            headers: await authHeaders()
         });
 
         if (!response.ok) {
@@ -224,10 +215,7 @@ export const checkCommentLike = async (commentId, userId) => {
         const url = `${supabaseUrl}/rest/v1/comment_likes?comment_id=eq.${commentId}&user_id=eq.${userId}`;
 
         const response = await fetch(url, {
-            headers: {
-                'apikey': supabaseAnonKey,
-                'Authorization': `Bearer ${supabaseAnonKey}`,
-            }
+            headers: await authHeaders()
         });
 
         if (!response.ok) return { isLiked: false, error: null };
@@ -251,11 +239,7 @@ export const togglePinComment = async (commentId, isPinned) => {
 
         const response = await fetch(url, {
             method: 'PATCH',
-            headers: {
-                'apikey': supabaseAnonKey,
-                'Authorization': `Bearer ${supabaseAnonKey}`,
-                'Content-Type': 'application/json',
-            },
+            headers: await authHeaders(true),
             body: JSON.stringify({ is_pinned: isPinned })
         });
 

@@ -1,173 +1,153 @@
-import React, { useState, useEffect } from 'react';
-import { X, Send } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import styles from './PostDetailModal.module.css';
-import Avatar from '../shared/Avatar';
-import InteractionBar from '../home/InteractionBar';
-import { useLike } from '../../hooks/useLike';
-import { useSave } from '../../hooks/useSave';
-import { useComment } from '../../hooks/useComment';
-import LoadingSpinner from '../shared/LoadingSpinner';
-
+import UserAvatar from '../ui/Avatar';
+import UniversalInteractionBar from '../ui/UniversalInteractionBar';
+import CommentsDrawer from '../post/CommentsDrawer';
 import ShareModal from './ShareModal';
+import { normalizeHydratedProfile } from '../../utils/identityHydration';
 
-const PostDetailModal = ({ post, onClose, onUpdate }) => {
-    const [commentText, setCommentText] = useState('');
+const PostDetailModal = ({ post, onClose, onUpdate, initialOpenComments = false }) => {
+    const [viewPost, setViewPost] = useState(post);
+    const [showComments, setShowComments] = useState(false);
     const [showShareModal, setShowShareModal] = useState(false);
-    const { toggleLike, animating } = useLike();
-    const { toggleSave } = useSave();
-    const { comments, loading, posting, loadComments, addComment } = useComment(post?.id, 'post');
 
     useEffect(() => {
-        if (post?.id) {
-            loadComments();
+        setViewPost(post);
+    }, [post]);
+
+    useEffect(() => {
+        if (initialOpenComments) {
+            setShowComments(true);
         }
-    }, [post?.id, loadComments]);
+    }, [initialOpenComments, viewPost?.id]);
+
+    const contentType = viewPost?.type === 'boltz' ? 'boltz' : 'post';
+    const mediaUrl =
+        viewPost?.media_url ||
+        viewPost?.media_urls?.[0] ||
+        viewPost?.thumbnail_url ||
+        viewPost?.video_url ||
+        null;
+    const author = useMemo(
+        () => viewPost ? normalizeHydratedProfile(viewPost?.profiles || viewPost?.user, viewPost?.user_id) : {},
+        [viewPost]
+    );
 
     if (!post) return null;
 
-    const user = post.user || post.profiles;
-
-    const handleLike = () => {
-        toggleLike(post.id, post.is_liked, 'post', onUpdate);
-    };
-
-    const handleSave = () => {
-        toggleSave(post.id, post.is_saved, 'post', onUpdate);
-    };
-
-    const handleSubmitComment = async (e) => {
-        e.preventDefault();
-        if (!commentText.trim() || posting) return;
-
-        const { error } = await addComment(commentText);
-        if (!error) {
-            setCommentText('');
-            if (onUpdate) {
-                onUpdate(post.id, { comments_count_delta: 1 });
+    const handleLocalUpdate = (contentId, updates) => {
+        setViewPost((prev) => {
+            if (!prev || prev.id !== contentId) return prev;
+            const next = { ...prev, ...updates };
+            if (updates.likes_count_delta !== undefined) {
+                next.likes_count = Math.max(0, (prev.likes_count || 0) + updates.likes_count_delta);
             }
-        }
+            if (updates.saves_count_delta !== undefined) {
+                next.saves_count = Math.max(0, (prev.saves_count || 0) + updates.saves_count_delta);
+            }
+            if (updates.comments_count_delta !== undefined) {
+                next.comments_count = Math.max(0, (prev.comments_count || 0) + updates.comments_count_delta);
+            }
+            if (updates.shares_count_delta !== undefined) {
+                next.shares_count = Math.max(0, (prev.shares_count || 0) + updates.shares_count_delta);
+            }
+            onUpdate?.(contentId, updates);
+            return next;
+        });
     };
+
+    const isVideo = contentType === 'boltz' || viewPost?.type === 'video';
 
     return (
-        <div className={styles.overlay} onClick={onClose}>
-            <div className={styles.modal} onClick={e => e.stopPropagation()}>
+        <AnimatePresence>
+            <motion.div
+                className={styles.overlay}
+                onClick={onClose}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+            >
+            <motion.div
+                className={styles.modal}
+                onClick={(e) => e.stopPropagation()}
+                layoutId={`content-detail-${contentType}-${viewPost?.id}`}
+                initial={{ opacity: 0, y: 16, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 12, scale: 0.98 }}
+                transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            >
                 <button className={styles.closeButton} onClick={onClose}>
                     <X size={24} />
                 </button>
 
                 <div className={styles.mediaContainer}>
-                    {post.type === 'video' || post.type === 'boltz' ? (
-                        <video
-                            src={post.media_url}
-                            controls
-                            autoPlay
-                            className={styles.media}
-                        />
+                    {isVideo ? (
+                        <video src={mediaUrl} controls autoPlay className={styles.media} />
                     ) : (
-                        <img
-                            src={post.media_url}
-                            alt={post.caption}
-                            className={styles.media}
-                        />
+                        <img src={mediaUrl} alt={viewPost?.caption || 'Post'} className={styles.media} />
                     )}
                 </div>
 
                 <div className={styles.sidebar}>
                     <div className={styles.header}>
                         <div className={styles.userInfo}>
-                            <Avatar src={user?.avatar_url} size="md" />
+                            <UserAvatar src={author.avatar_url} username={author.username} size="md" />
                             <div className={styles.userMeta}>
-                                <span className={styles.username}>{user?.username}</span>
-                                {user?.verified && <span className={styles.verified}>✓</span>}
+                                <span className={styles.username}>{author.username}</span>
+                                {author.is_verified && <span className={styles.verified}>✓</span>}
                             </div>
                         </div>
                     </div>
 
                     <div className={styles.comments}>
-                        <div className={styles.captionBlock}>
-                            <Avatar src={user?.avatar_url} size="sm" />
-                            <div className={styles.captionContent}>
-                                <p className={styles.captionText}>
-                                    <span className={styles.username}>{user?.username}</span>
-                                    {' '}{post.caption}
-                                </p>
-                                <span className={styles.timestamp}>
-                                    {new Date(post.created_at).toLocaleDateString()}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className={styles.commentsList}>
-                            {loading ? (
-                                <div className={styles.spinnerContainer}>
-                                    <LoadingSpinner size="sm" />
+                        {viewPost?.caption && (
+                            <div className={styles.captionBlock}>
+                                <UserAvatar src={author.avatar_url} username={author.username} size="sm" />
+                                <div className={styles.captionContent}>
+                                    <p className={styles.captionText}>
+                                        <span className={styles.username}>{author.username}</span> {viewPost.caption}
+                                    </p>
                                 </div>
-                            ) : comments.length > 0 ? (
-                                comments.map(comment => (
-                                    <div key={comment.id} className={styles.commentItem}>
-                                        <Avatar src={comment.user?.avatar_url} size="sm" />
-                                        <div className={styles.commentContent}>
-                                            <p className={styles.commentText}>
-                                                <span className={styles.username}>{comment.user?.username}</span>
-                                                {' '}{comment.content}
-                                            </p>
-                                            <span className={styles.timestamp}>
-                                                {new Date(comment.created_at).toLocaleDateString()}
-                                            </span>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <p className={styles.emptyComments}>No comments yet. Be the first!</p>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className={styles.footer}>
-                        <InteractionBar
-                            isLiked={post.is_liked}
-                            likesCount={post.likes_count}
-                            onLike={handleLike}
-                            onComment={() => document.getElementById('commentInput').focus()}
-                            onShare={() => setShowShareModal(true)}
-                            isSaved={post.is_saved}
-                            onSave={handleSave}
-                            animating={animating}
+                        <UniversalInteractionBar
+                            postId={viewPost?.id}
+                            contentType={contentType}
+                            isLiked={Boolean(viewPost?.is_liked)}
+                            likeCount={viewPost?.likes_count || 0}
+                            isSaved={Boolean(viewPost?.is_saved)}
+                            commentCount={viewPost?.comments_count || 0}
+                            shareCount={viewPost?.shares_count || 0}
+                            savesCount={viewPost?.saves_count || 0}
+                            onCommentClick={() => setShowComments(true)}
+                            onShareClick={() => setShowShareModal(true)}
+                            onUpdate={handleLocalUpdate}
                         />
-
-                        <div className={styles.stats}>
-                            <span className={styles.likesCount}>{post.likes_count || 0} likes</span>
-                        </div>
-
-                        <form className={styles.commentForm} onSubmit={handleSubmitComment}>
-                            <input
-                                id="commentInput"
-                                type="text"
-                                placeholder="Add a comment..."
-                                value={commentText}
-                                onChange={(e) => setCommentText(e.target.value)}
-                                className={styles.commentInput}
-                                disabled={posting}
-                            />
-                            <button
-                                type="submit"
-                                className={styles.sendButton}
-                                disabled={!commentText.trim() || posting}
-                            >
-                                {posting ? <LoadingSpinner size="xs" /> : <Send size={20} />}
-                            </button>
-                        </form>
                     </div>
                 </div>
-            </div>
+            </motion.div>
             {showShareModal && (
                 <ShareModal
-                    item={post}
-                    type="post"
+                    item={viewPost}
+                    type={contentType}
                     onClose={() => setShowShareModal(false)}
                 />
             )}
-        </div>
+            {showComments && (
+                <CommentsDrawer
+                    targetId={viewPost?.id}
+                    targetType={contentType}
+                    onClose={() => setShowComments(false)}
+                />
+            )}
+            </motion.div>
+        </AnimatePresence>
     );
 };
 

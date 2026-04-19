@@ -1,55 +1,82 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 
+/**
+ * useTrending — Focus Platform
+ * Fetches real trending hashtags (via RPC view) + trending posts (24h).
+ * No fake data. Falls back gracefully if the view doesn't exist yet.
+ */
 export const useTrending = () => {
     const [trendingPosts, setTrendingPosts] = useState([]);
     const [trendingHashtags, setTrendingHashtags] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchTrending = async () => {
-            try {
-                // Fetch trending posts (most likes in last 24h)
-                // Note: In a real app, this would likely be a materialized view or RPC
-                // For now, we'll fetch recent posts and sort by likes
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
+    const fetchTrending = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
-                const { data: posts, error: postsError } = await supabase
-                    .from('posts')
-                    .select('*, profiles(username, avatar_url)')
-                    .gte('created_at', yesterday.toISOString())
-                    .order('likes_count', { ascending: false })
-                    .limit(6);
+            // ── Trending Posts: top-engaged in last 24h ──────────────────
+            const { data: posts, error: postsErr } = await supabase
+                .from('posts')
+                .select('*, profiles(id, username, avatar_url, is_verified)')
+                .gte('created_at', yesterday)
+                .order('likes_count', { ascending: false })
+                .limit(6);
 
-                if (postsError) throw postsError;
-                setTrendingPosts(posts);
+            if (postsErr) throw postsErr;
+            setTrendingPosts(posts || []);
 
-                // Fetch trending hashtags
-                // Assuming a 'hashtags' table or extracting from captions
-                // For simplicity, we'll use a hardcoded list or fetch from a 'trending_tags' table if it existed
-                // Here we will mock it with a simple query or static data if table missing, 
-                // but let's try to fetch from a hypothetical 'hashtags' table
-                const { data: tags, error: tagsError } = await supabase
-                    .from('hashtags')
-                    .select('*')
-                    .order('count', { ascending: false })
-                    .limit(5);
+            // ── Trending Hashtags: try RPC first, fall back to view ──────
+            const { data: rpcTags, error: rpcErr } = await supabase
+                .rpc('get_trending_hashtags', { limit_count: 10 });
 
-                if (!tagsError) {
-                    setTrendingHashtags(tags);
-                }
-
-
-            } catch (error) {
-                console.error('Error fetching trending:', error);
-            } finally {
-                setLoading(false);
+            if (!rpcErr && rpcTags?.length) {
+                setTrendingHashtags(rpcTags);
+                return;
             }
-        };
 
-        fetchTrending();
+            // Fallback: query the view directly
+            const { data: viewTags, error: viewErr } = await supabase
+                .from('trending_hashtags')
+                .select('tag, post_count, score, last_used')
+                .order('score', { ascending: false })
+                .limit(10);
+
+            if (!viewErr && viewTags?.length) {
+                setTrendingHashtags(viewTags);
+                return;
+            }
+
+            // Last resort: extract hashtags client-side from recent posts
+            if (posts?.length) {
+                const tagMap = {};
+                posts.forEach(p => {
+                    const text = (p.content || '') + ' ' + (p.caption || '');
+                    const matches = text.match(/#[a-zA-Z0-9_]+/g) || [];
+                    matches.forEach(tag => {
+                        const t = tag.slice(1).toLowerCase();
+                        tagMap[t] = (tagMap[t] || 0) + 1;
+                    });
+                });
+                const extracted = Object.entries(tagMap)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 10)
+                    .map(([tag, post_count]) => ({ tag, post_count, score: post_count }));
+                setTrendingHashtags(extracted);
+            }
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
-    return { trendingPosts, trendingHashtags, loading };
+    useEffect(() => {
+        fetchTrending();
+    }, [fetchTrending]);
+
+    return { trendingPosts, trendingHashtags, loading, error, refetch: fetchTrending };
 };

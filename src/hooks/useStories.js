@@ -1,39 +1,45 @@
 import { useState, useEffect } from 'react';
 import { fetchStories } from '../utils/supabaseRest';
+import { supabase } from '../lib/supabase';
 
 export const useStories = (followedUserIds) => {
     const [stories, setStories] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let timeoutId;
+        let channel;
+        let cancelled = false;
+
         const fetchStoriesData = async () => {
-            // Set timeout to prevent infinite loading
-            const timeoutId = setTimeout(() => {
+            if (timeoutId) clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
                 console.warn('⚠️ Stories fetch timeout - showing empty state');
-                setStories([]);
-                setLoading(false);
-            }, 5000); // 5 seconds (increased from 2)
+                if (!cancelled) {
+                    setStories([]);
+                    setLoading(false);
+                }
+            }, 5000);
 
             try {
                 console.log('📸 Fetching Flash stories via REST API...');
-                setLoading(true);
+                if (!cancelled) setLoading(true);
 
-                // Fetch all stories (24 hour filter is in fetchStories)
                 let storiesData = await fetchStories();
 
-                // Clear timeout on response
-                clearTimeout(timeoutId);
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                    timeoutId = undefined;
+                }
 
-                // Filter by followed users if provided
                 if (followedUserIds && followedUserIds.length > 0) {
-                    storiesData = storiesData.filter(s =>
+                    storiesData = storiesData.filter((s) =>
                         followedUserIds.includes(s.user_id)
                     );
                 }
 
                 console.log('✅ Stories fetched:', storiesData.length);
 
-                // Group stories by user
                 const groupedStories = storiesData.reduce((acc, story) => {
                     const userId = story.user_id;
                     if (!acc[userId]) {
@@ -44,26 +50,72 @@ export const useStories = (followedUserIds) => {
                         };
                     }
                     acc[userId].stories.push(story);
-
-                    // Check if viewed (simplified - you may need to add view tracking)
-                    const isViewed = story.viewed && story.viewed.length > 0;
+                    const isViewed = Boolean(
+                        story.is_viewed ||
+                        story.viewed_by_current_user ||
+                        story.viewed_at ||
+                        (story.viewed && story.viewed.length > 0)
+                    );
                     if (!isViewed) {
                         acc[userId].hasUnviewed = true;
                     }
                     return acc;
                 }, {});
 
-                setStories(Object.values(groupedStories));
+                if (!cancelled) setStories(Object.values(groupedStories));
             } catch (err) {
                 console.error('❌ Error fetching stories:', err);
-                setStories([]);
-                clearTimeout(timeoutId);
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                    timeoutId = undefined;
+                }
             } finally {
-                setLoading(false);
+                if (!cancelled) setLoading(false);
             }
         };
 
         fetchStoriesData();
+
+        channel = supabase
+            .channel('public:flash_realtime')
+            .on(
+                'postgres_changes',
+                { event: 'DELETE', schema: 'public', table: 'flash' },
+                (payload) => {
+                    const deletedId = payload.old?.id;
+                    if (!deletedId) return;
+
+                    setStories((prev) =>
+                        prev
+                            .map((group) => ({
+                                ...group,
+                                stories: group.stories.filter((s) => s.id !== deletedId),
+                            }))
+                            .filter((group) => group.stories.length > 0)
+                    );
+                }
+            )
+            .on(
+                'postgres_changes',
+                { event: 'INSERT', schema: 'public', table: 'flash' },
+                () => {
+                    fetchStoriesData();
+                }
+            )
+            .on(
+                'postgres_changes',
+                { event: 'UPDATE', schema: 'public', table: 'flash' },
+                () => {
+                    fetchStoriesData();
+                }
+            )
+            .subscribe();
+
+        return () => {
+            cancelled = true;
+            if (timeoutId) clearTimeout(timeoutId);
+            if (channel) supabase.removeChannel(channel);
+        };
     }, [followedUserIds]);
 
     return { stories, loading };

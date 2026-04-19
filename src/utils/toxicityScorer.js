@@ -7,9 +7,7 @@ const threshold = 0.9;
 export const loadToxicityModel = async () => {
     if (model) return model;
     try {
-        console.log('Loading toxicity model...');
         model = await toxicity.load(threshold);
-        console.log('Toxicity model loaded');
         return model;
     } catch (error) {
         console.error('Error loading toxicity model:', error);

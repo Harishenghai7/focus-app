@@ -91,7 +91,7 @@
 }
 
 .twitter {
-    background: black;
+    background: var(--bg-primary);
     color: white;
     border-color: black;
 }

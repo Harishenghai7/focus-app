@@ -1,0 +1,282 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.header {
+    text-align: center;
+}
+
+.title {
+    margin: 0;
+    font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+    color: var(--text-primary);
+}
+
+.subtitle {
+    margin: 6px 0 0;
+    color: var(--text-secondary);
+}
+
+.focuslyGuide {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(196, 181, 253, 0.25);
+    background: rgba(76, 29, 149, 0.18);
+}
+
+.focuslyGuide p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.4;
+}
+
+.progressTrack {
+    width: 100%;
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(196, 181, 253, 0.18);
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, #8b5cf6 0%, #c084fc 100%);
+}
+
+.stageCard {
+    min-height: 320px;
+    border-radius: 20px;
+    border: 1px solid rgba(221, 214, 254, 0.2);
+    background: rgba(21, 12, 43, 0.5);
+    backdrop-filter: blur(18px);
+    padding: 16px;
+}
+
+.stage {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+}
+
+.scannerOverlay {
+    width: 100%;
+    min-height: 180px;
+    border-radius: 18px;
+    background: radial-gradient(circle at top, rgba(139, 92, 246, 0.28), rgba(15, 6, 32, 0.6));
+    display: grid;
+    place-items: center;
+}
+
+.documentFrame {
+    width: min(290px, 100%);
+    height: 170px;
+    border-radius: 14px;
+    position: relative;
+    border: 1px dashed rgba(233, 213, 255, 0.55);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 8px;
+}
+
+.cornerTopLeft,
+.cornerTopRight,
+.cornerBottomLeft,
+.cornerBottomRight {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border: 3px solid #e9d5ff;
+}
+
+.cornerTopLeft { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+.cornerTopRight { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+.cornerBottomLeft { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+.cornerBottomRight { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+.overlayHint {
+    margin: 0;
+    font-size: 0.82rem;
+    color: #f5e8ff;
+}
+
+.uploadBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 12px;
+    padding: 10px 14px;
+    background: rgba(139, 92, 246, 0.22);
+    color: var(--text-primary);
+    cursor: pointer;
+    border: 1px solid rgba(196, 181, 253, 0.35);
+}
+
+.extractedCard {
+    width: 100%;
+    border-radius: 12px;
+    padding: 10px 12px;
+    border: 1px solid rgba(196, 181, 253, 0.3);
+    background: rgba(30, 17, 56, 0.65);
+}
+
+.extractedCard p {
+    margin: 4px 0;
+    color: var(--text-secondary);
+}
+
+.cameraRingWrap {
+    width: 220px;
+    height: 220px;
+    position: relative;
+}
+
+.cameraVideo {
+    position: absolute;
+    inset: 12px;
+    width: calc(100% - 24px);
+    height: calc(100% - 24px);
+    border-radius: 999px;
+    object-fit: cover;
+    background: #120b24;
+}
+
+.progressRing {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.ringBase {
+    fill: none;
+    stroke: rgba(196, 181, 253, 0.25);
+    stroke-width: 8;
+}
+
+.ringProgress {
+    fill: none;
+    stroke: #c084fc;
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 339;
+    transition: stroke-dashoffset 0.4s ease;
+}
+
+.actionText {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #f3e8ff;
+}
+
+.warning {
+    margin: 0;
+    color: #fca5a5;
+    font-size: 0.9rem;
+}
+
+.processingGlass {
+    width: 100%;
+    min-height: 210px;
+    border-radius: 16px;
+    border: 1px solid rgba(221, 214, 254, 0.3);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 2px 20px rgba(255, 255, 255, 0.08);
+    display: grid;
+    place-items: center;
+    gap: 10px;
+}
+
+.loaderOrb {
+    width: 50px;
+    height: 50px;
+    border-radius: 999px;
+    border: 3px solid rgba(233, 213, 255, 0.2);
+    border-top-color: #d8b4fe;
+    animation: spin 0.95s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.successBlock,
+.failureBlock {
+    width: 100%;
+    border-radius: 14px;
+    padding: 14px;
+    text-align: center;
+}
+
+.successBlock {
+    border: 1px solid rgba(74, 222, 128, 0.35);
+    background: rgba(22, 101, 52, 0.17);
+}
+
+.failureBlock {
+    border: 1px solid rgba(248, 113, 113, 0.35);
+    background: rgba(153, 27, 27, 0.17);
+}
+
+.successBlock h3,
+.failureBlock h3 {
+    margin: 8px 0 6px;
+}
+
+.successBlock p,
+.failureBlock p {
+    margin: 0 0 12px;
+    color: var(--text-secondary);
+}
+
+.guardianCopy {
+    margin: 0;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.qrBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    border-radius: 14px;
+    padding: 10px;
+    border: 1px solid rgba(196, 181, 253, 0.3);
+    background: rgba(30, 17, 56, 0.65);
+}
+
+.linkText {
+    margin: 0;
+    text-align: center;
+    color: #ddd6fe;
+    word-break: break-all;
+    font-size: 0.78rem;
+}
+
+.inlineButtons {
+    display: flex;
+    gap: 10px;
+}
+
+.error {
+    margin: 0;
+    color: #fca5a5;
+    text-align: center;
+}
+
+.progressInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-tertiary);
+}

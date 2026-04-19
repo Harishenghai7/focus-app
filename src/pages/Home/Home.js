@@ -1,51 +1,70 @@
 /**
- * Home Page - Updated with New Feed System
- * Integrates new PostCard and Feed components with existing features
+ * Home Page - Ultimate Lavender Theme v3.0
+ * Fixed: Hook errors & missing CSS
  */
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './Home.module.css';
+import { useFocusUser } from '../../context/FocusUserContext';
+import styles from './Home.module.css'; // Uses the Lavender CSS above
+
+// Components
 import MainLayout from '../../components/layout/MainLayout';
 import FlashStoriesBar from '../../components/home/FlashStoriesBar';
+import BoltzPreviewRow from '../../components/boltz/BoltzPreviewRow';
 import Feed from '../../components/feed/Feed';
 import FlashViewer from '../../components/modals/FlashViewer';
-import ShareModal from '../../components/modals/ShareModal';
+import HomeSkeleton from './HomeSkeleton';
+import HomeErrorBoundary from './HomeErrorBoundary';
 
 const Home = () => {
     const navigate = useNavigate();
+    const { user, loading } = useFocusUser();
+    
+    // Local State
     const [activeStoryGroup, setActiveStoryGroup] = useState(null);
-    const [shareItem, setShareItem] = useState(null);
 
     const handleAddStory = () => {
         navigate('/create?tab=flash');
     };
 
+    if (loading) {
+        return (
+            <MainLayout>
+                <div className={styles.container}>
+                    <HomeSkeleton />
+                </div>
+            </MainLayout>
+        );
+    }
+
+    if (!user) return null;
+
     return (
         <MainLayout>
-            <div className={styles.container}>
-                <FlashStoriesBar
-                    onStoryClick={setActiveStoryGroup}
-                    onAddStory={handleAddStory}
-                />
+            <HomeErrorBoundary>
+                <div className={styles.container}>
+                    <div className={styles.homeStack}>
+                        <FlashStoriesBar
+                            onStoryClick={setActiveStoryGroup}
+                            onAddStory={handleAddStory}
+                        />
 
-                {/* New Advanced Feed Component */}
-                <Feed feedType="home" />
+                        <BoltzPreviewRow />
 
-                <FlashViewer
-                    isOpen={!!activeStoryGroup}
-                    onClose={() => setActiveStoryGroup(null)}
-                    storyGroup={activeStoryGroup}
-                />
+                        <div className={styles.feed}>
+                            <Feed feedType="home" />
+                        </div>
+                    </div>
 
-                {shareItem && (
-                    <ShareModal
-                        item={shareItem}
-                        type={shareItem.type || 'post'}
-                        onClose={() => setShareItem(null)}
-                    />
-                )}
-            </div>
+                    {activeStoryGroup && (
+                        <FlashViewer
+                            isOpen={!!activeStoryGroup}
+                            onClose={() => setActiveStoryGroup(null)}
+                            storyGroup={activeStoryGroup}
+                        />
+                    )}
+                </div>
+            </HomeErrorBoundary>
         </MainLayout>
     );
 };

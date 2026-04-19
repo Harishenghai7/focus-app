@@ -1,171 +1,63 @@
-/* Notifications Tabs Styles */
-.container {
-    margin-bottom: 1.5rem;
-    position: relative;
-}
-
-.tabsWrapper {
-    position: relative;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    scroll-behavior: smooth;
-    /* Add momentum scrolling for iOS */
-    -webkit-overflow-scrolling: touch;
-    /* Enable scroll snap for better UX */
-    scroll-snap-type: x proximity;
-    /* Add padding for better scroll experience */
-    padding: 0 1rem;
-    margin: 0 -1rem;
-}
-
-.tabsWrapper::-webkit-scrollbar {
-    display: none;
-}
-
-/* Fade indicators on edges to show more content */
-.container::before,
-.container::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0.5rem;
-    width: 40px;
-    pointer-events: none;
-    z-index: 2;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.container::before {
-    left: 0;
-    background: linear-gradient(90deg, var(--bg-primary) 0%, transparent 100%);
-}
-
-.container::after {
-    right: 0;
-    background: linear-gradient(270deg, var(--bg-primary) 0%, transparent 100%);
-}
-
-/* Show fade indicators when scrollable */
-.container[data-scrollable="true"]::before,
-.container[data-scrollable="true"]::after {
-    opacity: 1;
-}
+/* ==========================================================
+   NotificationsTabs — Focus App | Pill-style Premium
+   ========================================================== */
 
 .tabs {
     display: flex;
-    gap: 0.5rem;
-    padding-bottom: 0.5rem;
-    position: relative;
-    min-width: min-content;
+    gap: 6px;
+    padding: 12px 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--border-subtle, rgba(255,255,255,0.05));
 }
+.tabs::-webkit-scrollbar { display: none; }
 
 .tab {
-    position: relative;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.25rem;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.9rem;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid transparent;
+    background: none;
+    color: var(--text-muted, #777);
+    font-size: 0.83rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.18s ease;
     white-space: nowrap;
-    backdrop-filter: blur(10px);
-    /* Scroll snap alignment */
-    scroll-snap-align: start;
-    /* Prevent text selection on touch */
-    user-select: none;
-    -webkit-user-select: none;
-    /* Better touch target size */
-    min-height: 44px;
+    flex-shrink: 0;
+    font-family: inherit;
 }
 
 .tab:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(167, 139, 250, 0.3);
-    color: rgba(255, 255, 255, 0.8);
-    transform: translateY(-2px);
-}
-
-.tab:active {
-    transform: translateY(0);
+    background: rgba(255,255,255,0.05);
+    color: var(--text-secondary, #bbb);
 }
 
 .tab.active {
-    background: linear-gradient(135deg, rgba(167, 139, 250, 0.2) 0%, rgba(192, 132, 252, 0.2) 100%);
-    border-color: rgba(167, 139, 250, 0.5);
-    color: #ffffff;
-    box-shadow: 0 4px 12px rgba(167, 139, 250, 0.2);
-}
-
-.label {
+    background: rgba(124, 58, 237, 0.15);
+    border-color: rgba(124, 58, 237, 0.35);
+    color: var(--primary, #7C3AED);
     font-weight: 600;
 }
 
-.badge {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 20px;
-    height: 20px;
-    padding: 0 6px;
-    background: linear-gradient(135deg, #a78bfa 0%, #c084fc 100%);
-    border-radius: 10px;
-    color: #ffffff;
-    font-size: 0.75rem;
+/* Tab badge for unread count */
+.tabBadge {
+    background: var(--primary, #7C3AED);
+    color: #fff;
+    font-size: 0.65rem;
     font-weight: 700;
-    line-height: 1;
+    padding: 1px 5px;
+    border-radius: 8px;
+    min-width: 16px;
+    text-align: center;
+    line-height: 1.4;
 }
 
-.indicator {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #a78bfa 0%, #c084fc 100%);
-    border-radius: 3px 3px 0 0;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 0 12px rgba(167, 139, 250, 0.6);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .tabsWrapper {
-        /* More aggressive momentum scrolling on mobile */
-        -webkit-overflow-scrolling: touch;
-        scroll-snap-type: x mandatory;
-        padding: 0 0.5rem;
-        margin: 0 -0.5rem;
-    }
-
-    .tabs {
-        gap: 0.375rem;
-    }
-
-    .tab {
-        padding: 0.625rem 1rem;
-        font-size: 0.85rem;
-        /* Ensure good touch target */
-        min-height: 44px;
-    }
-
-    .badge {
-        min-width: 18px;
-        height: 18px;
-        font-size: 0.7rem;
-    }
-
-    /* Stronger fade indicators on mobile */
-    .container::before,
-    .container::after {
-        width: 30px;
-    }
+.tab:not(.active) .tabBadge {
+    background: rgba(255,255,255,0.12);
+    color: var(--text-muted, #888);
 }

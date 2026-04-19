@@ -1,19 +1,37 @@
 .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(8, 2, 20, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    animation: overlayIn 0.2s ease;
+}
+
+@keyframes overlayIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .modal {
-    background: var(--bg-elevated);
-    border-radius: var(--radius-xl);
+    background: var(--glass-surface);
+    backdrop-filter: var(--blur-xl);
+    -webkit-backdrop-filter: var(--blur-xl);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-2xl), 0 0 40px rgba(124, 58, 237, 0.2);
     width: 90%;
-    max-width: 400px;
+    max-width: 420px;
     padding: var(--space-6);
+    animation: modalBounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalBounceIn {
+    from { opacity: 0; transform: scale(0.88) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .header {
@@ -42,15 +60,19 @@
     align-items: center;
     gap: var(--space-2);
     padding: var(--space-4);
-    background: var(--bg-secondary);
-    border: none;
-    border-radius: var(--radius-lg);
+    background: var(--glass-surface);
+    backdrop-filter: var(--blur-sm);
+    -webkit-backdrop-filter: var(--blur-sm);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
     color: var(--text-primary);
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--transition-bounce);
 }
 
 .option:hover {
-    background: var(--bg-tertiary);
-    transform: translateY(-2px);
+    background: var(--glass-surface-hover);
+    border-color: var(--primary-dim);
+    transform: translateY(-4px) scale(1.04);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.25);
 }

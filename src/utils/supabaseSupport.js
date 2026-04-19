@@ -332,7 +332,7 @@ export const subscribeToTicket = (ticketId, onUpdate) => {
     return subscription;
 };
 
-export default {
+const _defaultModule = {
     createTicket,
     getTicketsByUser,
     getTicketQueue,
@@ -343,3 +343,6 @@ export default {
     searchTickets,
     subscribeToTicket
 };
+
+
+export default _defaultModule;

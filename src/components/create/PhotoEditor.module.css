@@ -10,7 +10,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #000;
+    background: var(--bg-primary);
     overflow: hidden;
     padding: var(--space-4);
 }

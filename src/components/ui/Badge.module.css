@@ -1,3 +1,5 @@
+/* Badge Component - Royal Lavender Theme */
+
 .badge {
     display: inline-flex;
     align-items: center;
@@ -10,17 +12,17 @@
 }
 
 .badge-primary {
-    background: var(--primary-lavender-200);
-    color: var(--primary-lavender);
+    background: rgba(124, 58, 237, 0.2);
+    color: var(--neon-lavender);
 }
 
 .badge-success {
     background: rgba(76, 175, 80, 0.2);
-    color: var(--success);
+    color: #4caf50;
 }
 
 .badge-verified {
-    background: var(--gradient-primary);
-    color: white;
+    background: var(--gradient-royal);
+    color: var(--text-primary);
     padding: var(--space-1) var(--space-2);
 }

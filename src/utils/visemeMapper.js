@@ -203,7 +203,7 @@ export const getVisemeIntensity = (viseme, volume = 1.0) => {
     return (baseIntensity[viseme] || 0.5) * volume;
 };
 
-export default {
+const _defaultModule = {
     VisemeType,
     getVisemeForChar,
     getVisemeForPhoneme,
@@ -212,3 +212,6 @@ export default {
     estimateSpeakingDuration,
     getVisemeIntensity
 };
+
+
+export default _defaultModule;

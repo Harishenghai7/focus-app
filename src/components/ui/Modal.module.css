@@ -1,4 +1,4 @@
-/* Modal Component - Design System Compliant */
+/* Modal Component - Royal Lavender Theme */
 
 .overlay {
     position: fixed;
@@ -8,7 +8,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: var(--z-modal-backdrop);
+    z-index: var(--z-modal);
     animation: fadeIn 0.2s ease-out;
     padding: var(--space-4);
 }
@@ -21,13 +21,13 @@
 }
 
 .modalContent {
-    background: rgba(26, 26, 26, 0.95);
+    background: var(--glass-bg);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(139, 92, 246, 0.2);
-    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
     padding: var(--space-6);
-    box-shadow: 0 16px 48px rgba(139, 92, 246, 0.25);
+    box-shadow: var(--glow-purple);
     display: flex;
     flex-direction: column;
     max-height: 90vh;
@@ -39,12 +39,12 @@
     justify-content: space-between;
     margin-bottom: var(--space-6);
     padding-bottom: var(--space-4);
-    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .title {
-    font-size: 20px;
-    font-weight: 600;
+    font-size: var(--font-xl);
+    font-weight: var(--font-semibold);
     color: var(--text-primary);
 }
 
@@ -55,7 +55,7 @@
     min-height: 32px;
     background: transparent;
     border: none;
-    border-radius: 50%;
+    border-radius: var(--radius-full);
     color: var(--text-secondary);
     font-size: var(--font-2xl);
     cursor: pointer;
@@ -64,7 +64,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: var(--transition-base);
 }
 
 .closeBtn:hover {
@@ -87,7 +87,7 @@
     justify-content: flex-end;
     margin-top: var(--space-6);
     padding-top: var(--space-4);
-    border-top: 1px solid rgba(139, 92, 246, 0.2);
+    border-top: 1px solid var(--border-subtle);
 }
 
 /* ANIMATIONS */
@@ -120,7 +120,7 @@
     }
 
     .modalContent {
-        border-radius: 12px;
+        border-radius: var(--radius-lg);
         padding: var(--space-4);
     }
 
@@ -139,6 +139,6 @@
 
 /* ACCESSIBILITY */
 .closeBtn:focus-visible {
-    outline: 2px solid #9b87f5;
+    outline: 2px solid var(--royal-purple);
     outline-offset: 2px;
 }
