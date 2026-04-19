@@ -53,6 +53,8 @@ const ChatPane = ({
     const [forwardMessage, setForwardMessage] = useState(null);
     const [editingMessage, setEditingMessage] = useState(null);
     const [deletingMessage, setDeletingMessage] = useState(null);
+    const [showUserInfo, setShowUserInfo] = useState(false);
+    const [showPinned, setShowPinned] = useState(false);
     const [showSearchPanel, setShowSearchPanel] = useState(false);
     const [showPollCreator, setShowPollCreator] = useState(false);
     const [showLocationPicker, setShowLocationPicker] = useState(false);
@@ -522,7 +524,7 @@ const ChatPane = ({
                 onVideoCall={handleVideoCall}
                 onInfo={handleInfo}
                 onSearch={() => setShowSearchPanel(true)}
-                onShowPinned={() => {}}
+                onShowPinned={() => setShowPinned(true)}
                 onSchedule={() => {}}
                 onDisappearingMessages={() => {}}
                 onReadReceipts={() => {}}
