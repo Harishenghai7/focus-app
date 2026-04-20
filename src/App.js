@@ -73,17 +73,31 @@ const LoadingScreen = () => (
 );
 
 /**
- * RootGuard — VerifiedRoute
+ * HighSecurityGuard
  * ─────────────────────────
  * If the user is authenticated but their verification_status is NOT 'VERIFIED',
- * they are locked into /onboarding. All routes to /home and the main app are
- * blocked until TrustShield verification is complete.
+ * they are locked into /onboarding.
  */
-const VerifiedRoute = ({ children }) => {
+const HighSecurityGuard = ({ children }) => {
     const { user, profile, loading } = useFocusUser();
     const location = useLocation();
+    const [isRefreshing, setIsRefreshing] = useState(true);
 
-    if (loading) return <LoadingScreen />;
+    useEffect(() => {
+        let isMounted = true;
+        const doRefresh = async () => {
+            if (user && profile?.verification_status !== 'VERIFIED') {
+                try {
+                    await supabase.auth.refreshSession();
+                } catch(e) {}
+            }
+            if (isMounted) setIsRefreshing(false);
+        };
+        doRefresh();
+        return () => { isMounted = false; };
+    }, [user, profile?.verification_status]);
+
+    if (loading || isRefreshing) return <LoadingScreen />;
 
     // Not logged in at all — let the route handle redirect
     if (!user) return children;
@@ -107,9 +121,7 @@ const VerifiedRoute = ({ children }) => {
         ''
     ).toUpperCase().trim();
 
-    const VERIFIED_STATUSES = new Set(['VERIFIED', 'VERIFIED_MINOR']);
-
-    if (!VERIFIED_STATUSES.has(verificationStatus)) {
+    if (verificationStatus !== 'VERIFIED') {
         // Lock the user into onboarding — they cannot access /home or any protected route
         return <Navigate to="/onboarding" replace />;
     }
@@ -211,7 +223,7 @@ const AppContent = () => {
                     } />
                     <Route path="/home" element={
                         user
-                            ? <VerifiedRoute>{withTrustGate(<Home />)}</VerifiedRoute>
+                            ? <HighSecurityGuard>{withTrustGate(<Home />)}</HighSecurityGuard>
                             : <Navigate to="/auth" replace />
                     } />
 
@@ -266,7 +278,7 @@ const AppContent = () => {
                     */}
                     <Route path="*" element={
                       user
-                        ? <VerifiedRoute><Navigate to="/home" replace /></VerifiedRoute>
+                        ? <HighSecurityGuard><Navigate to="/home" replace /></HighSecurityGuard>
                         : <Navigate to="/auth" replace />
                     } />
                 </AnimatedRoutes>

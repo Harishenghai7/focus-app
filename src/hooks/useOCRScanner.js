@@ -27,6 +27,8 @@ const ADULT_MARKERS = [
   /Government\s+of\s+India/i,
   /\bPASSPORT\b/i,
   /Republic\s+of\s+India/i,
+  /\bVoter\b/i,
+  /\bElection\b/i,
 ];
 
 // ── TEEN Document Markers ────────────────────────────────────────────────────

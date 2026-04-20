@@ -65,9 +65,12 @@
 .ghost {
     background: transparent;
     /* Ghost Button Fix: force #FFFFFF for visibility — H2 Spec */
-    color: #FFFFFF;
-    text-align: center;
+    color: #FFFFFF !important;
+    font-weight: 600;
+    display: flex;
     justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
 .ghost:hover:not(:disabled) {

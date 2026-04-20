@@ -100,8 +100,9 @@ const TrustShieldVerification = () => {
 
   // ── Liveness State ────────────────────────────────────────────────────────
   // Randomize challenge order each session — 'Chaos Engine'
-  const [challengeSequence] = useState(() => shuffleChallenges(LIVENESS_CHALLENGE_POOL));
+  const challengeSequenceRef = useRef([]);
   const [livenessPhase, setLivenessPhase] = useState(0);
+  const [livenessLuminance, setLivenessLuminance] = useState(1);
   const [livenessStatus, setLivenessStatus] = useState('');
   const [livenessComplete, setLivenessComplete] = useState([false, false, false]);
   const [faceModelsLoaded, setFaceModelsLoaded] = useState(false);
@@ -117,6 +118,7 @@ const TrustShieldVerification = () => {
   const blinkCountRef     = useRef(0);
   // ── Teleport / Injection Detection ────────────────────────────────────────
   const prevYawRef        = useRef(null);    // Previous frame yaw for delta check
+  const prevFaceCenterRef = useRef(null);
   const teleportCountRef  = useRef(0);       // Consecutive teleport events
 
   // ── Scanner Hook ──────────────────────────────────────────────────────────
@@ -187,6 +189,7 @@ const TrustShieldVerification = () => {
    */
   const handleHardReset = useCallback((reason) => {
     if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
+    localStorage.clear();
     setStep(1);
     setAgeGroup(null);
     setOcrData(null);
@@ -226,6 +229,18 @@ const TrustShieldVerification = () => {
         await supabase.from('profiles')
           .update({ identity_hash: identityHash })
           .eq('id', user.id);
+
+        // ── THE PRIVACY WIPE: Delete from bucket ──
+        const autoCleanup = async () => {
+           try {
+             const { data: files } = await supabase.storage.from('verification-uploads').list(user.id);
+             if (files?.length > 0) {
+                 const filePaths = files.map(f => `${user.id}/${f.name}`);
+                 await supabase.storage.from('verification-uploads').remove(filePaths);
+             }
+           } catch(e) { console.error('autoCleanup failed', e); }
+        };
+        autoCleanup();
       }
       // Refresh session so global profile state picks up immediately
       await supabase.auth.refreshSession();
@@ -235,6 +250,15 @@ const TrustShieldVerification = () => {
           metadata: { ocrData },
         });
         setGuardianToken(token);
+
+        // Lock post privileges for teen
+        await supabase.from('profiles').update({ can_post: false }).eq('id', user.id);
+
+        if (profile?.guardian_email) {
+            await supabase.functions.invoke('send-parent-consent-email', {
+                body: { parentEmail: profile.guardian_email, childName: user?.user_metadata?.full_name || '', childUserId: user?.id, token }
+            });
+        }
       }
       setStep(5);
     } catch (err) {
@@ -384,7 +408,7 @@ const TrustShieldVerification = () => {
               .maybeSingle();
 
             if (existing) {
-              handleFail('Identity already linked to an existing Focus account. Each ID can only be used once.');
+              handleFail('Permanent Conflict Error: Identity already linked to an existing Focus account. Each ID can only be used once.');
               scanner.stopCamera?.();
               return;
             }
@@ -422,6 +446,8 @@ const TrustShieldVerification = () => {
   }, [faceModelsLoaded]);
 
   const startLivenessCamera = useCallback(async () => {
+    const newSeq = shuffleChallenges(LIVENESS_CHALLENGE_POOL);
+    challengeSequenceRef.current = newSeq;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
@@ -438,17 +464,18 @@ const TrustShieldVerification = () => {
       yawHistoryRef.current   = [];
       blinkCountRef.current   = 0;
       prevYawRef.current      = null;     // Reset teleport tracker
+      prevFaceCenterRef.current = null;
       teleportCountRef.current = 0;       // Reset injection counter
       setLivenessPhase(0);
       setLivenessComplete([false, false, false]);
       setStaticImageFlag(false);
       // Show the RANDOMIZED first challenge
-      setLivenessStatus(`Challenge 1: ${challengeSequence[0]?.label ?? 'Hold steady'}`);
+      setLivenessStatus(`Challenge 1: ${newSeq[0]?.label ?? 'Hold steady'}`);
       startLivenessLoop();
     } catch (_) {
       setLivenessStatus('Camera blocked. Enable camera and retry.');
     }
-  }, [challengeSequence]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [startLivenessLoop]);
 
   const stopLivenessCamera = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -491,12 +518,34 @@ const TrustShieldVerification = () => {
         const jawMid   = (jawLeft.x + jawRight.x) / 2;
         const yaw = (noseTip.x - jawMid) / ((jawRight.x - jawLeft.x) || 1); // -0.5..0.5
 
+        const faceBox = detection.detection.box;
+        const faceCenterX = faceBox.x + faceBox.width / 2;
+        const faceCenterY = faceBox.y + faceBox.height / 2;
+
+        // ── VIRTUAL RING LIGHT LUMINANCE CHECK ──
+        if (liveVideoRef.current) {
+            try {
+                const osc = document.createElement('canvas');
+                osc.width = 32; osc.height = 32;
+                const ctx = osc.getContext('2d');
+                ctx.drawImage(liveVideoRef.current, 0, 0, 32, 32);
+                const px = ctx.getImageData(0,0,32,32).data;
+                let lumSum = 0;
+                for(let i=0; i<px.length; i+=4) lumSum += (0.299 * px[i] + 0.587 * px[i+1] + 0.114 * px[i+2]) / 255;
+                setLivenessLuminance(lumSum / (32*32));
+            } catch(e) {}
+        }
+
         // ── TELEPORT INJECTION DETECTION ──────────────────────────────
-        // A real face moving naturally cannot jump >40% of face width in one frame.
+        // A real face moving naturally cannot jump >30% of frame width in one frame.
         // A photoswap or virtual-camera injection will 'teleport' instantly.
-        if (prevYawRef.current !== null) {
-          const delta = Math.abs(yaw - prevYawRef.current);
-          if (delta > 0.40) {
+        if (prevYawRef.current !== null && prevFaceCenterRef.current !== null) {
+          const prevPos = prevFaceCenterRef.current;
+          const deltaX = Math.abs(faceCenterX - prevPos.x) / (liveVideoRef.current.videoWidth || 640);
+          const deltaY = Math.abs(faceCenterY - prevPos.y) / (liveVideoRef.current.videoHeight || 480);
+          const deltaYaw = Math.abs(yaw - prevYawRef.current);
+
+          if (deltaX > 0.30 || deltaY > 0.30 || deltaYaw > 0.30) {
             teleportCountRef.current += 1;
             if (teleportCountRef.current >= 2) {
               // ── HARD LOCK — LOCKED_INJECTION ──────────────────────
@@ -523,13 +572,14 @@ const TrustShieldVerification = () => {
           }
         }
         prevYawRef.current = yaw;
+        prevFaceCenterRef.current = { x: faceCenterX, y: faceCenterY };
 
         yawHistoryRef.current.push(yaw);
         if (yawHistoryRef.current.length > 30) yawHistoryRef.current.shift();
 
         // ── Use RANDOMIZED challengeSequence ──────────────────────────
         setLivenessPhase(prev => {
-          const currentChallenge = challengeSequence[prev];
+          const currentChallenge = challengeSequenceRef.current[prev];
           if (!currentChallenge || prev >= 3) return prev;
 
           // ── CHALLENGE: BLINK ───────────────────────────────────────
@@ -558,7 +608,7 @@ const TrustShieldVerification = () => {
                 if (navigator?.vibrate) navigator.vibrate(80);
                 setLivenessComplete(p => { const n=[...p]; n[prev]=true; return n; });
                 const next = prev + 1;
-                const nextCh = challengeSequence[next];
+                const nextCh = challengeSequenceRef.current[next];
                 setLivenessStatus(nextCh ? `✅ Complete! Next: ${nextCh.label}` : '✅ All challenges passed!');
                 if (!nextCh) { cancelAnimationFrame(rafRef.current); stopLivenessCamera(); setTimeout(() => setStep(s => s + 1), 800); }
                 return next;
@@ -588,7 +638,7 @@ const TrustShieldVerification = () => {
               setLivenessComplete(p => { const n=[...p]; n[prev]=true; return n; });
               yawHistoryRef.current = [];
               const next = prev + 1;
-              const nextCh = challengeSequence[next];
+              const nextCh = challengeSequenceRef.current[next];
               setLivenessStatus(nextCh ? `✅ Complete! Next: ${nextCh.label}` : '✅ All challenges passed!');
               if (!nextCh) { cancelAnimationFrame(rafRef.current); stopLivenessCamera(); setTimeout(() => setStep(s => s + 1), 800); }
               return next;
@@ -602,7 +652,7 @@ const TrustShieldVerification = () => {
               if (navigator?.vibrate) navigator.vibrate([100, 50, 100]);
               setLivenessComplete(p => { const n=[...p]; n[prev]=true; return n; });
               const next = prev + 1;
-              const nextCh = challengeSequence[next];
+              const nextCh = challengeSequenceRef.current[next];
               setLivenessStatus(nextCh ? `✅ Complete! Next: ${nextCh.label}` : '✅ All challenges passed!');
               cancelAnimationFrame(rafRef.current);
               stopLivenessCamera();
@@ -617,7 +667,7 @@ const TrustShieldVerification = () => {
       } catch (_) {}
     };
     rafRef.current = requestAnimationFrame(detect);
-  }, [stopLivenessCamera, challengeSequence, user?.id]);
+  }, [stopLivenessCamera, user?.id]);
 
   useEffect(() => {
     if (step === 3) {
@@ -823,7 +873,11 @@ const TrustShieldVerification = () => {
 
           {/* ── STEP 3: RUTHLESS LIVENESS ── */}
           {step === 3 && (
-            <div className={styles.stepCard}>
+            <div className={styles.stepCard} style={
+              typeof window !== 'undefined' && window.innerWidth <= 768 && livenessLuminance < 0.3 
+                ? { background: '#FFFFFF', zIndex: 9999, position: 'fixed', inset: 0, width: '100vw', height: '100vh', borderRadius: 0, paddingTop: '10%' } 
+                : {}
+            }>
               <h2 className={styles.stepTitle}>👁️ Biometric Liveness</h2>
               <p className={styles.stepDesc}>
                 3-step challenge to confirm you're a living person. Complete each challenge in sequence.
