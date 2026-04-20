@@ -92,6 +92,12 @@ const useOnboarding = () => {
             if (updateFocusProfile) updateFocusProfile(updatedProfileData);
 
             // 5-second timeout race to prevent hanging
+            const trustShieldData = {
+                verification_status: formData.trustShieldStatus === 'VERIFIED' ? 'VERIFIED' : 'PENDING',
+                trust_shield_status: formData.trustShieldStatus === 'VERIFIED' ? 'VERIFIED' : 'PENDING',
+                identity_hash: formData.identityHash || null,
+            };
+
             const savePromise = saveOnboardingData(
                 user.id,
                 {
@@ -101,7 +107,8 @@ const useOnboarding = () => {
                     website: formData.website,
                     avatar_url: avatarUrl
                 },
-                formData.interests
+                formData.interests,
+                trustShieldData
             );
 
             const timeoutPromise = new Promise((_, reject) =>

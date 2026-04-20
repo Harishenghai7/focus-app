@@ -73,19 +73,22 @@ export const persistTrustShieldState = async ({
 
     if (profileError) throw profileError;
 
-    const { error: auditError } = await supabase
-        .from('verification_audit_trail')
-        .insert({
-            user_id: userId,
-            device_id: deviceId,
-            stage,
-            result: attemptResult,
-            reason,
-            score: faceScore,
-            metadata,
-        });
-
-    if (auditError) throw auditError;
+    // Audit trail is secondary — never block verification on this
+    try {
+        await supabase
+            .from('verification_audit_trail')
+            .insert({
+                user_id: userId,
+                device_id: deviceId,
+                stage,
+                result: attemptResult,
+                reason,
+                score: faceScore,
+                metadata,
+            });
+    } catch (auditErr) {
+        console.warn('[TrustShield] Audit trail write failed (non-blocking):', auditErr);
+    }
 };
 
 export const createGuardianHandshake = async ({ teenUserId, metadata = {} }) => {

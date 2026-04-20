@@ -330,20 +330,25 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
         setStage('processing');
         stopCamera();
         
-        window.setTimeout(() => {
-            setSelfieFrames(async (currentFrames) => {
-                try {
-                    const result = await runFaceSimilarityCheck({ idImageFile: idFile, selfieFrames: currentFrames });
-                    setMatchResult(result);
+        // Read selfieFrames from current state via functional update (sync read only)
+        // Then run the async face check OUTSIDE of setState
+        let capturedFrames = [];
+        setSelfieFrames(prev => { capturedFrames = prev; return prev; });
+
+        window.setTimeout(async () => {
+            try {
+                const result = await runFaceSimilarityCheck({ idImageFile: idFile, selfieFrames: capturedFrames });
+                setMatchResult(result);
+                
+                if (result.passed) {
+                    triggerHaptic(24);
+                    setError(''); // Clear any hovering errors
+                    updateFormData('trustShieldStatus', 'VERIFIED');
+                    updateFormData('trustShieldInitialized', true);
+                    updateFormData('trustShieldFaceScore', result.score);
                     
-                    if (result.passed) {
-                        triggerHaptic(24);
-                        setError(''); // Clear any hovering errors
-                        updateFormData('trustShieldStatus', 'VERIFIED');
-                        updateFormData('trustShieldInitialized', true);
-                        updateFormData('trustShieldFaceScore', result.score);
-                        
-                        if (isTeen) {
+                    if (isTeen) {
+                        try {
                             const handshakeToken = await createGuardianHandshake({
                                 teenUserId: user?.id,
                                 metadata: { ocr: ocrResult, face_score: result.score },
@@ -359,8 +364,12 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
                                 stage: 'guardian_pending',
                                 handshakeToken,
                             });
-                            setStage('guardian');
-                        } else {
+                        } catch (persistErr) {
+                            console.warn('[TrustShield] Guardian persist failed (non-fatal):', persistErr);
+                        }
+                        setStage('guardian');
+                    } else {
+                        try {
                             await persistTrustShieldState({
                                 userId: user?.id,
                                 verificationStatus: 'VERIFIED',
@@ -369,9 +378,13 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
                                 attemptResult: 'SUCCESS',
                                 stage: 'face_match',
                             });
-                            setStage('result');
+                        } catch (persistErr) {
+                            console.warn('[TrustShield] Persist failed (non-fatal):', persistErr);
                         }
-                    } else {
+                        setStage('result');
+                    }
+                } else {
+                    try {
                         await persistTrustShieldState({
                             userId: user?.id,
                             verificationStatus: 'PENDING',
@@ -381,15 +394,17 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
                             stage: 'face_match',
                             reason: result.reason || 'Face similarity threshold not met.',
                         });
-                        setStage('result');
+                    } catch (persistErr) {
+                        console.warn('[TrustShield] Failure persist failed (non-fatal):', persistErr);
                     }
-                } catch (e) {
-                    setError('Liveness processing error.');
                     setStage('result');
                 }
-                setIdFile(null);
-                return currentFrames;
-            });
+            } catch (e) {
+                console.error('[TrustShield] Face similarity check failed:', e);
+                setError('Liveness processing error. Please retry.');
+                setStage('liveness');
+            }
+            setIdFile(null);
         }, 500);
     };
 

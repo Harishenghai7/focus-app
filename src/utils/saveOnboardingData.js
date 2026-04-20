@@ -7,7 +7,7 @@ import { supabase } from '../lib/supabase';
  * @param {Array} interests - List of interest strings.
  * @returns {Promise<void>}
  */
-export const saveOnboardingData = async (userId, profileData, interests) => {
+export const saveOnboardingData = async (userId, profileData, interests, trustShieldData = {}) => {
     try {
         // 1. Ensure Profile Exists (insert if missing)
         const { data: existingProfile, error: fetchError } = await supabase
@@ -28,6 +28,9 @@ export const saveOnboardingData = async (userId, profileData, interests) => {
                     avatar_url: profileData.avatar_url,
                     website: profileData.website,
                     onboarding_completed: true,
+                    ...(trustShieldData.verification_status ? { verification_status: trustShieldData.verification_status } : {}),
+                    ...(trustShieldData.trust_shield_status ? { trust_shield_status: trustShieldData.trust_shield_status } : {}),
+                    ...(trustShieldData.identity_hash ? { identity_hash: trustShieldData.identity_hash } : {}),
                     updated_at: new Date().toISOString(),
                 }
             ]);
@@ -43,6 +46,9 @@ export const saveOnboardingData = async (userId, profileData, interests) => {
                     avatar_url: profileData.avatar_url,
                     website: profileData.website,
                     onboarding_completed: true,
+                    ...(trustShieldData.verification_status ? { verification_status: trustShieldData.verification_status } : {}),
+                    ...(trustShieldData.trust_shield_status ? { trust_shield_status: trustShieldData.trust_shield_status } : {}),
+                    ...(trustShieldData.identity_hash ? { identity_hash: trustShieldData.identity_hash } : {}),
                     updated_at: new Date().toISOString(),
                 })
                 .eq('id', userId);

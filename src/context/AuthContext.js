@@ -178,6 +178,10 @@ export const AuthProvider = ({ children }) => {
     };
   }, [user?.id]);
 
+  const updateProfileState = useCallback((newData) => {
+    setProfile(prev => ({ ...(prev || {}), ...newData }));
+  }, []);
+
   const computedProfile = useMemo(() => {
     if (!user) return null;
     const fallbackAvatar = user.user_metadata?.avatar_url || user.user_metadata?.picture || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.id || 'Focusly'}`;
@@ -198,6 +202,7 @@ export const AuthProvider = ({ children }) => {
     profile: computedProfile,
     signOut: () => supabase.auth.signOut(),
     refreshProfile,
+    updateProfileState,
     // Force refresh JWT + re-fetch profile after verification_status changes
     refreshSession: async () => {
       try {
@@ -208,7 +213,7 @@ export const AuthProvider = ({ children }) => {
         console.warn('refreshSession error:', err);
       }
     },
-  }), [user, session, loading, computedProfile, refreshProfile, fetchProfile]);
+  }), [user, session, loading, computedProfile, refreshProfile, updateProfileState, fetchProfile]);
 
   return (
     <AuthContext.Provider value={value}>

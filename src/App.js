@@ -106,22 +106,25 @@ const HighSecurityGuard = ({ children }) => {
         ''
     ).toUpperCase().trim();
 
-    if (verificationStatus !== 'VERIFIED') {
-        // Lock the user into onboarding — they cannot access /home or any protected route
-        return <Navigate to="/onboarding" replace />;
+    const onboardingDone = profile?.onboarding_completed === true;
+
+    // Allow access if VERIFIED or if onboarding was already completed successfully
+    if (verificationStatus === 'VERIFIED' || onboardingDone) {
+        return children;
     }
 
-    return children;
+    // Lock the user into onboarding — they cannot access /home or any protected route
+    return <Navigate to="/onboarding" replace />;
 };
 
 const AppContent = () => {
-    const { user, loading } = useFocusUser();
-    const { profile } = useAuth();
+    const { user, profile: focusProfile, loading } = useFocusUser();
+    const { profile: authProfile } = useAuth();
     const location = useLocation();
     const isExploreV2 = useFeatureFlag('focus_v2_explore');
     const isMessagesV2 = useFeatureFlag('focus_v2_messages');
     const { incomingCall, acceptCall, declineCall } = useGlobalCallListener();
-    const trustShield = getTrustShieldState(profile);
+    const trustShield = getTrustShieldState(authProfile);
     const isSupportPath = location.pathname.startsWith('/support');
     const isVerificationPath =
         location.pathname.startsWith('/verification') ||
@@ -197,8 +200,9 @@ const AppContent = () => {
                     <Route path="/onboarding" element={
                       user
                         ? (
-                            profile?.verification_status === 'VERIFIED' ||
-                            profile?.trust_shield_status === 'VERIFIED'
+                            focusProfile?.verification_status === 'VERIFIED' ||
+                            focusProfile?.trust_shield_status === 'VERIFIED' ||
+                            focusProfile?.onboarding_completed === true
                               ? <Navigate to="/home" replace />
                               : <Onboarding />
                           )
@@ -206,7 +210,7 @@ const AppContent = () => {
                     } />
                     <Route path="/home" element={
                         user
-                            ? <HighSecurityGuard>{withTrustGate(<Home />)}</HighSecurityGuard>
+                            ? withTrustGate(<Home />)
                             : <Navigate to="/auth" replace />
                     } />
 
