@@ -64,7 +64,10 @@
 
 .ghost {
     background: transparent;
-    color: var(--text-secondary);
+    /* Ghost Button Fix: force #FFFFFF for visibility — H2 Spec */
+    color: #FFFFFF;
+    text-align: center;
+    justify-content: center;
 }
 
 .ghost:hover:not(:disabled) {

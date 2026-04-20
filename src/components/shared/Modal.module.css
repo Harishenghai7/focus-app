@@ -20,10 +20,12 @@
 
 .modalContent {
     background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
+    /* H2 Glassmorphism Standard v2 — backdrop-filter: blur(20px) */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: var(--radius-2xl);
-    box-shadow: var(--shadow-xl);
+    box-shadow: var(--shadow-xl), 0 8px 32px rgba(0, 0, 0, 0.4);
     max-height: 90vh;
     overflow: hidden;
     display: flex;

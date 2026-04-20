@@ -1,4 +1,13 @@
-/* TrustShieldVerification.module.css — H2 Innovative */
+/* TrustShieldVerification.module.css — H2 Innovative Focus Trust Shield v2.0 */
+
+/* ── Global Glassmorphism Variables ──────────────────────────────────────── */
+:root {
+  --glass-blur: 16px;
+  --glass-border: 1px solid rgba(255, 255, 255, 0.10);
+  --glass-bg: rgba(124, 107, 254, 0.04);
+  --glass-shadow: 0 20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08);
+  --transition-cinematic: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
 .container {
   min-height: 100vh;
@@ -6,8 +15,147 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 16px 40px;
+  padding: 0 16px 60px;
 }
+
+/* ── Live Scanner ─────────────────────────────────────────────────────────── */
+.liveScannerWrap {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #000;
+  aspect-ratio: 16/10;
+  box-shadow: 0 0 0 2px rgba(124,107,254,0.4), 0 16px 40px rgba(0,0,0,0.7);
+}
+
+.liveScannerVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.liveScannerFrame {
+  position: absolute;
+  inset: 12px;
+  pointer-events: none;
+}
+
+.frameCornerTL,
+.frameCornerTR,
+.frameCornerBL,
+.frameCornerBR {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-color: #a855f7;
+  border-style: solid;
+}
+
+.frameCornerTL { top: 0; left: 0; border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
+.frameCornerTR { top: 0; right: 0; border-width: 3px 3px 0 0; border-radius: 0 4px 0 0; }
+.frameCornerBL { bottom: 0; left: 0; border-width: 0 0 3px 3px; border-radius: 0 0 0 4px; }
+.frameCornerBR { bottom: 0; right: 0; border-width: 0 3px 3px 0; border-radius: 0 0 4px 0; }
+
+.scanBeam {
+  position: absolute;
+  left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, #d946ef 50%, transparent 100%);
+  box-shadow: 0 0 8px #d946ef;
+  animation: scanBeamDown 1.8s ease-in-out infinite;
+}
+
+@keyframes scanBeamDown {
+  0%   { top: 0; opacity: 1; }
+  90%  { top: calc(100% - 2px); opacity: 1; }
+  100% { top: 0; opacity: 0; }
+}
+
+/* ── Low Light Toast ──────────────────────────────────────────────────────── */
+.lowLightToast {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(251,191,36,0.4);
+  border-radius: 14px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 260px;
+  animation: toastSlideUp 0.4s ease-out;
+  box-shadow: 0 0 20px rgba(251,191,36,0.3);
+}
+
+.lowLightIcon { font-size: 1.4rem; animation: lowLightPulse 1s ease-in-out infinite; }
+
+.lowLightToast strong { color: #fbbf24; font-size: 0.85rem; display: block; }
+.lowLightToast p { color: #94a3b8; font-size: 0.78rem; margin: 2px 0 0; }
+
+@keyframes toastSlideUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes lowLightPulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.15); }
+}
+
+/* ── Quality Chip ─────────────────────────────────────────────────────────── */
+.qualityChip {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid;
+  font-size: 0.72rem;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+  transition: all 0.4s ease;
+}
+
+/* ── Captured Preview ─────────────────────────────────────────────────────── */
+.capturedPreview {
+  width: 100%;
+  max-width: 380px;
+  max-height: 220px;
+  object-fit: contain;
+  border-radius: 14px;
+  border: 2px solid rgba(34,197,94,0.4);
+  box-shadow: 0 0 20px rgba(34,197,94,0.2);
+  margin: 0 auto;
+  display: block;
+}
+
+/* ── Liveness Ring ────────────────────────────────────────────────────────── */
+.livenessRing {
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  border: 4px solid;
+  overflow: hidden;
+  margin: 0 auto;
+  transition: border-color var(--transition-cinematic), box-shadow var(--transition-cinematic);
+  flex-shrink: 0;
+}
+
+.livenessVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+
 
 /* ── Header ───────────────────────────────────────────────── */
 .header {

@@ -2,21 +2,144 @@
  * useOCRScanner.js
  * ================
  * Real ID text extraction using Tesseract.js
- * Supports: Aadhaar Card, Student ID, Passport
- * Extracts: Name, Date of Birth, ID Number
+ * Supports: Aadhaar Card, PAN Card, Passport (Govt IDs — 18+ Tier)
+ *           School ID, College ID (Student IDs — Teen Tier)
+ * Extracts: Name, Date of Birth, ID Number, Identity Hash (SHA-256)
  *
  * H2 Innovative — Focus Trust Shield
+ * SECURITY: v3 — Dual-Tier Classification + SHA-256 Identity Hash
  */
 
 import { useState, useCallback, useRef } from 'react';
 import { createWorker } from 'tesseract.js';
+
+// ── ADULT (18+) Document Markers ─────────────────────────────────────────────
+/** Phrases that identify a GOVERNMENT / 18+ document */
+const ADULT_MARKERS = [
+  /\bINDIA\b/i,
+  /\bIndia\b/i,
+  /Income\s+Tax/i,
+  /Election\s+Commission/i,
+  /\bAadhaar\b/i,
+  /\bAADHAAR\b/i,
+  /Permanent\s+Account\s+Number/i,
+  /\bPAN\s+CARD\b/i,
+  /Government\s+of\s+India/i,
+  /\bPASSPORT\b/i,
+  /Republic\s+of\s+India/i,
+];
+
+// ── TEEN Document Markers ────────────────────────────────────────────────────
+/** Phrases that identify a SCHOOL / COLLEGE / Student ID (Teen Tier) */
+const TEEN_MARKERS = [
+  /\bSchool\b/i,
+  /\bCollege\b/i,
+  /\bStudent\b/i,
+  /\bInstitute\b/i,
+  /\bUniversity\b/i,
+  /\bLibrary\s+Card\b/i,
+  /\bStudent\s+ID\b/i,
+];
+
+// ── SHA-256 Identity Hash ─────────────────────────────────────────────────────
+/**
+ * Compute SHA-256 hash of a cleaned ID number using the Web Crypto API.
+ * Used for deduplication — one real-world ID can only link to ONE Focus account.
+ * @param {string} idNumber
+ * @returns {Promise<string|null>} Hex-encoded SHA-256 hash, or null on failure
+ */
+export const computeIdentityHash = async (idNumber) => {
+  if (!idNumber) return null;
+  try {
+    const normalized = idNumber.replace(/\s/g, '').toUpperCase();
+    const encoder = new TextEncoder();
+    const data = encoder.encode(normalized);
+    const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+  } catch {
+    return null;
+  }
+};
+
+// ── Document Tier Classifier ──────────────────────────────────────────────────
+/**
+ * Classify OCR text as 'adult' (govt) or 'teen' (school/college) document.
+ * If both markers are present, 'adult' wins (e.g., Aadhaar from a college student).
+ * @param {string} text
+ * @returns {'adult'|'teen'|'unknown'}
+ */
+export const classifyDocumentTier = (text) => {
+  if (!text) return 'unknown';
+  const normalised = text.replace(/\s+/g, ' ');
+  const isAdult = ADULT_MARKERS.some((p) => p.test(normalised));
+  const isTeen  = TEEN_MARKERS.some((p) => p.test(normalised));
+
+  // Government markers override student markers (e.g., college Aadhaar scan)
+  if (isAdult) return 'adult';
+  if (isTeen)  return 'teen';
+  return 'unknown';
+};
+
+/**
+ * Validate document against the expected tier.
+ * @param {string} text              — Raw OCR text
+ * @param {'18+'|'teen'|null} expectedTier — Tier selected by the user
+ * @returns {{ ok: boolean, reason?: string, detectedTier: string }}
+ */
+const validateDocumentForTier = (text, expectedTier) => {
+  if (!text) {
+    return { ok: false, reason: 'ERR_INVALID_DOCUMENT: No text could be extracted from the image.', detectedTier: 'unknown' };
+  }
+
+  const normalised = text.replace(/\s+/g, ' ');
+  const detected = classifyDocumentTier(normalised);
+
+  if (!expectedTier) {
+    // No tier specified — just verify it's not completely unclassified
+    if (detected === 'unknown') {
+      return {
+        ok: false,
+        reason: 'ERR_INVALID_DOCUMENT: Document not recognised. Please upload an Aadhaar Card, PAN Card, Passport, or School/College ID.',
+        detectedTier: detected,
+      };
+    }
+    return { ok: true, detectedTier: detected };
+  }
+
+  const required = expectedTier === '18+' ? 'adult' : 'teen';
+
+  if (detected !== required) {
+    if (required === 'adult' && detected === 'teen') {
+      return {
+        ok: false,
+        reason: 'ERR_WRONG_DOCUMENT_TYPE: A College or Student ID is not accepted for the 18+ tier. Please upload your Aadhaar Card, PAN Card, or Passport.',
+        detectedTier: detected,
+      };
+    }
+    if (required === 'teen' && detected === 'adult') {
+      return {
+        ok: false,
+        reason: 'ERR_WRONG_DOCUMENT_TYPE: A Government ID is not accepted for the Teen tier. Please upload your School or College Student ID Card.',
+        detectedTier: detected,
+      };
+    }
+    return {
+      ok: false,
+      reason: 'ERR_INVALID_DOCUMENT: Document type could not be verified. Please upload the correct ID for your age group.',
+      detectedTier: detected,
+    };
+  }
+
+  return { ok: true, detectedTier: detected };
+};
 
 // ── Text Parsers ──────────────────────────────────────────────────────────────
 
 // Aadhaar: 12-digit number in groups of 4
 const AADHAAR_REGEX = /\b\d{4}\s?\d{4}\s?\d{4}\b/;
 
-const DOB_REGEX = /\b(\d{4}[-/.\\](?:0?[1-9]|1[0-2])[-/.\\](?:0?[1-9]|[12]\d|3[01])|(?:0?[1-9]|[12]\d|3[01])[-/.\\](?:0?[1-9]|1[0-2])[-/.\\]\d{4})\b/;
+const DOB_REGEX = /\b(\d{4}[-/.\\/](?:0?[1-9]|1[0-2])[-/.\\/](?:0?[1-9]|[12]\d|3[01])|(?:0?[1-9]|[12]\d|3[01])[-/.\\/](?:0?[1-9]|1[0-2])[-/.\\/]\d{4})\b/;
 
 // Year of birth (fallback)
 const YEAR_REGEX = /(?:Year of Birth|DOB|YOB)\s*[:-]?\s*(\d{4})/i;
@@ -120,10 +243,11 @@ export const useOCRScanner = () => {
 
   /**
    * Scan an image file for ID text
-   * @param {File|string} imageSource — File object or image URL
-   * @returns {Object} Parsed ID data
+   * @param {File|string} imageSource   — File object or image URL
+   * @param {'18+'|'teen'|null} expectedTier — User's selected age tier for validation
+   * @returns {Object} Parsed ID data including identity_hash
    */
-  const scanID = useCallback(async (imageSource) => {
+  const scanID = useCallback(async (imageSource, expectedTier = null) => {
     setScanning(true);
     setProgress(0);
     setError(null);
@@ -162,6 +286,13 @@ export const useOCRScanner = () => {
         throw new Error('Image quality too low. Please upload a clearer photo of your ID in good lighting.');
       }
 
+      // ── SECURITY: Dual-Tier Document Classification ───────────────────
+      setStatusMessage('Validating document type...');
+      const docCheck = validateDocumentForTier(text, expectedTier);
+      if (!docCheck.ok) {
+        throw new Error(docCheck.reason);
+      }
+
       setStatusMessage('Parsing identity data...');
       const parsed = parseIDText(text);
 
@@ -169,9 +300,19 @@ export const useOCRScanner = () => {
         throw new Error('Could not extract identity data. Please ensure the text on your ID is clearly visible and not blurred.');
       }
 
-      setResult(parsed);
+      // ── SECURITY: SHA-256 Identity Hash ──────────────────────────────
+      setStatusMessage('Computing identity hash...');
+      const identityHash = await computeIdentityHash(parsed.idNumber);
+
+      const finalResult = {
+        ...parsed,
+        identityHash,
+        detectedTier: docCheck.detectedTier,
+      };
+
+      setResult(finalResult);
       setStatusMessage('ID scanned successfully.');
-      return { ok: true, ...parsed };
+      return { ok: true, ...finalResult };
     } catch (err) {
       const message = err.message || 'OCR scan failed. Please try again.';
       setError(message);

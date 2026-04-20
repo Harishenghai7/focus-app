@@ -11,7 +11,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import * as faceapi from 'face-api.js';
 
-// ── Challenge Pool ────────────────────────────────────────────────────────────
+// ── Challenge Pool (3 distinct actions) ─────────────────────────────────
 const CHALLENGE_POOL = [
   {
     id: 'blink',
@@ -25,16 +25,27 @@ const CHALLENGE_POOL = [
     icon: '😊',
     description: 'Show a genuine smile',
   },
+  {
+    id: 'tilt',
+    label: 'Tilt your head left',
+    icon: '🧀',
+    description: 'Gently tilt your head to your left side',
+  },
 ];
 
 // ── Thresholds ────────────────────────────────────────────────────────────────
 const THRESHOLDS = {
   smile: 0.35,          // lower smile threshold to accommodate subtle indoor lighting
   blink: 0.25,          // eye aspect ratio (lower = more closed)
+  tilt: 12,             // roll angle in degrees (head tilt)
   lookLeft: 12,         // head yaw degrees (positive = left)
   lookRight: -12,       // head yaw degrees (negative = right)
   nod: 15,              // head pitch degrees
   detectionMinScore: 0.5,
+  // Anti-spoofing: if descriptor cosine distance < this value across
+  // SPOOF_FRAME_THRESHOLD consecutive frames, flag as photo injection
+  spoofDistanceMin: 0.015,
+  spoofFrameThreshold: 8,
 };
 
 // ── Shuffle helper ────────────────────────────────────────────────────────────
@@ -74,6 +85,9 @@ export const useFaceLiveness = ({
   const poseHistoryRef = useRef([]);     // for smoothing head pose
   const blinkStartRef = useRef(null);
   const earHistoryRef = useRef([]);      // for rolling average blink
+  // Anti-spoofing: track consecutive static descriptor distances
+  const staticFrameCountRef = useRef(0);
+  const lastDescriptorRef = useRef(null);
 
   // ── Load models from /public/models/ ───────────────────────────────────────
   const loadModels = useCallback(async () => {
@@ -164,6 +178,46 @@ export const useFaceLiveness = ({
         }
 
         const { expressions, landmarks, descriptor, detection } = detections;
+
+        // ── ANTI-SPOOFING: Photo Injection Detection ───────────────────
+        // Compute L2 (Euclidean) distance between current and previous descriptor.
+        // A real face in motion always produces micro-variations; a static photo
+        // injected via virtual camera stays nearly identical frame-to-frame.
+        if (lastDescriptorRef.current && descriptor) {
+          const prev = lastDescriptorRef.current;
+          const curr = Array.from(descriptor);
+          let l2sq = 0;
+          for (let i = 0; i < curr.length; i++) {
+            l2sq += (curr[i] - prev[i]) ** 2;
+          }
+          const l2 = Math.sqrt(l2sq);
+
+          if (l2 < THRESHOLDS.spoofDistanceMin) {
+            staticFrameCountRef.current += 1;
+          } else {
+            staticFrameCountRef.current = 0; // movement detected — reset counter
+          }
+
+          if (staticFrameCountRef.current >= THRESHOLDS.spoofFrameThreshold) {
+            // Spoofing detected — reset challenge sequence
+            staticFrameCountRef.current = 0;
+            lastDescriptorRef.current = null;
+            if (challengeHoldRef.current) {
+              clearTimeout(challengeHoldRef.current);
+              challengeHoldRef.current = null;
+            }
+            const newChallenges = getRandomChallenges(challengeCount);
+            setChallenges(newChallenges);
+            setCurrentIndex(0);
+            currentIndexRef.current = 0;
+            setCompletedChallenges([]);
+            setProgress(0);
+            setStatusMessage('⚠️ Anti-spoofing: Static frame detected. Challenge reset. Please use a live camera.');
+            detectionLoopRef.current = requestAnimationFrame(detect);
+            return;
+          }
+        }
+        lastDescriptorRef.current = descriptor ? Array.from(descriptor) : null;
 
         // Face-to-Center calculation
         if (videoRef.current) {
@@ -318,6 +372,18 @@ export const useFaceLiveness = ({
         return false;
       }
 
+      case 'tilt': {
+        // Head roll: compare ear heights relative to face width
+        // Left ear (pt 0) drops relative to right ear (pt 16) when tilting left
+        const pts = landmarks.positions;
+        const leftEarY  = pts[0].y;   // landmark 0 = left jaw edge
+        const rightEarY = pts[16].y;  // landmark 16 = right jaw edge
+        const faceW = Math.abs(pts[16].x - pts[0].x) || 1;
+        const rollDeg = ((rightEarY - leftEarY) / faceW) * 90;
+        // Positive rollDeg means left ear is higher = head tilted to the right (user's perspective left)
+        return rollDeg > THRESHOLDS.tilt;
+      }
+
       default:
         return false;
     }
@@ -370,6 +436,8 @@ export const useFaceLiveness = ({
     }
     blinkStartRef.current = null;
     earHistoryRef.current = [];
+    staticFrameCountRef.current = 0;
+    lastDescriptorRef.current = null;
     setSmileProgress(0);
     pauseRef.current = false;
     setIsDetecting(false);

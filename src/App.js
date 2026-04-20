@@ -72,6 +72,51 @@ const LoadingScreen = () => (
     </div>
 );
 
+/**
+ * RootGuard — VerifiedRoute
+ * ─────────────────────────
+ * If the user is authenticated but their verification_status is NOT 'VERIFIED',
+ * they are locked into /onboarding. All routes to /home and the main app are
+ * blocked until TrustShield verification is complete.
+ */
+const VerifiedRoute = ({ children }) => {
+    const { user, profile, loading } = useFocusUser();
+    const location = useLocation();
+
+    if (loading) return <LoadingScreen />;
+
+    // Not logged in at all — let the route handle redirect
+    if (!user) return children;
+
+    const EXEMPT_PATHS = [
+        '/onboarding',
+        '/auth',
+        '/verification',
+        '/verify-mobile',
+        '/support',
+        '/security',
+    ];
+
+    const isExempt = EXEMPT_PATHS.some((p) => location.pathname.startsWith(p));
+    if (isExempt) return children;
+
+    const verificationStatus = (
+        profile?.verification_status ||
+        profile?.trust_shield_status ||
+        profile?.focus_trust_status ||
+        ''
+    ).toUpperCase().trim();
+
+    const VERIFIED_STATUSES = new Set(['VERIFIED', 'VERIFIED_MINOR']);
+
+    if (!VERIFIED_STATUSES.has(verificationStatus)) {
+        // Lock the user into onboarding — they cannot access /home or any protected route
+        return <Navigate to="/onboarding" replace />;
+    }
+
+    return children;
+};
+
 const AppContent = () => {
     const { user, loading } = useFocusUser();
     const { profile } = useAuth();
@@ -149,9 +194,26 @@ const AppContent = () => {
                     <Route path="/verify-email" element={<Navigate to="/auth" replace />} />
                     {/* DigiLocker Callback Removed */}
 
-                    {/* --- Protected Routes --- */}
-                    <Route path="/onboarding" element={user ? <Onboarding /> : <Navigate to="/auth" replace />} />
-                    <Route path="/home" element={user ? withTrustGate(<Home />) : <Navigate to="/auth" replace />} />
+                    {/* --- Protected Routes (all gated by VerifiedRoute) --- */}
+                    {/*
+                      THE WALL: If a verified user navigates back to /onboarding via the URL bar,
+                      they are immediately redirected to /home. Unverified users stay in /onboarding.
+                    */}
+                    <Route path="/onboarding" element={
+                      user
+                        ? (
+                            profile?.verification_status === 'VERIFIED' ||
+                            profile?.trust_shield_status === 'VERIFIED'
+                              ? <Navigate to="/home" replace />
+                              : <Onboarding />
+                          )
+                        : <Navigate to="/auth" replace />
+                    } />
+                    <Route path="/home" element={
+                        user
+                            ? <VerifiedRoute>{withTrustGate(<Home />)}</VerifiedRoute>
+                            : <Navigate to="/auth" replace />
+                    } />
 
                     <Route path="/explore" element={user ? withTrustGate(isExploreV2 ? <ExploreEnhanced /> : <Explore />) : <Navigate to="/auth" replace />} />
                     <Route path="/create" element={user ? withTrustGate(<Create />) : <Navigate to="/auth" replace />} />
@@ -197,8 +259,16 @@ const AppContent = () => {
                     <Route path="/support" element={user ? <SupportCenter /> : <Navigate to="/auth" replace />} />
                     <Route path="/support/new" element={user ? <SubmitTicket /> : <Navigate to="/auth" replace />} />
 
-                    {/* Catch All */}
-                    <Route path="*" element={<Navigate to={user ? "/home" : "/auth"} replace />} />
+                    {/* Catch All — THE WALL */}
+                    {/*
+                      If a user types /home or any other protected path directly into the URL bar,
+                      VerifiedRoute will catch them and redirect to /onboarding if unverified.
+                    */}
+                    <Route path="*" element={
+                      user
+                        ? <VerifiedRoute><Navigate to="/home" replace /></VerifiedRoute>
+                        : <Navigate to="/auth" replace />
+                    } />
                 </AnimatedRoutes>
             </Suspense>
 

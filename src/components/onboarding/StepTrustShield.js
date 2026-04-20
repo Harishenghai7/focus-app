@@ -14,12 +14,28 @@ import {
 import styles from './StepTrustShield.module.css';
 import { useAuth } from '../../hooks/useAuth';
 import useOCRScanner from '../../hooks/useOCRScanner';
-// uuidv4 removed — not needed after QR URL simplification
 import { supabase } from '../../lib/supabase';
+
+// ── Mobile Handoff Helper ──────────────────────────────────────────────────────
+/** Generate a UUID-style session token using the Web Crypto API */
+const generateHandoffSessionId = () => {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+        return crypto.randomUUID();
+    }
+    return 'xxxx-xxxx-4xxx-yxxx-xxxx'.replace(/[xy]/g, (c) => {
+        const r = Math.random() * 16 | 0;
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+};
+
+/** Base URL for QR handoff — uses Vercel deployment URL in production */
+const HANDOFF_BASE_URL =
+    process.env.REACT_APP_VERCEL_URL ||
+    (typeof window !== 'undefined' ? window.location.origin : 'https://focus-app.vercel.app');
 
 const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
     // Version cache-buster: forces fresh renders after deploys
-    const BRIDGE_VERSION = '2026.04.19-prod';
+    const BRIDGE_VERSION = '2026.04.20-prod';
     const { user } = useAuth();
     const { scanID, progress: ocrProgress, statusMessage: ocrStatus } = useOCRScanner();
     const [stage, setStage] = useState('ocr');
@@ -32,7 +48,8 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
     const [videoReady, setVideoReady] = useState(false);
     const [cameraDenied, setCameraDenied] = useState(false);
     const [error, setError] = useState('');
-    // handoffToken state removed — QR URL uses user.id directly
+    // Mobile Handoff — new session_id per handoff attempt
+    const [handoffSessionId] = useState(() => generateHandoffSessionId());
     const streamRef = useRef(null);
     const videoRef = useRef(null);
     const channelRef = useRef(null);
@@ -177,7 +194,9 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
         stopCamera();
 
         try {
-            const channel = supabase.channel(`handoff_${user.id}`)
+            // Use unique session channel name for this handoff session
+            const channelName = `handoff_${user.id}_${handoffSessionId}`;
+            const channel = supabase.channel(channelName)
                 .on('postgres_changes', {
                     event: 'UPDATE',
                     schema: 'public',
@@ -189,6 +208,8 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
                         updateFormData('trustShieldInitialized', true);
                         setMatchResult({ passed: true, score: 0.99 });
                         setStage('result');
+                        // Vibrate on success
+                        if (navigator?.vibrate) navigator.vibrate([200, 100, 400]);
                         setTimeout(() => {
                             window.location.href = '/home';
                         }, 1000);
@@ -474,7 +495,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
                                 boxSizing: 'border-box'
                             }}>
                                 <QRCodeSVG 
-                                    value={`${window.location.origin}/verify-mobile?uid=${user?.id}`}
+                                    value={`${HANDOFF_BASE_URL}/verify-mobile?uid=${user?.id}&session_id=${handoffSessionId}`}
                                     data-version={BRIDGE_VERSION}
                                     style={{ width: '100%', height: '100%' }}
                                     level={"H"}

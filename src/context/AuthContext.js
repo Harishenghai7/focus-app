@@ -198,7 +198,17 @@ export const AuthProvider = ({ children }) => {
     profile: computedProfile,
     signOut: () => supabase.auth.signOut(),
     refreshProfile,
-  }), [user, session, loading, computedProfile, refreshProfile]);
+    // Force refresh JWT + re-fetch profile after verification_status changes
+    refreshSession: async () => {
+      try {
+        await supabase.auth.refreshSession();
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        if (currentUser) await fetchProfile(currentUser.id);
+      } catch (err) {
+        console.warn('refreshSession error:', err);
+      }
+    },
+  }), [user, session, loading, computedProfile, refreshProfile, fetchProfile]);
 
   return (
     <AuthContext.Provider value={value}>
