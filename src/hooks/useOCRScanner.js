@@ -79,20 +79,18 @@ const validateDocumentForTier = (text, expectedTier, dobValid) => {
     return { ok: true, detectedTier: detected };
   }
 
-  const required = (expectedTier === '18+' || expectedTier === 'adult') ? 'adult' : 'teen';
-
-  if (detected !== required) {
-    if (detected === 'unknown' && dobValid) {
-       console.log('[useOCRScanner] SPECIAL BYPASS: Document unknown, prioritizing DOB.');
-       return { ok: true, detectedTier: detected };
-    }
-    
-    if (required === 'adult' && detected === 'teen') {
-      return { ok: false, reason: 'ERR_WRONG_DOCUMENT_TYPE: A Student ID is not accepted for the 18+ tier. Please upload a Government ID.', detectedTier: detected };
-    }
-    if (required === 'teen' && detected === 'adult') {
+  // Only enforce documents if expectedTier is explicitly known.
+  if (expectedTier === 'teen') {
+    if (detected === 'adult') {
       return { ok: false, reason: 'ERR_WRONG_DOCUMENT_TYPE: A Government ID is not accepted for the Teen tier. Please upload a Student ID.', detectedTier: detected };
     }
+  } else if (expectedTier === '18+' || expectedTier === 'adult') {
+    if (detected === 'teen') {
+      return { ok: false, reason: 'ERR_WRONG_DOCUMENT_TYPE: A Student ID is not accepted for the 18+ tier. Please upload a Government ID.', detectedTier: detected };
+    }
+  }
+
+  if (detected === 'unknown' && !dobValid) {
     return { ok: false, reason: 'ERR_INVALID_DOCUMENT: Could not verify if this is a Government or Student ID. Please ensure it is well lit.', detectedTier: detected };
   }
 

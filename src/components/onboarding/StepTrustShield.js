@@ -465,7 +465,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
                                     <input type="file" accept="image/*" onChange={handleIdUpload} hidden />
                                 </label>
                             </div>
-                            {ocrStatus && (
+                            {ocrStatus && !error && (
                                 <p style={{ fontSize: '0.85rem', color: '#a78bfa', marginTop: '0.5rem', textAlign: 'center' }}>
                                     {ocrStatus} {ocrProgress > 0 && `${ocrProgress}%`}
                                 </p>
