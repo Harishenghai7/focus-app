@@ -30,14 +30,13 @@ const SuggestedUserCard = ({ user, isFollowing, onFollow }) => {
                     )}
                 </div>
             </div>
-            <Button
-                variant={isFollowing ? 'secondary' : 'primary'}
+            <button
+                className={`${styles.followBtn} ${isFollowing ? styles.followingBtn : 'glass-button'}`}
                 onClick={onFollow}
-                className={styles.followBtn}
                 disabled={isFollowing}
             >
                 {isFollowing ? 'Following' : 'Follow'}
-            </Button>
+            </button>
         </div>
     );
 };

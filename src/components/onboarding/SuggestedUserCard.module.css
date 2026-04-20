@@ -3,15 +3,16 @@
     align-items: center;
     justify-content: space-between;
     padding: 16px;
-    border: 1px solid #E5E7EB;
+    border: 1px solid rgba(255,255,255,0.1);
     border-radius: 12px;
-    background: white;
+    background: rgba(26, 15, 46, 0.6);
+    backdrop-filter: blur(12px);
     transition: all 0.3s;
 }
 
 .card:hover {
-    border-color: #C4B5FD;
-    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+    border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.15);
 }
 
 .userInfo {
@@ -98,4 +99,33 @@
     .bio {
         font-size: 12px;
     }
+}
+
+:global(.glass-button) {
+    color: #FFFFFF;
+    display: flex;
+    justify-content: center;
+    font-weight: 600;
+    align-items: center;
+    background: rgba(139, 92, 246, 0.4);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+:global(.glass-button:hover) {
+    background: rgba(139, 92, 246, 0.6);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.followingBtn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #9CA3AF;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: not-allowed;
 }

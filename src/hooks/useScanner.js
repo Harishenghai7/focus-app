@@ -240,6 +240,7 @@ const useScanner = () => {
     startCamera,
     stopCamera,
     retry,
+    runOCR,
   };
 };
 

@@ -408,7 +408,14 @@ const TrustShieldVerification = () => {
               .maybeSingle();
 
             if (existing) {
-              handleFail('Permanent Conflict Error: Identity already linked to an existing Focus account. Each ID can only be used once.');
+              setAccountLocked(true);
+              setStaticImageFlag(true);
+              cancelAnimationFrame(rafRef.current);
+              if (liveStreamRef.current) {
+                liveStreamRef.current.getTracks().forEach(t => t.stop());
+                liveStreamRef.current = null;
+              }
+              handleFail('ACCOUNT_ALREADY_EXISTS: Identity already linked to an existing Focus account. Each ID can only be used once.');
               scanner.stopCamera?.();
               return;
             }
@@ -698,7 +705,10 @@ const TrustShieldVerification = () => {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <MainLayout>
-      <div className={styles.container}>
+      <div 
+        className={styles.container} 
+        style={(step === 3 && livenessLuminance < 0.3 && !accountLocked) ? { backgroundColor: '#FFFFFF', transition: 'background-color 0.3s ease' } : { transition: 'background-color 0.3s ease' }}
+      >
         {/* Header */}
         <div className={styles.header}>
           <button className={styles.backBtn} onClick={() => navigate(-1)}>← Back</button>
@@ -810,9 +820,36 @@ const TrustShieldVerification = () => {
 
               {/* Start camera button */}
               {scanner.phase === 'idle' && (
-                <button className={styles.primaryBtn} onClick={scanner.startCamera}>
-                  📸 Open Camera
-                </button>
+                <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                  <button className={styles.primaryBtn} onClick={scanner.startCamera}>
+                    📸 Open Camera
+                  </button>
+                  <label className={styles.primaryBtn} style={{ cursor: 'pointer', background: 'transparent', border: '1px solid var(--accent-magenta)' }}>
+                    📂 Browse Files
+                    <input 
+                       type="file" 
+                       accept="image/*" 
+                       hidden 
+                       onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                             const img = new Image();
+                             const url = URL.createObjectURL(file);
+                             img.onload = () => {
+                                 const canvas = document.createElement('canvas');
+                                 canvas.width = img.width;
+                                 canvas.height = img.height;
+                                 const ctx = canvas.getContext('2d');
+                                 ctx.drawImage(img, 0, 0);
+                                 URL.revokeObjectURL(url);
+                                 if (scanner.runOCR) scanner.runOCR(canvas);
+                             };
+                             img.src = url;
+                          }
+                       }}
+                    />
+                  </label>
+                </div>
               )}
 
               {/* Progress */}

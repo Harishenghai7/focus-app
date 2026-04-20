@@ -66,6 +66,11 @@ const useOnboarding = () => {
                 avatarUrl = user.user_metadata.avatar_url;
             }
 
+            if (avatarUrl && avatarUrl.startsWith('data:image')) {
+                // Prevent massive payload sizes from base64 strings
+                avatarUrl = null;
+            }
+
             // Optimistic update: Update local state immediately so UI reflects changes
             // even if the backend save takes time or fails/times out.
             if (updateProfileState) {
