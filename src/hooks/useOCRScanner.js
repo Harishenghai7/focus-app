@@ -13,35 +13,9 @@
 import { useState, useCallback, useRef } from 'react';
 import { createWorker } from 'tesseract.js';
 
-// ── ADULT (18+) Document Markers ─────────────────────────────────────────────
-/** Phrases that identify a GOVERNMENT / 18+ document */
-const ADULT_MARKERS = [
-  /\bINDIA\b/i,
-  /\bIndia\b/i,
-  /Income\s+Tax/i,
-  /Election\s+Commission/i,
-  /\bAadhaar\b/i,
-  /\bAADHAAR\b/i,
-  /Permanent\s+Account\s+Number/i,
-  /\bPAN\s+CARD\b/i,
-  /Government\s+of\s+India/i,
-  /\bPASSPORT\b/i,
-  /Republic\s+of\s+India/i,
-  /\bVoter\b/i,
-  /\bElection\b/i,
-];
-
-// ── TEEN Document Markers ────────────────────────────────────────────────────
-/** Phrases that identify a SCHOOL / COLLEGE / Student ID (Teen Tier) */
-const TEEN_MARKERS = [
-  /\bSchool\b/i,
-  /\bCollege\b/i,
-  /\bStudent\b/i,
-  /\bInstitute\b/i,
-  /\bUniversity\b/i,
-  /\bLibrary\s+Card\b/i,
-  /\bStudent\s+ID\b/i,
-];
+// ── ADULT & TEEN Document Markers (Weight-Based System) ───────────────
+const ADULT_KEYWORDS = ['GOVT', 'INDIA', 'INCOME TAX', 'ELECTION', 'AADHAAR', 'PAN', 'VOTER', 'DRIVING'];
+const TEEN_KEYWORDS = ['SCHOOL', 'COLLEGE', 'INSTITUTE', 'STUDENT', 'ID CARD', 'ACADEMIC', 'UNIVERSITY'];
 
 // ── SHA-256 Identity Hash ─────────────────────────────────────────────────────
 /**
@@ -65,21 +39,23 @@ export const computeIdentityHash = async (idNumber) => {
 };
 
 // ── Document Tier Classifier ──────────────────────────────────────────────────
-/**
- * Classify OCR text as 'adult' (govt) or 'teen' (school/college) document.
- * If both markers are present, 'adult' wins (e.g., Aadhaar from a college student).
- * @param {string} text
- * @returns {'adult'|'teen'|'unknown'}
- */
 export const classifyDocumentTier = (text) => {
   if (!text) return 'unknown';
-  const normalised = text.replace(/\s+/g, ' ');
-  const isAdult = ADULT_MARKERS.some((p) => p.test(normalised));
-  const isTeen  = TEEN_MARKERS.some((p) => p.test(normalised));
+  const normalised = text.toUpperCase();
 
-  // Government markers override student markers (e.g., college Aadhaar scan)
-  if (isAdult) return 'adult';
-  if (isTeen)  return 'teen';
+  let adultWeight = 0;
+  let teenWeight = 0;
+
+  ADULT_KEYWORDS.forEach(kw => {
+    if (normalised.includes(kw)) adultWeight++;
+  });
+
+  TEEN_KEYWORDS.forEach(kw => {
+    if (normalised.includes(kw)) teenWeight++;
+  });
+
+  if (adultWeight > teenWeight) return 'adult';
+  if (teenWeight > adultWeight) return 'teen';
   return 'unknown';
 };
 

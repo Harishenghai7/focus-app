@@ -355,40 +355,48 @@ const TrustShieldVerification = () => {
       return;
     }
 
-    // ── THE GATEKEEPER: Dual-Tier Document Classification ─────────────────
-    if (result.rawText) {
-      const detected = classifyDocumentTier(result.rawText);
-      const required = ageGroup === '18+' ? 'adult' : 'teen';
-      if (detected !== 'unknown' && detected !== required) {
-        const msg = required === 'adult'
-          ? 'ERR_WRONG_DOCUMENT_TYPE: A School or College ID is not valid for the 18+ tier. Please upload your Aadhaar Card, PAN Card, or Passport.'
-          : 'ERR_WRONG_DOCUMENT_TYPE: A Government ID is not valid for the Teen tier. Please upload your School or College Student ID.';
-        handleFail(msg);
-        return;
-      }
-    }
-
-    // ── THE LAW: Age Validation + Hard Reset ─────────────────────────────
+    // ── THE GATEKEEPER & THE LAW: Classification + Validations ──
+    const detected = result.rawText ? classifyDocumentTier(result.rawText) : 'unknown';
+    const required = ageGroup === '18+' ? 'adult' : 'teen';
+    
+    let age = null;
+    let dobValid = false;
     if (result.dob) {
       const parts = result.dob.split(/[\/-]/);
       if (parts.length === 3) {
         const year = parts.find(p => p.length === 4);
-        if (year) {
-          const age = new Date().getFullYear() - parseInt(year);
-          if (age < 13) {
-            handleHardReset('Focus is not available for anyone under 13. You have been returned to Step 1.');
-            return;
-          }
-          if (ageGroup === '18+' && age < 18) {
-            // Hard reset — no retry on this step. Back to Step 1.
-            handleHardReset('Your government ID confirms you are under 18. You selected the wrong age tier. You have been reset to Step 1. Please select \'Ages 13–17\'.');
-            return;
-          }
-          if (ageGroup === '13-17' && age >= 18) {
-            handleHardReset('Your ID confirms you are 18 or older. Please select the \'Ages 18+\' tier and upload a Government ID.');
-            return;
-          }
-        }
+        if (year) { age = new Date().getFullYear() - parseInt(year); dobValid = true; }
+      }
+    }
+
+    // 1. Classification Lock
+    if (detected !== required) {
+       // SPECIAL BYPASS: We are 100% sure of DOB (dobValid=true) but unsure of document type (detected='unknown').
+       // Allow them to pass to Age Check to prioritize real people.
+       if (detected === 'unknown' && dobValid) {
+          console.log('[TrustShield] SPECIAL BYPASS: Document unknown, prioritizing DOB.');
+       } else {
+          const msg = detected === 'unknown' 
+            ? 'ERR_INVALID: Could not verify if document is Government or Student ID. Please ensure clarity.'
+            : (required === 'adult' ? 'ERR_WRONG_DOCUMENT: Student IDs not accepted for 18+. Use Govt ID.' : 'ERR_WRONG_DOCUMENT: Govt IDs not accepted for Teen tier. Use Student ID.');
+          handleFail(msg);
+          return;
+       }
+    }
+
+    // 2. Age Verification Rule Engine
+    if (dobValid && age !== null) {
+      if (age < 13) {
+        handleHardReset('Focus is not available for anyone under 13. You have been returned to Step 1.');
+        return;
+      }
+      if (ageGroup === '18+' && age < 18) {
+        handleHardReset('Your government ID confirms you are under 18. You selected the wrong age tier. Please select \'Ages 13–17\'.');
+        return;
+      }
+      if (ageGroup === '13-17' && age >= 18) {
+        handleHardReset('Your ID confirms you are 18 or older. Please select the \'Ages 18+\' tier and upload a Government ID.');
+        return;
       }
     }
 
@@ -880,21 +888,14 @@ const TrustShieldVerification = () => {
                 </div>
               )}
 
-              {error && (
-                <div className={styles.errorBox}>
-                  <p>{error}</p>
+              {(error || scanner.phase === 'error') && (
+                <div className={`${styles.errorBox} ${styles.glassErrorToast}`}>
+                  <p>{error || scanner.statusMessage}</p>
                   <button className={styles.retryBtn} onClick={scanner.retry}>↺ Retry Scan</button>
                 </div>
               )}
 
-              {scanner.phase === 'error' && (
-                <div className={styles.errorBox}>
-                  <p>{scanner.statusMessage}</p>
-                  <button className={styles.retryBtn} onClick={scanner.retry}>↺ Retry</button>
-                </div>
-              )}
-
-              {ocrData && !error && (
+              {ocrData && !error && scanner.phase === 'captured' && (
                 <button className={styles.primaryBtn} onClick={() => { setStep(3); }}>
                   Continue to Liveness →
                 </button>
