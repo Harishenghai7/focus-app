@@ -189,6 +189,7 @@ const useOnboarding = () => {
         updateFormData,
         nextStep,
         prevStep,
+        resetStep: () => setCurrentStep(1),
         isSubmitting,
         error,
         user

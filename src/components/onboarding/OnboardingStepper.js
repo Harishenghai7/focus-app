@@ -33,7 +33,7 @@ const OnboardingStepper = () => {
             case 4:
                 return <StepFollowUsers formData={formData} updateFormData={updateFormData} onNext={nextStep} onBack={prevStep} />;
             case 5:
-                return <StepTrustShield formData={formData} updateFormData={updateFormData} onNext={nextStep} onBack={prevStep} />;
+                return <StepTrustShield formData={formData} updateFormData={updateFormData} onNext={nextStep} onBack={prevStep} onReset={resetStep} />;
             case 6:
                 return <StepNotifications formData={formData} updateFormData={updateFormData} onNext={nextStep} onBack={prevStep} isSubmitting={isSubmitting} />;
             default:

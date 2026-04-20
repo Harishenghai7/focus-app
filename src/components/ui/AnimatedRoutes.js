@@ -10,10 +10,7 @@ const AnimatedRoutes = ({ children }) => {
     const location = useLocation();
 
     return (
-        <div
-            key={location.pathname}
-            style={{ width: '100%', minHeight: '100%' }}
-        >
+        <div style={{ width: '100%', minHeight: '100%' }}>
             <Routes location={location}>
                 {children}
             </Routes>

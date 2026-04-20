@@ -33,7 +33,7 @@ const HANDOFF_BASE_URL =
     process.env.REACT_APP_VERCEL_URL ||
     (typeof window !== 'undefined' ? window.location.origin : 'https://focus-app.vercel.app');
 
-const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
+const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) => {
     // Version cache-buster: forces fresh renders after deploys
     const BRIDGE_VERSION = '2026.04.20-prod';
     const { user } = useAuth();
@@ -242,11 +242,18 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
 
         // ── STRICT DOB YEAR VALIDATION ──
         const expectedDob = formData?.ageInfo?.dateOfBirth; // Format: YYYY-MM-DD
+        
+        if (expectedDob && !result.dob) {
+            setError('ERR_MISSING_DOB: We could not extract your Date of Birth from this document. Please upload a clear, glare-free picture.');
+            return;
+        }
+
         if (expectedDob && result.dob) {
             const expectedYear = expectedDob.split('-')[0];
             const scannedYear = result.dob.split('-')[0];
             if (expectedYear !== scannedYear) {
-                setError(`ERR_DOB_MISMATCH: The Document Year of Birth (${scannedYear}) does not match your declared Year (${expectedYear}). You must restart and enter your correct Date of Birth.`);
+                window.alert(`ERR_DOB_MISMATCH: The Document Year of Birth (${scannedYear}) does not match your declared Year (${expectedYear}). You must restart and enter your correct Date of Birth.`);
+                if (onReset) onReset();
                 return;
             }
         }
