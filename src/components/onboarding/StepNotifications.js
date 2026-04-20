@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './StepNotifications.module.css';
 import Button from '../shared/Button';
-import { FaBell } from 'react-icons/fa';
+import { FaBell, FaHeart, FaComment, FaUserPlus, FaEnvelope } from 'react-icons/fa';
 
 const StepNotifications = ({ formData, updateFormData, onNext, onBack, isSubmitting }) => {
     const handleEnable = () => {
@@ -17,22 +17,36 @@ const StepNotifications = ({ formData, updateFormData, onNext, onBack, isSubmitt
     return (
         <div className={styles.container}>
             <div className={styles.content}>
-                <div className={styles.iconWrapper}>
-                    <FaBell />
+                <div className={styles.glowRing}>
+                    <div className={styles.iconWrapper}>
+                        <FaBell />
+                    </div>
                 </div>
-                <h2 className={styles.title}>Stay updated with Focus! 🔔</h2>
-                <p className={styles.subtitle}>Get notified when:</p>
+                
+                <h2 className={styles.title}>Stay updated with Focus</h2>
+                <p className={styles.subtitle}>Don't miss a beat. We'll only send what matters.</p>
 
-                <ul className={styles.benefitsList}>
-                    <li>✓ Someone likes your post</li>
-                    <li>✓ Someone comments on your content</li>
-                    <li>✓ Someone follows you</li>
-                    <li>✓ You get a new message</li>
-                </ul>
+                <div className={styles.benefitsGrid}>
+                    <div className={styles.benefitCard}>
+                        <FaHeart className={styles.benefitIcon} style={{color: '#ec4899'}}/>
+                        <span>Post Likes</span>
+                    </div>
+                    <div className={styles.benefitCard}>
+                        <FaComment className={styles.benefitIcon} style={{color: '#3b82f6'}}/>
+                        <span>Comments</span>
+                    </div>
+                    <div className={styles.benefitCard}>
+                        <FaUserPlus className={styles.benefitIcon} style={{color: '#10b981'}}/>
+                        <span>Followers</span>
+                    </div>
+                    <div className={styles.benefitCard}>
+                        <FaEnvelope className={styles.benefitIcon} style={{color: '#eab308'}}/>
+                        <span>Messages</span>
+                    </div>
+                </div>
 
                 <p className={styles.description}>
-                    We'll send you notifications to keep you connected
-                    with your friends and community.
+                    Enable notifications to instantly connect with your friends, community, and stay secure.
                 </p>
             </div>
 
@@ -50,7 +64,7 @@ const StepNotifications = ({ formData, updateFormData, onNext, onBack, isSubmitt
             </div>
 
             <div className={styles.progressInfo}>
-                <span>Step 4 of 4</span>
+                <span>Step 6 of 6</span>
             </div>
         </div>
     );

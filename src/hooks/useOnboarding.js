@@ -4,7 +4,7 @@ import { useAuth } from './useAuth';
 import { saveOnboardingData } from '../utils/saveOnboardingData';
 import { uploadImage } from '../utils/uploadImage';
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 const useOnboarding = () => {
     const { user, refreshProfile, updateProfileState } = useAuth();
@@ -23,7 +23,11 @@ const useOnboarding = () => {
         avatarPreview: null,
         interests: [],
         followedUsers: [],
-        notificationsEnabled: false
+        notificationsEnabled: false,
+        ageTier: null,
+        ageVerified: false,
+        ageInfo: null,
+        trustShieldStatus: 'PENDING'
     });
 
     const updateFormData = (field, value) => {
@@ -80,7 +84,9 @@ const useOnboarding = () => {
                     bio: formData.bio,
                     website: formData.website,
                     avatar_url: avatarUrl,
-                    onboarding_completed: true
+                    onboarding_completed: true,
+                    verification_status: formData.trustShieldStatus === 'VERIFIED' ? 'VERIFIED' : 'PENDING',
+                    trust_shield_status: formData.trustShieldStatus === 'VERIFIED' ? 'VERIFIED' : 'PENDING'
                 });
             }
 

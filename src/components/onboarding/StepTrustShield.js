@@ -48,6 +48,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
     const [videoReady, setVideoReady] = useState(false);
     const [cameraDenied, setCameraDenied] = useState(false);
     const [error, setError] = useState('');
+    const [selfieFrames, setSelfieFrames] = useState([]);
     // Mobile Handoff — new session_id per handoff attempt
     const [handoffSessionId] = useState(() => generateHandoffSessionId());
     const streamRef = useRef(null);
@@ -232,7 +233,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
         if (!file) return;
         setIdFile(file);
         setError('');
-        const result = await scanID(file);
+        const result = await scanID(file, formData?.ageTier || null);
         if (!result.ok) {
             setError(result.reason);
             return;
@@ -260,6 +261,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
         const actions = generateLivenessActions();
         setLivenessActions(actions);
         setCurrentActionIndex(0);
+        setSelfieFrames([]);
         setStage('liveness');
         await startCamera();
     };
@@ -269,6 +271,22 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
             setError('Session expired. Please log in again.');
             return;
         }
+
+        let currentFrames = [...selfieFrames];
+        if (videoRef.current) {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = videoRef.current.videoWidth || 640;
+                canvas.height = videoRef.current.videoHeight || 480;
+                canvas.getContext('2d').drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+                const frameData = canvas.toDataURL('image/jpeg', 0.6);
+                currentFrames.push(frameData);
+                setSelfieFrames(currentFrames);
+            } catch (e) {
+                console.error('Frame capture error', e);
+            }
+        }
+
         if (currentActionIndex < livenessActions.length - 1) {
             setCurrentActionIndex((prev) => prev + 1);
             return;
@@ -276,7 +294,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
         setStage('processing');
         stopCamera();
         window.setTimeout(async () => {
-            const result = await runFaceSimilarityCheck({ idImageFile: idFile, selfieCaptured: true });
+            const result = await runFaceSimilarityCheck({ idImageFile: idFile, selfieFrames: currentFrames });
             setMatchResult(result);
             if (result.passed) {
                 triggerHaptic(24);
@@ -411,11 +429,16 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
                                     <p className={styles.overlayHint}>{ocrHint}</p>
                                 </div>
                             </div>
-                            <label className={styles.uploadBtn}>
-                                <Upload size={16} />
-                                Upload Government or Student ID
-                                <input type="file" accept="image/*" onChange={handleIdUpload} hidden />
-                            </label>
+                            <div className={styles.inlineButtons} style={{ marginTop: '1.5rem', justifyContent: 'center' }}>
+                                <label className={styles.uploadBtn}>
+                                    <Camera size={16} /> Take Photo
+                                    <input type="file" accept="image/*" capture="environment" onChange={handleIdUpload} hidden />
+                                </label>
+                                <label className={styles.uploadBtn} style={{ background: 'rgba(255,255,255,0.05)', color: '#d8b4fe', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                    <Upload size={16} /> Upload File
+                                    <input type="file" accept="image/*" onChange={handleIdUpload} hidden />
+                                </label>
+                            </div>
                             {ocrStatus && (
                                 <p style={{ fontSize: '0.85rem', color: '#a78bfa', marginTop: '0.5rem', textAlign: 'center' }}>
                                     {ocrStatus} {ocrProgress > 0 && `${ocrProgress}%`}

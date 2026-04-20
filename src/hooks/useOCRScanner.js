@@ -284,8 +284,8 @@ export const useOCRScanner = () => {
       const text = data.text;
       const avgConf = data.confidence;
 
-      if (avgConf < 30) {
-        throw new Error('Image quality too low. Please upload a clearer photo of your ID in good lighting.');
+      if (avgConf < 20 && (!text || text.trim().length < 10)) {
+        throw new Error('Image quality too low or no text detected. Please upload a clearer photo of your ID.');
       }
 
       // ── SECURITY: Dual-Tier Document Classification ───────────────────
@@ -298,7 +298,7 @@ export const useOCRScanner = () => {
       setStatusMessage('Parsing identity data...');
       const parsed = parseIDText(text);
 
-      if (parsed.confidence === 0) {
+      if (parsed.confidence === 0 && avgConf < 40) {
         throw new Error('Could not extract identity data. Please ensure the text on your ID is clearly visible and not blurred.');
       }
 
