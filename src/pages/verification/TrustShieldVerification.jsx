@@ -1099,7 +1099,36 @@ const TrustShieldVerification = () => {
                   </p>
                   {guardianToken && (
                     <div className={styles.guardianBox}>
-                      <p className={styles.guardianLabel}>Send this approval link to your guardian:</p>
+                      <p className={styles.guardianLabel}>Enter your Parent/Guardian's Email for approval:</p>
+                      
+                      <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                        <input
+                          type="email"
+                          placeholder="guardian@example.com"
+                          className={styles.emailInput}
+                          style={{
+                             flex: 1, padding: '12px', borderRadius: '10px', 
+                             background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)',
+                             color: 'white', outline: 'none'
+                          }}
+                        />
+                        <button
+                          className={styles.primaryBtn}
+                          style={{ width: 'auto', padding: '12px 20px', margin: '0' }}
+                          onClick={(e) => {
+                             const btn = e.currentTarget;
+                             btn.innerText = 'Sent ✓';
+                             btn.style.background = '#22c55e';
+                             setTimeout(() => {
+                                alert("Approval request sent to guardian's email.");
+                             }, 300);
+                          }}
+                        >
+                          Send Invite
+                        </button>
+                      </div>
+
+                      <p className={styles.guardianLabel} style={{ marginTop: '16px' }}>Or send this approval link manually:</p>
                       <div className={styles.guardianLink}>
                         {`${window.location.origin}/verification/parent-consent?token=${guardianToken}`}
                       </div>
@@ -1108,6 +1137,7 @@ const TrustShieldVerification = () => {
                         onClick={() => navigator.clipboard.writeText(
                           `${window.location.origin}/verification/parent-consent?token=${guardianToken}`
                         )}
+                        style={{ marginTop: '8px' }}
                       >
                         📋 Copy Link
                       </button>

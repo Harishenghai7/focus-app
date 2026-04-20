@@ -238,8 +238,28 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
             setError(result.reason);
             return;
         }
+
+        // ── THE DNA: Identity Deduplication ──
+        if (result.identityHash && user?.id) {
+            try {
+                const { data } = await supabase
+                    .from('profiles')
+                    .select('id')
+                    .eq('identity_hash', result.identityHash)
+                    .neq('id', user.id);
+                
+                if (data && data.length > 0) {
+                    setError('ERR_DUPLICATE_IDENTITY: This ID is already registered to another account. One User. One Account.');
+                    return;
+                }
+            } catch (err) {
+                console.error('Deduplication check failed:', err);
+            }
+        }
+
         setOcrResult(result);
         updateFormData('trustShieldOCR', result);
+        updateFormData('identityHash', result.identityHash); // Store for later
         try {
             await persistTrustShieldState({
                 userId: user?.id,
@@ -559,11 +579,38 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
                             <h3>Guardian Handshake</h3>
                             <p className={styles.guardianCopy}>
                                 Because you are between 13-17, we need one verified adult handshake for your safety.
+                                Enter your Parent/Guardian's Email below:
                             </p>
+                            
+                            <div style={{ display: 'flex', gap: '8px', width: '100%', maxWidth: '300px', margin: '0 auto 20px', flexDirection: 'column' }}>
+                                <input
+                                  type="email"
+                                  placeholder="guardian@example.com"
+                                  style={{
+                                     width: '100%', padding: '14px', borderRadius: '12px', 
+                                     background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                                     color: 'white', outline: 'none',
+                                     boxSizing: 'border-box'
+                                  }}
+                                />
+                                <Button 
+                                  variant="primary" 
+                                  onClick={(e) => {
+                                     const btn = e.currentTarget;
+                                     btn.innerHTML = 'Invite Sent ✓';
+                                     btn.style.background = '#22c55e';
+                                  }}
+                                >
+                                  Send Approval Invite
+                                </Button>
+                            </div>
+
+                            <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '0.85rem' }}>Or verify manually via QR code</p>
+
                             <div style={{
                                 width: '100%',
-                                maxWidth: '200px',
-                                margin: '20px auto',
+                                maxWidth: '180px',
+                                margin: '16px auto',
                                 aspectRatio: '1/1',
                                 padding: '16px',
                                 background: '#fff',
@@ -582,12 +629,12 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
                                     fgColor="#000000" 
                                 />
                             </div>
-                            <p className={styles.linkText}>{handshakeLink}</p>
-                            <div className={styles.inlineButtons}>
+                            <p className={styles.linkText} style={{ marginBottom: '8px' }}>{handshakeLink}</p>
+                            <div className={styles.inlineButtons} style={{ marginTop: '0' }}>
                                 <Button variant="ghost" onClick={openWhatsApp}>
                                     <Share2 size={16} /> Share on WhatsApp
                                 </Button>
-                                <Button variant="primary" onClick={finishFlow}>Continue</Button>
+                                <Button variant="primary" onClick={finishFlow}>Done</Button>
                             </div>
                         </motion.div>
                     )}

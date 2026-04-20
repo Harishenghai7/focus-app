@@ -65,48 +65,35 @@ export const classifyDocumentTier = (text) => {
  * @param {'18+'|'teen'|null} expectedTier — Tier selected by the user
  * @returns {{ ok: boolean, reason?: string, detectedTier: string }}
  */
-const validateDocumentForTier = (text, expectedTier) => {
+const validateDocumentForTier = (text, expectedTier, dobValid) => {
   if (!text) {
     return { ok: false, reason: 'ERR_INVALID_DOCUMENT: No text could be extracted from the image.', detectedTier: 'unknown' };
   }
 
-  const normalised = text.replace(/\s+/g, ' ');
-  const detected = classifyDocumentTier(normalised);
+  const detected = classifyDocumentTier(text);
 
   if (!expectedTier) {
-    // No tier specified — just verify it's not completely unclassified
-    if (detected === 'unknown') {
-      return {
-        ok: false,
-        reason: 'ERR_INVALID_DOCUMENT: Document not recognised. Please upload an Aadhaar Card, PAN Card, Passport, or School/College ID.',
-        detectedTier: detected,
-      };
+    if (detected === 'unknown' && !dobValid) {
+      return { ok: false, reason: 'ERR_INVALID_DOCUMENT: Document not recognised. Please ensure it is clear.', detectedTier: detected };
     }
     return { ok: true, detectedTier: detected };
   }
 
-  const required = expectedTier === '18+' ? 'adult' : 'teen';
+  const required = (expectedTier === '18+' || expectedTier === 'adult') ? 'adult' : 'teen';
 
   if (detected !== required) {
+    if (detected === 'unknown' && dobValid) {
+       console.log('[useOCRScanner] SPECIAL BYPASS: Document unknown, prioritizing DOB.');
+       return { ok: true, detectedTier: detected };
+    }
+    
     if (required === 'adult' && detected === 'teen') {
-      return {
-        ok: false,
-        reason: 'ERR_WRONG_DOCUMENT_TYPE: A College or Student ID is not accepted for the 18+ tier. Please upload your Aadhaar Card, PAN Card, or Passport.',
-        detectedTier: detected,
-      };
+      return { ok: false, reason: 'ERR_WRONG_DOCUMENT_TYPE: A Student ID is not accepted for the 18+ tier. Please upload a Government ID.', detectedTier: detected };
     }
     if (required === 'teen' && detected === 'adult') {
-      return {
-        ok: false,
-        reason: 'ERR_WRONG_DOCUMENT_TYPE: A Government ID is not accepted for the Teen tier. Please upload your School or College Student ID Card.',
-        detectedTier: detected,
-      };
+      return { ok: false, reason: 'ERR_WRONG_DOCUMENT_TYPE: A Government ID is not accepted for the Teen tier. Please upload a Student ID.', detectedTier: detected };
     }
-    return {
-      ok: false,
-      reason: 'ERR_INVALID_DOCUMENT: Document type could not be verified. Please upload the correct ID for your age group.',
-      detectedTier: detected,
-    };
+    return { ok: false, reason: 'ERR_INVALID_DOCUMENT: Could not verify if this is a Government or Student ID. Please ensure it is well lit.', detectedTier: detected };
   }
 
   return { ok: true, detectedTier: detected };
@@ -264,15 +251,28 @@ export const useOCRScanner = () => {
         throw new Error('Image quality too low or no text detected. Please upload a clearer photo of your ID.');
       }
 
+      setStatusMessage('Parsing identity data...');
+      const parsed = parseIDText(text);
+
+      if (parsed.confidence === 0 && avgConf < 40) {
+        throw new Error('Could not extract identity data. Please ensure the text on your ID is clearly visible and not blurred.');
+      }
+
       // ── SECURITY: Dual-Tier Document Classification ───────────────────
       setStatusMessage('Validating document type...');
-      const docCheck = validateDocumentForTier(text, expectedTier);
+      let dobValid = false;
+      if (parsed.dob) {
+          const parts = parsed.dob.split(/[\/-]/);
+          if (parts.length === 3) {
+              const year = parts.find(p => p.length === 4);
+              if (year) dobValid = true;
+          }
+      }
+      
+      const docCheck = validateDocumentForTier(text, expectedTier, dobValid);
       if (!docCheck.ok) {
         throw new Error(docCheck.reason);
       }
-
-      setStatusMessage('Parsing identity data...');
-      const parsed = parseIDText(text);
 
       if (parsed.confidence === 0 && avgConf < 40) {
         throw new Error('Could not extract identity data. Please ensure the text on your ID is clearly visible and not blurred.');
