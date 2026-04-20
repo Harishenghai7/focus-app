@@ -130,8 +130,7 @@ const AppContent = () => {
         location.pathname.startsWith('/onboarding');
 
     const canUseProtectedFeatures = !user || !trustShield.isBlocked || isSupportPath || isVerificationPath;
-    const withTrustGate = (element) =>
-        canUseProtectedFeatures ? element : <Navigate to="/verification/trust-shield" replace />;
+    const withTrustGate = (element) => <HighSecurityGuard>{element}</HighSecurityGuard>;
 
     // Initialize tracking
     useBehaviorTracking(true);

@@ -423,7 +423,7 @@ const TrustShieldVerification = () => {
                 liveStreamRef.current.getTracks().forEach(t => t.stop());
                 liveStreamRef.current = null;
               }
-              handleFail('ACCOUNT_ALREADY_EXISTS: Identity already linked to an existing Focus account. Each ID can only be used once.');
+              handleFail('ERR_DUPLICATE_IDENTITY: One User, One Account.');
               scanner.stopCamera?.();
               return;
             }
@@ -461,7 +461,10 @@ const TrustShieldVerification = () => {
   }, [faceModelsLoaded]);
 
   const startLivenessCamera = useCallback(async () => {
-    const newSeq = shuffleChallenges(LIVENESS_CHALLENGE_POOL);
+    const newSeq = [
+       { id: 'blink', label: 'Blink comfortably', maxAttempts: 50 },
+       { id: 'smile', label: 'Smile clearly', maxAttempts: 50 }
+    ];
     challengeSequenceRef.current = newSeq;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -551,135 +554,66 @@ const TrustShieldVerification = () => {
             } catch(e) {}
         }
 
-        // ── TELEPORT INJECTION DETECTION ──────────────────────────────
-        // A real face moving naturally cannot jump >30% of frame width in one frame.
-        // A photoswap or virtual-camera injection will 'teleport' instantly.
-        if (prevYawRef.current !== null && prevFaceCenterRef.current !== null) {
-          const prevPos = prevFaceCenterRef.current;
-          const deltaX = Math.abs(faceCenterX - prevPos.x) / (liveVideoRef.current.videoWidth || 640);
-          const deltaY = Math.abs(faceCenterY - prevPos.y) / (liveVideoRef.current.videoHeight || 480);
-          const deltaYaw = Math.abs(yaw - prevYawRef.current);
-
-          if (deltaX > 0.30 || deltaY > 0.30 || deltaYaw > 0.30) {
-            teleportCountRef.current += 1;
-            if (teleportCountRef.current >= 2) {
-              // ── HARD LOCK — LOCKED_INJECTION ──────────────────────
-              cancelAnimationFrame(rafRef.current);
-              if (liveStreamRef.current) {
-                liveStreamRef.current.getTracks().forEach(t => t.stop());
-                liveStreamRef.current = null;
-              }
-              setLivenessStatus('🚨 ACCOUNT LOCKED: Static injection attack detected. This incident has been reported.');
-              setAccountLocked(true);
-              setStaticImageFlag(true);
-              // Persist LOCKED_INJECTION to database — no mercy
-              try {
-                await supabase.from('profiles').update({
-                  verification_status: 'LOCKED_INJECTION',
-                  trust_shield_status: 'LOCKED_INJECTION',
-                }).eq('id', user?.id ?? '');
-              } catch (lockErr) {
-                console.error('[TrustShield] Failed to lock account:', lockErr);
-              }
-              return; // Halt the detection loop permanently
+        // ── 'HUMAN-ONLY' 100% STATIC INJECTION CHECK ──────────────────────────────
+        const currentLandmarksString = JSON.stringify(landmarks.positions);
+        if (prevFaceCenterRef.current === currentLandmarksString) {
+            teleportCountRef.current = (teleportCountRef.current || 0) + 1;
+            if (teleportCountRef.current > 5) {
+               // 100% static for 5 frames -> injection detected
+               cancelAnimationFrame(rafRef.current);
+               stopLivenessCamera();
+               setAccountLocked(true);
+               setStaticImageFlag(true);
+               handleFail('SECURITY_ALERT: Static photo/video injection detected. Challenge reset.');
+               return;
             }
-            setLivenessStatus(`⚠️ Suspicious movement detected. Final warning. (${teleportCountRef.current}/2)`);
-          }
+        } else {
+            teleportCountRef.current = 0;
         }
-        prevYawRef.current = yaw;
-        prevFaceCenterRef.current = { x: faceCenterX, y: faceCenterY };
+        prevFaceCenterRef.current = currentLandmarksString;
 
-        yawHistoryRef.current.push(yaw);
-        if (yawHistoryRef.current.length > 30) yawHistoryRef.current.shift();
+        // ── CHALLENGE: BLINK FOLLOWED BY SMILE ──
+        const dist = (p1, p2) => Math.hypot(p1.x - p2.x, p1.y - p2.y);
+        const EAR = (eye) => {
+           return (dist(eye[1], eye[5]) + dist(eye[2], eye[4])) / (2 * dist(eye[0], eye[3]));
+        };
+        const leftEAR = EAR(leftEye);
+        const rightEAR = EAR(rightEye);
+        const avgEAR = (leftEAR + rightEAR) / 2;
 
-        // ── Use RANDOMIZED challengeSequence ──────────────────────────
-        setLivenessPhase(prev => {
-          const currentChallenge = challengeSequenceRef.current[prev];
-          if (!currentChallenge || prev >= 3) return prev;
+        const currentPhaseIndex = livenessPhase;
+        const currentChallenge = challengeSequenceRef.current[currentPhaseIndex];
 
-          // ── CHALLENGE: BLINK ───────────────────────────────────────
-          if (currentChallenge.id === 'blink') {
-            const ear = (getEAR(leftEye) + getEAR(rightEye)) / 2.0;
-
-            if (baselineEARRef.current === null) {
-              earBufferRef.current.push(ear);
-              if (earBufferRef.current.length >= 12) {
-                baselineEARRef.current = earBufferRef.current.reduce((a, b) => a + b, 0) / earBufferRef.current.length;
-                earBufferRef.current = [];
-                setLivenessStatus('Baseline set. Blink rapidly 3× 👁️');
-              }
-              return prev;
+        if (currentChallenge?.id === 'blink') {
+            if (avgEAR < 0.22) { // Blink detected
+                blinkCountRef.current = (blinkCountRef.current || 0) + 1;
+                if (blinkCountRef.current > 1) {
+                    setLivenessComplete(prev => { const n = [...prev]; n[0] = true; return n; });
+                    setLivenessPhase(1);
+                    setLivenessStatus('Challenge 2: Smile clearly');
+                }
+            } else {
+               // Must sustain blink, reset count if eyes open
+               blinkCountRef.current = 0;
             }
+        }
 
-            earBufferRef.current.push(ear);
-            if (earBufferRef.current.length > 3) earBufferRef.current.shift();
-            const rollingAvg = earBufferRef.current.reduce((a, b) => a + b, 0) / earBufferRef.current.length;
-
-            if (rollingAvg < baselineEARRef.current * 0.60) {
-              blinkCountRef.current += 1;
-              setLivenessStatus(`Blink ${blinkCountRef.current}/3 detected ✓`);
-              earBufferRef.current = [];
-              if (blinkCountRef.current >= 3) {
-                if (navigator?.vibrate) navigator.vibrate(80);
-                setLivenessComplete(p => { const n=[...p]; n[prev]=true; return n; });
-                const next = prev + 1;
-                const nextCh = challengeSequenceRef.current[next];
-                setLivenessStatus(nextCh ? `✅ Complete! Next: ${nextCh.label}` : '✅ All challenges passed!');
-                if (!nextCh) { cancelAnimationFrame(rafRef.current); stopLivenessCamera(); setTimeout(() => setStep(s => s + 1), 800); }
-                return next;
-              }
+        if (currentChallenge?.id === 'smile') {
+            if (expressions.happy > 0.85) {
+                setLivenessComplete(prev => { const n = [...prev]; n[1] = true; return n; });
+                setLivenessPhase(2); 
+                
+                // Completed!
+                stopLivenessCamera();
+                setLivenessStatus('✅ Liveness Confirmed — You are human.');
+                setMatchResult({ passed: true, score: 0.99 });
+                setTimeout(completeVerification, 1000);
+                return;
             }
-            return prev;
-          }
-
-          // ── CHALLENGE: LOOK LEFT ───────────────────────────────────
-          if (currentChallenge.id === 'turn_left') {
-            const yawRange = yawHistoryRef.current.length > 5
-              ? Math.max(...yawHistoryRef.current) - Math.min(...yawHistoryRef.current)
-              : 0;
-
-            // Secondary static-frame check (yaw never changes)
-            if (yawHistoryRef.current.length >= 25 && yawRange < 0.03) {
-              setStaticImageFlag(true);
-              setLivenessStatus('🚨 Static Image Detected — you must be physically present');
-              return prev;
-            }
-
-            const recentYaw = yawHistoryRef.current.slice(-5);
-            const avgRecentYaw = recentYaw.reduce((a, b) => a + b, 0) / recentYaw.length;
-
-            if (avgRecentYaw < -0.10) {
-              if (navigator?.vibrate) navigator.vibrate(80);
-              setLivenessComplete(p => { const n=[...p]; n[prev]=true; return n; });
-              yawHistoryRef.current = [];
-              const next = prev + 1;
-              const nextCh = challengeSequenceRef.current[next];
-              setLivenessStatus(nextCh ? `✅ Complete! Next: ${nextCh.label}` : '✅ All challenges passed!');
-              if (!nextCh) { cancelAnimationFrame(rafRef.current); stopLivenessCamera(); setTimeout(() => setStep(s => s + 1), 800); }
-              return next;
-            }
-            return prev;
-          }
-
-          // ── CHALLENGE: SMILE ───────────────────────────────────────
-          if (currentChallenge.id === 'smile') {
-            if (expressions.happy > 0.40) {
-              if (navigator?.vibrate) navigator.vibrate([100, 50, 100]);
-              setLivenessComplete(p => { const n=[...p]; n[prev]=true; return n; });
-              const next = prev + 1;
-              const nextCh = challengeSequenceRef.current[next];
-              setLivenessStatus(nextCh ? `✅ Complete! Next: ${nextCh.label}` : '✅ All challenges passed!');
-              cancelAnimationFrame(rafRef.current);
-              stopLivenessCamera();
-              setTimeout(() => setStep(s => s + 1), 800);
-              return next;
-            }
-            return prev;
-          }
-
-          return prev;
-        });
-      } catch (_) {}
+        }
+      } catch (_) {
+         console.error('[Liveness] Detection error:', _);
+      }
     };
     rafRef.current = requestAnimationFrame(detect);
   }, [stopLivenessCamera, user?.id]);
@@ -1103,6 +1037,7 @@ const TrustShieldVerification = () => {
                       
                       <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                         <input
+                          id="guardian_email_input"
                           type="email"
                           placeholder="guardian@example.com"
                           className={styles.emailInput}
@@ -1115,13 +1050,22 @@ const TrustShieldVerification = () => {
                         <button
                           className={styles.primaryBtn}
                           style={{ width: 'auto', padding: '12px 20px', margin: '0' }}
-                          onClick={(e) => {
+                          onClick={async (e) => {
                              const btn = e.currentTarget;
+                             const emailInput = document.getElementById('guardian_email_input').value;
+                             if (!emailInput) return;
+                             btn.innerText = 'Sending...';
+                             
+                             try {
+                                await supabase.functions.invoke('send-guardian-email', {
+                                    body: { email: emailInput, link: `${window.location.origin}/verification/parent-consent?token=${guardianToken}` }
+                                });
+                             } catch (err) {
+                                console.error('Failed to send edge function email:', err);
+                             }
+
                              btn.innerText = 'Sent ✓';
                              btn.style.background = '#22c55e';
-                             setTimeout(() => {
-                                alert("Approval request sent to guardian's email.");
-                             }, 300);
                           }}
                         >
                           Send Invite

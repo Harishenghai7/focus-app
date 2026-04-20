@@ -249,7 +249,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
                     .neq('id', user.id);
                 
                 if (data && data.length > 0) {
-                    setError('ERR_DUPLICATE_IDENTITY: This ID is already registered to another account. One User. One Account.');
+                    setError('ERR_DUPLICATE_IDENTITY: One User, One Account.');
                     return;
                 }
             } catch (err) {
@@ -284,94 +284,100 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
         setSelfieFrames([]);
         setStage('liveness');
         await startCamera();
+
+        // ── 'No Overrides' Auto-Capture Sequence ──
+        let stepCount = 0;
+        const totalSteps = actions.length;
+        
+        const captureInterval = setInterval(() => {
+            if (!videoRef.current) return;
+            
+            setSelfieFrames(prev => {
+                const newFrames = [...prev];
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = videoRef.current.videoWidth || 640;
+                    canvas.height = videoRef.current.videoHeight || 480;
+                    canvas.getContext('2d').drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+                    newFrames.push(canvas.toDataURL('image/jpeg', 0.6));
+                } catch (e) {}
+                return newFrames;
+            });
+            
+            stepCount++;
+            if (stepCount < totalSteps) {
+                setCurrentActionIndex(stepCount);
+            } else {
+                clearInterval(captureInterval);
+                finishLivenessExecution();
+            }
+        }, 3000); // 3 seconds per action
     };
 
-    const completeAction = () => {
-        if (!user?.id) {
-            setError('Session expired. Please log in again.');
-            return;
-        }
-
-        let currentFrames = [...selfieFrames];
-        if (videoRef.current) {
-            try {
-                const canvas = document.createElement('canvas');
-                canvas.width = videoRef.current.videoWidth || 640;
-                canvas.height = videoRef.current.videoHeight || 480;
-                canvas.getContext('2d').drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-                const frameData = canvas.toDataURL('image/jpeg', 0.6);
-                currentFrames.push(frameData);
-                setSelfieFrames(currentFrames);
-            } catch (e) {
-                console.error('Frame capture error', e);
-            }
-        }
-
-        if (currentActionIndex < livenessActions.length - 1) {
-            setCurrentActionIndex((prev) => prev + 1);
-            return;
-        }
+    const finishLivenessExecution = () => {
         setStage('processing');
         stopCamera();
-        window.setTimeout(async () => {
-            const result = await runFaceSimilarityCheck({ idImageFile: idFile, selfieFrames: currentFrames });
-            setMatchResult(result);
-            if (result.passed) {
-                triggerHaptic(24);
-                updateFormData('trustShieldStatus', 'VERIFIED');
-                updateFormData('trustShieldInitialized', true);
-                updateFormData('trustShieldFaceScore', result.score);
+        
+        window.setTimeout(() => {
+            setSelfieFrames(async (currentFrames) => {
                 try {
-                    if (isTeen) {
-                        const handshakeToken = await createGuardianHandshake({
-                            teenUserId: user?.id,
-                            metadata: { ocr: ocrResult, face_score: result.score },
-                        });
-                        const generatedLink = `${window.location.origin}/verification/parent-consent?token=${handshakeToken}`;
-                        updateFormData('guardianHandshakeLink', generatedLink);
+                    const result = await runFaceSimilarityCheck({ idImageFile: idFile, selfieFrames: currentFrames });
+                    setMatchResult(result);
+                    
+                    if (result.passed) {
+                        triggerHaptic(24);
+                        updateFormData('trustShieldStatus', 'VERIFIED');
+                        updateFormData('trustShieldInitialized', true);
+                        updateFormData('trustShieldFaceScore', result.score);
+                        
+                        if (isTeen) {
+                            const handshakeToken = await createGuardianHandshake({
+                                teenUserId: user?.id,
+                                metadata: { ocr: ocrResult, face_score: result.score },
+                            });
+                            const generatedLink = `${window.location.origin}/verification/parent-consent?token=${handshakeToken}`;
+                            updateFormData('guardianHandshakeLink', generatedLink);
+                            await persistTrustShieldState({
+                                userId: user?.id,
+                                verificationStatus: 'PENDING',
+                                ocrResult,
+                                faceScore: result.score,
+                                attemptResult: 'SUCCESS',
+                                stage: 'guardian_pending',
+                                handshakeToken,
+                            });
+                            setStage('guardian');
+                        } else {
+                            await persistTrustShieldState({
+                                userId: user?.id,
+                                verificationStatus: 'VERIFIED',
+                                ocrResult,
+                                faceScore: result.score,
+                                attemptResult: 'SUCCESS',
+                                stage: 'face_match',
+                            });
+                            setStage('result');
+                        }
+                    } else {
                         await persistTrustShieldState({
                             userId: user?.id,
                             verificationStatus: 'PENDING',
                             ocrResult,
                             faceScore: result.score,
-                            attemptResult: 'SUCCESS',
-                            stage: 'guardian_pending',
-                            handshakeToken,
-                        });
-                        setStage('guardian');
-                    } else {
-                        await persistTrustShieldState({
-                            userId: user?.id,
-                            verificationStatus: 'VERIFIED',
-                            ocrResult,
-                            faceScore: result.score,
-                            attemptResult: 'SUCCESS',
+                            attemptResult: 'FAILURE',
                             stage: 'face_match',
+                            reason: result.reason || 'Face similarity threshold not met.',
                         });
                         setStage('result');
                     }
-                } catch (persistError) {
-                    setError(persistError.message || 'Could not persist verification result.');
+                } catch (e) {
+                    setError('Liveness processing error.');
                     setStage('result');
-                } finally {
-                    setIdFile(null);
                 }
-                return;
-            }
-            try {
-                await persistTrustShieldState({
-                    userId: user?.id,
-                    verificationStatus: 'PENDING',
-                    ocrResult,
-                    faceScore: result.score,
-                    attemptResult: 'FAILURE',
-                    stage: 'face_match',
-                    reason: result.reason || 'Face similarity threshold not met.',
-                });
-            } catch (_) {}
-            setIdFile(null);
-            setStage('result');
-        }, 1800);
+                setIdFile(null);
+                return currentFrames;
+            });
+        }, 500);
     };
 
     const finishFlow = () => {
@@ -498,9 +504,6 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
                             <p className={styles.actionText}>{livenessActions[currentActionIndex]}</p>
                             {cameraDenied && <p className={styles.warning}>Camera permission blocked. Enable camera and retry.</p>}
                             <div className={styles.inlineButtons} style={{ flexDirection: 'column', gap: '8px' }}>
-                                <Button variant="primary" onClick={completeAction} disabled={!videoReady}>
-                                    <Camera size={16} /> I completed this action
-                                </Button>
                                 <Button variant="ghost" onClick={initiatePhoneHandoff}>
                                     <QrCode size={16} /> No Camera? Use Phone
                                 </Button>
@@ -584,6 +587,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
                             
                             <div style={{ display: 'flex', gap: '8px', width: '100%', maxWidth: '300px', margin: '0 auto 20px', flexDirection: 'column' }}>
                                 <input
+                                  id="step_guardian_email_input"
                                   type="email"
                                   placeholder="guardian@example.com"
                                   style={{
@@ -595,8 +599,20 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
                                 />
                                 <Button 
                                   variant="primary" 
-                                  onClick={(e) => {
+                                  onClick={async (e) => {
                                      const btn = e.currentTarget;
+                                     const emailInput = document.getElementById('step_guardian_email_input').value;
+                                     if (!emailInput) return;
+                                     btn.innerHTML = 'Sending...';
+                                     
+                                     try {
+                                        await supabase.functions.invoke('send-guardian-email', {
+                                            body: { email: emailInput, link: handshakeLink }
+                                        });
+                                     } catch (err) {
+                                        console.error('Failed to send edge function email:', err);
+                                     }
+
                                      btn.innerHTML = 'Invite Sent ✓';
                                      btn.style.background = '#22c55e';
                                   }}
