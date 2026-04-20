@@ -290,7 +290,10 @@ export const useOCRScanner = () => {
       setStatusMessage('ID scanned successfully.');
       return { ok: true, ...finalResult };
     } catch (err) {
-      const message = err.message || 'OCR scan failed. Please try again.';
+      let message = err.message || 'OCR scan failed. Please try again.';
+      if (message.includes('Code=0')) {
+        message = 'ERR_IMAGE_UNREADABLE: The file or photo was empty or corrupted. Please try capturing the ID again.';
+      }
       setError(message);
       setStatusMessage(message);
 

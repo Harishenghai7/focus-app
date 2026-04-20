@@ -208,6 +208,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
                         updateFormData('trustShieldStatus', 'VERIFIED');
                         updateFormData('trustShieldInitialized', true);
                         setMatchResult({ passed: true, score: 0.99 });
+                        setError(''); // Clear any lingering errors
                         setStage('result');
                         // Vibrate on success
                         if (navigator?.vibrate) navigator.vibrate([200, 100, 400]);
@@ -237,6 +238,17 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
         if (!result.ok) {
             setError(result.reason);
             return;
+        }
+
+        // ── STRICT DOB YEAR VALIDATION ──
+        const expectedDob = formData?.ageInfo?.dateOfBirth; // Format: YYYY-MM-DD
+        if (expectedDob && result.dob) {
+            const expectedYear = expectedDob.split('-')[0];
+            const scannedYear = result.dob.split('-')[0];
+            if (expectedYear !== scannedYear) {
+                setError(`ERR_DOB_MISMATCH: The Document Year of Birth (${scannedYear}) does not match your declared Year (${expectedYear}). You must restart and enter your correct Date of Birth.`);
+                return;
+            }
         }
 
         // ── THE DNA: Identity Deduplication ──
@@ -326,6 +338,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack }) => {
                     
                     if (result.passed) {
                         triggerHaptic(24);
+                        setError(''); // Clear any hovering errors
                         updateFormData('trustShieldStatus', 'VERIFIED');
                         updateFormData('trustShieldInitialized', true);
                         updateFormData('trustShieldFaceScore', result.score);

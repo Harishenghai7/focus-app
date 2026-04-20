@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './useAuth';
+import { useFocusUser } from '../context/FocusUserContext';
 import { saveOnboardingData } from '../utils/saveOnboardingData';
 import { uploadImage } from '../utils/uploadImage';
 
 const TOTAL_STEPS = 6;
 
 const useOnboarding = () => {
-    const { user, refreshProfile, updateProfileState } = useAuth();
+    const { user, refreshProfile, updateProfileState: updateAuthProfile } = useAuth();
+    const { updateProfileState: updateFocusProfile } = useFocusUser();
     const navigate = useNavigate();
     const [currentStep, setCurrentStep] = useState(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -75,20 +77,19 @@ const useOnboarding = () => {
                 avatarUrl = null;
             }
 
-            // Optimistic update: Update local state immediately so UI reflects changes
-            // even if the backend save takes time or fails/times out.
-            if (updateProfileState) {
-                updateProfileState({
-                    username: formData.username,
-                    full_name: formData.full_name,
-                    bio: formData.bio,
-                    website: formData.website,
-                    avatar_url: avatarUrl,
-                    onboarding_completed: true,
-                    verification_status: formData.trustShieldStatus === 'VERIFIED' ? 'VERIFIED' : 'PENDING',
-                    trust_shield_status: formData.trustShieldStatus === 'VERIFIED' ? 'VERIFIED' : 'PENDING'
-                });
-            }
+            const updatedProfileData = {
+                username: formData.username,
+                full_name: formData.full_name,
+                bio: formData.bio,
+                website: formData.website,
+                avatar_url: avatarUrl,
+                onboarding_completed: true,
+                verification_status: formData.trustShieldStatus === 'VERIFIED' ? 'VERIFIED' : 'PENDING',
+                trust_shield_status: formData.trustShieldStatus === 'VERIFIED' ? 'VERIFIED' : 'PENDING'
+            };
+
+            if (updateAuthProfile) updateAuthProfile(updatedProfileData);
+            if (updateFocusProfile) updateFocusProfile(updatedProfileData);
 
             // 5-second timeout race to prevent hanging
             const savePromise = saveOnboardingData(

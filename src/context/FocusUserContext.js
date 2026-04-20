@@ -194,6 +194,10 @@ export const FocusUserProvider = ({ children }) => {
     return () => { supabase.removeChannel(channel); };
   }, [user?.id]);
 
+  const updateProfileState = useCallback((newProfileData) => {
+    setProfile(prev => ({ ...(prev || {}), ...newProfileData }));
+  }, []);
+
   const value = useMemo(() => ({
     user,
     session,
@@ -201,9 +205,10 @@ export const FocusUserProvider = ({ children }) => {
     loading,
     error,
     refreshProfile,
+    updateProfileState,
     signOut: () => supabase.auth.signOut(),
     identity: toSafeIdentity(user, profile),
-  }), [error, loading, profile, refreshProfile, session, user]);
+  }), [error, loading, profile, refreshProfile, session, updateProfileState, user]);
 
   return (
     <FocusUserContext.Provider value={value}>
