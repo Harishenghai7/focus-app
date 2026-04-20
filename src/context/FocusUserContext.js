@@ -107,7 +107,7 @@ export const FocusUserProvider = ({ children }) => {
 
     const { data, error: fetchError } = await supabase
       .from('profiles')
-      .select('id, username, full_name, avatar_url, is_verified, trust_tier, updated_at')
+      .select('id, username, full_name, avatar_url, is_verified, trust_tier, updated_at, verification_status, trust_shield_status, focus_trust_status')
       .eq('id', targetId)
       .maybeSingle();
 

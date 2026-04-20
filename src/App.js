@@ -81,23 +81,8 @@ const LoadingScreen = () => (
 const HighSecurityGuard = ({ children }) => {
     const { user, profile, loading } = useFocusUser();
     const location = useLocation();
-    const [isRefreshing, setIsRefreshing] = useState(true);
 
-    useEffect(() => {
-        let isMounted = true;
-        const doRefresh = async () => {
-            if (user && profile?.verification_status !== 'VERIFIED') {
-                try {
-                    await supabase.auth.refreshSession();
-                } catch(e) {}
-            }
-            if (isMounted) setIsRefreshing(false);
-        };
-        doRefresh();
-        return () => { isMounted = false; };
-    }, [user, profile?.verification_status]);
-
-    if (loading || isRefreshing) return <LoadingScreen />;
+    if (loading) return <LoadingScreen />;
 
     // Not logged in at all — let the route handle redirect
     if (!user) return children;
@@ -150,7 +135,6 @@ const AppContent = () => {
 
     // Initialize tracking
     useBehaviorTracking(true);
-    useOnboardingRedirect();
     useOnlineStatus();
 
     // Global realtime notification → in-app banner bridge
