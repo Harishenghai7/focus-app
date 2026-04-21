@@ -108,6 +108,30 @@ This is a **mature, large-scale codebase** (500+ components, 35+ migrations, 7 e
 - ✅ Verified Supabase client initialization, GoTrue auth flow, 5-way OAuth UI render.
 - ✅ Verified no runtime errors; Auth page loads at `/auth`, glassmorphic BrandPanel with tagline carousel.
 
+### Session 3 — Pillar 2: Stealth Shield (Shadow-Moderation) Spec-Perfect
+- ✅ **Master migration** `supabase/migrations/20260421000000_pillar2_stealth_shield.sql`:
+    - Ensures `moderation_status` enum has exactly `('approved', 'restricted', 'flagged')` (migrates older enums idempotently)
+    - Adds `moderation_status` + 5 metadata columns (`reason`, `score`, `categories[]`, `moderated_at`, `moderator_type`) to `posts`, `boltz`, `flashes`, `comments`
+    - Creates helper SQL function `is_content_visible(status, owner)` returning `status='approved' OR owner=auth.uid()`
+    - Replaces SELECT RLS policies on `posts`/`boltz`/`flashes` with spec-perfect `stealth_shield_select_*` policies
+    - Publishes views `v_visible_posts`, `v_visible_boltz`, `v_visible_flashes` for feeds that want explicit intent
+    - Creates `moderation_audit` table (every AI decision logged with Gemini raw JSON, indexed by content + user)
+    - Fast indexes: partial index on `moderation_status='approved'` for feed queries; composite index on `(user_id, moderation_status)` for author echo-chamber
+- ✅ **Edge function rewrite** `supabase/functions/content-moderator/index.ts`:
+    - Upgraded to **Gemini 2.5 Flash** (vision-capable, current best price/latency for classification; overridable via `GEMINI_MODERATION_MODEL` env)
+    - Returns spec-exact verdict: `{ moderationStatus, toxicityType, severity, confidence, categories, reason, suggestion }`
+    - Ruthless verdict logic (`deriveVerdict`): NSFW/hate/violence/self-harm → `restricted` immediately (zero-tolerance), high-severity bullying/misinfo/spam → `restricted`, medium or confidence ≥0.4 → `flagged`, else `approved`
+    - Image URLs auto-fetched and base64-encoded as `inline_data` parts for Gemini Vision (up to 4 images, 15MB cap)
+    - **Fails CLOSED** per spec — if Gemini is unreachable or malformed, verdict = `flagged` (queued for human review), never silently approves
+- ✅ **Client hook** `src/hooks/useAutoModeration.js`:
+    - `const { moderate, moderating, lastVerdict } = useAutoModeration()`
+    - `moderate({ text, imageUrls })` returns verdict + `dbColumns` ready to spread into an INSERT payload (`{ moderation_status, moderation_reason, moderation_score, moderation_categories, moderated_at, moderator_type: 'auto' }`)
+    - Defensive: merges with defaults, forces unknown statuses to `flagged`
+- ✅ **Feed services hardened with defense-in-depth filter** (in case RLS isn't yet deployed):
+    - `src/services/postService.js` — new `applyStealthShield(query, viewerId)` helper applies `.or('moderation_status.eq.approved,user_id.eq.<viewer>')`. New `fetchMyRestrictedPosts(userId)` powers the author-only echo-chamber view.
+    - `src/services/boltzService.js` — shadow filter applied on both primary + fallback query paths, `moderation_status` added to select
+    - `src/services/flashService.js` — same filter applied; `useHomeFeed.js` now passes `userId` through to both services
+
 ### Session 2 — Pillar 1: Trust Shield Spec-Perfect Fixes
 - ✅ **Identity DNA salt:** `computeIdentityHash` in `src/hooks/useOCRScanner.js` now computes `SHA256(ID_Number + SALT)` per spec. Salt read from `REACT_APP_TRUST_SHIELD_SALT` (CRA) with fallback to `VITE_TRUST_SHIELD_SALT` (future Vite migration). Salt value added to `/app/.env` (64-char openssl hex).
 - ✅ **Nuclear Hard Reset:** `handleHardReset` in `TrustShieldVerification.jsx` now executes the full spec sequence:

@@ -25,7 +25,7 @@ export const useHomeFeed = (userId) => {
 
     // FLASH (non-blocking)
     try {
-      const flashData = await fetchFlashStories();
+      const flashData = await fetchFlashStories(userId);
       setFlash(flashData);
     } catch (err) {
       console.warn('⚠️ Flash load failed:', err);
@@ -34,7 +34,7 @@ export const useHomeFeed = (userId) => {
 
     // BOLTZ (non-blocking)
     try {
-      const boltzData = await fetchBoltzPreview();
+      const boltzData = await fetchBoltzPreview(12, userId);
       setBoltz(boltzData);
     } catch (err) {
       console.warn('⚠️ Boltz load failed:', err);
