@@ -1,0 +1,130 @@
+/* FocuslyToastLayer.module.css — glassmorphic proactive speech bubble */
+
+.anchor {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 9998;
+    pointer-events: none;
+    animation: focuslyFloat 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card {
+    pointer-events: auto;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    max-width: 380px;
+    padding: 14px 18px 16px 14px;
+    border-radius: 20px;
+    background: rgba(10, 12, 22, 0.55);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow:
+        0 18px 42px -12px rgba(0, 0, 0, 0.7),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 0 0 1px var(--focusly-accent, rgba(0, 195, 255, 0.25));
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* Accent shimmer on the left edge, colored by state */
+.card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 12%;
+    bottom: 12%;
+    width: 3px;
+    border-radius: 3px;
+    background: var(--focusly-accent, #00c3ff);
+    box-shadow: 0 0 12px var(--focusly-accent, #00c3ff);
+}
+
+.mascotSlot {
+    flex-shrink: 0;
+}
+
+.body {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.name {
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    color: var(--focusly-accent, #00c3ff);
+    text-shadow: 0 0 18px var(--focusly-accent, rgba(0, 195, 255, 0.6));
+}
+
+.closeBtn {
+    appearance: none;
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    width: 24px;
+    height: 24px;
+    line-height: 1;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+.closeBtn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: scale(1.06);
+}
+
+.message {
+    margin: 2px 0 0 0;
+    font-size: 0.95rem;
+    line-height: 1.45;
+    color: #fff;
+    font-weight: 500;
+    letter-spacing: 0.005em;
+}
+
+/* Per-state border pulse */
+.card_celebrating {
+    animation: celebratePulseBorder 1.4s ease-in-out infinite;
+}
+.card_disappointed {
+    animation: concernPulseBorder 2.4s ease-in-out infinite;
+}
+
+@keyframes focuslyFloat {
+    from { opacity: 0; transform: translateY(16px) scale(0.94); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+@keyframes celebratePulseBorder {
+    0%, 100% { box-shadow: 0 18px 42px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 220, 0, 0.35); }
+    50%      { box-shadow: 0 18px 52px -10px rgba(255, 220, 0, 0.4), 0 0 0 2px rgba(255, 220, 0, 0.7); }
+}
+@keyframes concernPulseBorder {
+    0%, 100% { box-shadow: 0 18px 42px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 80, 80, 0.35); }
+    50%      { box-shadow: 0 18px 52px -10px rgba(255, 80, 80, 0.35), 0 0 0 2px rgba(255, 80, 80, 0.6); }
+}
+
+@media (max-width: 768px) {
+    .anchor {
+        bottom: auto;
+        top: 76px;
+        left: 12px;
+        right: 12px;
+    }
+    .card {
+        max-width: none;
+    }
+}

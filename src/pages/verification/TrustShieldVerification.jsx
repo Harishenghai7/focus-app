@@ -8,6 +8,7 @@ import MainLayout from '../../components/layout/MainLayout';
 import { QRCodeSVG } from 'qrcode.react';
 import { supabase } from '../../lib/supabase';
 import * as faceapi from 'face-api.js';
+import { useFocusly } from '../../context/FocuslyContext';
 import styles from './TrustShieldVerification.module.css';
 
 // ── Mobile Handoff ──────────────────────────────────────────────────────
@@ -77,6 +78,7 @@ const FocuslyLion = () => (
 const TrustShieldVerification = () => {
   const navigate = useNavigate();
   const { profile, user } = useAuth();
+  const focusly = useFocusly(); // 🦁 Pillar 4 companion
 
   // ── Core State ────────────────────────────────────────────────────────────
   const [step, setStep]               = useState(1);
@@ -194,6 +196,9 @@ const TrustShieldVerification = () => {
   const handleHardReset = useCallback(async (reason) => {
     if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
 
+    // 🦁 Pillar 4 — Focusly reacts with disappointment (the ritual has been broken)
+    try { focusly.disappoint(reason || 'Your ID did not match your tier. Let\'s start over — you got this.'); } catch (_) {}
+
     // 1. Stop camera streams FIRST to prevent hardware contention
     scanner.stopCamera?.();
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -229,7 +234,7 @@ const TrustShieldVerification = () => {
 
     // 5. Navigate back to /auth — session is gone, they must re-authenticate
     setTimeout(() => navigate('/auth', { replace: true }), 2500);
-  }, [scanner, navigate]);
+  }, [scanner, navigate, focusly]);
 
   const handleSuccessFeedback = useCallback(() => {
     if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
@@ -288,12 +293,29 @@ const TrustShieldVerification = () => {
         }
       }
       setStep(5);
+      // 🦁 Pillar 4 — Focusly celebrates the Trust Shield pass
+      try {
+        const firstName = user?.user_metadata?.full_name?.split(' ')?.[0];
+        if (isTeen) {
+          focusly.motivate(
+            firstName
+              ? `Almost there, ${firstName}! Your guardian just needs to confirm and you're in. 🎉`
+              : `Almost there! Your guardian just needs to confirm and you're in. 🎉`
+          );
+        } else {
+          focusly.celebrate(
+            firstName
+              ? `Welcome to Focus, ${firstName}! You are officially verified. Real people, real connections.`
+              : `Welcome to Focus! You are officially verified. Real people, real connections.`
+          );
+        }
+      } catch (_) { /* non-critical */ }
     } catch (err) {
       handleFail('Failed to save verification. Please try again.');
     } finally {
       setSaving(false);
     }
-  }, [ageGroup, ocrData, identityHash, user, handleFail]);
+  }, [ageGroup, ocrData, identityHash, user, handleFail, focusly]);
 
   // ── Mobile Realtime Sync (Desktop listens for VERIFIED) ──────────────────
   useEffect(() => {

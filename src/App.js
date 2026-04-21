@@ -11,6 +11,7 @@ import { AudioProvider } from './context/AudioProvider';
 import { ThemeProvider } from './context/ThemeContext';
 import { QueryProvider } from './context/QueryProvider';
 import { FocuslyProvider } from './context/FocuslyContext';
+import { useFocuslySentiment } from './hooks/useFocuslySentiment';
 
 import { supabase } from './lib/supabase';
 import { useBehaviorTracking } from './hooks/useBehaviorTracking';
@@ -126,6 +127,8 @@ const AppContent = () => {
     const isMessagesV2 = useFeatureFlag('focus_v2_messages');
     const { incomingCall, acceptCall, declineCall } = useGlobalCallListener();
     const trustShield = getTrustShieldState(authProfile);
+    // 🦁 Pillar 4 — activate Focusly proactive sentiment monitoring
+    useFocuslySentiment();
     const isSupportPath = location.pathname.startsWith('/support');
     const isVerificationPath =
         location.pathname.startsWith('/verification') ||

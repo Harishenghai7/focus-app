@@ -108,6 +108,43 @@ This is a **mature, large-scale codebase** (500+ components, 35+ migrations, 7 e
 - ✅ Verified Supabase client initialization, GoTrue auth flow, 5-way OAuth UI render.
 - ✅ Verified no runtime errors; Auth page loads at `/auth`, glassmorphic BrandPanel with tagline carousel.
 
+### Session 5 — Pillar 3 wire-up + Pillar 4 Focusly AI (living companion)
+
+**A. Guardian consent wired end-to-end**
+- ✅ `src/pages/verification/ParentConsent.jsx` parent flow now calls the new `useGuardianHandshake.confirmConsent(token)` (removed dependency on legacy `approveGuardianHandshake` util). Accepts both `?token=` and `?t=` URL params for email-client link flexibility. Drops the `!user` gate so the guardian link works regardless of login state.
+- ✅ New migration `supabase/migrations/20260421020000_release_pending_teen_content.sql`:
+    - RPC `release_pending_teen_content(teen_id uuid) → int` — bulk-updates every teen-locked `restricted` row to `approved`; only rows whose `moderation_reason LIKE 'Teen account %'` are released (Gemini-toxic rows stay shadow-banned forever). Auth checks: only the teen, service_role, or admin can call.
+    - Idempotent REPLACE of `confirm_guardian_consent(token)` — now returns `TABLE(teen_id uuid, confirmed_at timestamptz, content_released int)` and **auto-invokes release** after flipping consent.
+    - Audit log entry written to `moderation_audit` table documenting the release.
+- ✅ Parent success screen shows released-count: *"N posts queued during the wait have been released to the feed."* Also reminds parents: *"🔒 Private messages remain private — you will never see their DMs."*
+
+**B. Pillar 4 — Focusly AI (living companion)**
+- ✅ **`FocuslyContext.js` fully rewritten** with a 5-state machine:
+    - `idle` / `thinking` / `motivational` / `disappointed` / `celebrating`
+    - API: `speak({ state, message, duration, sticky })`, `celebrate(msg)`, `disappoint(msg)`, `motivate(msg)`, `think(msg)`, `hush()`, `setIdle()`
+    - Per-state default auto-dismiss durations; sticky mode available for persistent states
+    - Legacy `useFocuslyContext` + drawer controls preserved for backward compat
+- ✅ **`src/components/focusly/FocuslyMascot.jsx` + `.module.css`** — the physical living companion:
+    - Renders user's uploaded chromatic lion PNG at `/focusly-lion.png`
+    - Each state has unique CSS keyframes: `bob` (idle), `headTilt` (thinking), `standTall` (motivational), `sadShake` (disappointed, greyscale + red aura), `celebrateBounce` (celebrating, +sparkles)
+    - Ambient aura radial gradient shifts color per state (cyan/purple/green/red/gold)
+    - 4 orbital sparkles that animate outward only during `celebrating`
+    - `prefers-reduced-motion: reduce` respected (animations disabled)
+- ✅ **`src/components/focusly/FocuslyToastLayer.jsx` + `.module.css`** — glassmorphic proactive speech bubble:
+    - Fixed bottom-left desktop, top-bar mobile
+    - 20px backdrop-filter blur, accent border pulses colored by state
+    - Auto-mounted by `FocuslyProvider` (no App.js wiring needed)
+    - Celebratory / concerned pulse-border animations
+    - Dismissible (× button + data-testid="focusly-toast-dismiss")
+- ✅ **`src/hooks/useFocuslySentiment.js`** — proactive empathy engine:
+    - Signal 1: `welcome-back motivational` on sign-in (throttled 1x/day via localStorage)
+    - Signal 2: `shadow-restrict burst` — if ≥2 user posts restricted in last 24h, Focusly proactively disappears with *"I noticed N of your recent posts were restricted. Want to chat about what's going on? No judgment."* (Ties Pillar 4 to Pillar 2's audit layer.) Throttled 1x/day.
+    - Mounted globally in `AppContent` via a single `useFocuslySentiment()` call
+- ✅ **Trust Shield reactions wired**:
+    - `completeVerification` success → `focusly.celebrate('Welcome to Focus, {firstName}! You are officially verified.')` for adults, `focusly.motivate('Almost there, {firstName}! Guardian just needs to confirm...')` for teens
+    - `handleHardReset` failure → `focusly.disappoint('{reason} — Let\'s start over, you got this.')`
+- ✅ **Circular-import bug caught & fixed**: `FocuslyContext.js` imports `FocuslyToastLayer` which previously re-imported `FOCUSLY_STATES` from Context → ReferenceError at load. Fixed by inlining state labels/accents inside `FocuslyToastLayer.jsx`. Verified end-to-end — Auth page loads clean with no console errors.
+
 ### Session 4 — Pillar 2 Wire-Up into Create Studio + Pillar 3 (Teen Care)
 
 **A. Create Studio now runs Gemini moderation + teen lock at publish time**

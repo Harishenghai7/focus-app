@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import { toast } from 'react-toastify';
-import { approveGuardianHandshake } from '../../utils/trustShieldEngine';
+import { useGuardianHandshake } from '../../hooks/useGuardianHandshake';
 import styles from './ParentConsent.module.css';
 
 const FocuslyGuardian = ({ message }) => (
@@ -20,7 +20,9 @@ const ParentConsent = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
-  const token = searchParams.get('token');
+  // Accept both `token` and `t` for flexibility with email-client link rewrites
+  const token = searchParams.get('token') || searchParams.get('t');
+  const { confirmConsent } = useGuardianHandshake();
 
   // Teen Flow State
   const [parentEmail, setParentEmail] = useState('');
@@ -32,6 +34,7 @@ const ParentConsent = () => {
   const [parentConfirmEmail, setParentConfirmEmail] = useState('');
   const [isApproving, setIsApproving] = useState(false);
   const [isApproved, setIsApproved] = useState(false);
+  const [releasedCount, setReleasedCount] = useState(0);
 
   // ── TEEN FLOW: Send Request ───────────────────────────────────────────────
   const sendParentConsentRequest = async (e) => {
@@ -68,7 +71,7 @@ const ParentConsent = () => {
     }
   };
 
-  // ── PARENT FLOW: Approve Request ──────────────────────────────────────────
+  // ── PARENT FLOW: Approve Request via the new confirm_guardian_consent RPC ─
   const handleApproveHandshake = async (e) => {
     e.preventDefault();
 
@@ -76,19 +79,29 @@ const ParentConsent = () => {
       toast.error('Please fill in your details to approve.');
       return;
     }
+    if (!token) {
+      toast.error('Missing consent token. Please use the link in the email.');
+      return;
+    }
 
     try {
       setIsApproving(true);
-      await approveGuardianHandshake({
-        handshakeToken: token,
-        guardianName: parentName,
-        guardianEmail: parentConfirmEmail,
-      });
-
+      const result = await confirmConsent(token);
+      // RPC returns { teen_id, confirmed_at, content_released }
+      const released = Number(result?.content_released || 0);
+      setReleasedCount(released);
       setIsApproved(true);
-      toast.success('Account approved successfully!');
+      toast.success(
+        released > 0
+          ? `Account approved. ${released} queued post${released === 1 ? '' : 's'} released.`
+          : 'Account approved successfully!'
+      );
     } catch (err) {
-      toast.error('Failed to approve the account. The link may have expired or is invalid.');
+      toast.error(
+        err?.message?.includes('expired') || err?.message?.includes('Invalid')
+          ? 'This link has expired or was already used. Ask your teen to request a new one.'
+          : 'Failed to approve the account. Please try again.'
+      );
       console.error(err);
     } finally {
       setIsApproving(false);
@@ -98,7 +111,7 @@ const ParentConsent = () => {
   if (isApproved) {
     return (
       <div className={styles.container}>
-        <div className={styles.successCard}>
+        <div className={styles.successCard} data-testid="guardian-consent-success">
           <div className={styles.successIcon}>✨</div>
           <h2 className={styles.title}>Approval Successful</h2>
           <p className={styles.subtitle}>
@@ -107,12 +120,16 @@ const ParentConsent = () => {
           <div className={styles.rewardBox}>
             <h3>What happens now?</h3>
             <ul>
-              <li>✅ The teen user now has access to the Focus platform.</li>
-              <li>✅ You will receive monthly activity reports if configured.</li>
-              <li>✅ The platform's Teen Care safety nets will remain active unconditionally.</li>
+              <li>✅ The teen user now has full posting access.</li>
+              {releasedCount > 0 && (
+                <li>✅ <strong>{releasedCount}</strong> post{releasedCount === 1 ? '' : 's'} queued during the wait {releasedCount === 1 ? 'has' : 'have'} been released to the feed.</li>
+              )}
+              <li>✅ You will receive weekly activity reports.</li>
+              <li>✅ Focus's Teen Care safety nets remain active unconditionally.</li>
+              <li>🔒 Private messages remain private — you will never see their DMs.</li>
             </ul>
           </div>
-          <button className={styles.primaryBtn} onClick={() => navigate('/')}>
+          <button className={styles.primaryBtn} onClick={() => navigate('/')} data-testid="guardian-consent-home-btn">
             Go to Focus Home
           </button>
         </div>
@@ -120,7 +137,7 @@ const ParentConsent = () => {
     );
   }
 
-  if (token && !user) {
+  if (token) {
     // ── PARENT VIEW: Approving via token link ──
     return (
       <div className={styles.container}>
