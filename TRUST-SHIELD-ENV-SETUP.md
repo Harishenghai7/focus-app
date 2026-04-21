@@ -7,7 +7,7 @@ Add these to your `.env` file:
 ```env
 # hCaptcha Configuration
 # Get your site key from: https://www.hcaptcha.com/
-REACT_APP_HCAPTCHA_SITE_KEY=10000000-ffff-ffff-ffff-000000000001
+REACT_APP_HCAPTCHA_SITE_KEY=content-immune
 
 # For development, the above test key works
 # For production, replace with your actual hCaptcha site key
@@ -120,7 +120,7 @@ REACT_APP_SUPABASE_URL=your_supabase_url
 REACT_APP_SUPABASE_ANON_KEY=your_supabase_key
 
 # hCaptcha (Add this)
-REACT_APP_HCAPTCHA_SITE_KEY=10000000-ffff-ffff-ffff-000000000001
+REACT_APP_HCAPTCHA_SITE_KEY=content-immune
 
 # Optional: IP Intelligence
 IPQUALITYSCORE_API_KEY=

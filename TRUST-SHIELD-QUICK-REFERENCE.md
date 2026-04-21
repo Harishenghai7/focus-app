@@ -196,7 +196,7 @@
   npm install
 
   # Add environment variable
-  REACT_APP_HCAPTCHA_SITE_KEY=10000000-ffff-ffff-ffff-000000000001
+  REACT_APP_HCAPTCHA_SITE_KEY=content-immune
 
   # Start development server
   npm start

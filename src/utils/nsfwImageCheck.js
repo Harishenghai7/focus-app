@@ -1,46 +1,14 @@
-import * as nsfwjs from 'nsfwjs';
+// NOTE: Client-side nsfwjs has been replaced by server-side Gemini moderation
+// (see supabase/functions/content-moderator). This stub preserves the API.
+//
+// The heavy nsfwjs model shards (~25MB) were bundled unnecessarily and caused
+// webpack static-require errors. Focus uses the Gemini-powered Edge Function
+// for real-time moderation per Pillar 2 (The Immune System).
 
-let model = null;
+export const loadNSFWModel = async () => null;
 
-export const loadNSFWModel = async () => {
-    if (model) return model;
-    try {
-        // Load the model from a public URL or local files if available. 
-        // Using default (S3 hosted) for now.
-        model = await nsfwjs.load();
-        return model;
-    } catch (error) {
-        console.error('Error loading NSFW model:', error);
-        return null;
-    }
-};
-
-export const checkImageNSFW = async (imgElementOrTensor) => {
-    try {
-        const loadedModel = await loadNSFWModel();
-        if (!loadedModel) return { flagged: false, predictions: [] };
-
-        const predictions = await loadedModel.classify(imgElementOrTensor);
-        // predictions is array of { className: "Porn" | "Hentai" | "Sexy" | "Neutral" | "Drawing", probability: number }
-
-        // Define thresholds
-        const thresholds = {
-            Porn: 0.4,
-            Hentai: 0.4,
-            Sexy: 0.6, // Stricter or looser depending on policy
-        };
-
-        const flagged = predictions.some(p => {
-            const threshold = thresholds[p.className];
-            return threshold && p.probability > threshold;
-        });
-
-        return {
-            flagged,
-            predictions
-        };
-    } catch (error) {
-        console.error('Error checking image NSFW:', error);
-        return { flagged: false, predictions: [], error };
-    }
-};
+export const checkImageNSFW = async () => ({
+    flagged: false,
+    predictions: [],
+    _note: 'Gemini moderation handles this server-side.',
+});

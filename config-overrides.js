@@ -40,6 +40,20 @@ module.exports = override(
     config.ignoreWarnings = [
       ...(config.ignoreWarnings || []),
       /Failed to parse source map/,
+      /Cannot statically analyse/,
+      /Critical dependency: the request of a dependency is an expression/,
+      { module: /nsfwjs/ },
+      { module: /@tensorflow/ },
+    ];
+
+    // ── Exclude heavy nsfwjs model bundles from parsing ──────────────────
+    config.module.rules.push({
+      test: /nsfwjs[\\/].*\.min\.js$/,
+      parser: { requireEnsure: false, amd: false },
+    });
+    config.module.noParse = [
+      ...(config.module.noParse ? (Array.isArray(config.module.noParse) ? config.module.noParse : [config.module.noParse]) : []),
+      /nsfwjs[\\/]dist[\\/]models[\\/]/,
     ];
 
     return config;

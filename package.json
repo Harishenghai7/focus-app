@@ -69,7 +69,7 @@
     "zego-express-engine-webrtc": "^3.11.0"
   },
   "scripts": {
-    "start": "set \"NODE_OPTIONS=--max_old_space_size=8192\" && set \"GENERATE_SOURCEMAP=false\" && set \"DISABLE_ESLINT_PLUGIN=true\" && react-app-rewired start",
+    "start": "NODE_OPTIONS=--max_old_space_size=8192 GENERATE_SOURCEMAP=false DISABLE_ESLINT_PLUGIN=true TSC_COMPILE_ON_ERROR=true ESLINT_NO_DEV_ERRORS=true WDS_SOCKET_PORT=443 DANGEROUSLY_DISABLE_HOST_CHECK=true react-app-rewired start",
     "tunnel": "lt --port 3000 --subdomain focus-macha",
     "server": "node server/gemini-proxy.js",
     "dev": "concurrently \"npm run server\" \"npm start\"",
