@@ -108,6 +108,35 @@ This is a **mature, large-scale codebase** (500+ components, 35+ migrations, 7 e
 - ✅ Verified Supabase client initialization, GoTrue auth flow, 5-way OAuth UI render.
 - ✅ Verified no runtime errors; Auth page loads at `/auth`, glassmorphic BrandPanel with tagline carousel.
 
+### Session 6 — Pillar 5: Report & Support (The Life-Line)
+
+**Migration** `supabase/migrations/20260421030000_pillar5_report_support.sql`:
+- Adds 8 AI-audit columns to `reports`: `ai_audit_status`, `ai_severity`, `ai_confidence`, `ai_recommended_action`, `ai_summary`, `ai_evidence JSONB`, `ai_audited_at`, `ai_gemini_raw JSONB` with check constraints
+- Adds `author_type` to `support_ticket_messages` ∈ (user|staff|focusly|system) so Focusly can officially post as first-responder
+- New SECURITY DEFINER RPC `get_user_activity_snapshot(user_id, limit=10)` → returns JSONB with profile + last 10 posts + comments + reports-against-last-30d count. Only callable by `service_role` (used by the safety-audit edge function).
+- New view `v_reports_triaged` — pending reports pre-sorted by AI severity (critical → low)
+
+**Edge Function** `supabase/functions/safety-audit/index.ts` — **Ruthless Safety Audit**:
+- Accepts `{ reportId }`, reads report + target user activity snapshot via service role, calls Gemini 2.5 Flash with strict JSON output schema
+- Returns verdict: `severity ∈ (critical|high|medium|low|inconclusive)` + `recommendedAction ∈ (ban_immediate|shadow_ban|warn_user|temporary_suspension|monitor|dismiss)` + `summary` + `evidence[]`
+- Spec-compliant thresholds: `critical + ban_immediate` only for NSFW-targeting-minors, credible threats, doxxing, organised hate; `>=3 reports in 30d` auto-escalates severity by 1 tier
+- Writes full verdict back to `reports.ai_*` columns; auto-bumps `priority='high'` for critical/high cases
+- **Fails CLOSED** — if Gemini unavailable, status = `failed`, summary explains queued-for-human
+
+**Edge Function** `supabase/functions/focusly-triage/index.ts` — **Focusly First-Responder**:
+- Accepts `{ ticketId, subject, description, category }`, calls Gemini with empathetic Focusly persona prompt
+- Inserts a `support_ticket_messages` row with `author_type='focusly'` containing the AI first reply
+- Safety-critical override: any mention of self-harm/suicide/abuse/emergency → severity='high' + crisis-line language in the reply + auto-bumps ticket to `priority='urgent'`
+- Keeps replies <500 chars, warm ("Macha" vocative), never promises fixes — only promises paths
+
+**Client hook** `src/hooks/useSafetyAudit.js` — thin fire-and-forget wrapper around `supabase.functions.invoke('safety-audit')`.
+
+**Wire-ups:**
+- ✅ `src/hooks/useReport.js` → after report insert: fires `runAudit(reportId)` background + `focusly.motivate('Thanks for reporting. My AI is already auditing this account. You\'re keeping Focus human.')` + updated toast copy *"Our AI is auditing the account now."*
+- ✅ `src/pages/SubmitTicket.js` → on submit: `focusly.think('I\'m reading your ticket now, Macha')` BEFORE createTicket resolves; then invokes `focusly-triage` edge function background to post the AI first-reply; then `focusly.motivate('Got it! You\'ll see my first reply in the thread in a moment.')` before navigate.
+
+✅ **All 5 files lint-clean, webpack compiles, screenshot confirms zero runtime errors, Auth page intact.**
+
 ### Session 5 — Pillar 3 wire-up + Pillar 4 Focusly AI (living companion)
 
 **A. Guardian consent wired end-to-end**

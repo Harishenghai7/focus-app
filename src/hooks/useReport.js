@@ -4,10 +4,14 @@ import { submitReport, scanAndModerateContent } from '../utils/supabaseReports';
 import { validateReport, sanitizeReportData } from '../utils/reportValidator';
 import { sendReportConfirmation } from '../utils/emailNotifications';
 import { useAuth } from './useAuth';
+import { useSafetyAudit } from './useSafetyAudit';
+import { useFocusly } from '../context/FocuslyContext';
 import { toast } from 'react-toastify';
 
 export const useReport = () => {
     const { user } = useAuth();
+    const { runAudit } = useSafetyAudit();
+    const focusly = useFocusly();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
 
@@ -61,7 +65,28 @@ export const useReport = () => {
                 // Don't fail the whole operation if email fails
             }
 
-            toast.success('Report submitted successfully. Thank you for helping keep Focus safe!');
+            // ── PILLAR 5 — Ruthless Safety Audit ─────────────────────────
+            // Fire-and-forget: the Edge Function calls Gemini to analyse the
+            // reported user's last 10 interactions + metadata, then writes
+            // the verdict back to `reports.ai_*` columns. Admin dashboards
+            // pick it up async. No user-facing blocking.
+            try {
+                const newReportId = result?.data?.id || result?.data?.[0]?.id;
+                if (newReportId) {
+                    runAudit(newReportId).catch(err => console.warn('[safety-audit] background failed:', err?.message));
+                }
+            } catch (auditErr) {
+                console.warn('[safety-audit] kick-off failed:', auditErr);
+            }
+
+            // ── PILLAR 4 × 5 — Focusly acknowledges the report ──────────
+            try {
+                focusly.motivate(
+                    `Thanks for reporting. My AI is already auditing this account. You\'re keeping Focus human.`
+                );
+            } catch (_) { /* non-critical */ }
+
+            toast.success('Report submitted. Our AI is auditing the account now.');
             return result;
         } catch (err) {
             const errorMsg = err.message || 'Failed to submit report';
@@ -71,7 +96,7 @@ export const useReport = () => {
         } finally {
             setIsSubmitting(false);
         }
-    }, [user]);
+    }, [user, runAudit, focusly]);
 
     /**
      * Report content with auto-moderation check

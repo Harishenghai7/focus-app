@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSupport } from '../hooks/useSupport';
+import { useFocusly } from '../context/FocuslyContext';
+import { supabase } from '../lib/supabase';
 import { SUPPORT_CATEGORIES } from '../utils/supportCategories';
 import PageShell from '../components/layout/PageShell';
 import styles from './SubmitTicket.module.css';
@@ -9,6 +11,7 @@ import styles from './SubmitTicket.module.css';
 const SubmitTicket = () => {
     const navigate = useNavigate();
     const { createTicket, isCreating } = useSupport();
+    const focusly = useFocusly();
     const [formData, setFormData] = useState({
         category: '',
         subject: '',
@@ -19,9 +22,36 @@ const SubmitTicket = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // 🦁 Pillar 5 — Focusly becomes the first-responder visually BEFORE the call resolves
+        try {
+            focusly.think("I'm reading your ticket now, Macha. Give me a second…");
+        } catch (_) {}
+
         const result = await createTicket(formData);
 
         if (result.success) {
+            const newTicketId = result?.data?.id || result?.data?.[0]?.id || result?.ticketId;
+
+            // 🚑 Pillar 5 — Invoke `focusly-triage` Edge Function to post the
+            // AI first-response message on the ticket thread. Fire-and-forget.
+            if (newTicketId) {
+                supabase.functions.invoke('focusly-triage', {
+                    body: {
+                        ticketId: newTicketId,
+                        subject: formData.subject,
+                        description: formData.description,
+                        category: formData.category,
+                    },
+                }).catch(err => console.warn('[focusly-triage] background failed:', err?.message));
+            }
+
+            // 🦁 Celebrate the ticket being received
+            try {
+                focusly.motivate(
+                    "Got it! You'll see my first reply in the thread in a moment, then a human takes over."
+                );
+            } catch (_) {}
+
             navigate('/support', { replace: true });
         }
     };
