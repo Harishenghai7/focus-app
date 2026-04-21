@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { supabase, supabaseAnonKey } from '../lib/supabase';
 import { useAuth } from './useAuth';
+import { useAutoModeration } from './useAutoModeration';
 import { playPublish } from '../utils/audioFX';
 import { runPreUploadSafetyCheck } from '../utils/uploadSafetyMiddleware';
 
 export const usePublish = () => {
     const { user } = useAuth();
+    const { moderate } = useAutoModeration();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -193,13 +195,81 @@ export const usePublish = () => {
             }
 
             let tableName = 'posts';
+            // ╔══════════════════════════════════════════════════════════════════╗
+            // ║ 🛡️  PILLAR 2 + PILLAR 3 — AI Moderation + Teen Lock          ║
+            // ║                                                                  ║
+            // ║ AFTER upload, BEFORE insert: run the Gemini-powered content-   ║
+            // ║ moderator edge function. Merge its verdict directly into the    ║
+            // ║ row being inserted. Shadow-moderation happens at the DB layer   ║
+            // ║ via moderation_status — no branching in UI, no blurs, no       ║
+            // ║ censors. The post INSERTs fine; only the author will see it    ║
+            // ║ if the verdict is 'restricted'.                                 ║
+            // ║                                                                  ║
+            // ║ Teens (guardian_consent_status != 'active') get an additional   ║
+            // ║ hard-lock: their content is forced to 'restricted' regardless   ║
+            // ║ of the AI verdict, until the guardian handshake confirms.      ║
+            // ╚══════════════════════════════════════════════════════════════════╝
+            let moderationDb = {
+                moderation_status: 'approved',
+                moderation_reason: null,
+                moderation_score: null,
+                moderation_categories: [],
+                moderated_at: new Date().toISOString(),
+                moderator_type: 'auto',
+            };
+            try {
+                const imageUrls = uploadedMedia
+                    .filter(m => m.type === 'image')
+                    .map(m => m.url);
+                const verdict = await moderate({
+                    text: details?.caption || '',
+                    imageUrls,
+                });
+                if (verdict?.dbColumns) moderationDb = verdict.dbColumns;
+                console.log('🛡️ Moderation verdict:', verdict?.moderationStatus, verdict?.toxicityType);
+
+                // Pillar 3 — Teen auto-restriction until guardian consent is active
+                try {
+                    const { data: prof } = await supabase
+                        .from('profiles')
+                        .select('can_post, guardian_consent_status, is_teen_mode')
+                        .eq('id', user.id)
+                        .maybeSingle();
+                    const teenNeedsLock =
+                        prof?.is_teen_mode === true &&
+                        prof?.guardian_consent_status !== 'active';
+                    const postingBlocked = prof?.can_post === false;
+                    if (teenNeedsLock || postingBlocked) {
+                        moderationDb = {
+                            ...moderationDb,
+                            moderation_status: 'restricted',
+                            moderation_reason:
+                                'Teen account — content is pending guardian consent.',
+                            moderator_type: 'auto',
+                        };
+                        console.log('🛡️ Teen lock applied — content restricted until guardian handshake.');
+                    }
+                } catch (profErr) {
+                    console.warn('[publish] profile lookup for teen lock failed:', profErr);
+                }
+            } catch (modErr) {
+                // Fail CLOSED per Pillar 2 — never silently approve
+                console.error('[publish] Gemini moderation call failed:', modErr);
+                moderationDb = {
+                    ...moderationDb,
+                    moderation_status: 'flagged',
+                    moderation_reason: 'Moderation service unavailable — queued for human review.',
+                };
+            }
+
             let postData = {
                 user_id: user.id,
                 caption: details.caption,
                 location: details.location,
                 media_url: uploadedMedia[0].url,
                 thumbnail_url: uploadedMedia[0].type === 'video' ? uploadedMedia[0].url : null,
-                type: uploadedMedia[0].type === 'video' ? 'video' : 'image'
+                type: uploadedMedia[0].type === 'video' ? 'video' : 'image',
+                ...moderationDb,
             };
 
             if (createMode === 'boltz') {
@@ -217,7 +287,8 @@ export const usePublish = () => {
                     thumbnail_url: uploadedThumb,
                     poster_url: uploadedThumb,
                     music_url: music?.audio || null,
-                    duration: uploadedMedia[0].duration || null
+                    duration: uploadedMedia[0].duration || null,
+                    ...moderationDb,
                 };
             } else if (createMode === 'flash') {
                 tableName = 'stories';
@@ -225,7 +296,8 @@ export const usePublish = () => {
                     user_id: user.id,
                     media_url: uploadedMedia[0].url,
                     media_type: uploadedMedia[0].type === 'video' ? 'video' : 'image',
-                    duration: 15
+                    duration: 15,
+                    ...moderationDb,
                 };
             }
 
@@ -258,7 +330,18 @@ export const usePublish = () => {
             // Success!
             console.log('🎉 PUBLISH SUCCESS!');
             const { focusToast } = require('../utils/focusToast');
-            focusToast.success(`${createMode === 'boltz' ? 'Boltz' : (createMode === 'flash' ? 'Flash' : 'Post')} published successfully!`);
+            const kind = createMode === 'boltz' ? 'Boltz' : (createMode === 'flash' ? 'Flash' : 'Post');
+            if (moderationDb.moderation_status === 'restricted') {
+                // Spec: "Toxic users remain in an echo chamber." Be honest with the author.
+                focusToast.info(
+                    `${kind} published — visible only to you. ${moderationDb.moderation_reason || 'Violates Focus Constitution.'}`,
+                    { duration: 6000 }
+                );
+            } else if (moderationDb.moderation_status === 'flagged') {
+                focusToast.info(`${kind} pending review. We'll notify you once it's approved.`);
+            } else {
+                focusToast.success(`${kind} published successfully!`);
+            }
             playPublish();
 
             return true;

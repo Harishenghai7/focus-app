@@ -108,6 +108,31 @@ This is a **mature, large-scale codebase** (500+ components, 35+ migrations, 7 e
 - ✅ Verified Supabase client initialization, GoTrue auth flow, 5-way OAuth UI render.
 - ✅ Verified no runtime errors; Auth page loads at `/auth`, glassmorphic BrandPanel with tagline carousel.
 
+### Session 4 — Pillar 2 Wire-Up into Create Studio + Pillar 3 (Teen Care)
+
+**A. Create Studio now runs Gemini moderation + teen lock at publish time**
+- ✅ `src/hooks/usePublish.js` rewired:
+    - Pulls in `useAutoModeration().moderate()` at the top of the hook
+    - AFTER media upload / BEFORE DB insert: calls the `content-moderator` edge function with caption + all uploaded image URLs
+    - Merges `verdict.dbColumns` (moderation_status, reason, score, categories, moderated_at, moderator_type) into the INSERT payload for `posts`, `boltz`, and `stories` tables — spec-compliant shadow-moderation at the DB layer
+    - **Fails CLOSED** — moderation errors flag the row, never silently approve
+    - **Teen auto-lock** — queries `profiles.{is_teen_mode, guardian_consent_status, can_post}`; if teen without active guardian consent → forces `moderation_status='restricted'` with reason "Teen account — content is pending guardian consent."
+    - Toast UX differentiates: `approved` → success; `restricted` → info ("visible only to you") with verdict reason; `flagged` → pending review
+
+**B. Pillar 3 — Teen Care Guardian Handshake**
+- ✅ New migration `supabase/migrations/20260421010000_pillar3_teen_care_handshake.sql` (idempotent, spec-perfect):
+    - Adds to `profiles`: `guardian_email`, `guardian_consent_status` ∈ (pending|active|declined), `guardian_consent_sent_at`, `guardian_consent_token` (UNIQUE), `guardian_confirmed_at`, `can_post BOOLEAN DEFAULT TRUE`, `is_teen_mode BOOLEAN DEFAULT FALSE`
+    - Trigger `sync_profile_teen_mode` — when `age_verification` detects teen, mirrors `is_teen_mode=TRUE` + `can_post=FALSE` to profiles
+    - Trigger `apply_guardian_consent_unlock` — when `guardian_consent_status` flips to 'active', auto-unlocks `can_post=TRUE`
+    - **Trigger `enforce_teen_content_lock`** (spec-critical) — runs BEFORE INSERT on `posts`, `boltz`, `flashes`, `stories`, `comments`. Any teen without active consent has their content auto-set to `moderation_status='restricted'`. This is the DB-level guarantee that mirrors the client-side lock.
+    - **Messages RLS privacy** — spec: "Parents NEVER read private messages." New policy `messages_privacy_select` allows SELECT only to sender, receiver, or conversation participants. Guardians have zero access paths to DM content.
+    - RPC `start_guardian_handshake(teen_id, guardian_email) → token` — cryptographic 32-byte hex token, writes consent-pending state
+    - RPC `confirm_guardian_consent(token) → (teen_id, confirmed_at)` — one-time-use, 7-day TTL, flips status to 'active'
+- ✅ New client hook `src/hooks/useGuardianHandshake.js`:
+    - `startHandshake({ guardianEmail })` → RPC + auto-invokes `send-parent-consent-email` Edge Function with the token
+    - `confirmConsent(token)` → for the public `/guardian/confirm?t=<token>` route
+    - `getMyConsentStatus()` → profile-scoped consent status read for UI badges
+
 ### Session 3 — Pillar 2: Stealth Shield (Shadow-Moderation) Spec-Perfect
 - ✅ **Master migration** `supabase/migrations/20260421000000_pillar2_stealth_shield.sql`:
     - Ensures `moderation_status` enum has exactly `('approved', 'restricted', 'flagged')` (migrates older enums idempotently)
