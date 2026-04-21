@@ -98,8 +98,7 @@ This is a **mature, large-scale codebase** (500+ components, 35+ migrations, 7 e
 
 ## 4. What This Session Delivered (2026-04-21)
 
-The codebase was **present but not runnable** in this environment. Session focus: **make it boot + clean up**.
-
+### Session 1 — Make the codebase runnable
 - ✅ Installed all 1300+ npm deps (`yarn install --ignore-engines`)
 - ✅ Supervisor wiring: created `/app/frontend` symlink → `/app` so the read-only supervisor config could find the CRA project.
 - ✅ Fixed `package.json` start script (Windows `set ...` → Linux env-var prefix; added `DANGEROUSLY_DISABLE_HOST_CHECK=true` and `WDS_SOCKET_PORT=443` for Kubernetes ingress).
@@ -108,6 +107,28 @@ The codebase was **present but not runnable** in this environment. Session focus
 - ✅ Copied user-provided branded assets to `/app/public/focus-logo.png` and `/app/public/focusly-lion.png`.
 - ✅ Verified Supabase client initialization, GoTrue auth flow, 5-way OAuth UI render.
 - ✅ Verified no runtime errors; Auth page loads at `/auth`, glassmorphic BrandPanel with tagline carousel.
+
+### Session 2 — Pillar 1: Trust Shield Spec-Perfect Fixes
+- ✅ **Identity DNA salt:** `computeIdentityHash` in `src/hooks/useOCRScanner.js` now computes `SHA256(ID_Number + SALT)` per spec. Salt read from `REACT_APP_TRUST_SHIELD_SALT` (CRA) with fallback to `VITE_TRUST_SHIELD_SALT` (future Vite migration). Salt value added to `/app/.env` (64-char openssl hex).
+- ✅ **Nuclear Hard Reset:** `handleHardReset` in `TrustShieldVerification.jsx` now executes the full spec sequence:
+    1. Stops all cameras (scanner + liveness RAF + MediaStream tracks)
+    2. `localStorage.clear()` + `sessionStorage.clear()`
+    3. `supabase.auth.signOut()` — kills the session
+    4. Resets every React state variable to initial
+    5. `navigate('/auth', { replace: true })` after 2.5s
+- ✅ **Third challenge (Face Tilt) added:** pool is now exactly `[Blink, Smile, Tilt]` per spec, Fisher-Yates shuffled each session. Yaw-based tilt detection (`|yaw| > 0.18` sustained 3 frames at 8fps).
+- ✅ **Math-confirmed thresholds:**
+    - Blink: EAR < 0.22 for ≥2 events
+    - Smile: `expressions.happy > 0.80` sustained ≥4 frames
+    - Tilt: `|yaw| > 0.18` sustained ≥3 frames
+- ✅ **Physical Continue Lock:** new `data-testid="trust-shield-continue-btn"` button is `disabled={!allConfirmed || accountLocked || saving}`, visual opacity + cursor reflect lock state. Label reads `🔒 Complete all 3 challenges to unlock` until math confirms.
+- ✅ **Skip buttons removed:** the "📱 Use Phone Instead" button on Step 3 is gone per spec ("Physically remove 'Skip' buttons").
+- ✅ **5-click lion bypass removed:** FocuslyLion is now display-only; no manual override path exists.
+- ✅ **Fixed runtime ReferenceErrors:**
+    - `setMatchResult` (undefined, would crash smile detection) → removed
+    - `challengeSequence` (undefined, would crash Step 3 render) → `challengeSequenceRef.current`
+- ✅ **Added liveness refs:** `tiltHoldRef`, `smileHoldRef` for sustained-evidence detection.
+- ✅ Compiled clean (zero lint, zero webpack errors, zero runtime errors).
 
 ---
 

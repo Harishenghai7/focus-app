@@ -34,11 +34,11 @@ const STEPS = [
 const COOLDOWN_KEY   = 'trust_shield_cooldown';
 const FAIL_COUNT_KEY = 'trust_shield_fails';
 
-// ── Liveness Challenge Pool (order randomized each session) ──────────────────
+// ── Liveness Challenge Pool (exactly 3 — order randomized each session) ─────
 const LIVENESS_CHALLENGE_POOL = [
-  { id: 'blink',     label: '👁️  Blink both eyes rapidly',   icon: '👁️'  },
-  { id: 'smile',     label: '😊  Slow Smile naturally',       icon: '😊'  },
-  { id: 'turn_left', label: '↩️  Look LEFT 15°',             icon: '↩️'  },
+  { id: 'blink', label: 'Blink both eyes clearly', icon: '👁️' },
+  { id: 'smile', label: 'Smile naturally',         icon: '😊' },
+  { id: 'tilt',  label: 'Tilt / turn head 20°',    icon: '↩️' },
 ];
 
 /** Fisher-Yates in-place shuffle — produces a new random 3-step ritual each session */
@@ -61,22 +61,17 @@ const getEAR = (eye) => {
 };
 
 // ── Focusly AI Mascot ─────────────────────────────────────────────────────────
-const FocuslyLion = ({ onSecretBypass }) => {
-  const [clicks, setClicks] = useState(0);
-  return (
-    <div
-      className={styles.focuslyContainer}
-      onClick={() => { const n = clicks + 1; setClicks(n); if (n >= 5) onSecretBypass(); }}
-      style={{ cursor: 'pointer' }}
-    >
-      <div className={styles.focuslyAvatar} style={{ userSelect: 'none' }}>🦁</div>
-      <div className={styles.focuslySpeech} style={{ userSelect: 'none' }}>
-        <strong>Focusly AI (Guardian Mode)</strong>
-        <p>"Real people make a real nation. Let's verify your soul, Macha!"</p>
-      </div>
+// NOTE: No click-to-bypass — Pillar 1 spec: "Physically remove 'Skip' buttons".
+// The Continue button is math-locked to AI confirmation. No manual overrides.
+const FocuslyLion = () => (
+  <div className={styles.focuslyContainer} style={{ userSelect: 'none' }} data-testid="focusly-lion-guardian">
+    <div className={styles.focuslyAvatar}>🦁</div>
+    <div className={styles.focuslySpeech}>
+      <strong>Focusly AI (Guardian Mode)</strong>
+      <p>"Real people make a real nation. Let's verify your soul, Macha!"</p>
     </div>
-  );
-};
+  </div>
+);
 
 // ── Main Component ─────────────────────────────────────────────────────────────
 const TrustShieldVerification = () => {
@@ -116,6 +111,8 @@ const TrustShieldVerification = () => {
   const baselineEARRef    = useRef(null);
   const yawHistoryRef     = useRef([]);
   const blinkCountRef     = useRef(0);
+  const tiltHoldRef       = useRef(0); // Consecutive frames with |yaw| > threshold
+  const smileHoldRef      = useRef(0); // Consecutive frames with expressions.happy > threshold
   // ── Teleport / Injection Detection ────────────────────────────────────────
   const prevYawRef        = useRef(null);    // Previous frame yaw for delta check
   const prevFaceCenterRef = useRef(null);
@@ -181,28 +178,58 @@ const TrustShieldVerification = () => {
   }, []);
 
   /**
-   * handleHardReset — THE LAW
-   * ──────────────────────────
-   * Called when a user's ID reveals an age or tier mismatch they lied about.
-   * Wipes the ENTIRE session: step, ageGroup, OCR data — back to Step 1.
-   * No 'Retry Scan' option. They must re-enter from the beginning.
+   * handleHardReset — THE LAW (Nuclear Reset per Pillar 1 Spec)
+   * ────────────────────────────────────────────────────────────
+   * Triggered when a user's ID reveals an age/tier mismatch they lied about.
+   *
+   * Sequence (spec-mandated):
+   *   1. supabase.auth.signOut()   — kill the session
+   *   2. clear localStorage + sessionStorage
+   *   3. wipe all React state     — step, ageGroup, OCR, hash
+   *   4. stop all cameras         — scanner + liveness
+   *   5. navigate to Step 1       — they must re-enter from the very beginning
+   *
+   * No 'Retry Scan' option exists.
    */
-  const handleHardReset = useCallback((reason) => {
+  const handleHardReset = useCallback(async (reason) => {
     if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
-    localStorage.clear();
-    setStep(1);
-    setAgeGroup(null);
-    setOcrData(null);
-    setIdentityHash(null);
-    setError(reason || 'Your ID does not match your selected age tier. You have been returned to Step 1.');
+
+    // 1. Stop camera streams FIRST to prevent hardware contention
     scanner.stopCamera?.();
-    // Also stop liveness camera if it was started
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     if (liveStreamRef.current) {
       liveStreamRef.current.getTracks().forEach(t => t.stop());
       liveStreamRef.current = null;
     }
-  }, [scanner]);
+
+    // 2. Wipe all persisted state
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+    } catch (_) {}
+
+    // 3. Sign the user out of Supabase — the session cannot survive a hard reset
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.error('[TrustShield] signOut during hard reset failed:', err);
+    }
+
+    // 4. Reset all React state back to Step 1
+    setStep(1);
+    setAgeGroup(null);
+    setOcrData(null);
+    setIdentityHash(null);
+    setAccountLocked(false);
+    setStaticImageFlag(false);
+    setLivenessPhase(0);
+    setLivenessComplete([false, false, false]);
+    setLivenessStatus('');
+    setError(reason || 'Your ID does not match your selected age tier. You have been signed out and returned to Step 1.');
+
+    // 5. Navigate back to /auth — session is gone, they must re-authenticate
+    setTimeout(() => navigate('/auth', { replace: true }), 2500);
+  }, [scanner, navigate]);
 
   const handleSuccessFeedback = useCallback(() => {
     if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
@@ -461,11 +488,11 @@ const TrustShieldVerification = () => {
   }, [faceModelsLoaded]);
 
   const startLivenessCamera = useCallback(async () => {
-    const newSeq = [
-       { id: 'blink', label: 'Blink comfortably', maxAttempts: 50 },
-       { id: 'smile', label: 'Smile clearly', maxAttempts: 50 }
-    ];
-    challengeSequenceRef.current = newSeq;
+    // ── SHUFFLE THE FULL 3-CHALLENGE POOL (Blink / Smile / Tilt) ──
+    // Spec: "randomized challenge sequence (Blink → Slow Smile → Face Tilt)"
+    // Order is randomized per session — there is no fixed order.
+    const shuffled = shuffleChallenges(LIVENESS_CHALLENGE_POOL);
+    challengeSequenceRef.current = shuffled;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
@@ -481,14 +508,16 @@ const TrustShieldVerification = () => {
       baselineEARRef.current  = null;
       yawHistoryRef.current   = [];
       blinkCountRef.current   = 0;
-      prevYawRef.current      = null;     // Reset teleport tracker
+      prevYawRef.current      = null;
       prevFaceCenterRef.current = null;
-      teleportCountRef.current = 0;       // Reset injection counter
+      teleportCountRef.current = 0;
+      tiltHoldRef.current      = 0;
+      smileHoldRef.current     = 0;
       setLivenessPhase(0);
       setLivenessComplete([false, false, false]);
       setStaticImageFlag(false);
       // Show the RANDOMIZED first challenge
-      setLivenessStatus(`Challenge 1: ${newSeq[0]?.label ?? 'Hold steady'}`);
+      setLivenessStatus(`Challenge 1 of 3 — ${shuffled[0]?.icon || ''} ${shuffled[0]?.label || 'Hold steady'}`);
       startLivenessLoop();
     } catch (_) {
       setLivenessStatus('Camera blocked. Enable camera and retry.');
@@ -572,44 +601,73 @@ const TrustShieldVerification = () => {
         }
         prevFaceCenterRef.current = currentLandmarksString;
 
-        // ── CHALLENGE: BLINK FOLLOWED BY SMILE ──
+        // ── CHALLENGE DETECTION: BLINK / SMILE / TILT ──
+        // Math-based, spec-perfect. Each challenge requires sustained evidence
+        // to prevent single-frame false positives.
         const dist = (p1, p2) => Math.hypot(p1.x - p2.x, p1.y - p2.y);
-        const EAR = (eye) => {
-           return (dist(eye[1], eye[5]) + dist(eye[2], eye[4])) / (2 * dist(eye[0], eye[3]));
-        };
+        const EAR = (eye) =>
+          (dist(eye[1], eye[5]) + dist(eye[2], eye[4])) /
+          (2 * (dist(eye[0], eye[3]) || 1));
         const leftEAR = EAR(leftEye);
         const rightEAR = EAR(rightEye);
         const avgEAR = (leftEAR + rightEAR) / 2;
 
         const currentPhaseIndex = livenessPhase;
         const currentChallenge = challengeSequenceRef.current[currentPhaseIndex];
+        if (!currentChallenge) return; // All done or not yet initialised
 
-        if (currentChallenge?.id === 'blink') {
-            if (avgEAR < 0.22) { // Blink detected
-                blinkCountRef.current = (blinkCountRef.current || 0) + 1;
-                if (blinkCountRef.current > 1) {
-                    setLivenessComplete(prev => { const n = [...prev]; n[0] = true; return n; });
-                    setLivenessPhase(1);
-                    setLivenessStatus('Challenge 2: Smile clearly');
-                }
-            } else {
-               // Must sustain blink, reset count if eyes open
-               blinkCountRef.current = 0;
-            }
+        const advance = () => {
+          setLivenessComplete(prev => {
+            const n = [...prev];
+            n[currentPhaseIndex] = true;
+            return n;
+          });
+          const nextIdx = currentPhaseIndex + 1;
+          // Reset per-challenge counters
+          blinkCountRef.current = 0;
+          smileHoldRef.current = 0;
+          tiltHoldRef.current = 0;
+          if (nextIdx >= challengeSequenceRef.current.length) {
+            // All challenges complete — stop detection but DO NOT auto-advance.
+            // The spec demands a physical Continue button that enables only here.
+            setLivenessPhase(nextIdx);
+            stopLivenessCamera();
+            setLivenessStatus('✅ Liveness confirmed. Press Continue to proceed.');
+          } else {
+            setLivenessPhase(nextIdx);
+            const n = challengeSequenceRef.current[nextIdx];
+            setLivenessStatus(`Challenge ${nextIdx + 1} of 3 — ${n.icon} ${n.label}`);
+          }
+        };
+
+        // 1️⃣ BLINK — EAR drops below 0.22 (closed) ≥2 times
+        if (currentChallenge.id === 'blink') {
+          if (avgEAR < 0.22) {
+            blinkCountRef.current = (blinkCountRef.current || 0) + 1;
+            if (blinkCountRef.current >= 2) advance();
+          } else if (blinkCountRef.current > 0 && avgEAR > 0.28) {
+            // Eyes re-opened between blinks — keep count
+          }
         }
 
-        if (currentChallenge?.id === 'smile') {
-            if (expressions.happy > 0.85) {
-                setLivenessComplete(prev => { const n = [...prev]; n[1] = true; return n; });
-                setLivenessPhase(2); 
-                
-                // Completed!
-                stopLivenessCamera();
-                setLivenessStatus('✅ Liveness Confirmed — You are human.');
-                setMatchResult({ passed: true, score: 0.99 });
-                setTimeout(completeVerification, 1000);
-                return;
-            }
+        // 2️⃣ SMILE — expressions.happy sustained > 0.80 for ≥4 frames (~0.5s @ 8fps)
+        if (currentChallenge.id === 'smile') {
+          if (expressions.happy > 0.80) {
+            smileHoldRef.current = (smileHoldRef.current || 0) + 1;
+            if (smileHoldRef.current >= 4) advance();
+          } else {
+            smileHoldRef.current = 0;
+          }
+        }
+
+        // 3️⃣ TILT — |yaw| > 0.18 sustained ≥3 frames (~0.4s @ 8fps)
+        if (currentChallenge.id === 'tilt') {
+          if (Math.abs(yaw) > 0.18) {
+            tiltHoldRef.current = (tiltHoldRef.current || 0) + 1;
+            if (tiltHoldRef.current >= 3) advance();
+          } else {
+            tiltHoldRef.current = 0;
+          }
         }
       } catch (_) {
          console.error('[Liveness] Detection error:', _);
@@ -672,7 +730,7 @@ const TrustShieldVerification = () => {
         {renderProgress()}
 
         <div className={styles.content}>
-          <FocuslyLion onSecretBypass={handleFounderBypass} />
+          <FocuslyLion />
 
           {/* ── STEP 1: AGE SELECTION ── */}
           {step === 1 && (
@@ -857,13 +915,13 @@ const TrustShieldVerification = () => {
 
               {/* Randomized Challenge progress chips */}
               <div className={styles.challengeBar}>
-                {challengeSequence.map((ch, i) => (
+                {(challengeSequenceRef.current || []).map((ch, i) => (
                   <div key={ch.id} className={`${styles.challengeChip} ${
                     livenessComplete[i] ? styles.challengeDone :
                     livenessPhase === i ? styles.challengeActive :
                     styles.challengePending
                   }`}>
-                    {livenessComplete[i] ? '✓ ' : `${i+1}. `}{ch.label}
+                    {livenessComplete[i] ? '✓ ' : `${i+1}. `}{ch.icon} {ch.label}
                   </div>
                 ))}
               </div>
@@ -928,10 +986,44 @@ const TrustShieldVerification = () => {
                 </div>
               )}
 
-              {/* Skip to mobile bridge if camera is unavailable */}
-              <button className={styles.secondaryBtn} onClick={() => setStep(4)} style={{ marginTop: 8 }}>
-                📱 Use Phone Instead
-              </button>
+              {/*
+                PHYSICAL CONTINUE LOCK — Pillar 1 Spec
+                ──────────────────────────────────────
+                Button is DISABLED until every challenge in the randomized
+                sequence has been mathematically confirmed by the AI. No
+                manual skip path exists.
+              */}
+              {(() => {
+                const allConfirmed =
+                  challengeSequenceRef.current.length > 0 &&
+                  livenessComplete.slice(0, challengeSequenceRef.current.length).every(Boolean);
+                return (
+                  <button
+                    className={styles.primaryBtn}
+                    onClick={completeVerification}
+                    disabled={!allConfirmed || accountLocked || saving}
+                    data-testid="trust-shield-continue-btn"
+                    style={{
+                      marginTop: 12,
+                      opacity: (allConfirmed && !accountLocked && !saving) ? 1 : 0.35,
+                      cursor: (allConfirmed && !accountLocked && !saving) ? 'pointer' : 'not-allowed',
+                    }}
+                  >
+                    {saving ? 'Securing verification…' : (allConfirmed ? 'Continue →' : `🔒 Complete all 3 challenges to unlock`)}
+                  </button>
+                );
+              })()}
+
+              {/*
+                Allow the user to restart the ritual on the same device only.
+                NO 'skip to mobile' path — spec: "Physically remove 'Skip' buttons."
+                The Bridge (Step 4) is only reachable via a camera-blocked fallback.
+              */}
+              {staticImageFlag && accountLocked === false && (
+                <p style={{ textAlign: 'center', fontSize: '0.8rem', color: '#fbbf24', marginTop: 8 }}>
+                  Injection detected. Use "Restart Liveness" above.
+                </p>
+              )}
             </div>
           )}
 

@@ -19,7 +19,14 @@ const TEEN_KEYWORDS = ['SCHOOL', 'COLLEGE', 'INSTITUTE', 'STUDENT', 'ID CARD', '
 
 // ── SHA-256 Identity Hash ─────────────────────────────────────────────────────
 /**
- * Compute SHA-256 hash of a cleaned ID number using the Web Crypto API.
+ * Compute SHA-256 hash of a cleaned ID number using the Web Crypto API,
+ * SALTED with the per-deployment secret. Spec: Hash = SHA256(ID_Number + SALT).
+ *
+ * Salt is read from env in priority order:
+ *   1. REACT_APP_TRUST_SHIELD_SALT (CRA runtime)
+ *   2. VITE_TRUST_SHIELD_SALT      (future Vite migration)
+ *   3. Empty string (dev fallback — WARN)
+ *
  * Used for deduplication — one real-world ID can only link to ONE Focus account.
  * @param {string} idNumber
  * @returns {Promise<string|null>} Hex-encoded SHA-256 hash, or null on failure
@@ -28,8 +35,17 @@ export const computeIdentityHash = async (idNumber) => {
   if (!idNumber) return null;
   try {
     const normalized = idNumber.replace(/\s/g, '').toUpperCase();
+    const salt =
+      (typeof process !== 'undefined' && process.env && (
+        process.env.REACT_APP_TRUST_SHIELD_SALT ||
+        process.env.VITE_TRUST_SHIELD_SALT
+      )) || '';
+    if (!salt && typeof console !== 'undefined') {
+      console.warn('[TrustShield] REACT_APP_TRUST_SHIELD_SALT is not set — identity hashes are UNSALTED. Set it before production.');
+    }
+    const payload = `${normalized}${salt}`;
     const encoder = new TextEncoder();
-    const data = encoder.encode(normalized);
+    const data = encoder.encode(payload);
     const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
