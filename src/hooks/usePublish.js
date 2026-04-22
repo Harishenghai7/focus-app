@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { supabase, supabaseAnonKey } from '../lib/supabase';
 import { useAuth } from './useAuth';
-import { useAutoModeration } from './useAutoModeration';
+import { useFreeModeration } from './useFreeModeration';
 import { playPublish } from '../utils/audioFX';
 import { runPreUploadSafetyCheck } from '../utils/uploadSafetyMiddleware';
 
 export const usePublish = () => {
     const { user } = useAuth();
-    const { moderate } = useAutoModeration();
+    const { moderate } = useFreeModeration(); // 🛡️ 100% FREE - Zero API costs
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
