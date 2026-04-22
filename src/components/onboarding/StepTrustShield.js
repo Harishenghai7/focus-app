@@ -696,7 +696,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                 <Button variant="ghost" onClick={onBack}>
                     <ArrowLeft size={14} /> Back
                 </Button>
-                <span>Step 4 of 5</span>
+                <span>Step 5 of 6</span>
             </div>
         </div>
     );

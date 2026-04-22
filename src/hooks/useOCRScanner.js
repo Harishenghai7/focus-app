@@ -233,16 +233,42 @@ export const useOCRScanner = () => {
     setResult(null);
 
     try {
+      // ── VALIDATE INPUT ─────────────────────────────────────────────────────
+      if (!imageSource) {
+        throw new Error('ERR_NO_IMAGE: Please select or capture an ID photo first.');
+      }
+
+      // If it's a File, validate it
+      if (imageSource instanceof File) {
+        if (imageSource.size === 0) {
+          throw new Error('ERR_EMPTY_FILE: The selected file is empty. Please choose a valid image.');
+        }
+        if (imageSource.size > 10 * 1024 * 1024) { // 10MB limit
+          throw new Error('ERR_FILE_TOO_LARGE: Image must be smaller than 10MB. Please compress or choose a smaller file.');
+        }
+        // Check file type
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+        if (!validTypes.includes(imageSource.type) && !imageSource.name?.match(/\.(jpg|jpeg|png|webp|heic)$/i)) {
+          throw new Error('ERR_INVALID_FORMAT: Please upload a JPG, PNG, or WebP image.');
+        }
+      }
+
       setStatusMessage('Initializing OCR engine...');
 
-      // Create fresh worker
-      const worker = await createWorker('eng', 1, {
-        logger: (m) => {
-          if (m.status === 'recognizing text') {
-            setProgress(Math.round(m.progress * 100));
-          }
-        },
-      });
+      // Create fresh worker with error handling
+      let worker;
+      try {
+        worker = await createWorker('eng', 1, {
+          logger: (m) => {
+            if (m.status === 'recognizing text') {
+              setProgress(Math.round(m.progress * 100));
+            }
+          },
+        });
+      } catch (workerErr) {
+        console.error('[OCR] Worker creation failed:', workerErr);
+        throw new Error('ERR_OCR_INIT: Could not start text recognition. Please try again.');
+      }
 
       workerRef.current = worker;
 
@@ -307,11 +333,23 @@ export const useOCRScanner = () => {
       return { ok: true, ...finalResult };
     } catch (err) {
       let message = err.message || 'OCR scan failed. Please try again.';
-      if (message.includes('Code=0')) {
-        message = 'ERR_IMAGE_UNREADABLE: The file or photo was empty or corrupted. Please try capturing the ID again.';
+      
+      // Handle specific Tesseract.js error codes
+      if (message.includes('Code=0') || message.includes('empty') || message.includes('corrupted')) {
+        message = 'ERR_IMAGE_UNREADABLE: The image appears to be empty or corrupted. Please:\n• Ensure good lighting\n• Hold the camera steady\n• Fill the frame with your ID\n• Avoid glare and shadows';
+      } else if (message.includes('network') || message.includes('fetch')) {
+        message = 'ERR_NETWORK: Connection issue while processing. Please check your internet and try again.';
+      } else if (message.includes('memory') || message.includes('heap')) {
+        message = 'ERR_MEMORY: Image too large to process. Please use a smaller image or compress it.';
+      } else if (message.includes('abort') || message.includes('cancelled')) {
+        message = 'ERR_CANCELLED: Scan was cancelled. Please try again.';
+      } else if (!message.startsWith('ERR_')) {
+        // Generic error - wrap it
+        message = `ERR_OCR_FAILED: ${message}`;
       }
+      
       setError(message);
-      setStatusMessage(message);
+      setStatusMessage(message.replace(/ERR_\w+:/, '').trim());
 
       // Terminate worker if still running
       if (workerRef.current) {

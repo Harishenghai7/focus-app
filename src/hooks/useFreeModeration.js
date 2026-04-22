@@ -116,7 +116,8 @@ const loadNsfwModel = async () => {
 };
 
 /**
- * Load Transformers.js Text Classifier (FREE - runs locally)
+ * Load Transformers.js Text Classifier (FREE - runs locally, OPTIONAL)
+ * This is an optional enhancement - falls back gracefully if not installed
  */
 const loadTextClassifier = async () => {
   if (modelLoadState.classifier.loaded) return textClassifier;
@@ -129,12 +130,23 @@ const loadTextClassifier = async () => {
 
   modelLoadState.classifier.loading = true;
   try {
-    const { pipeline } = await import('@xenova/transformers');
+    // Hidden dynamic import - webpack can't trace this
+    const moduleName = ['@', 'xenova', '/', 'transformers'].join('');
+    let pipeline;
+    try {
+      const module = await import(/* webpackIgnore: true */ moduleName);
+      pipeline = module.pipeline;
+    } catch (importErr) {
+      console.warn('[FreeModeration] ⚠️ Transformers.js not installed. Advanced NLP unavailable. Install with: npm i @xenova/transformers');
+      modelLoadState.classifier.error = 'Optional dependency not found';
+      return null;
+    }
+
     // Use lightweight model for zero-shot classification
     textClassifier = await pipeline(
       'zero-shot-classification',
       'Xenova/mobilebert-uncased-mnli',
-      { quantized: true } // Smaller, faster model
+      { quantized: true }
     );
     modelLoadState.classifier.loaded = true;
     console.log('[FreeModeration] ✅ Transformers classifier loaded (100% free)');

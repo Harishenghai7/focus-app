@@ -478,9 +478,15 @@ const TrustShieldVerification = () => {
        if (detected === 'unknown' && dobValid) {
           console.log('[TrustShield] SPECIAL BYPASS: Document unknown, prioritizing DOB.');
        } else {
-          const msg = detected === 'unknown' 
-            ? 'ERR_INVALID: Could not verify if document is Government or Student ID. Please ensure clarity.'
-            : (required === 'adult' ? 'ERR_WRONG_DOCUMENT: Student IDs not accepted for 18+. Use Govt ID.' : 'ERR_WRONG_DOCUMENT: Govt IDs not accepted for Teen tier. Use Student ID.');
+          // Professional, helpful error messages with specific guidance
+          let msg;
+          if (detected === 'unknown') {
+            msg = 'ERR_UNCLEAR_DOCUMENT: We could not read the document type clearly.\n\nTips:\n• Ensure all corners of the ID are visible\n• Remove any glare or shadows\n• Make sure text is not blurred\n• Use a plain background';
+          } else if (required === 'adult') {
+            msg = 'ERR_WRONG_DOCUMENT_TYPE: You selected "Ages 18+" but uploaded a Student ID.\n\nFor 18+ tier, please upload:\n• Aadhaar Card\n• PAN Card\n• Passport\n• Driver\'s License\n• Voter ID\n\nIf you are under 18, please go back and select "Ages 13-17" tier.';
+          } else {
+            msg = 'ERR_WRONG_DOCUMENT_TYPE: You selected "Ages 13-17" (Teen tier) but uploaded a Government ID.\n\nFor Teen tier, please upload:\n• School ID Card\n• College/Institute ID\n• Student Photo ID\n\nIf you are 18 or older, please go back and select "Ages 18+" tier.';
+          }
           handleFail(msg);
           return;
        }

@@ -150,7 +150,7 @@ const StepFollowUsers = ({ formData, updateFormData, onNext, onBack }) => {
             </div>
 
             <div className={styles.progressInfo}>
-                <span>Step 3 of 4</span>
+                <span>Step 4 of 6</span>
             </div>
         </div>
     );

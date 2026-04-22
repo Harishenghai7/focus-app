@@ -18,6 +18,7 @@ const OnboardingStepper = () => {
         updateFormData,
         nextStep,
         prevStep,
+        resetStep,
         isSubmitting,
         error
     } = useOnboarding();
