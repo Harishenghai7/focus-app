@@ -130,22 +130,249 @@ export const generateLivenessActions = () => {
     return pool.sort(() => 0.5 - Math.random()).slice(0, 2);
 };
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// REAL FACE SIMILARITY CHECK USING FACE-API.JS
+// ═══════════════════════════════════════════════════════════════════════════════
+// Replaces the fake random-score implementation with actual face comparison
+// ═══════════════════════════════════════════════════════════════════════════════
+
+import * as faceapi from 'face-api.js';
+
+const MODEL_URL = '/models';
+let modelsLoaded = false;
+
+/**
+ * Load face-api.js models (once)
+ */
+const loadModels = async () => {
+    if (modelsLoaded) return;
+    
+    try {
+        await Promise.all([
+            faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+            faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+            faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+        ]);
+        modelsLoaded = true;
+        console.log('[TrustShield] Face-api models loaded');
+    } catch (err) {
+        console.error('[TrustShield] Model load failed:', err);
+        throw new Error('Failed to load face recognition models');
+    }
+};
+
+/**
+ * Convert base64/dataURL to HTMLImageElement
+ */
+const dataURLToImage = (dataURL) => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = dataURL;
+    });
+};
+
+/**
+ * Convert File to HTMLImageElement
+ */
+const fileToImage = (file) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+};
+
+/**
+ * Detect face and get descriptor
+ */
+const getFaceDescriptor = async (image) => {
+    const detection = await faceapi
+        .detectSingleFace(image, new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 }))
+        .withFaceLandmarks()
+        .withFaceDescriptor();
+    
+    if (!detection) {
+        throw new Error('No face detected in image');
+    }
+    
+    return detection.descriptor;
+};
+
+/**
+ * Calculate Euclidean distance between two descriptors
+ */
+const calculateDistance = (desc1, desc2) => {
+    let sum = 0;
+    for (let i = 0; i < desc1.length; i++) {
+        sum += Math.pow(desc1[i] - desc2[i], 2);
+    }
+    return Math.sqrt(sum);
+};
+
+/**
+ * Convert distance to similarity score (0-1)
+ * 0.6 is typical threshold for face matching (lower = more similar)
+ */
+const distanceToScore = (distance) => {
+    // 0.0 distance = 1.0 score (perfect match)
+    // 0.6 distance = 0.5 score (threshold)
+    // 1.0 distance = 0.0 score (completely different)
+    const score = Math.max(0, Math.min(1, 1 - (distance / 0.6)));
+    return Math.round(score * 100) / 100;
+};
+
+/**
+ * Run REAL face similarity check
+ * Compares ID photo with best selfie frame using face-api.js
+ */
 export const runFaceSimilarityCheck = async ({ idImageFile, selfieFrames }) => {
-    if (!idImageFile || !selfieFrames || selfieFrames.length < 2) {
-        return { passed: false, score: 0, reason: 'Liveness check failed. Not enough motion detected. Are you a real human?' };
+    // ── VALIDATION ────────────────────────────────────────────────────────────
+    if (!idImageFile || !selfieFrames || selfieFrames.length < 1) {
+        return { 
+            passed: false, 
+            score: 0, 
+            reason: 'Liveness check failed. Not enough images for comparison. Please provide ID and take a selfie.' 
+        };
     }
 
-    // ── SECURITY: Anti-Spoof Frame Variance Detection ──
-    // Compare string lengths of base64 frames to detect static image injection (virtual cameras playing a static picture).
+    // ── ANTI-SPOOF: Frame Variance Detection ─────────────────────────────────
     const frameDataLengths = selfieFrames.map(f => typeof f === 'string' ? f.length : 0);
-    const variance = Math.abs(frameDataLengths[0] - frameDataLengths[1]);
-
-    if (variance < 200) {
-        // Pixel data is too identical across actions -> STATIC SPOOF DETECTED!
-        return { passed: false, score: 0.12, reason: 'SECURITY ALERT: Static image injection detected. Liveness challenge failed.' };
+    const maxVariance = Math.max(...frameDataLengths) - Math.min(...frameDataLengths);
+    
+    if (maxVariance < 200) {
+        return { 
+            passed: false, 
+            score: 0.12, 
+            reason: 'SECURITY ALERT: Static image injection detected. The selfies appear identical, indicating a possible spoof attempt.' 
+        };
     }
 
-    const score = 0.85 + (Math.random() * 0.14);
-    return { passed: true, score, reason: '' };
+    try {
+        // ── LOAD MODELS ─────────────────────────────────────────────────────────
+        await loadModels();
+
+        // ── PROCESS ID IMAGE ────────────────────────────────────────────────────
+        console.log('[TrustShield] Processing ID image...');
+        const idImage = await fileToImage(idImageFile);
+        const idDescriptor = await getFaceDescriptor(idImage);
+        
+        if (!idDescriptor) {
+            return { 
+                passed: false, 
+                score: 0, 
+                reason: 'Could not detect a face in your ID document. Please upload a clearer photo.' 
+            };
+        }
+
+        // ── PROCESS SELFIE FRAMES ───────────────────────────────────────────────
+        console.log('[TrustShield] Processing selfie frames...');
+        let bestMatch = { score: 0, frameIndex: -1 };
+        const results = [];
+
+        for (let i = 0; i < selfieFrames.length; i++) {
+            try {
+                const frame = selfieFrames[i];
+                const selfieImage = await dataURLToImage(frame);
+                const selfieDescriptor = await getFaceDescriptor(selfieImage);
+                
+                if (selfieDescriptor) {
+                    const distance = calculateDistance(idDescriptor, selfieDescriptor);
+                    const score = distanceToScore(distance);
+                    
+                    results.push({ frameIndex: i, distance, score });
+                    
+                    if (score > bestMatch.score) {
+                        bestMatch = { score, frameIndex: i, distance };
+                    }
+                }
+            } catch (err) {
+                console.warn(`[TrustShield] Frame ${i} failed:`, err.message);
+                results.push({ frameIndex: i, error: err.message });
+            }
+        }
+
+        // ── LOGGING ─────────────────────────────────────────────────────────────
+        console.log('[TrustShield] Face comparison results:', {
+            idFaceDetected: true,
+            selfiesProcessed: selfieFrames.length,
+            validComparisons: results.filter(r => r.score !== undefined).length,
+            bestMatch: bestMatch,
+            allResults: results
+        });
+
+        // ── VALIDATION: Must have at least one valid comparison ─────────────────
+        const validComparisons = results.filter(r => r.score !== undefined);
+        if (validComparisons.length === 0) {
+            return { 
+                passed: false, 
+                score: 0, 
+                reason: 'Could not detect faces in your selfies. Please ensure your face is clearly visible and well-lit.' 
+            };
+        }
+
+        // ── THRESHOLD LOGIC ────────────────────────────────────────────────────
+        // 0.70+ = Strong match (pass)
+        // 0.50-0.69 = Moderate match (review)
+        // < 0.50 = Weak/no match (fail)
+        
+        const PASS_THRESHOLD = 0.70;
+        const REVIEW_THRESHOLD = 0.50;
+        
+        if (bestMatch.score >= PASS_THRESHOLD) {
+            return { 
+                passed: true, 
+                score: bestMatch.score, 
+                reason: '',
+                details: {
+                    bestFrame: bestMatch.frameIndex,
+                    totalFrames: selfieFrames.length,
+                    validComparisons: validComparisons.length,
+                    averageScore: validComparisons.reduce((a, b) => a + b.score, 0) / validComparisons.length
+                }
+            };
+        } else if (bestMatch.score >= REVIEW_THRESHOLD) {
+            return { 
+                passed: true, // Allow but flag for review
+                score: bestMatch.score, 
+                reason: 'Face match is moderate. Your account may be subject to additional review.',
+                flagged: true,
+                details: {
+                    bestFrame: bestMatch.frameIndex,
+                    totalFrames: selfieFrames.length,
+                    validComparisons: validComparisons.length
+                }
+            };
+        } else {
+            return { 
+                passed: false, 
+                score: bestMatch.score, 
+                reason: `Face similarity too low (${Math.round(bestMatch.score * 100)}%). Please ensure you're taking a live selfie that matches your ID photo.`,
+                details: {
+                    bestFrame: bestMatch.frameIndex,
+                    totalFrames: selfieFrames.length,
+                    validComparisons: validComparisons.length
+                }
+            };
+        }
+
+    } catch (err) {
+        console.error('[TrustShield] Face similarity check error:', err);
+        
+        // Fail-safe: if face-api fails, fall back to basic validation
+        return { 
+            passed: false, 
+            score: 0, 
+            reason: `Face recognition failed: ${err.message}. Please try again with better lighting.`,
+            error: err.message
+        };
+    }
 };
 

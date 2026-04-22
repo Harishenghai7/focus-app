@@ -1,104 +1,297 @@
-import { useState, useCallback } from 'react';
-import { analyzeImageNSFW, getModerationAction } from '../utils/nsfwDetection';
+// ═══════════════════════════════════════════════════════════════════════════════
+// 🛡️ USE CONTENT MODERATION HOOK - Real-time Purity Gate
+// ═══════════════════════════════════════════════════════════════════════════════
+// Layer 1: Pre-upload AI scanning with TensorFlow.js
+// Layer 2: Purpose-driven quality control
+// Layer 3: Ruthless enforcement & feedback
+// ═══════════════════════════════════════════════════════════════════════════════
+
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { ContentModerationService } from '../services/ContentModerationService';
 
 /**
- * Hook for content moderation using HuggingFace NSFW detection
+ * Hook for comprehensive content moderation
+ * Features:
+ * - Real-time image NSFW detection (TensorFlow.js + NSFWJS)
+ * - Text toxicity analysis
+ * - Quality control (blur, brightness, resolution)
+ * - Misinformation detection
+ * - H2-themed progress UI
  */
-export const useContentModeration = () => {
-    const [moderating, setModerating] = useState(false);
-    const [moderationResult, setModerationResult] = useState(null);
+export const useContentModeration = (options = {}) => {
+    const {
+        onViolation = null,
+        onQualityIssue = null,
+        onComplete = null,
+        autoInitialize = true
+    } = options;
 
-    // Get HuggingFace API key from environment
-    const apiKey = process.env.REACT_APP_HUGGINGFACE_API_KEY;
+    // State
+    const [isInitializing, setIsInitializing] = useState(false);
+    const [isScanning, setIsScanning] = useState(false);
+    const [modelsReady, setModelsReady] = useState(false);
+    const [scanProgress, setScanProgress] = useState(0);
+    const [scanStage, setScanStage] = useState(''); // 'idle', 'vision', 'text', 'quality', 'complete'
+    const [lastResult, setLastResult] = useState(null);
+    const [error, setError] = useState(null);
+    
+    // Refs for cancellation
+    const abortController = useRef(null);
+    const isMounted = useRef(true);
 
     /**
-     * Moderate a single image
+     * Initialize AI models on mount
      */
-    const moderateImage = useCallback(async (imageUrl) => {
-        if (!apiKey) {
-            console.warn('HuggingFace API key not configured');
-            return { allowed: true, warning: 'Moderation disabled' };
+    useEffect(() => {
+        if (autoInitialize) {
+            initializeModels();
         }
+        
+        return () => {
+            isMounted.current = false;
+            if (abortController.current) {
+                abortController.current.abort();
+            }
+        };
+    }, [autoInitialize]);
 
-        setModerating(true);
+    /**
+     * Initialize moderation models
+     */
+    const initializeModels = useCallback(async () => {
+        if (isInitializing || modelsReady) return;
+        
+        setIsInitializing(true);
+        setScanStage('initializing');
+        
         try {
-            const analysis = await analyzeImageNSFW(imageUrl, apiKey);
-            const action = getModerationAction(analysis);
-
-            const result = {
-                allowed: action.action !== 'block',
-                action: action.action,
-                reason: action.reason,
-                autoBlock: action.autoBlock,
-                nsfwScore: analysis.nsfwScore,
-                confidence: analysis.confidence
-            };
-
-            setModerationResult(result);
-            return result;
-        } catch (error) {
-            console.error('Moderation error:', error);
-            // Fail open - allow content if moderation fails
-            return { allowed: true, error: error.message };
+            await ContentModerationService.initialize();
+            if (isMounted.current) {
+                setModelsReady(true);
+            }
+        } catch (err) {
+            console.error('[useContentModeration] Model init failed:', err);
+            setError('Failed to initialize moderation models');
         } finally {
-            setModerating(false);
+            if (isMounted.current) {
+                setIsInitializing(false);
+            }
         }
-    }, [apiKey]);
+    }, [isInitializing, modelsReady]);
 
     /**
-     * Moderate multiple images
+     * Perform complete purity scan on content
+     * @param {Object} content - { mediaFiles: File[], caption: string, type: string }
+     * @returns {Promise<Object>} Scan results
      */
-    const moderateImages = useCallback(async (imageUrls) => {
-        if (!apiKey) {
-            console.warn('HuggingFace API key not configured');
-            return { allowed: true, warning: 'Moderation disabled' };
-        }
-
-        setModerating(true);
+    const performPurityScan = useCallback(async (content) => {
+        abortController.current = new AbortController();
+        
+        setIsScanning(true);
+        setScanProgress(0);
+        setError(null);
+        setScanStage('starting');
+        
+        const progressInterval = setInterval(() => {
+            setScanProgress(prev => Math.min(prev + 2, 90));
+        }, 100);
+        
         try {
-            const results = await Promise.all(
-                imageUrls.map(url => analyzeImageNSFW(url, apiKey))
-            );
-
-            // Check if any image should be blocked
-            const actions = results.map(getModerationAction);
-            const shouldBlock = actions.some(a => a.action === 'block');
-            const shouldReview = actions.some(a => a.action === 'review');
-
-            const result = {
-                allowed: !shouldBlock,
-                action: shouldBlock ? 'block' : shouldReview ? 'review' : 'allow',
-                results: results.map((r, i) => ({
-                    imageUrl: imageUrls[i],
-                    nsfwScore: r.nsfwScore,
-                    action: actions[i].action
-                })),
-                maxNsfwScore: Math.max(...results.map(r => r.nsfwScore))
-            };
-
-            setModerationResult(result);
+            // Stage 1: Vision Analysis
+            if (content.mediaFiles?.length > 0) {
+                setScanStage('analyzing_media');
+            }
+            
+            // Stage 2: Text Analysis
+            if (content.caption) {
+                setScanStage('analyzing_text');
+            }
+            
+            // Stage 3: Quality Check
+            setScanStage('checking_quality');
+            
+            // Perform the scan
+            const result = await ContentModerationService.performPurityScan(content);
+            
+            clearInterval(progressInterval);
+            
+            if (isMounted.current) {
+                setScanProgress(100);
+                setScanStage('complete');
+                setLastResult(result);
+                
+                // Callbacks
+                if (result.violations?.length > 0 && onViolation) {
+                    onViolation(result.violations, result);
+                }
+                
+                if (result.warnings?.length > 0 && onQualityIssue) {
+                    onQualityIssue(result.warnings, result);
+                }
+                
+                if (onComplete) {
+                    onComplete(result);
+                }
+            }
+            
             return result;
-        } catch (error) {
-            console.error('Moderation error:', error);
-            return { allowed: true, error: error.message };
+            
+        } catch (err) {
+            clearInterval(progressInterval);
+            
+            if (isMounted.current) {
+                setError(err.message);
+                setScanStage('error');
+            }
+            
+            // Fail-safe: allow content if scan fails critically
+            return {
+                passed: true,
+                error: err.message,
+                contentRating: 0.5,
+                safetyHash: null,
+                failedOpen: true
+            };
         } finally {
-            setModerating(false);
+            if (isMounted.current) {
+                setIsScanning(false);
+            }
         }
-    }, [apiKey]);
+    }, [onViolation, onQualityIssue, onComplete]);
 
     /**
-     * Clear moderation result
+     * Quick image scan (for previews)
+     * @param {File} file
+     * @returns {Promise<Object>} Quick scan result
      */
-    const clearResult = useCallback(() => {
-        setModerationResult(null);
+    const quickScanImage = useCallback(async (file) => {
+        try {
+            setScanStage('quick_scan');
+            const result = await ContentModerationService.analyzeImage(file);
+            return result;
+        } catch (err) {
+            console.error('[useContentModeration] Quick scan failed:', err);
+            return { isSafe: true, safetyScore: 1, error: err.message };
+        }
     }, []);
 
+    /**
+     * Scan text content only
+     * @param {string} text
+     * @returns {Promise<Object>} Text analysis result
+     */
+    const scanText = useCallback(async (text) => {
+        try {
+            setScanStage('scanning_text');
+            const result = await ContentModerationService.analyzeText(text);
+            return result;
+        } catch (err) {
+            console.error('[useContentModeration] Text scan failed:', err);
+            return { isSafe: true, safetyScore: 1, error: err.message };
+        }
+    }, []);
+
+    /**
+     * Cancel ongoing scan
+     */
+    const cancelScan = useCallback(() => {
+        if (abortController.current) {
+            abortController.current.abort();
+        }
+        setIsScanning(false);
+        setScanProgress(0);
+        setScanStage('cancelled');
+    }, []);
+
+    /**
+     * Clear results
+     */
+    const clearResult = useCallback(() => {
+        setLastResult(null);
+        setError(null);
+        setScanProgress(0);
+        setScanStage('idle');
+    }, []);
+
+    /**
+     * Get human-readable scan stage label
+     */
+    const getScanStageLabel = useCallback(() => {
+        const labels = {
+            idle: '',
+            initializing: 'Initializing AI guardians...',
+            starting: 'Preparing scan...',
+            analyzing_media: 'Analyzing media content...',
+            analyzing_text: 'Checking text for toxicity...',
+            checking_quality: 'Evaluating content quality...',
+            complete: 'Scan complete',
+            error: 'Scan failed',
+            cancelled: 'Scan cancelled',
+            quick_scan: 'Quick scanning...',
+            scanning_text: 'Scanning text...'
+        };
+        return labels[scanStage] || 'Scanning...';
+    }, [scanStage]);
+
+    /**
+     * Check if content would be blocked based on last result
+     */
+    const wouldBeBlocked = useCallback(() => {
+        if (!lastResult) return false;
+        return lastResult.blocked || (!lastResult.passed && lastResult.violations?.length > 0);
+    }, [lastResult]);
+
+    /**
+     * Get violation summary for display
+     */
+    const getViolationSummary = useCallback(() => {
+        if (!lastResult?.violations?.length) return null;
+        
+        const critical = lastResult.violations.filter(v => 
+            ['NUDITY_PORN', 'NUDITY_HENTAI', 'VIOLENCE', 'THREAT'].includes(v.type)
+        );
+        
+        const warnings = lastResult.violations.filter(v => 
+            v.severity === 'warning' || v.type === 'SUGGESTIVE'
+        );
+        
+        return {
+            hasCritical: critical.length > 0,
+            hasWarnings: warnings.length > 0,
+            criticalCount: critical.length,
+            warningCount: warnings.length,
+            totalCount: lastResult.violations.length,
+            violations: lastResult.violations
+        };
+    }, [lastResult]);
+
     return {
-        moderating,
-        moderationResult,
-        moderateImage,
-        moderateImages,
+        // State
+        isInitializing,
+        isScanning,
+        modelsReady,
+        scanProgress,
+        scanStage,
+        scanStageLabel: getScanStageLabel(),
+        lastResult,
+        error,
+        
+        // Actions
+        initializeModels,
+        performPurityScan,
+        quickScanImage,
+        scanText,
+        cancelScan,
         clearResult,
-        isConfigured: !!apiKey
+        
+        // Utilities
+        wouldBeBlocked: wouldBeBlocked(),
+        violationSummary: getViolationSummary(),
+        isConfigured: true, // Always configured with TensorFlow.js
+        
+        // Service reference
+        service: ContentModerationService
     };
 };
+
+export default useContentModeration;

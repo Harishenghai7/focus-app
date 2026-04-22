@@ -49,6 +49,10 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
     const [cameraDenied, setCameraDenied] = useState(false);
     const [error, setError] = useState('');
     const [selfieFrames, setSelfieFrames] = useState([]);
+    // Teen verification states
+    const [isSendingInvite, setIsSendingInvite] = useState(false);
+    const [inviteSent, setInviteSent] = useState(false);
+    const [inviteError, setInviteError] = useState('');
     // Mobile Handoff — new session_id per handoff attempt
     const [handoffSessionId] = useState(() => generateHandoffSessionId());
     const streamRef = useRef(null);
@@ -635,26 +639,77 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                                 <Button 
                                   variant="primary" 
                                   onClick={async (e) => {
-                                     const btn = e.currentTarget;
-                                     const emailInput = document.getElementById('step_guardian_email_input').value;
-                                     if (!emailInput) return;
-                                     btn.innerHTML = 'Sending...';
+                                     const emailInput = document.getElementById('step_guardian_email_input')?.value?.trim();
+                                     if (!emailInput) {
+                                         setInviteError('Please enter a valid email address');
+                                         return;
+                                     }
+                                     
+                                     // Email validation
+                                     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                                     if (!emailRegex.test(emailInput)) {
+                                         setInviteError('Please enter a valid email address');
+                                         return;
+                                     }
+                                     
+                                     setIsSendingInvite(true);
+                                     setInviteError('');
                                      
                                      try {
-                                        await supabase.functions.invoke('send-guardian-email', {
-                                            body: { email: emailInput, link: handshakeLink }
-                                        });
+                                        // Try with retry logic
+                                        let retries = 3;
+                                        let success = false;
+                                        
+                                        while (retries > 0 && !success) {
+                                            try {
+                                                const { error: fnError } = await supabase.functions.invoke('send-guardian-email', {
+                                                    body: { 
+                                                        email: emailInput, 
+                                                        link: handshakeLink,
+                                                        teenName: formData?.full_name || user?.user_metadata?.full_name,
+                                                        teenUserId: user?.id
+                                                    }
+                                                });
+                                                
+                                                if (fnError) throw fnError;
+                                                success = true;
+                                            } catch (err) {
+                                                retries--;
+                                                if (retries === 0) throw err;
+                                                await new Promise(r => setTimeout(r, 1000));
+                                            }
+                                        }
+                                        
+                                        // Also save guardian email to profile
+                                        await supabase.from('profiles').update({
+                                            guardian_email: emailInput,
+                                            updated_at: new Date().toISOString()
+                                        }).eq('id', user?.id);
+                                        
+                                        setInviteSent(true);
+                                        
+                                        // Vibrate on success
+                                        if (navigator?.vibrate) navigator.vibrate([100, 50, 100]);
+                                        
                                      } catch (err) {
-                                        console.error('Failed to send edge function email:', err);
+                                        console.error('Failed to send guardian invite:', err);
+                                        setInviteError('Failed to send invite. Please try again or use WhatsApp/QR code.');
+                                     } finally {
+                                        setIsSendingInvite(false);
                                      }
-
-                                     btn.innerHTML = 'Invite Sent ✓';
-                                     btn.style.background = '#22c55e';
                                   }}
+                                  loading={isSendingInvite}
+                                  disabled={isSendingInvite || inviteSent}
                                 >
-                                  Send Approval Invite
+                                  {inviteSent ? 'Invite Sent ✓' : (isSendingInvite ? 'Sending...' : 'Send Approval Invite')}
                                 </Button>
                             </div>
+                            
+                            {inviteError && (
+                                <p style={{ color: '#ef4444', fontSize: '0.85rem', textAlign: 'center', marginBottom: '12px' }}>
+                                    {inviteError}
+                                </p>
+                            )}
 
                             <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '0.85rem' }}>Or verify manually via QR code</p>
 

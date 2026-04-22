@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from './OnboardingStepper.module.css';
 import ProgressBar from './ProgressBar';
 import StepWelcome from './StepWelcome';
@@ -7,7 +7,7 @@ import StepFollowUsers from './StepFollowUsers';
 import StepTrustShield from './StepTrustShield';
 import StepNotifications from './StepNotifications';
 import StepAgeVerification from './StepAgeVerification';
-import useOnboarding from '../../hooks/useOnboarding';
+import useOnboardingPersistent from '../../hooks/useOnboardingPersistent';
 import Toast from '../shared/Toast';
 
 const OnboardingStepper = () => {
@@ -20,8 +20,17 @@ const OnboardingStepper = () => {
         prevStep,
         resetStep,
         isSubmitting,
-        error
-    } = useOnboarding();
+        error,
+        clearError,
+        isRestored
+    } = useOnboardingPersistent();
+
+    // Show restoration notice
+    useEffect(() => {
+        if (isRestored && currentStep > 1) {
+            console.log(`[OnboardingStepper] Restored to step ${currentStep}`);
+        }
+    }, [isRestored, currentStep]);
 
     const renderStep = () => {
         switch (currentStep) {
@@ -50,7 +59,7 @@ const OnboardingStepper = () => {
                     {renderStep()}
                 </div>
             </div>
-            {error && <Toast message={error} type="error" onClose={() => { }} />}
+            {error && <Toast message={error} type="error" onClose={clearError} duration={8000} />}
         </div>
     );
 };
