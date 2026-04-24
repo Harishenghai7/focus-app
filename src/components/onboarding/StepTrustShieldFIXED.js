@@ -206,38 +206,23 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
     }, []);
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // KEYBOARD SHORTCUTS
+    // 🛡️ NON-BYPASSABLE: NO KEYBOARD SHORTCUTS - VERIFICATION IS MANDATORY
     // ═══════════════════════════════════════════════════════════════════════════
+    // REMOVED: Dev backdoor (Ctrl+Shift+V) - This is PRODUCTION
+    // Trust Shield verification CANNOT be bypassed. Period.
+    // All users MUST complete ID upload + Liveness check + Face match.
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    // Enforcement: Check on mount if user tried to skip
     useEffect(() => {
-        const handleKeyDown = async (e) => {
-            if (process.env.NODE_ENV !== 'development') return;
-            keysPressed.current.add(e.key.toLowerCase());
-            
-            if (e.ctrlKey && e.shiftKey && keysPressed.current.has('v')) {
-                try {
-                    if (user?.id) {
-                        await supabase.from('profiles').update({ 
-                            verification_status: VERIFICATION_STATUS.VERIFIED, 
-                            trust_shield_status: VERIFICATION_STATUS.VERIFIED 
-                        }).eq('id', user.id);
-                        localStorage.setItem('bypass_used', 'true');
-                        window.location.href = '/home';
-                    }
-                } catch (err) {}
-            }
-        };
-        
-        const handleKeyUp = (e) => {
-            keysPressed.current.delete(e.key.toLowerCase());
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        window.addEventListener('keyup', handleKeyUp);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-            window.removeEventListener('keyup', handleKeyUp);
-        };
-    }, [user]);
+        // If trustShieldInitialized is set but no verification data, reset
+        if (formData?.trustShieldInitialized && !formData?.trustShieldFaceScore) {
+            console.warn('[TrustShield] Invalid state detected - possible bypass attempt');
+            setError('Verification data missing. Please complete all steps.');
+            updateFormData('trustShieldInitialized', false);
+            updateFormData('trustShieldStatus', VERIFICATION_STATUS.PENDING);
+        }
+    }, [formData?.trustShieldInitialized, formData?.trustShieldFaceScore, updateFormData]);
 
     // ═══════════════════════════════════════════════════════════════════════════
     // CLEANUP
@@ -647,18 +632,55 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
     }, [idFile, isTeen, ocrResult, stopCamera, updateFormData, user?.id]);
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // FINISH FLOW
+    // 🛡️ FINISH FLOW - NON-BYPASSABLE GUARDS
     // ═══════════════════════════════════════════════════════════════════════════
     const finishFlow = useCallback(() => {
-        if (!matchResult?.passed && !formData?.trustShieldInitialized) {
-            setError('Complete verification before continuing.');
+        // GUARD 1: Must have match result
+        if (!matchResult) {
+            setError('Face verification not completed. Please complete the liveness check.');
+            setErrorType('liveness');
             return;
         }
+        
+        // GUARD 2: Must have passed
+        if (!matchResult.passed) {
+            setError('Face verification failed. You cannot continue without passing verification.');
+            setErrorType('liveness');
+            return;
+        }
+        
+        // GUARD 3: Must have face score
+        if (!matchResult.score || matchResult.score < 0.5) {
+            setError('Face match score too low. Verification incomplete.');
+            setErrorType('liveness');
+            return;
+        }
+        
+        // GUARD 4: Must have OCR result
+        if (!ocrResult || !ocrResult.dob || !ocrResult.name) {
+            setError('ID information missing. Please upload your ID again.');
+            return;
+        }
+        
+        // GUARD 5: For teens, guardian handshake is required
+        if (isTeen && !handshakeLink && !formData?.guardianHandshakeLink) {
+            setError('Guardian approval required for teen accounts. Please complete guardian handshake.');
+            return;
+        }
+        
+        // All guards passed - mark as verified
+        updateFormData('trustShieldStatus', VERIFICATION_STATUS.VERIFIED);
+        updateFormData('trustShieldInitialized', true);
+        updateFormData('trustShieldFaceScore', matchResult.score);
+        
         if (isTeen) {
             updateFormData('guardianHandshakeLink', handshakeLink || formData?.guardianHandshakeLink || '');
         }
+        
+        // Final check before navigation
+        console.log('[TrustShield] ✅ All guards passed - proceeding to next step');
         onNext();
-    }, [matchResult?.passed, formData?.trustShieldInitialized, formData?.guardianHandshakeLink, isTeen, handshakeLink, updateFormData, onNext]);
+    }, [matchResult, ocrResult, isTeen, handshakeLink, formData?.guardianHandshakeLink, updateFormData, onNext]);
 
     const openWhatsApp = useCallback(() => {
         const text = encodeURIComponent(
