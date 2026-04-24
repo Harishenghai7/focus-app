@@ -147,9 +147,34 @@ const useOnboardingPersistent = () => {
     }, []);
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // NAVIGATION
+    // NAVIGATION - WITH MANDATORY TRUST SHIELD GUARD
     // ═══════════════════════════════════════════════════════════════════════════
     const nextStep = useCallback(() => {
+        // 🛡️ CRITICAL GUARD: Cannot proceed from Step 5 to Step 6 without Trust Shield verification
+        if (currentStep === 5) {
+            const isVerified = formData.trustShieldStatus === 'VERIFIED' || 
+                               formData.trustShieldStatus === 'VERIFIED_MINOR';
+            const hasFaceScore = formData.trustShieldFaceScore && formData.trustShieldFaceScore >= 0.5;
+            const hasOCR = formData.trustShieldOCR && formData.trustShieldOCR.dob && formData.trustShieldOCR.name;
+            
+            if (!isVerified) {
+                setError('❌ TRUST SHIELD REQUIRED: You must complete face verification before continuing.');
+                return;
+            }
+            
+            if (!hasFaceScore) {
+                setError('❌ FACE VERIFICATION INCOMPLETE: Liveness check required.');
+                return;
+            }
+            
+            if (!hasOCR) {
+                setError('❌ ID VERIFICATION MISSING: Please upload and verify your ID.');
+                return;
+            }
+            
+            console.log('[Onboarding] ✅ Trust Shield verification confirmed - proceeding to Step 6');
+        }
+        
         if (currentStep < TOTAL_STEPS) {
             setCurrentStep(prev => prev + 1);
             // Scroll to top
@@ -157,7 +182,7 @@ const useOnboardingPersistent = () => {
         } else {
             completeOnboarding();
         }
-    }, [currentStep]);
+    }, [currentStep, formData.trustShieldStatus, formData.trustShieldFaceScore, formData.trustShieldOCR]);
 
     const prevStep = useCallback(() => {
         if (currentStep > 1) {
@@ -189,6 +214,36 @@ const useOnboardingPersistent = () => {
             setError('User not authenticated. Please log in again.');
             return;
         }
+        
+        // 🛡️ CRITICAL GUARD: Cannot create account without Trust Shield verification
+        const isVerified = formData.trustShieldStatus === 'VERIFIED' || 
+                           formData.trustShieldStatus === 'VERIFIED_MINOR';
+        const hasFaceScore = formData.trustShieldFaceScore && formData.trustShieldFaceScore >= 0.5;
+        const hasOCR = formData.trustShieldOCR && formData.trustShieldOCR.dob && formData.trustShieldOCR.name;
+        
+        if (!isVerified) {
+            setError('❌ ACCOUNT CREATION BLOCKED: Trust Shield verification is mandatory. Complete Step 5 first.');
+            setIsSubmitting(false);
+            // Force back to Step 5
+            setCurrentStep(5);
+            return;
+        }
+        
+        if (!hasFaceScore) {
+            setError('❌ ACCOUNT CREATION BLOCKED: Face liveness check incomplete. Complete Step 5 first.');
+            setIsSubmitting(false);
+            setCurrentStep(5);
+            return;
+        }
+        
+        if (!hasOCR) {
+            setError('❌ ACCOUNT CREATION BLOCKED: ID verification missing. Complete Step 5 first.');
+            setIsSubmitting(false);
+            setCurrentStep(5);
+            return;
+        }
+        
+        console.log('[Onboarding] 🛡️ All Trust Shield guards passed - proceeding with account creation');
         
         setIsSubmitting(true);
         setError(null);

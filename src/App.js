@@ -110,9 +110,27 @@ const HighSecurityGuard = ({ children }) => {
 
     const onboardingDone = profile?.onboarding_completed === true;
 
-    // Allow access if VERIFIED or if onboarding was already completed successfully
-    if (verificationStatus === 'VERIFIED' || onboardingDone) {
+    // 🛡️ CRITICAL: Trust Shield verification is MANDATORY
+    // Onboarding completion alone is NOT sufficient - must be VERIFIED
+    const isVerified = verificationStatus === 'VERIFIED' || verificationStatus === 'VERIFIED_MINOR';
+    
+    // Allow access ONLY if VERIFIED (onboarding completion without verification = locked)
+    if (isVerified) {
         return children;
+    }
+    
+    // If onboarding shows as completed but no verification, force reset
+    if (onboardingDone && !isVerified) {
+        console.warn('[HighSecurityGuard] Onboarding marked complete but no Trust Shield - forcing back to onboarding');
+        // Reset onboarding flag in background
+        supabase.from('profiles').update({ 
+            onboarding_completed: false,
+            verification_status: 'PENDING'
+        }).eq('id', user.id).then(() => {
+            console.log('[HighSecurityGuard] Profile reset - verification required');
+        }).catch(err => {
+            console.error('[HighSecurityGuard] Failed to reset profile:', err);
+        });
     }
 
     // Lock the user into onboarding — they cannot access /home or any protected route
@@ -205,9 +223,11 @@ const AppContent = () => {
                     <Route path="/onboarding" element={
                       user
                         ? (
+                            // 🛡️ Only allow access to /home if VERIFIED
+                            // onboarding_completed alone is NOT sufficient
                             focusProfile?.verification_status === 'VERIFIED' ||
                             focusProfile?.trust_shield_status === 'VERIFIED' ||
-                            focusProfile?.onboarding_completed === true
+                            focusProfile?.verification_status === 'VERIFIED_MINOR'
                               ? <Navigate to="/home" replace />
                               : <Onboarding />
                           )
