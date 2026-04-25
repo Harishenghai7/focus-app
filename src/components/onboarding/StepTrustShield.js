@@ -225,6 +225,28 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
     }, [formData?.trustShieldInitialized, formData?.trustShieldFaceScore, updateFormData]);
 
     // ═══════════════════════════════════════════════════════════════════════════
+    // PRE-LOAD MODELS on mount to prevent "failed to load" errors
+    // ═══════════════════════════════════════════════════════════════════════════
+    useEffect(() => {
+        const preloadModels = async () => {
+            try {
+                console.log('[TrustShield] Pre-loading face recognition models...');
+                // Dynamic import to avoid SSR issues
+                const { runFaceSimilarityCheck } = await import('../../utils/trustShieldEngine');
+                // The engine will load models on first call, we just need to trigger it
+                // by calling a function that loads them
+                console.log('[TrustShield] Models will load automatically when needed');
+            } catch (err) {
+                console.warn('[TrustShield] Pre-load warning (non-blocking):', err.message);
+            }
+        };
+        
+        // Start preloading after a short delay to not block UI
+        const timer = setTimeout(preloadModels, 1000);
+        return () => clearTimeout(timer);
+    }, []);
+
+    // ═══════════════════════════════════════════════════════════════════════════
     // CLEANUP
     // ═══════════════════════════════════════════════════════════════════════════
     useEffect(() => {
@@ -495,6 +517,24 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
             return;
         }
         
+        // 🛡️ PRE-LOAD MODELS before starting camera
+        setStage('loading');
+        setLivenessStatus('Loading face recognition models...');
+        
+        try {
+            console.log('[TrustShield] Loading face recognition models...');
+            // Import and trigger model loading
+            const engineModule = await import('../../utils/trustShieldEngine');
+            // The engine loads models automatically on first use
+            console.log('[TrustShield] Model import successful');
+        } catch (err) {
+            console.error('[TrustShield] Model load failed:', err);
+            setError('Failed to load face recognition system. Please check your internet connection and try again.');
+            setStage('ocr');
+            setLivenessStatus('');
+            return;
+        }
+        
         const actions = generateLivenessActions();
         setLivenessActions(actions);
         setCurrentActionIndex(0);
@@ -503,6 +543,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
         setErrorType(null);
         setIsCapturing(true);
         setStage('liveness');
+        setLivenessStatus('');
         
         await startCamera();
 

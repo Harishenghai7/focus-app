@@ -144,31 +144,86 @@ import * as faceapi from 'face-api.js';
 const MODEL_URL = '/models';
 let modelsLoaded = false;
 let ssdMobileNetLoaded = false;
+let tinyFaceLoaded = false;
+let recognitionModelsLoaded = false;
 
 /**
- * Load ALL face-api.js models including POWERFUL SSD MobileNet v1
+ * 🔥 BULLETPROOF Model Loading with Individual Error Handling
+ * Loads models one by one with fallbacks
  */
 const loadModels = async () => {
-    if (modelsLoaded && ssdMobileNetLoaded) return;
-    
-    try {
-        // Load SSD MobileNet v1 (MOST POWERFUL & ACCURATE)
-        await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
-        ssdMobileNetLoaded = true;
-        
-        // Load TinyFaceDetector as fallback
-        await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-        
-        // Load recognition models
-        await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-        await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-        
-        modelsLoaded = true;
-        console.log('[TrustShield] ✅ SSD MobileNet v1 + all models loaded');
-    } catch (err) {
-        console.error('[TrustShield] ❌ Model load failed:', err);
-        throw new Error('Failed to load face recognition models. Check internet connection.');
+    // If all loaded, skip
+    if (modelsLoaded && ssdMobileNetLoaded && tinyFaceLoaded && recognitionModelsLoaded) {
+        console.log('[TrustShield] Models already loaded');
+        return;
     }
+    
+    const errors = [];
+    
+    // ── STEP 1: Try SSD MobileNet v1 (MOST POWERFUL) ──────────────────────────
+    if (!ssdMobileNetLoaded) {
+        try {
+            console.log('[TrustShield] Loading SSD MobileNet v1...');
+            await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
+            ssdMobileNetLoaded = true;
+            console.log('[TrustShield] ✅ SSD MobileNet v1 loaded');
+        } catch (err) {
+            console.warn('[TrustShield] ⚠️ SSD MobileNet failed:', err.message);
+            errors.push('SSD MobileNet: ' + err.message);
+        }
+    }
+    
+    // ── STEP 2: Try TinyFaceDetector (FALLBACK - always load) ─────────────────
+    if (!tinyFaceLoaded) {
+        try {
+            console.log('[TrustShield] Loading TinyFaceDetector...');
+            await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+            tinyFaceLoaded = true;
+            console.log('[TrustShield] ✅ TinyFaceDetector loaded');
+        } catch (err) {
+            console.error('[TrustShield] ❌ TinyFaceDetector failed:', err.message);
+            errors.push('TinyFaceDetector: ' + err.message);
+        }
+    }
+    
+    // ── STEP 3: Load Recognition Models ───────────────────────────────────────
+    if (!recognitionModelsLoaded) {
+        try {
+            console.log('[TrustShield] Loading recognition models...');
+            await Promise.all([
+                faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+                faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+            ]);
+            recognitionModelsLoaded = true;
+            console.log('[TrustShield] ✅ Recognition models loaded');
+        } catch (err) {
+            console.error('[TrustShield] ❌ Recognition models failed:', err.message);
+            errors.push('Recognition: ' + err.message);
+        }
+    }
+    
+    // ── STEP 4: Determine overall status ────────────────────────────────────
+    modelsLoaded = recognitionModelsLoaded; // Must have recognition models
+    
+    // We need at least one detector AND recognition models
+    const hasDetector = ssdMobileNetLoaded || tinyFaceLoaded;
+    
+    if (!modelsLoaded) {
+        console.error('[TrustShield] ❌ CRITICAL: Recognition models failed to load');
+        throw new Error('Face recognition system unavailable. Please check your internet connection and try again.');
+    }
+    
+    if (!hasDetector) {
+        console.error('[TrustShield] ❌ CRITICAL: No face detector available');
+        throw new Error('Face detection system unavailable. Please refresh the page and try again.');
+    }
+    
+    // Success with whatever we have
+    console.log('[TrustShield] ✅ System ready:', {
+        ssdMobileNet: ssdMobileNetLoaded,
+        tinyFace: tinyFaceLoaded,
+        recognition: recognitionModelsLoaded
+    });
 };
 
 /**
@@ -202,57 +257,69 @@ const fileToImage = (file) => {
 
 /**
  * 🔥 POWERFUL Face Detection with MULTIPLE strategies
- * Tries SSD MobileNet v1 first (most accurate), then TinyFaceDetector as fallback
+ * Uses available models (SSD MobileNet v1 preferred, TinyFaceDetector fallback)
  */
-const getFaceDescriptor = async (image, attempt = 1) => {
+const getFaceDescriptor = async (image) => {
     const maxAttempts = 3;
     let lastError = null;
     
+    // Ensure models are loaded first
+    if (!modelsLoaded) {
+        await loadModels();
+    }
+    
     for (let i = 0; i < maxAttempts; i++) {
         try {
-            // STRATEGY 1: SSD MobileNet v1 (MOST POWERFUL)
-            // minConfidence: 0.3 = detects faces even in challenging conditions
-            const ssdDetection = await faceapi
-                .detectSingleFace(image, new faceapi.SsdMobilenetv1Options({ 
-                    minConfidence: 0.3,  // Lower threshold for better detection
-                    maxResults: 1 
-                }))
-                .withFaceLandmarks()
-                .withFaceDescriptor();
-            
-            if (ssdDetection) {
-                console.log(`[TrustShield] ✅ SSD MobileNet detected face (attempt ${i + 1})`);
-                return ssdDetection.descriptor;
+            // STRATEGY 1: SSD MobileNet v1 (MOST POWERFUL) - if available
+            if (ssdMobileNetLoaded) {
+                const ssdDetection = await faceapi
+                    .detectSingleFace(image, new faceapi.SsdMobilenetv1Options({ 
+                        minConfidence: 0.3,  // Lower threshold for better detection
+                        maxResults: 1 
+                    }))
+                    .withFaceLandmarks()
+                    .withFaceDescriptor();
+                
+                if (ssdDetection) {
+                    console.log(`[TrustShield] ✅ SSD MobileNet detected face (attempt ${i + 1})`);
+                    return ssdDetection.descriptor;
+                }
             }
             
-            // STRATEGY 2: TinyFaceDetector (FALLBACK)
-            // inputSize: 512 = higher resolution detection
-            const tinyDetection = await faceapi
-                .detectSingleFace(image, new faceapi.TinyFaceDetectorOptions({ 
-                    inputSize: 512,  // Larger input for better accuracy
-                    scoreThreshold: 0.4  // Slightly lower threshold
-                }))
-                .withFaceLandmarks()
-                .withFaceDescriptor();
+            // STRATEGY 2: TinyFaceDetector (FALLBACK) - if available
+            if (tinyFaceLoaded) {
+                const tinyDetection = await faceapi
+                    .detectSingleFace(image, new faceapi.TinyFaceDetectorOptions({ 
+                        inputSize: 512,  // Larger input for better accuracy
+                        scoreThreshold: 0.4  // Slightly lower threshold
+                    }))
+                    .withFaceLandmarks()
+                    .withFaceDescriptor();
+                
+                if (tinyDetection) {
+                    console.log(`[TrustShield] ✅ TinyFaceDetector detected face (attempt ${i + 1})`);
+                    return tinyDetection.descriptor;
+                }
+            }
             
-            if (tinyDetection) {
-                console.log(`[TrustShield] ✅ TinyFaceDetector detected face (fallback ${i + 1})`);
-                return tinyDetection.descriptor;
+            // If neither detected a face, wait and retry
+            if (i < maxAttempts - 1) {
+                console.log(`[TrustShield] No face detected, retrying... (${i + 1}/${maxAttempts})`);
+                await new Promise(r => setTimeout(r, 200));
             }
             
         } catch (err) {
             lastError = err;
             console.warn(`[TrustShield] Detection attempt ${i + 1} failed:`, err.message);
             
-            // Wait before retry
             if (i < maxAttempts - 1) {
-                await new Promise(r => setTimeout(r, 100));
+                await new Promise(r => setTimeout(r, 200));
             }
         }
     }
     
     // All attempts failed
-    throw new Error(lastError?.message || 'No face detected. Please ensure good lighting and face the camera directly.');
+    throw new Error(lastError?.message || 'No face detected. Tips: 1) Ensure good lighting 2) Face the camera directly 3) Remove glasses or glare 4) Move closer to camera');
 };
 
 /**
