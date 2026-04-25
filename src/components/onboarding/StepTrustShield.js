@@ -78,17 +78,10 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
     const [errorType, setErrorType] = useState(null); // 'dob_mismatch', 'verification', 'general'
     
     const channelRef = useRef(null);
-    const stageRef = useRef(stage);
-    
-    // Keep stageRef synced with stage
-    useEffect(() => {
-        stageRef.current = stage;
-    }, [stage]);
 
-    // Progress calculation
+    // Progress calculation - simplified (no processing stage)
     const progress = useMemo(() => {
-        if (stage === 'ocr') return 33;
-        if (stage === 'processing') return 66;
+        if (stage === 'ocr') return 50;
         if (stage === 'result') return 100;
         if (stage === 'guardian') return 100;
         return 0;
@@ -371,9 +364,9 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
     }, [onReset]);
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // 🔥 BULLETPROOF ID VERIFICATION (NO FACE RECOGNITION)
+    // 🔥 INSTANT VERIFICATION - No async, no waiting, never hangs
     // ═══════════════════════════════════════════════════════════════════════════
-    const beginVerification = useCallback(async () => {
+    const beginVerification = useCallback(() => {
         if (!ocrResult?.name || !ocrResult?.dob) {
             setError('Name and DOB are required. Please scan your ID first.');
             return;
@@ -384,139 +377,69 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
             return;
         }
         
-        setStage('processing');
-        setLivenessStatus('Verifying your identity...');
-        setError('');
+        console.log('[TrustShieldV3] ⚡ INSTANT VERIFICATION STARTING');
         
-        // 🔥 EMERGENCY TIMEOUT: Force progress after 12 seconds no matter what
-        const emergencyTimeout = setTimeout(() => {
-            console.log('[TrustShieldV2] ⏱️ Emergency timeout triggered - forcing progress');
-            // Use stageRef to get CURRENT stage value (not stale closure)
-            if (stageRef.current === 'processing') {
-                setMatchResult({ passed: true, score: 0.8, reason: 'Emergency timeout - verification assumed successful' });
-                setStage(isTeen ? 'guardian' : 'result');
-                setLivenessStatus('');
-                setError('');
-                
-                updateFormData('trustShieldStatus', isTeen ? VERIFICATION_STATUS.PENDING_GUARDIAN : VERIFICATION_STATUS.VERIFIED);
-                updateFormData('trustShieldInitialized', true);
-                updateFormData('trustShieldFaceScore', 0.8);
-            }
-        }, 8000);  // 8 second emergency timeout
+        // 🔥 INSTANT SYNC CALL - Returns immediately (< 100ms)
+        const result = runBulletproofVerification({
+            idImageFile: idFile,
+            ocrResult: ocrResult,
+            userId: user?.id,
+            userEmail: user?.email
+        });
         
-        try {
-            console.log('[TrustShieldV2] Starting bulletproof verification...');
+        console.log('[TrustShieldV3] ✅ INSTANT RESULT:', result);
+        
+        setMatchResult(result);
+        
+        if (result.passed) {
+            triggerHaptic(24);
+            setError('');
             
-            // 🔥 Run verification with 10 second timeout
-            const verificationPromise = runBulletproofVerification({
-                idImageFile: idFile,
-                ocrResult: ocrResult,
-                userId: user?.id,
-                userEmail: user?.email
-            });
+            // Update form data immediately
+            const finalStatus = isTeen ? VERIFICATION_STATUS.PENDING_GUARDIAN : VERIFICATION_STATUS.VERIFIED;
+            updateFormData('trustShieldStatus', finalStatus);
+            updateFormData('trustShieldInitialized', true);
+            updateFormData('trustShieldFaceScore', result.score);
+            updateFormData('trustShieldDeviceId', result.deviceId);
             
-            const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Verification timeout')), 6000)  // 6 second timeout
-            );
-            
-            const result = await Promise.race([verificationPromise, timeoutPromise]);
-            
-            console.log('[TrustShieldV2] Verification result:', result);
-            
-            clearTimeout(emergencyTimeout); // Clear emergency timeout since we got a result
-            
-            setMatchResult(result);
-            
-            if (result.passed) {
-                triggerHaptic(24);
-                setError('');
-                
-                // Determine verification status
-                const finalStatus = isTeen ? VERIFICATION_STATUS.PENDING_GUARDIAN : VERIFICATION_STATUS.VERIFIED;
-                
-                updateFormData('trustShieldStatus', finalStatus);
-                updateFormData('trustShieldInitialized', true);
-                updateFormData('trustShieldFaceScore', result.score);
-                updateFormData('trustShieldDeviceId', result.deviceId);
-                
-                // 🔥 Fire-and-forget: Don't await DB calls (they can hang)
-                if (isTeen) {
-                    createGuardianHandshake({
-                        teenUserId: user?.id,
-                        metadata: { 
-                            ocr: ocrResult, 
-                            score: result.score,
-                            deviceId: result.deviceId,
-                            verificationMethod: 'id_only'
-                        },
-                    }).then(handshakeToken => {
-                        const generatedLink = `${window.location.origin}/verification/parent-consent?token=${handshakeToken}`;
-                        updateFormData('guardianHandshakeLink', generatedLink);
-                        persistTrustShieldState({
-                            userId: user?.id,
-                            verificationStatus: VERIFICATION_STATUS.PENDING_GUARDIAN,
-                            ocrResult,
-                            faceScore: result.score,
-                            attemptResult: 'SUCCESS_ID_ONLY',
-                            deviceFingerprint: result.deviceFingerprint,
-                            stage: 'guardian_pending',
-                            handshakeToken,
-                        }).catch(() => {}); // Silent fail
-                    }).catch(() => {}); // Silent fail
-                    setStage('guardian');
-                } else {
-                    // Fire-and-forget DB persistence
-                    persistTrustShieldState({
-                        userId: user?.id,
-                        verificationStatus: VERIFICATION_STATUS.VERIFIED,
-                        ocrResult,
-                        faceScore: result.score,
-                        attemptResult: 'SUCCESS_ID_ONLY',
-                        deviceFingerprint: result.deviceFingerprint,
-                        stage: 'verified',
-                    }).catch(() => {}); // Silent fail - don't block user
-                    setStage('result');
-                }
-            } else {
-                // Verification failed
-                setErrorType('verification');
-                setError(result.reason || 'Verification failed. Please check your ID and try again.');
-                setStage('result');
-                
-                // Fire-and-forget failure log
-                persistTrustShieldState({
-                    userId: user?.id,
-                    verificationStatus: VERIFICATION_STATUS.FAILED,
-                    ocrResult,
-                    attemptResult: 'FAILURE',
-                    failureReason: result.reason,
-                    failureLayer: result.layer,
-                    stage: 'failed',
+            // Go to next stage immediately
+            if (isTeen) {
+                // Create guardian handshake in background
+                createGuardianHandshake({
+                    teenUserId: user?.id,
+                    metadata: { 
+                        ocr: ocrResult, 
+                        score: result.score,
+                        deviceId: result.deviceId,
+                        verificationMethod: 'id_only_instant'
+                    },
+                }).then(token => {
+                    const link = `${window.location.origin}/verification/parent-consent?token=${token}`;
+                    updateFormData('guardianHandshakeLink', link);
                 }).catch(() => {});
-            }
-            
-        } catch (err) {
-            clearTimeout(emergencyTimeout);
-            console.error('[TrustShieldV2] Verification error:', err);
-            
-            // 🔥 EMERGENCY BYPASS: If anything fails, still allow user through after 3+ attempts
-            if (livenessAttempts >= 2) {
-                console.log('[TrustShieldV2] 🚨 Emergency bypass after multiple failures');
-                setMatchResult({ passed: true, score: 0.75, reason: 'Emergency bypass' });
-                updateFormData('trustShieldStatus', VERIFICATION_STATUS.PENDING_REVIEW);
-                updateFormData('trustShieldInitialized', true);
-                updateFormData('trustShieldFaceScore', 0.75);
-                setStage('result');
-                setError('');
+                setStage('guardian');
             } else {
-                setErrorType('verification');
-                setError('Verification timed out. Please try again.');
                 setStage('result');
             }
-        } finally {
-            setLivenessStatus('');
+            
+            // Background audit log (fire and forget)
+            persistTrustShieldState({
+                userId: user?.id,
+                verificationStatus: finalStatus,
+                ocrResult,
+                faceScore: result.score,
+                attemptResult: 'SUCCESS_INSTANT',
+                deviceFingerprint: result.deviceFingerprint,
+                stage: isTeen ? 'guardian_pending' : 'verified',
+            }).catch(() => {});
+            
+        } else {
+            // Instant failure - show error
+            setErrorType('verification');
+            setError(result.reason || 'ID validation failed. Please upload a clearer photo.');
+            setStage('result');
         }
-    }, [ocrResult, idFile, user, isTeen, updateFormData, stage, livenessAttempts]);
+    }, [ocrResult, idFile, user, isTeen, updateFormData]);
 
     // ═══════════════════════════════════════════════════════════════════════════
     // 🛡️ FINISH FLOW - NON-BYPASSABLE GUARDS
@@ -701,24 +624,22 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                             ? 'thinking'
                             : stage === 'result'
                                 ? matchResult?.passed ? 'happy' : 'confused'
-                                : 'wave'
+                                : 'neutral'
                     }
-                    size="small"
+                    size="sm"
                 />
                 <p>
-                    {stage === 'ocr' && 'Place your ID inside the frame. I will read your Name and DOB.'}
-                    {stage === 'processing' && 'Verifying your ID and device...'}
-                    {stage === 'waiting_mobile' && 'Awaiting completion from your mobile browser...'}
+                    {stage === 'ocr' && 'Upload your ID photo. I will read Name and Date of Birth instantly.'}
+                    {stage === 'processing' && 'Processing...'}
                     {stage === 'result' && (matchResult?.passed
-                        ? 'Identity verified successfully!'
-                        : matchResult?.passed === false
-                            ? 'Verification failed. Please review the error below.'
-                            : 'Processing complete.')}
-                    {stage === 'guardian' && 'Teen shield active. Share this link with your guardian.'}
+                        ? '✅ Identity verified!'
+                        : `❌ Failed: ${matchResult?.reason || 'Please try again'}`
+                    )}
+                    {stage === 'guardian' && '⏳ Waiting for guardian approval...'}
                 </p>
             </div>
 
-            <div className={styles.progressTrack}>
+            <div className={styles.progressBar}>
                 <motion.div className={styles.progressFill} animate={{ width: `${progress}%` }} />
             </div>
 
@@ -824,7 +745,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                         </motion.div>
                     )}
 
-                    {/* PROCESSING STAGE */}
+                    {/* PROCESSING STAGE - Rarely shown since verification is instant */}
                     {stage === 'processing' && (
                         <motion.div 
                             key="processing" 
@@ -835,25 +756,10 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                         >
                             <div className={styles.processingGlass}>
                                 <div className={styles.loaderOrb} />
-                                <p style={{ fontWeight: '600' }}>Verifying Your Identity...</p>
+                                <p style={{ fontWeight: '600' }}>Processing...</p>
                                 <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '10px' }}>
-                                    Validating ID and securing your device
+                                    Please wait a moment
                                 </p>
-                                <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px' }}>
-                                    ⏱️ Auto-continuing in 8 seconds...
-                                </p>
-                                <Button 
-                                    variant="ghost" 
-                                    size="small" 
-                                    onClick={() => {
-                                        setStage('ocr');
-                                        setLivenessStatus('');
-                                    }}
-                                    style={{ marginTop: '15px', fontSize: '0.8rem' }}
-                                >
-                                    <XCircle size={14} style={{ marginRight: '5px' }} />
-                                    Cancel / Go Back
-                                </Button>
                             </div>
                         </motion.div>
                     )}
