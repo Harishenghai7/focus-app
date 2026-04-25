@@ -12,11 +12,13 @@ import { useAuth } from './useAuth';
 import { useFocusUser } from '../context/FocusUserContext';
 import { saveOnboardingData } from '../utils/saveOnboardingData';
 import { uploadImage } from '../utils/uploadImage';
+import { supabase } from '../lib/supabase';
 
 const TOTAL_STEPS = 6;
 const STORAGE_KEY = 'focus_onboarding_state';
 const TIMESTAMP_KEY = 'focus_onboarding_timestamp';
 const SESSION_TIMEOUT = 24 * 60 * 60 * 1000; // 24 hours
+const VERIFICATION_STEP_KEY = 'focus_verification_step';
 
 // Default form data
 const DEFAULT_FORM_DATA = {
@@ -62,59 +64,82 @@ const useOnboardingPersistent = () => {
     const [formData, setFormData] = useState({ ...DEFAULT_FORM_DATA });
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // LAYER 1: Restore from localStorage on mount
+    // LAYER 1: GOD-LEVEL PERSISTENT STATE - Sync with Supabase on mount
     // ═══════════════════════════════════════════════════════════════════════════
     useEffect(() => {
         if (hasLoadedRef.current) return;
         
-        try {
-            const savedState = localStorage.getItem(STORAGE_KEY);
-            const savedTimestamp = localStorage.getItem(TIMESTAMP_KEY);
-            
-            if (savedState && savedTimestamp) {
-                const timestamp = parseInt(savedTimestamp, 10);
-                const now = Date.now();
-                
-                // Check if session is still valid (24 hours)
-                if (now - timestamp < SESSION_TIMEOUT) {
-                    const parsed = JSON.parse(savedState);
+        const restoreState = async () => {
+            try {
+                // First: Try to restore from Supabase (source of truth)
+                if (user?.id) {
+                    const { data: profile, error } = await supabase
+                        .from('profiles')
+                        .select('verification_step, verification_progress, current_step')
+                        .eq('id', user.id)
+                        .single();
                     
-                    // Restore step
-                    if (parsed.currentStep && parsed.currentStep >= 1 && parsed.currentStep <= TOTAL_STEPS) {
-                        setCurrentStep(parsed.currentStep);
+                    if (!error && profile) {
+                        // Database is source of truth - use verification_step if available
+                        const dbStep = profile.verification_step || profile.current_step || 1;
+                        if (dbStep >= 1 && dbStep <= TOTAL_STEPS) {
+                            setCurrentStep(dbStep);
+                            localStorage.setItem(VERIFICATION_STEP_KEY, dbStep.toString());
+                            console.log('[Onboarding] 🔒 LOCKED to verification_step:', dbStep, '(from Supabase)');
+                            setIsRestored(true);
+                            hasLoadedRef.current = true;
+                            return; // Exit early - database wins
+                        }
                     }
-                    
-                    // Restore form data (deep merge with defaults)
-                    if (parsed.formData) {
-                        setFormData(prev => ({
-                            ...DEFAULT_FORM_DATA,
-                            ...parsed.formData,
-                            // Don't restore File objects (not serializable)
-                            avatarFile: null,
-                        }));
-                    }
-                    
-                    setIsRestored(true);
-                    console.log('[Onboarding] Restored state from localStorage at step', parsed.currentStep);
-                } else {
-                    // Session expired - clear storage
-                    localStorage.removeItem(STORAGE_KEY);
-                    localStorage.removeItem(TIMESTAMP_KEY);
-                    console.log('[Onboarding] Session expired, starting fresh');
                 }
+                
+                // Fallback: Restore from localStorage
+                const savedState = localStorage.getItem(STORAGE_KEY);
+                const savedTimestamp = localStorage.getItem(TIMESTAMP_KEY);
+                const savedVerificationStep = localStorage.getItem(VERIFICATION_STEP_KEY);
+                
+                if (savedVerificationStep) {
+                    const vStep = parseInt(savedVerificationStep, 10);
+                    if (vStep >= 1 && vStep <= TOTAL_STEPS) {
+                        setCurrentStep(vStep);
+                        console.log('[Onboarding] 🔒 LOCKED to verification_step:', vStep, '(from localStorage)');
+                    }
+                } else if (savedState && savedTimestamp) {
+                    const timestamp = parseInt(savedTimestamp, 10);
+                    const now = Date.now();
+                    
+                    if (now - timestamp < SESSION_TIMEOUT) {
+                        const parsed = JSON.parse(savedState);
+                        if (parsed.currentStep && parsed.currentStep >= 1 && parsed.currentStep <= TOTAL_STEPS) {
+                            setCurrentStep(parsed.currentStep);
+                        }
+                        if (parsed.formData) {
+                            setFormData(prev => ({
+                                ...DEFAULT_FORM_DATA,
+                                ...parsed.formData,
+                                avatarFile: null,
+                            }));
+                        }
+                        console.log('[Onboarding] Restored from localStorage at step', parsed.currentStep);
+                    } else {
+                        localStorage.removeItem(STORAGE_KEY);
+                        localStorage.removeItem(TIMESTAMP_KEY);
+                    }
+                }
+                
+                setIsRestored(true);
+            } catch (err) {
+                console.error('[Onboarding] Failed to restore state:', err);
+            } finally {
+                hasLoadedRef.current = true;
             }
-        } catch (err) {
-            console.error('[Onboarding] Failed to restore state:', err);
-            // Clear corrupted storage
-            localStorage.removeItem(STORAGE_KEY);
-            localStorage.removeItem(TIMESTAMP_KEY);
-        }
+        };
         
-        hasLoadedRef.current = true;
-    }, []);
+        restoreState();
+    }, [user?.id]);
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // LAYER 2: Persist to localStorage on every change
+    // LAYER 2: Persist to localStorage AND Supabase on every change
     // ═══════════════════════════════════════════════════════════════════════════
     useEffect(() => {
         if (!hasLoadedRef.current) return;
@@ -124,17 +149,47 @@ const useOnboardingPersistent = () => {
                 currentStep,
                 formData: {
                     ...formData,
-                    // Don't save File objects
                     avatarFile: null,
                 },
             };
             
             localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
             localStorage.setItem(TIMESTAMP_KEY, Date.now().toString());
+            localStorage.setItem(VERIFICATION_STEP_KEY, currentStep.toString());
         } catch (err) {
             console.error('[Onboarding] Failed to save state:', err);
         }
     }, [currentStep, formData]);
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // LAYER 2b: Sync verification_step to Supabase (fire and forget)
+    // ═══════════════════════════════════════════════════════════════════════════
+    useEffect(() => {
+        if (!hasLoadedRef.current || !user?.id) return;
+        
+        // Fire and forget - don't block UI
+        supabase.rpc('sync_verification_state', {
+            p_user_id: user.id,
+            p_step: currentStep,
+            p_progress: {
+                step_name: getStepName(currentStep),
+                trust_shield_status: formData.trustShieldStatus,
+                updated_at: new Date().toISOString()
+            }
+        }).then(({ error }) => {
+            if (error) {
+                console.warn('[Onboarding] Failed to sync verification_step:', error);
+            } else {
+                console.log('[Onboarding] 🔒 verification_step synced to Supabase:', currentStep);
+            }
+        }).catch(() => {});
+    }, [currentStep, user?.id, formData.trustShieldStatus]);
+    
+    // Helper to get step name
+    const getStepName = (step) => {
+        const names = ['profile', 'age', 'interests', 'avatar', 'trust_shield', 'complete'];
+        return names[step - 1] || 'unknown';
+    };
 
     // ═══════════════════════════════════════════════════════════════════════════
     // FORM DATA UPDATE
@@ -196,12 +251,57 @@ const useOnboardingPersistent = () => {
         console.log('[Onboarding] Reset to step 1');
     }, []);
 
-    const goToStep = useCallback((step) => {
-        if (step >= 1 && step <= TOTAL_STEPS) {
-            setCurrentStep(step);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRICT STEP NAVIGATION - Cannot go backwards (God-Level Enforcement)
+    // ═══════════════════════════════════════════════════════════════════════════
+    const goToStep = useCallback(async (targetStep) => {
+        // Validate step range
+        if (targetStep < 1 || targetStep > TOTAL_STEPS) {
+            console.warn('[Onboarding] Invalid step:', targetStep);
+            return;
         }
-    }, []);
+        
+        // 🛡️ GOD-LEVEL GUARD: Cannot go backwards in verification flow
+        if (targetStep < currentStep) {
+            console.warn('[Onboarding] 🚫 BLOCKED: Cannot go from step', currentStep, 'to step', targetStep);
+            setError('🔒 Verification flow is locked. You cannot go backwards.');
+            return;
+        }
+        
+        // Check Supabase for authoritative state (prevent tampering)
+        if (user?.id) {
+            try {
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('verification_step')
+                    .eq('id', user.id)
+                
+                    .single();
+                
+                if (!error && profile?.verification_step) {
+                    const dbStep = profile.verification_step;
+                    // If database shows higher step than local, use database
+                    if (dbStep > currentStep) {
+                        setCurrentStep(dbStep);
+                        console.log('[Onboarding] 🔒 LOCKED to database step:', dbStep);
+                        return;
+                    }
+                    // If trying to go below database step, block
+                    if (targetStep < dbStep) {
+                        console.warn('[Onboarding] 🚫 BLOCKED: Database enforces step', dbStep);
+                        setError('🔒 This step has already been completed.');
+                        return;
+                    }
+                }
+            } catch (err) {
+                console.warn('[Onboarding] Could not verify with database:', err);
+            }
+        }
+        
+        // Allow forward navigation
+        setCurrentStep(targetStep);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [currentStep, user?.id]);
 
     // ═══════════════════════════════════════════════════════════════════════════
     // COMPLETE ONBOARDING - With retry logic and better error handling

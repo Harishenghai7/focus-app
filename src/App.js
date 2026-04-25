@@ -25,6 +25,7 @@ import { getTrustShieldState } from './utils/trustShieldPolicy';
 // 3. Core Components
 import BiometricLock from './components/trustShield/BiometricLock';
 import AdminRoute from './components/auth/AdminRoute';
+import ProtectedTrustRoute from './components/auth/ProtectedTrustRoute';
 import IncomingCallModal from './components/calls/IncomingCallModal';
 import { InAppNotificationProvider, useInAppNotifications } from './components/notifications/InAppNotificationBanner';
 import AnimatedRoutes from './components/ui/AnimatedRoutes';
@@ -155,7 +156,7 @@ const AppContent = () => {
         location.pathname.startsWith('/onboarding');
 
     const canUseProtectedFeatures = !user || !trustShield.isBlocked || isSupportPath || isVerificationPath;
-    const withTrustGate = (element) => <HighSecurityGuard>{element}</HighSecurityGuard>;
+    const withTrustGate = (element) => <ProtectedTrustRoute>{element}</ProtectedTrustRoute>;
 
     // Initialize tracking
     useBehaviorTracking(true);
@@ -290,7 +291,7 @@ const AppContent = () => {
                     */}
                     <Route path="*" element={
                       user
-                        ? <HighSecurityGuard><Navigate to="/home" replace /></HighSecurityGuard>
+                        ? <ProtectedTrustRoute><Navigate to="/home" replace /></ProtectedTrustRoute>
                         : <Navigate to="/auth" replace />
                     } />
                 </AnimatedRoutes>
