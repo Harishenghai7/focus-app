@@ -7,19 +7,56 @@ import FingerprintJS from '@fingerprintjs/fingerprintjs';
  * Privacy-compliant: Hashes data, does not store raw PII.
  */
 
-// Initialize FingerprintJS agent
-const fpPromise = FingerprintJS.load();
+// Timeout wrapper for promises
+const withTimeout = (promise, ms, label) => {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) => 
+            setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms)
+        )
+    ]);
+};
+
+// Initialize FingerprintJS agent with timeout
+let fpPromise = null;
+let fpLoaded = false;
+
+const loadFingerprintJS = async () => {
+    if (fpLoaded && fpPromise) return fpPromise;
+    
+    try {
+        fpPromise = await withTimeout(
+            FingerprintJS.load(),
+            5000, // 5 second timeout
+            'FingerprintJS load'
+        );
+        fpLoaded = true;
+        return fpPromise;
+    } catch (err) {
+        console.warn('[Fingerprint] Failed to load:', err.message);
+        fpPromise = null;
+        fpLoaded = false;
+        return null;
+    }
+};
 
 export const getDeviceFingerprint = async () => {
     try {
-        const fp = await fpPromise;
-        const result = await fp.get();
+        const fp = await loadFingerprintJS();
+        if (!fp) return null;
+        
+        const result = await withTimeout(
+            fp.get(),
+            3000, // 3 second timeout for get
+            'FingerprintJS get'
+        );
+        
         return {
             visitorId: result.visitorId,
             components: result.components
         };
     } catch (error) {
-        console.error('Error generating fingerprint:', error);
+        console.error('[Fingerprint] Error:', error.message);
         return null;
     }
 };
@@ -31,9 +68,40 @@ export const getDeviceFingerprint = async () => {
  * Note: FingerprintJS handles most of this, but we can add custom layers.
  */
 export const generateAdvancedFingerprint = async () => {
-    const basicFingerprint = await getDeviceFingerprint();
+    // Try to get fingerprint with timeout
+    let basicFingerprint = null;
+    try {
+        basicFingerprint = await withTimeout(
+            getDeviceFingerprint(),
+            8000, // 8 second total timeout
+            'Device fingerprinting'
+        );
+    } catch (err) {
+        console.warn('[Fingerprint] Timed out, using fallback:', err.message);
+    }
 
-    if (!basicFingerprint) return null;
+    // If fingerprinting fails, generate a simple fallback ID
+    if (!basicFingerprint) {
+        console.log('[Fingerprint] Using fallback device ID');
+        const fallbackData = {
+            userAgent: navigator.userAgent,
+            language: navigator.language,
+            screenResolution: `${window.screen.width}x${window.screen.height}`,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            platform: navigator.platform,
+            random: Math.random().toString(36).substring(2), // Random component
+            timestamp: Date.now()
+        };
+        
+        const fallbackHash = await hashData(JSON.stringify(fallbackData));
+        
+        return {
+            fingerprintId: fallbackHash,
+            details: fallbackData,
+            visitorId: `fallback_${fallbackHash.substring(0, 16)}`,
+            isFallback: true
+        };
+    }
 
     const data = {
         visitorId: basicFingerprint.visitorId,

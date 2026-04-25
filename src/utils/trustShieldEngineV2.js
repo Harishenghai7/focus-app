@@ -21,105 +21,114 @@ export const runBulletproofVerification = async ({
 }) => {
     console.log('[TrustShieldV2] Starting bulletproof verification...');
     
+    // Create a timeout for the entire verification (15 seconds max)
+    const verificationTimeout = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Verification timed out after 15 seconds')), 15000);
+    });
+    
     try {
-        // ── LAYER 1: Device Fingerprinting ─────────────────────────────────────
-        console.log('[TrustShieldV2] Layer 1: Device fingerprinting...');
-        const deviceData = await generateAdvancedFingerprint();
-        
-        if (!deviceData) {
-            return {
-                passed: false,
-                reason: 'Unable to verify device. Please try from a different browser.',
-                layer: 'device'
-            };
-        }
-        
-        // Check for suspicious device patterns
-        if (isSuspiciousDevice(deviceData.details)) {
-            return {
-                passed: false,
-                reason: 'Suspicious device pattern detected. Please use a standard web browser.',
-                layer: 'device',
-                flagged: true
-            };
-        }
-        
-        // ── LAYER 2: OCR Validation ─────────────────────────────────────────────
-        console.log('[TrustShieldV2] Layer 2: OCR validation...');
-        
-        if (!ocrResult || !ocrResult.name || !ocrResult.dob) {
-            return {
-                passed: false,
-                reason: 'Could not read ID clearly. Please upload a clearer photo showing Name and Date of Birth.',
-                layer: 'ocr'
-            };
-        }
-        
-        // Anti-screenshot check (simple heuristic)
-        if (/screenshot/i.test(ocrResult.name) || ocrResult.name.length < 2) {
-            return {
-                passed: false,
-                reason: 'Please upload a real ID photo, not a screenshot or edited image.',
-                layer: 'ocr',
-                flagged: true
-            };
-        }
-        
-        // ── LAYER 3: ID Quality Check ───────────────────────────────────────────
-        console.log('[TrustShieldV2] Layer 3: ID quality validation...');
-        
-        // Check file size (too small = likely fake/compressed)
-        if (idImageFile && idImageFile.size < 50000) { // Less than 50KB
-            return {
-                passed: false,
-                reason: 'ID image quality too low. Please upload a clearer, higher resolution photo.',
-                layer: 'quality'
-            };
-        }
-        
-        // ── LAYER 4: Rate Limiting Check (Client-side) ─────────────────────────
-        console.log('[TrustShieldV2] Layer 4: Rate limiting...');
-        const verificationAttempts = parseInt(localStorage.getItem('trustShieldAttempts') || '0');
-        const lastAttempt = parseInt(localStorage.getItem('trustShieldLastAttempt') || '0');
-        const now = Date.now();
-        
-        // Max 5 attempts per hour per device
-        if (verificationAttempts >= 5 && (now - lastAttempt) < 3600000) {
-            const minutesLeft = Math.ceil((3600000 - (now - lastAttempt)) / 60000);
-            return {
-                passed: false,
-                reason: `Too many verification attempts. Please try again in ${minutesLeft} minutes.`,
-                layer: 'rate_limit'
-            };
-        }
-        
-        // Update attempt counter
-        localStorage.setItem('trustShieldAttempts', (verificationAttempts + 1).toString());
-        localStorage.setItem('trustShieldLastAttempt', now.toString());
-        
-        // ── ALL LAYERS PASSED ─────────────────────────────────────────────────
-        console.log('[TrustShieldV2] ✅ All security layers passed');
-        
-        return {
-            passed: true,
-            score: 0.85, // High confidence without face recognition
-            reason: 'ID verified successfully. Device fingerprint captured.',
-            deviceFingerprint: deviceData.fingerprintId,
-            deviceId: deviceData.visitorId,
-            ocrData: ocrResult,
-            verificationMethod: 'id_only',
-            version: TRUST_SHIELD_VERSION,
-            timestamp: new Date().toISOString()
-        };
-        
-    } catch (err) {
-        console.error('[TrustShieldV2] Verification error:', err);
+        return await Promise.race([
+            runVerificationInternal({ idImageFile, ocrResult, userId, userEmail }),
+            verificationTimeout
+        ]);
+    } catch (timeoutErr) {
+        console.error('[TrustShieldV2] Verification timeout:', timeoutErr.message);
         return {
             passed: false,
-            reason: `Verification system error: ${err.message}. Please refresh and try again.`,
-            error: err.message
+            reason: 'Verification timed out. Please check your connection and try again.',
+            layer: 'timeout',
+            error: timeoutErr.message
         };
     }
+};
+
+// Internal verification function
+const runVerificationInternal = async ({ idImageFile, ocrResult, userId, userEmail }) => {
+    // ── LAYER 1: Device Fingerprinting ─────────────────────────────────────
+    console.log('[TrustShieldV2] Layer 1: Device fingerprinting...');
+    const deviceData = await generateAdvancedFingerprint();
+    
+    // Note: deviceData can be null if fingerprinting fails, we use fallback
+    const isFallbackDevice = deviceData?.isFallback || false;
+    
+    // Check for suspicious device patterns
+    if (deviceData && isSuspiciousDevice(deviceData.details)) {
+        return {
+            passed: false,
+            reason: 'Suspicious device pattern detected. Please use a standard web browser.',
+            layer: 'device',
+            flagged: true
+        };
+    }
+    
+    // ── LAYER 2: OCR Validation ─────────────────────────────────────────────
+    console.log('[TrustShieldV2] Layer 2: OCR validation...');
+    
+    if (!ocrResult || !ocrResult.name || !ocrResult.dob) {
+        return {
+            passed: false,
+            reason: 'Could not read ID clearly. Please upload a clearer photo showing Name and Date of Birth.',
+            layer: 'ocr'
+        };
+    }
+    
+    // Anti-screenshot check (simple heuristic)
+    if (/screenshot/i.test(ocrResult.name) || ocrResult.name.length < 2) {
+        return {
+            passed: false,
+            reason: 'Please upload a real ID photo, not a screenshot or edited image.',
+            layer: 'ocr',
+            flagged: true
+        };
+    }
+    
+    // ── LAYER 3: ID Quality Check ───────────────────────────────────────────
+    console.log('[TrustShieldV2] Layer 3: ID quality validation...');
+    
+    // Check file size (too small = likely fake/compressed)
+    if (idImageFile && idImageFile.size < 50000) { // Less than 50KB
+        return {
+            passed: false,
+            reason: 'ID image quality too low. Please upload a clearer, higher resolution photo.',
+            layer: 'quality'
+        };
+    }
+    
+    // ── LAYER 4: Rate Limiting Check (Client-side) ─────────────────────────
+    console.log('[TrustShieldV2] Layer 4: Rate limiting...');
+    const verificationAttempts = parseInt(localStorage.getItem('trustShieldAttempts') || '0');
+    const lastAttempt = parseInt(localStorage.getItem('trustShieldLastAttempt') || '0');
+    const now = Date.now();
+    
+    // Max 5 attempts per hour per device
+    if (verificationAttempts >= 5 && (now - lastAttempt) < 3600000) {
+        const minutesLeft = Math.ceil((3600000 - (now - lastAttempt)) / 60000);
+        return {
+            passed: false,
+            reason: `Too many verification attempts. Please try again in ${minutesLeft} minutes.`,
+            layer: 'rate_limit'
+        };
+    }
+    
+    // Update attempt counter
+    localStorage.setItem('trustShieldAttempts', (verificationAttempts + 1).toString());
+    localStorage.setItem('trustShieldLastAttempt', now.toString());
+    
+    // ── ALL LAYERS PASSED ─────────────────────────────────────────────────
+    console.log('[TrustShieldV2] ✅ All security layers passed');
+    
+    return {
+        passed: true,
+        score: isFallbackDevice ? 0.75 : 0.85, // Slightly lower score for fallback
+        reason: 'ID verified successfully. Device fingerprint captured.',
+        deviceFingerprint: deviceData?.fingerprintId || 'unknown',
+        deviceId: deviceData?.visitorId || 'unknown',
+        ocrData: ocrResult,
+        verificationMethod: 'id_only',
+        isFallbackDevice: isFallbackDevice,
+        version: TRUST_SHIELD_VERSION,
+        timestamp: new Date().toISOString()
+    };
 };
 
 /**
