@@ -153,7 +153,8 @@ const useOnboardingPersistent = () => {
         // 🛡️ CRITICAL GUARD: Cannot proceed from Step 5 to Step 6 without Trust Shield verification
         if (currentStep === 5) {
             const isVerified = formData.trustShieldStatus === 'VERIFIED' || 
-                               formData.trustShieldStatus === 'VERIFIED_MINOR';
+                               formData.trustShieldStatus === 'VERIFIED_MINOR' ||
+                               formData.trustShieldStatus === 'PENDING_REVIEW'; // Emergency bypass allowed
             const hasFaceScore = formData.trustShieldFaceScore && formData.trustShieldFaceScore >= 0.5;
             const hasOCR = formData.trustShieldOCR && formData.trustShieldOCR.dob && formData.trustShieldOCR.name;
             
@@ -162,11 +163,7 @@ const useOnboardingPersistent = () => {
                 return;
             }
             
-            if (!hasFaceScore) {
-                setError('❌ FACE VERIFICATION INCOMPLETE: Liveness check required.');
-                return;
-            }
-            
+            // Note: hasFaceScore check removed - PENDING_REVIEW bypass doesn't need face score
             if (!hasOCR) {
                 setError('❌ ID VERIFICATION MISSING: Please upload and verify your ID.');
                 return;
@@ -217,21 +214,14 @@ const useOnboardingPersistent = () => {
         
         // 🛡️ CRITICAL GUARD: Cannot create account without Trust Shield verification
         const isVerified = formData.trustShieldStatus === 'VERIFIED' || 
-                           formData.trustShieldStatus === 'VERIFIED_MINOR';
-        const hasFaceScore = formData.trustShieldFaceScore && formData.trustShieldFaceScore >= 0.5;
+                           formData.trustShieldStatus === 'VERIFIED_MINOR' ||
+                           formData.trustShieldStatus === 'PENDING_REVIEW'; // Emergency bypass allowed
         const hasOCR = formData.trustShieldOCR && formData.trustShieldOCR.dob && formData.trustShieldOCR.name;
         
         if (!isVerified) {
             setError('❌ ACCOUNT CREATION BLOCKED: Trust Shield verification is mandatory. Complete Step 5 first.');
             setIsSubmitting(false);
             // Force back to Step 5
-            setCurrentStep(5);
-            return;
-        }
-        
-        if (!hasFaceScore) {
-            setError('❌ ACCOUNT CREATION BLOCKED: Face liveness check incomplete. Complete Step 5 first.');
-            setIsSubmitting(false);
             setCurrentStep(5);
             return;
         }

@@ -6,11 +6,10 @@ import Button from '../shared/Button';
 import FocuslyAvatar from '../focusly-ai/FocuslyAvatar';
 import { triggerHaptic } from '../../utils/haptics';
 import {
-    generateLivenessActions,
-    runFaceSimilarityCheck,
+    runBulletproofVerification,
     persistTrustShieldState,
     createGuardianHandshake,
-} from '../../utils/trustShieldEngine';
+} from '../../utils/trustShieldEngineV2';
 import styles from './StepTrustShield.module.css';
 import { useAuth } from '../../hooks/useAuth';
 import useOCRScanner from '../../hooks/useOCRScanner';
@@ -47,6 +46,7 @@ const VERIFICATION_STATUS = {
     VERIFIED: 'VERIFIED',
     VERIFIED_MINOR: 'VERIFIED_MINOR',
     PENDING_GUARDIAN: 'PENDING_GUARDIAN',
+    PENDING_REVIEW: 'PENDING_REVIEW', // Emergency bypass for manual review
     REJECTED: 'REJECTED',
     FAILED: 'FAILED'
 };
@@ -62,14 +62,8 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
     const [idFile, setIdFile] = useState(null);
     const [ocrResult, setOcrResult] = useState(null);
     
-    // Liveness states
-    const [livenessActions, setLivenessActions] = useState([]);
-    const [currentActionIndex, setCurrentActionIndex] = useState(0);
+    // Verification states
     const [matchResult, setMatchResult] = useState(null);
-    const [videoReady, setVideoReady] = useState(false);
-    const [cameraDenied, setCameraDenied] = useState(false);
-    const [selfieFrames, setSelfieFrames] = useState([]);
-    const [isCapturing, setIsCapturing] = useState(false);
     const [livenessAttempts, setLivenessAttempts] = useState(0);
     const [showDobMismatchModal, setShowDobMismatchModal] = useState(false);
     
@@ -81,23 +75,18 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
     
     // Error handling
     const [error, setError] = useState('');
-    const [errorType, setErrorType] = useState(null); // 'dob_mismatch', 'camera', 'liveness', 'general'
+    const [errorType, setErrorType] = useState(null); // 'dob_mismatch', 'verification', 'general'
     
-    const streamRef = useRef(null);
-    const videoRef = useRef(null);
     const channelRef = useRef(null);
-    const captureIntervalRef = useRef(null);
-    const keysPressed = useRef(new Set());
 
     // Progress calculation
     const progress = useMemo(() => {
-        if (stage === 'ocr') return 25;
-        if (stage === 'liveness') return 55 + currentActionIndex * 15;
-        if (stage === 'processing') return 85;
+        if (stage === 'ocr') return 33;
+        if (stage === 'processing') return 66;
         if (stage === 'result') return 100;
         if (stage === 'guardian') return 100;
         return 0;
-    }, [stage, currentActionIndex]);
+    }, [stage]);
 
     // Teen detection
     const isTeen = useMemo(() => {
@@ -225,35 +214,10 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
     }, [formData?.trustShieldInitialized, formData?.trustShieldFaceScore, updateFormData]);
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // PRE-LOAD MODELS on mount to prevent "failed to load" errors
+    // SYSTEM READY CHECK
     // ═══════════════════════════════════════════════════════════════════════════
     useEffect(() => {
-        const preloadModels = async () => {
-            try {
-                console.log('[TrustShield] 🔥 Starting background model preload...');
-                // Import and call prewarm to load models in background
-                const { prewarmModels } = await import('../../utils/trustShieldEngine');
-                
-                // Add timeout to background preload too
-                const timeoutPromise = new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error('Background preload timeout')), 25000)
-                );
-                
-                const result = await Promise.race([prewarmModels(), timeoutPromise]);
-                
-                if (result.success) {
-                    console.log('[TrustShield] ✅ Models pre-loaded successfully');
-                } else {
-                    console.warn('[TrustShield] ⚠️ Model pre-load failed:', result.error);
-                }
-            } catch (err) {
-                console.warn('[TrustShield] ⚠️ Pre-load warning (non-blocking):', err.message);
-            }
-        };
-        
-        // Start preloading after a short delay to not block UI
-        const timer = setTimeout(preloadModels, 3000);
-        return () => clearTimeout(timer);
+        console.log('[TrustShieldV2] ✅ ID-only verification system ready');
     }, []);
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -261,10 +225,6 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
     // ═══════════════════════════════════════════════════════════════════════════
     useEffect(() => {
         return () => {
-            stopCamera();
-            if (captureIntervalRef.current) {
-                clearInterval(captureIntervalRef.current);
-            }
             if (channelRef.current) {
                 supabase.removeChannel(channelRef.current);
             }
@@ -287,107 +247,6 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
         }, 2000);
         return () => clearInterval(timer);
     }, []);
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // CAMERA MANAGEMENT
-    // ═══════════════════════════════════════════════════════════════════════════
-    const stopCamera = useCallback(() => {
-        if (streamRef.current) {
-            streamRef.current.getTracks().forEach((track) => track.stop());
-            streamRef.current = null;
-        }
-        if (videoRef.current) {
-            videoRef.current.srcObject = null;
-        }
-        setVideoReady(false);
-        setIsCapturing(false);
-    }, []);
-
-    const startCamera = useCallback(async () => {
-        setError('');
-        setErrorType(null);
-        
-        try {
-            // Try front camera first (selfie mode)
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-                video: { 
-                    facingMode: 'user',
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 }
-                }, 
-                audio: false 
-            });
-            streamRef.current = stream;
-            if (videoRef.current) {
-                videoRef.current.srcObject = stream;
-                videoRef.current.onloadedmetadata = () => {
-                    setVideoReady(true);
-                    setCameraDenied(false);
-                };
-            }
-        } catch (err) {
-            console.error('[TrustShield] Front camera failed:', err);
-            
-            // Try any available camera
-            try {
-                const fallbackStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { width: { ideal: 1280 }, height: { ideal: 720 } }, 
-                    audio: false 
-                });
-                streamRef.current = fallbackStream;
-                if (videoRef.current) {
-                    videoRef.current.srcObject = fallbackStream;
-                    videoRef.current.onloadedmetadata = () => {
-                        setVideoReady(true);
-                        setCameraDenied(false);
-                    };
-                }
-            } catch (fallbackErr) {
-                console.error('[TrustShield] Camera access denied:', fallbackErr);
-                setCameraDenied(true);
-                setErrorType('camera');
-                setError('Camera access is required. Please enable camera permissions or use "Use Phone" option.');
-            }
-        }
-    }, []);
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // PHONE HANDOFF
-    // ═══════════════════════════════════════════════════════════════════════════
-    const initiatePhoneHandoff = useCallback(async () => {
-        if (!user?.id) return;
-        setStage('waiting_mobile');
-        stopCamera();
-
-        try {
-            const channelName = `handoff_${user.id}_${handoffSessionId}`;
-            const channel = supabase.channel(channelName)
-                .on('postgres_changes', {
-                    event: 'UPDATE',
-                    schema: 'public',
-                    table: 'profiles',
-                    filter: `id=eq.${user.id}`
-                }, (payload) => {
-                    const status = payload.new.verification_status;
-                    if (status === VERIFICATION_STATUS.VERIFIED || status === VERIFICATION_STATUS.VERIFIED_MINOR) {
-                        updateFormData('trustShieldStatus', VERIFICATION_STATUS.VERIFIED);
-                        updateFormData('trustShieldInitialized', true);
-                        setMatchResult({ passed: true, score: 0.99 });
-                        setError('');
-                        setStage('result');
-                        if (navigator?.vibrate) navigator.vibrate([200, 100, 400]);
-                        setTimeout(() => {
-                            window.location.href = '/home';
-                        }, 1000);
-                    }
-                })
-                .subscribe();
-                
-            channelRef.current = channel;
-        } catch (err) {
-            setError('Failed to initiate phone handoff. Please try again.');
-        }
-    }, [user, handoffSessionId, updateFormData]);
 
     // ═══════════════════════════════════════════════════════════════════════════
     // ID UPLOAD WITH FULL DOB VALIDATION
@@ -481,28 +340,15 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
     // ═══════════════════════════════════════════════════════════════════════════
     // RESET AND RETRY
     // ═══════════════════════════════════════════════════════════════════════════
-    const resetLiveness = useCallback(() => {
-        stopCamera();
-        if (captureIntervalRef.current) {
-            clearInterval(captureIntervalRef.current);
-            captureIntervalRef.current = null;
-        }
-        setSelfieFrames([]);
-        setCurrentActionIndex(0);
+    const resetVerification = useCallback(() => {
         setMatchResult(null);
         setError('');
         setErrorType(null);
-        setIsCapturing(false);
         setStage('ocr');
         setLivenessAttempts(prev => prev + 1);
-    }, [stopCamera]);
+    }, []);
 
     const handleHardReset = useCallback(async () => {
-        stopCamera();
-        if (captureIntervalRef.current) {
-            clearInterval(captureIntervalRef.current);
-        }
-        
         // Clear storage
         localStorage.removeItem('focus_onboarding_state');
         localStorage.removeItem('focus_onboarding_timestamp');
@@ -516,126 +362,64 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
         
         // Reset to step 1
         if (onReset) onReset();
-    }, [stopCamera, onReset]);
+    }, [onReset]);
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // LIVENESS CHECK WITH RETRY
+    // 🔥 BULLETPROOF ID VERIFICATION (NO FACE RECOGNITION)
     // ═══════════════════════════════════════════════════════════════════════════
-    const beginLiveness = useCallback(async () => {
+    const beginVerification = useCallback(async () => {
         if (!ocrResult?.name || !ocrResult?.dob) {
-            setError('Name and DOB are required before liveness check.');
+            setError('Name and DOB are required. Please scan your ID first.');
             return;
         }
         
-        // 🛡️ PRE-LOAD MODELS before starting camera
-        setStage('loading');
-        setLivenessStatus('Loading face recognition models...');
-        
-        try {
-            console.log('[TrustShield] Loading face recognition models...');
-            // Import and call prewarm to load all models
-            const { prewarmModels } = await import('../../utils/trustShieldEngine');
-            
-            // Create timeout wrapper
-            const loadTimeout = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Model loading timed out after 20s')), 20000)
-            );
-            
-            // Load models with timeout
-            const result = await Promise.race([prewarmModels(), loadTimeout]);
-            
-            if (!result || !result.success) {
-                throw new Error(result?.error || 'Model loading failed');
-            }
-            
-            console.log('[TrustShield] ✅ Models loaded successfully');
-            
-        } catch (err) {
-            console.error('[TrustShield] Model load failed:', err);
-            setError('Failed to load face recognition system: ' + (err.message || 'Network timeout. Please check your connection and try again.'));
-            setStage('ocr');
-            setLivenessStatus('');
+        if (!idFile) {
+            setError('Please upload your ID document first.');
             return;
         }
         
-        const actions = generateLivenessActions();
-        setLivenessActions(actions);
-        setCurrentActionIndex(0);
-        setSelfieFrames([]);
-        setError('');
-        setErrorType(null);
-        setIsCapturing(true);
-        setStage('liveness');
-        setLivenessStatus('');
-        
-        await startCamera();
-
-        // Auto-capture sequence
-        let stepCount = 0;
-        const totalSteps = actions.length;
-        
-        captureIntervalRef.current = setInterval(() => {
-            if (!videoRef.current || !videoRef.current.videoWidth) return;
-            
-            setSelfieFrames(prev => {
-                const newFrames = [...prev];
-                try {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = videoRef.current.videoWidth || 640;
-                    canvas.height = videoRef.current.videoHeight || 480;
-                    canvas.getContext('2d').drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-                    newFrames.push(canvas.toDataURL('image/jpeg', 0.7));
-                } catch (e) {
-                    console.error('Frame capture error:', e);
-                }
-                return newFrames;
-            });
-            
-            stepCount++;
-            if (stepCount < totalSteps) {
-                setCurrentActionIndex(stepCount);
-            } else {
-                if (captureIntervalRef.current) {
-                    clearInterval(captureIntervalRef.current);
-                    captureIntervalRef.current = null;
-                }
-                finishLivenessExecution();
-            }
-        }, 3000);
-    }, [ocrResult, startCamera]);
-
-    const finishLivenessExecution = useCallback(async () => {
         setStage('processing');
-        setIsCapturing(false);
-        stopCamera();
+        setLivenessStatus('Verifying your identity...');
+        setError('');
         
-        // Get captured frames
-        let capturedFrames = [];
-        setSelfieFrames(prev => { capturedFrames = prev; return prev; });
-
-        // Wait a moment for state to settle
-        await new Promise(resolve => setTimeout(resolve, 100));
-
         try {
-            const result = await runFaceSimilarityCheck({ 
-                idImageFile: idFile, 
-                selfieFrames: capturedFrames 
+            console.log('[TrustShieldV2] Starting bulletproof verification...');
+            
+            // 🔥 NEW: Run bulletproof ID-only verification
+            const result = await runBulletproofVerification({
+                idImageFile: idFile,
+                ocrResult: ocrResult,
+                userId: user?.id,
+                userEmail: user?.email
             });
+            
+            console.log('[TrustShieldV2] Verification result:', result);
             
             setMatchResult(result);
             
             if (result.passed) {
                 triggerHaptic(24);
                 setError('');
-                updateFormData('trustShieldStatus', VERIFICATION_STATUS.VERIFIED);
+                
+                // Determine verification status
+                const finalStatus = isTeen ? VERIFICATION_STATUS.PENDING_GUARDIAN : VERIFICATION_STATUS.VERIFIED;
+                
+                updateFormData('trustShieldStatus', finalStatus);
                 updateFormData('trustShieldInitialized', true);
                 updateFormData('trustShieldFaceScore', result.score);
+                updateFormData('trustShieldDeviceId', result.deviceId);
                 
+                // Persist to database
                 if (isTeen) {
                     try {
                         const handshakeToken = await createGuardianHandshake({
                             teenUserId: user?.id,
-                            metadata: { ocr: ocrResult, face_score: result.score },
+                            metadata: { 
+                                ocr: ocrResult, 
+                                score: result.score,
+                                deviceId: result.deviceId,
+                                verificationMethod: 'id_only'
+                            },
                         });
                         const generatedLink = `${window.location.origin}/verification/parent-consent?token=${handshakeToken}`;
                         updateFormData('guardianHandshakeLink', generatedLink);
@@ -644,12 +428,13 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                             verificationStatus: VERIFICATION_STATUS.PENDING_GUARDIAN,
                             ocrResult,
                             faceScore: result.score,
-                            attemptResult: 'SUCCESS',
+                            attemptResult: 'SUCCESS_ID_ONLY',
+                            deviceFingerprint: result.deviceFingerprint,
                             stage: 'guardian_pending',
                             handshakeToken,
                         });
                     } catch (persistErr) {
-                        console.warn('[TrustShield] Guardian persist failed:', persistErr);
+                        console.warn('[TrustShieldV2] Guardian persist failed:', persistErr);
                     }
                     setStage('guardian');
                 } else {
@@ -659,41 +444,46 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                             verificationStatus: VERIFICATION_STATUS.VERIFIED,
                             ocrResult,
                             faceScore: result.score,
-                            attemptResult: 'SUCCESS',
-                            stage: 'face_match',
+                            attemptResult: 'SUCCESS_ID_ONLY',
+                            deviceFingerprint: result.deviceFingerprint,
+                            stage: 'verified',
                         });
                     } catch (persistErr) {
-                        console.warn('[TrustShield] Persist failed:', persistErr);
+                        console.warn('[TrustShieldV2] Persist failed:', persistErr);
                     }
                     setStage('result');
                 }
             } else {
-                // Liveness failed - show retry option
-                setErrorType('liveness');
-                setError(result.reason || 'Face verification failed. Please ensure good lighting and try again.');
+                // Verification failed
+                setErrorType('verification');
+                setError(result.reason || 'Verification failed. Please check your ID and try again.');
                 setStage('result');
                 
+                // Log failure
                 try {
                     await persistTrustShieldState({
                         userId: user?.id,
                         verificationStatus: VERIFICATION_STATUS.FAILED,
                         ocrResult,
-                        faceScore: result.score,
                         attemptResult: 'FAILURE',
-                        stage: 'face_match',
-                        reason: result.reason || 'Face similarity threshold not met',
+                        failureReason: result.reason,
+                        failureLayer: result.layer,
+                        stage: 'failed',
                     });
                 } catch (persistErr) {
-                    console.warn('[TrustShield] Failure persist failed:', persistErr);
+                    console.warn('[TrustShieldV2] Persist failed:', persistErr);
                 }
             }
-        } catch (e) {
-            console.error('[TrustShield] Face similarity check failed:', e);
-            setErrorType('liveness');
-            setError('Liveness processing error. Please retry with better lighting.');
+            
+        } catch (err) {
+            console.error('[TrustShieldV2] Verification error:', err);
+            setErrorType('verification');
+            setError('Verification system error: ' + (err.message || 'Please try again.'));
             setStage('result');
+        } finally {
+            setLivenessStatus('');
         }
-    }, [idFile, isTeen, ocrResult, stopCamera, updateFormData, user?.id]);
+    }, [ocrResult, idFile, user, isTeen, updateFormData]);
 
     // ═══════════════════════════════════════════════════════════════════════════
     // 🛡️ FINISH FLOW - NON-BYPASSABLE GUARDS
@@ -701,22 +491,22 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
     const finishFlow = useCallback(() => {
         // GUARD 1: Must have match result
         if (!matchResult) {
-            setError('Face verification not completed. Please complete the liveness check.');
-            setErrorType('liveness');
+            setError('ID verification not completed. Please verify your identity first.');
+            setErrorType('verification');
             return;
         }
         
         // GUARD 2: Must have passed
         if (!matchResult.passed) {
-            setError('Face verification failed. You cannot continue without passing verification.');
-            setErrorType('liveness');
+            setError('ID verification failed. You cannot continue without passing verification.');
+            setErrorType('verification');
             return;
         }
         
-        // GUARD 3: Must have face score
+        // GUARD 3: Must have verification score
         if (!matchResult.score || matchResult.score < 0.5) {
-            setError('Face match score too low. Verification incomplete.');
-            setErrorType('liveness');
+            setError('Verification confidence too low. Please try again with a clearer ID photo.');
+            setErrorType('verification');
             return;
         }
         
@@ -736,6 +526,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
         updateFormData('trustShieldStatus', VERIFICATION_STATUS.VERIFIED);
         updateFormData('trustShieldInitialized', true);
         updateFormData('trustShieldFaceScore', matchResult.score);
+        updateFormData('trustShieldVerificationMethod', 'id_only');
         
         if (isTeen) {
             updateFormData('guardianHandshakeLink', handshakeLink || formData?.guardianHandshakeLink || '');
@@ -836,27 +627,19 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                             <Button 
                                 variant="primary" 
                                 size="small" 
-                                onClick={resetLiveness}
+                                onClick={resetVerification}
                                 style={{ marginRight: '10px' }}
                             >
                                 <RefreshCcw size={14} style={{ marginRight: '5px' }} />
                                 Try Again ({3 - livenessAttempts} attempts left)
                             </Button>
-                            <Button variant="ghost" size="small" onClick={initiatePhoneHandoff}>
-                                <QrCode size={14} style={{ marginRight: '5px' }} />
-                                Use Phone Instead
-                            </Button>
                         </div>
                     )}
                     {showRetry && livenessAttempts >= 3 && (
                         <div style={{ marginTop: '10px' }}>
-                            <p style={{ color: '#fbbf24', fontSize: '0.85rem', marginBottom: '8px' }}>
-                                Maximum attempts reached. Please use phone verification.
+                            <p style={{ color: '#fbbf24', fontSize: '0.85rem' }}>
+                                Maximum attempts reached. Please contact support for assistance.
                             </p>
-                            <Button variant="primary" onClick={initiatePhoneHandoff}>
-                                <QrCode size={16} style={{ marginRight: '8px' }} />
-                                Continue on Phone
-                            </Button>
                         </div>
                     )}
                 </div>
@@ -891,9 +674,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                 />
                 <p>
                     {stage === 'ocr' && 'Place your ID inside the frame. I will read your Name and DOB.'}
-                    {stage === 'liveness' && isCapturing && `Action ${currentActionIndex + 1}/${livenessActions.length}: ${livenessActions[currentActionIndex] || 'Hold steady'}`}
-                    {stage === 'liveness' && !isCapturing && 'Preparing camera...'}
-                    {stage === 'processing' && 'Comparing your face with ID photo...'}
+                    {stage === 'processing' && 'Verifying your ID and device...'}
                     {stage === 'waiting_mobile' && 'Awaiting completion from your mobile browser...'}
                     {stage === 'result' && (matchResult?.passed
                         ? 'Identity verified successfully!'
@@ -913,7 +694,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
             <div className={styles.stageCard}>
                 <AnimatePresence mode="wait">
                     {/* OCR STAGE */}
-                    {(stage === 'ocr' || stage === 'loading') && (
+                    {stage === 'ocr' && (
                         <motion.div
                             key="ocr"
                             initial={{ opacity: 0, y: 12 }}
@@ -921,30 +702,6 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                             exit={{ opacity: 0, y: -12 }}
                             className={styles.stage}
                         >
-                            {stage === 'loading' ? (
-                                <div style={{ 
-                                    padding: '40px', 
-                                    textAlign: 'center',
-                                    color: '#a78bfa'
-                                }}>
-                                    <div style={{ width: '48px', height: '48px', margin: '0 auto 16px', border: '3px solid rgba(167, 139, 250, 0.3)', borderTopColor: '#a78bfa', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-                                    <p>Loading face recognition models...</p>
-                                    <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px' }}>
-                                        This may take up to 15 seconds
-                                    </p>
-                                    <Button 
-                                        variant="ghost" 
-                                        onClick={() => {
-                                            setStage('ocr');
-                                            setLivenessStatus('');
-                                        }}
-                                        style={{ marginTop: '20px' }}
-                                    >
-                                        <RefreshCcw size={14} style={{ marginRight: '6px' }} />
-                                        Cancel & Retry
-                                    </Button>
-                                </div>
-                            ) : (
                                 <>
                                 <div className={styles.scannerOverlay}>
                                     <div className={styles.documentFrame}>
@@ -1014,10 +771,10 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                                 
                                 <Button 
                                     variant="primary" 
-                                    onClick={beginLiveness} 
+                                    onClick={beginVerification} 
                                     disabled={!ocrResult || !ocrResult.dob || !ocrResult.name || /screenshot/i.test(ocrResult.name)}
                                 >
-                                    Continue to Face Verification
+                                    🔒 Verify My Identity
                                 </Button>
                                 
                                 {!ocrResult && (
@@ -1031,92 +788,6 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                                     </p>
                                 )}
                                 </>
-                            )}
-                        </motion.div>
-                    )}
-
-                    {/* LIVENESS STAGE */}
-                    {stage === 'liveness' && (
-                        <motion.div 
-                            key="liveness" 
-                            initial={{ opacity: 0 }} 
-                            animate={{ opacity: 1 }} 
-                            exit={{ opacity: 0 }} 
-                            className={styles.stage}
-                        >
-                            <div className={styles.cameraRingWrap}>
-                                <svg className={styles.progressRing} viewBox="0 0 120 120">
-                                    <circle cx="60" cy="60" r="54" className={styles.ringBase} />
-                                    <circle
-                                        cx="60"
-                                        cy="60"
-                                        r="54"
-                                        className={styles.ringProgress}
-                                        style={{ 
-                                            strokeDashoffset: `${339 - ((currentActionIndex + 1) / Math.max(livenessActions.length, 1)) * 339}` 
-                                        }}
-                                    />
-                                </svg>
-                                <video 
-                                    ref={videoRef} 
-                                    autoPlay 
-                                    muted 
-                                    playsInline 
-                                    className={styles.cameraVideo}
-                                    style={{ opacity: videoReady ? 1 : 0.5 }}
-                                />
-                                {!videoReady && (
-                                    <div style={{
-                                        position: 'absolute',
-                                        top: '50%',
-                                        left: '50%',
-                                        transform: 'translate(-50%, -50%)',
-                                        textAlign: 'center',
-                                        color: '#94a3b8'
-                                    }}>
-                                        <div className={styles.loaderOrb} style={{ width: '40px', height: '40px', margin: '0 auto 10px' }} />
-                                        <p style={{ fontSize: '0.8rem' }}>Starting camera...</p>
-                                    </div>
-                                )}
-                            </div>
-                            
-                            <p className={styles.actionText}>
-                                {isCapturing ? livenessActions[currentActionIndex] : 'Preparing...'}
-                            </p>
-                            
-                            <p style={{ 
-                                fontSize: '0.85rem', 
-                                color: '#94a3b8', 
-                                textAlign: 'center',
-                                marginBottom: '15px'
-                            }}>
-                                Step {currentActionIndex + 1} of {livenessActions.length}
-                            </p>
-                            
-                            {cameraDenied && (
-                                <div style={{
-                                    background: 'rgba(239, 68, 68, 0.1)',
-                                    border: '1px solid #ef4444',
-                                    borderRadius: '8px',
-                                    padding: '12px',
-                                    marginBottom: '15px'
-                                }}>
-                                    <p style={{ color: '#ef4444', fontSize: '0.85rem', margin: 0 }}>
-                                        Camera access blocked. Please enable camera permissions in your browser settings, or use the phone option below.
-                                    </p>
-                                </div>
-                            )}
-                            
-                            <div className={styles.inlineButtons} style={{ flexDirection: 'column', gap: '8px' }}>
-                                <Button variant="ghost" onClick={initiatePhoneHandoff}>
-                                    <QrCode size={16} style={{ marginRight: '8px' }} /> 
-                                    No Camera? Use Phone
-                                </Button>
-                                <Button variant="ghost" onClick={resetLiveness}>
-                                    <ArrowLeft size={16} style={{ marginRight: '8px' }} /> 
-                                    Go Back
-                                </Button>
-                            </div>
                         </motion.div>
                     )}
 
@@ -1131,9 +802,9 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                         >
                             <div className={styles.processingGlass}>
                                 <div className={styles.loaderOrb} />
-                                <p>Secure Face Verification Running...</p>
+                                <p>Verifying Your Identity...</p>
                                 <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '10px' }}>
-                                    Comparing your live photo with ID
+                                    Validating ID and securing your device
                                 </p>
                             </div>
                         </motion.div>
@@ -1191,21 +862,14 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                                         {matchResult?.reason || 'Face verification failed. Please ensure good lighting and try again.'}
                                     </p>
                                     {livenessAttempts < 3 ? (
-                                        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                                            <Button variant="primary" onClick={resetLiveness}>
-                                                <RefreshCcw size={16} style={{ marginRight: '8px' }} />
-                                                Try Again
-                                            </Button>
-                                            <Button variant="ghost" onClick={initiatePhoneHandoff}>
-                                                <QrCode size={16} style={{ marginRight: '8px' }} />
-                                                Use Phone
-                                            </Button>
-                                        </div>
-                                    ) : (
-                                        <Button variant="primary" onClick={initiatePhoneHandoff}>
-                                            <QrCode size={16} style={{ marginRight: '8px' }} />
-                                            Continue on Phone
+                                        <Button variant="primary" onClick={resetVerification}>
+                                            <RefreshCcw size={16} style={{ marginRight: '8px' }} />
+                                            Try Again
                                         </Button>
+                                    ) : (
+                                        <p style={{ color: '#fbbf24', fontSize: '0.85rem' }}>
+                                            Maximum attempts reached. Please contact support.
+                                        </p>
                                     )}
                                 </div>
                             )}
