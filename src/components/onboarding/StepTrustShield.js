@@ -890,7 +890,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
             <div className={styles.stageCard}>
                 <AnimatePresence mode="wait">
                     {/* OCR STAGE */}
-                    {stage === 'ocr' && (
+                    {(stage === 'ocr' || stage === 'loading') && (
                         <motion.div
                             key="ocr"
                             initial={{ opacity: 0, y: 12 }}
@@ -898,89 +898,102 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                             exit={{ opacity: 0, y: -12 }}
                             className={styles.stage}
                         >
-                            <div className={styles.scannerOverlay}>
-                                <div className={styles.documentFrame}>
-                                    <span className={styles.cornerTopLeft} />
-                                    <span className={styles.cornerTopRight} />
-                                    <span className={styles.cornerBottomLeft} />
-                                    <span className={styles.cornerBottomRight} />
-                                    <p className={styles.overlayHint}>{ocrHint}</p>
-                                </div>
-                            </div>
-                            
-                            <div className={styles.inlineButtons} style={{ marginTop: '1.5rem', justifyContent: 'center' }}>
-                                {/* Take Photo - Uses capture attribute for mobile camera */}
-                                <label className={styles.uploadBtn}>
-                                    <Camera size={16} /> Take Photo
-                                    <input 
-                                        type="file" 
-                                        accept="image/*" 
-                                        capture="environment"
-                                        onChange={handleIdUpload} 
-                                        hidden 
-                                    />
-                                </label>
-                                
-                                {/* Upload File */}
-                                <label className={styles.uploadBtn} style={{ 
-                                    background: 'rgba(255,255,255,0.05)', 
-                                    color: '#d8b4fe', 
-                                    border: '1px solid rgba(255,255,255,0.1)' 
-                                }}>
-                                    <Upload size={16} /> Upload File
-                                    <input 
-                                        type="file" 
-                                        accept="image/*" 
-                                        onChange={handleIdUpload} 
-                                        hidden 
-                                    />
-                                </label>
-                            </div>
-                            
-                            {ocrStatus && !error && (
-                                <p style={{ 
-                                    fontSize: '0.85rem', 
-                                    color: '#a78bfa', 
-                                    marginTop: '0.5rem', 
-                                    textAlign: 'center' 
-                                }}>
-                                    {ocrStatus} {ocrProgress > 0 && `${ocrProgress}%`}
-                                </p>
-                            )}
-                            
-                            {ocrResult && (
-                                <div className={styles.extractedCard}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                                        <CheckCircle size={16} color="#22c55e" />
-                                        <span style={{ color: '#22c55e', fontSize: '0.85rem' }}>ID Read Successfully</span>
-                                    </div>
-                                    <p><strong>Name:</strong> {ocrResult.name || 'Not found'}</p>
-                                    <p><strong>DOB:</strong> {ocrResult.dob || 'Not found'}</p>
-                                    {formData?.ageInfo?.dateOfBirth && (
-                                        <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '8px' }}>
-                                            Expected DOB: {formData.ageInfo.dateOfBirth}
-                                        </p>
-                                    )}
-                                </div>
-                            )}
-                            
-                            <Button 
-                                variant="primary" 
-                                onClick={beginLiveness} 
-                                disabled={!ocrResult || !ocrResult.dob || !ocrResult.name || /screenshot/i.test(ocrResult.name)}
-                            >
-                                Continue to Face Verification
-                            </Button>
-                            
-                            {!ocrResult && (
-                                <p style={{ 
-                                    fontSize: '0.8rem', 
-                                    color: '#64748b', 
+                            {stage === 'loading' ? (
+                                <div style={{ 
+                                    padding: '40px', 
                                     textAlign: 'center',
-                                    marginTop: '10px'
+                                    color: '#a78bfa'
                                 }}>
-                                    Upload your ID to continue. Ensure the photo clearly shows your Name and Date of Birth.
-                                </p>
+                                    <div style={{ width: '48px', height: '48px', margin: '0 auto 16px', border: '3px solid rgba(167, 139, 250, 0.3)', borderTopColor: '#a78bfa', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                                    <p>Loading face recognition models...</p>
+                                </div>
+                            ) : (
+                                <>
+                                <div className={styles.scannerOverlay}>
+                                    <div className={styles.documentFrame}>
+                                        <span className={styles.cornerTopLeft} />
+                                        <span className={styles.cornerTopRight} />
+                                        <span className={styles.cornerBottomLeft} />
+                                        <span className={styles.cornerBottomRight} />
+                                        <p className={styles.overlayHint}>{ocrHint}</p>
+                                    </div>
+                                </div>
+                                
+                                <div className={styles.inlineButtons} style={{ marginTop: '1.5rem', justifyContent: 'center' }}>
+                                    {/* Take Photo - Uses capture attribute for mobile camera */}
+                                    <label className={styles.uploadBtn}>
+                                        <Camera size={16} /> Take Photo
+                                        <input 
+                                            type="file" 
+                                            accept="image/*" 
+                                            capture="environment"
+                                            onChange={handleIdUpload} 
+                                            hidden 
+                                        />
+                                    </label>
+                                    
+                                    {/* Upload File */}
+                                    <label className={styles.uploadBtn} style={{ 
+                                        background: 'rgba(255,255,255,0.05)', 
+                                        color: '#d8b4fe', 
+                                        border: '1px solid rgba(255,255,255,0.1)' 
+                                    }}>
+                                        <Upload size={16} /> Upload File
+                                        <input 
+                                            type="file" 
+                                            accept="image/*" 
+                                            onChange={handleIdUpload} 
+                                            hidden 
+                                        />
+                                    </label>
+                                </div>
+                                
+                                {ocrStatus && !error && (
+                                    <p style={{ 
+                                        fontSize: '0.85rem', 
+                                        color: '#a78bfa', 
+                                        marginTop: '0.5rem', 
+                                        textAlign: 'center' 
+                                    }}>
+                                        {ocrStatus} {ocrProgress > 0 && `${ocrProgress}%`}
+                                    </p>
+                                )}
+                                
+                                {ocrResult && (
+                                    <div className={styles.extractedCard}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                            <CheckCircle size={16} color="#22c55e" />
+                                            <span style={{ color: '#22c55e', fontSize: '0.85rem' }}>ID Read Successfully</span>
+                                        </div>
+                                        <p><strong>Name:</strong> {ocrResult.name || 'Not found'}</p>
+                                        <p><strong>DOB:</strong> {ocrResult.dob || 'Not found'}</p>
+                                        {formData?.ageInfo?.dateOfBirth && (
+                                            <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '8px' }}>
+                                                Expected DOB: {formData.ageInfo.dateOfBirth}
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
+                                
+                                <Button 
+                                    variant="primary" 
+                                    onClick={beginLiveness} 
+                                    disabled={!ocrResult || !ocrResult.dob || !ocrResult.name || /screenshot/i.test(ocrResult.name)}
+                                >
+                                    Continue to Face Verification
+                                </Button>
+                                
+                                {!ocrResult && (
+                                    <p style={{ 
+                                        fontSize: '0.8rem', 
+                                        color: '#64748b', 
+                                        textAlign: 'center',
+                                        marginTop: '10px'
+                                    }}>
+                                        Upload your ID to continue. Ensure the photo clearly shows your Name and Date of Birth.
+                                    </p>
+                                )}
+                                </>
                             )}
                         </motion.div>
                     )}
