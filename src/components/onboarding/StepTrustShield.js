@@ -230,22 +230,29 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
     useEffect(() => {
         const preloadModels = async () => {
             try {
-                console.log('[TrustShield] Pre-loading face recognition models...');
+                console.log('[TrustShield] 🔥 Starting background model preload...');
                 // Import and call prewarm to load models in background
                 const { prewarmModels } = await import('../../utils/trustShieldEngine');
-                const result = await prewarmModels();
+                
+                // Add timeout to background preload too
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Background preload timeout')), 25000)
+                );
+                
+                const result = await Promise.race([prewarmModels(), timeoutPromise]);
+                
                 if (result.success) {
                     console.log('[TrustShield] ✅ Models pre-loaded successfully');
                 } else {
                     console.warn('[TrustShield] ⚠️ Model pre-load failed:', result.error);
                 }
             } catch (err) {
-                console.warn('[TrustShield] Pre-load warning (non-blocking):', err.message);
+                console.warn('[TrustShield] ⚠️ Pre-load warning (non-blocking):', err.message);
             }
         };
         
         // Start preloading after a short delay to not block UI
-        const timer = setTimeout(preloadModels, 2000);
+        const timer = setTimeout(preloadModels, 3000);
         return () => clearTimeout(timer);
     }, []);
 
@@ -922,6 +929,20 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                                 }}>
                                     <div style={{ width: '48px', height: '48px', margin: '0 auto 16px', border: '3px solid rgba(167, 139, 250, 0.3)', borderTopColor: '#a78bfa', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
                                     <p>Loading face recognition models...</p>
+                                    <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px' }}>
+                                        This may take up to 15 seconds
+                                    </p>
+                                    <Button 
+                                        variant="ghost" 
+                                        onClick={() => {
+                                            setStage('ocr');
+                                            setLivenessStatus('');
+                                        }}
+                                        style={{ marginTop: '20px' }}
+                                    >
+                                        <RefreshCcw size={14} style={{ marginRight: '6px' }} />
+                                        Cancel & Retry
+                                    </Button>
                                 </div>
                             ) : (
                                 <>
