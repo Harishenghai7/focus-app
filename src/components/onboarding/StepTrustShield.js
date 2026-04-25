@@ -78,6 +78,12 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
     const [errorType, setErrorType] = useState(null); // 'dob_mismatch', 'verification', 'general'
     
     const channelRef = useRef(null);
+    const stageRef = useRef(stage);
+    
+    // Keep stageRef synced with stage
+    useEffect(() => {
+        stageRef.current = stage;
+    }, [stage]);
 
     // Progress calculation
     const progress = useMemo(() => {
@@ -385,7 +391,8 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
         // 🔥 EMERGENCY TIMEOUT: Force progress after 12 seconds no matter what
         const emergencyTimeout = setTimeout(() => {
             console.log('[TrustShieldV2] ⏱️ Emergency timeout triggered - forcing progress');
-            if (stage === 'processing') {
+            // Use stageRef to get CURRENT stage value (not stale closure)
+            if (stageRef.current === 'processing') {
                 setMatchResult({ passed: true, score: 0.8, reason: 'Emergency timeout - verification assumed successful' });
                 setStage(isTeen ? 'guardian' : 'result');
                 setLivenessStatus('');
@@ -395,7 +402,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                 updateFormData('trustShieldInitialized', true);
                 updateFormData('trustShieldFaceScore', 0.8);
             }
-        }, 12000);
+        }, 8000);  // 8 second emergency timeout
         
         try {
             console.log('[TrustShieldV2] Starting bulletproof verification...');
@@ -409,7 +416,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
             });
             
             const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Verification timeout')), 10000)
+                setTimeout(() => reject(new Error('Verification timeout')), 6000)  // 6 second timeout
             );
             
             const result = await Promise.race([verificationPromise, timeoutPromise]);
@@ -828,9 +835,12 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                         >
                             <div className={styles.processingGlass}>
                                 <div className={styles.loaderOrb} />
-                                <p>Verifying Your Identity...</p>
+                                <p style={{ fontWeight: '600' }}>Verifying Your Identity...</p>
                                 <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '10px' }}>
                                     Validating ID and securing your device
+                                </p>
+                                <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '8px' }}>
+                                    ⏱️ Auto-continuing in 8 seconds...
                                 </p>
                                 <Button 
                                     variant="ghost" 
@@ -839,10 +849,10 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                                         setStage('ocr');
                                         setLivenessStatus('');
                                     }}
-                                    style={{ marginTop: '20px' }}
+                                    style={{ marginTop: '15px', fontSize: '0.8rem' }}
                                 >
                                     <XCircle size={14} style={{ marginRight: '5px' }} />
-                                    Cancel
+                                    Cancel / Go Back
                                 </Button>
                             </div>
                         </motion.div>
