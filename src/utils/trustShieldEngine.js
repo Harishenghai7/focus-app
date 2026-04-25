@@ -148,8 +148,20 @@ let tinyFaceLoaded = false;
 let recognitionModelsLoaded = false;
 
 /**
- * 🔥 BULLETPROOF Model Loading with Individual Error Handling
- * Loads models one by one with fallbacks
+ * ⏱️ Promise with timeout wrapper
+ */
+const withTimeout = (promise, ms, label) => {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) => 
+            setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms)
+        )
+    ]);
+};
+
+/**
+ * 🔥 BULLETPROOF Model Loading with Individual Error Handling + TIMEOUTS
+ * Loads models one by one with fallbacks - NEVER hangs
  */
 const loadModels = async () => {
     // If all loaded, skip
@@ -159,12 +171,17 @@ const loadModels = async () => {
     }
     
     const errors = [];
+    const MODEL_TIMEOUT = 15000; // 15 seconds max per model
     
     // ── STEP 1: Try SSD MobileNet v1 (MOST POWERFUL) ──────────────────────────
     if (!ssdMobileNetLoaded) {
         try {
             console.log('[TrustShield] Loading SSD MobileNet v1...');
-            await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
+            await withTimeout(
+                faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
+                MODEL_TIMEOUT,
+                'SSD MobileNet v1'
+            );
             ssdMobileNetLoaded = true;
             console.log('[TrustShield] ✅ SSD MobileNet v1 loaded');
         } catch (err) {
@@ -177,7 +194,11 @@ const loadModels = async () => {
     if (!tinyFaceLoaded) {
         try {
             console.log('[TrustShield] Loading TinyFaceDetector...');
-            await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+            await withTimeout(
+                faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+                MODEL_TIMEOUT,
+                'TinyFaceDetector'
+            );
             tinyFaceLoaded = true;
             console.log('[TrustShield] ✅ TinyFaceDetector loaded');
         } catch (err) {
@@ -190,10 +211,14 @@ const loadModels = async () => {
     if (!recognitionModelsLoaded) {
         try {
             console.log('[TrustShield] Loading recognition models...');
-            await Promise.all([
-                faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-                faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
-            ]);
+            await withTimeout(
+                Promise.all([
+                    faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+                ]),
+                MODEL_TIMEOUT,
+                'Recognition models'
+            );
             recognitionModelsLoaded = true;
             console.log('[TrustShield] ✅ Recognition models loaded');
         } catch (err) {
@@ -224,6 +249,21 @@ const loadModels = async () => {
         tinyFace: tinyFaceLoaded,
         recognition: recognitionModelsLoaded
     });
+};
+
+/**
+ * 🚀 Exported function to pre-warm models
+ * Call this early to load models before they're needed
+ */
+export const prewarmModels = async () => {
+    try {
+        console.log('[TrustShield] Pre-warming models...');
+        await loadModels();
+        return { success: true };
+    } catch (err) {
+        console.error('[TrustShield] Pre-warm failed:', err);
+        return { success: false, error: err.message };
+    }
 };
 
 /**

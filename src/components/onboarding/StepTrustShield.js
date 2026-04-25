@@ -231,18 +231,21 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
         const preloadModels = async () => {
             try {
                 console.log('[TrustShield] Pre-loading face recognition models...');
-                // Dynamic import to avoid SSR issues
-                const { runFaceSimilarityCheck } = await import('../../utils/trustShieldEngine');
-                // The engine will load models on first call, we just need to trigger it
-                // by calling a function that loads them
-                console.log('[TrustShield] Models will load automatically when needed');
+                // Import and call prewarm to load models in background
+                const { prewarmModels } = await import('../../utils/trustShieldEngine');
+                const result = await prewarmModels();
+                if (result.success) {
+                    console.log('[TrustShield] ✅ Models pre-loaded successfully');
+                } else {
+                    console.warn('[TrustShield] ⚠️ Model pre-load failed:', result.error);
+                }
             } catch (err) {
                 console.warn('[TrustShield] Pre-load warning (non-blocking):', err.message);
             }
         };
         
         // Start preloading after a short delay to not block UI
-        const timer = setTimeout(preloadModels, 1000);
+        const timer = setTimeout(preloadModels, 2000);
         return () => clearTimeout(timer);
     }, []);
 
@@ -523,13 +526,26 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
         
         try {
             console.log('[TrustShield] Loading face recognition models...');
-            // Import and trigger model loading
-            const engineModule = await import('../../utils/trustShieldEngine');
-            // The engine loads models automatically on first use
-            console.log('[TrustShield] Model import successful');
+            // Import and call prewarm to load all models
+            const { prewarmModels } = await import('../../utils/trustShieldEngine');
+            
+            // Create timeout wrapper
+            const loadTimeout = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Model loading timed out after 20s')), 20000)
+            );
+            
+            // Load models with timeout
+            const result = await Promise.race([prewarmModels(), loadTimeout]);
+            
+            if (!result || !result.success) {
+                throw new Error(result?.error || 'Model loading failed');
+            }
+            
+            console.log('[TrustShield] ✅ Models loaded successfully');
+            
         } catch (err) {
             console.error('[TrustShield] Model load failed:', err);
-            setError('Failed to load face recognition system. Please check your internet connection and try again.');
+            setError('Failed to load face recognition system: ' + (err.message || 'Network timeout. Please check your connection and try again.'));
             setStage('ocr');
             setLivenessStatus('');
             return;
