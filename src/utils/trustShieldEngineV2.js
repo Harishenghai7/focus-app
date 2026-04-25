@@ -184,7 +184,7 @@ export const generateLivenessActions = () => {
 export const persistTrustShieldState = async (data) => {
     try {
         // Import supabase here to avoid circular deps
-        const { supabase } = await import('./supabaseClient');
+        const { supabase } = await import('../lib/supabase');
         
         const { error } = await supabase
             .from('trust_shield_audit')
@@ -212,7 +212,7 @@ export const persistTrustShieldState = async (data) => {
  */
 export const createGuardianHandshake = async (userId, guardianEmail) => {
     try {
-        const { supabase } = await import('./supabaseClient');
+        const { supabase } = await import('../lib/supabase');
         
         const handshakeId = crypto.randomUUID();
         
