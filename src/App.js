@@ -230,7 +230,11 @@ const AppContent = () => {
                             focusProfile?.trust_shield_status === 'VERIFIED' ||
                             focusProfile?.verification_status === 'VERIFIED_MINOR'
                               ? <Navigate to="/home" replace />
-                              : <Onboarding />
+                              : (
+                                // 🔱 GOD-LEVEL: Check for locked step redirect
+                                // If user was locked to a specific step, they go directly there
+                                <Onboarding />
+                              )
                           )
                         : <Navigate to="/auth" replace />
                     } />

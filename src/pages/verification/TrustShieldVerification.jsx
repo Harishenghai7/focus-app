@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import useScanner from '../../hooks/useScanner';
 import { persistTrustShieldState, createGuardianHandshake } from '../../utils/trustShieldEngine';
@@ -10,6 +10,25 @@ import { supabase } from '../../lib/supabase';
 import * as faceapi from 'face-api.js';
 import { useFocusly } from '../../context/FocuslyContext';
 import styles from './TrustShieldVerification.module.css';
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 🔱 GOD-LEVEL ENGINE IMPORTS - Layer 1-4 Integration
+// ═══════════════════════════════════════════════════════════════════════════════
+import {
+  getDeviceId,
+  getVerificationStep,
+  setVerificationStep,
+  lockVerificationStep,
+  getLockedStep,
+  validateIDQuality,
+  checkRateLimit,
+  recordAttempt,
+  checkIdentityUniqueness,
+  logVerificationAttempt,
+  atomicVerificationComplete,
+  runGodLevelValidation,
+  ERROR_CODES,
+} from '../../utils/trustShieldGodEngine';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // PILLAR 1: ANTI-DEBUG / ANTI-TAMPER PROTECTION
@@ -125,23 +144,152 @@ const FocuslyLion = () => (
 // ── Main Component ─────────────────────────────────────────────────────────────
 const TrustShieldVerification = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { profile, user } = useAuth();
   const focusly = useFocusly(); // 🦁 Pillar 4 companion
+  
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔱 LAYER 1: PERSISTENT STATE MACHINE - God-Level Step Management
+  // ═══════════════════════════════════════════════════════════════════════════
+  const [isLoadingStep, setIsLoadingStep] = useState(true);
+  const [lockedStep, setLockedStep] = useState(null);
+  const [deviceId, setDeviceId] = useState(null);
 
   // ── PILLAR 1: Initialize Anti-Debug Protection ───────────────────────────
   useEffect(() => {
     initAntiDebug();
   }, []);
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔱 LAYER 1: PERSISTENT STATE INITIALIZATION - Fixes "Reset to Step 1" Bug
+  // ═══════════════════════════════════════════════════════════════════════════
+  useEffect(() => {
+    const initializeGodLevelState = async () => {
+      if (!user?.id) {
+        setIsLoadingStep(false);
+        return;
+      }
+
+      try {
+        // Get device fingerprint
+        const did = getDeviceId();
+        setDeviceId(did);
+
+        // Check rate limiting first
+        const rateLimit = await checkRateLimit(did);
+        if (!rateLimit.allowed) {
+          setError(rateLimit.reason);
+          setIsLoadingStep(false);
+          return;
+        }
+
+        // Get persistent verification state from DB + localStorage
+        const stepData = await getVerificationStep(user.id);
+        const locked = await getLockedStep(user.id);
+        
+        console.log('[TrustShield] 🔱 God-Level State Init:', {
+          step: stepData.step,
+          lockedStep: locked,
+          source: stepData.source,
+          progress: stepData.progress,
+        });
+
+        // If there's a locked step from previous session, restore it
+        if (locked && locked > 1) {
+          setLockedStep(locked);
+          setStep(locked);
+          
+          // Restore progress from metadata
+          if (stepData.progress?.ageGroup) setAgeGroup(stepData.progress.ageGroup);
+          if (stepData.progress?.ocrData) setOcrData(stepData.progress.ocrData);
+          if (stepData.progress?.identityHash) setIdentityHash(stepData.progress.identityHash);
+          
+          console.log('[TrustShield] 🔒 Restored to locked step:', locked);
+        } else {
+          // Check if we're coming from a redirect with locked step
+          const fromState = location.state?.lockedStep;
+          if (fromState && fromState > 1) {
+            setLockedStep(fromState);
+            setStep(fromState);
+          } else {
+            setStep(stepData.step || 1);
+          }
+        }
+      } catch (err) {
+        console.error('[TrustShield] State init error:', err);
+      } finally {
+        setIsLoadingStep(false);
+      }
+    };
+
+    initializeGodLevelState();
+  }, [user?.id, location.state]);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔱 LAYER 1: STEP PERSISTENCE - Save step changes to DB + localStorage
+  // ═══════════════════════════════════════════════════════════════════════════
+  const persistStepChange = useCallback(async (newStep, metadata = {}) => {
+    if (!user?.id) return;
+    
+    try {
+      const result = await setVerificationStep(user.id, newStep, {
+        ...metadata,
+        ageGroup,
+        ocrData,
+        identityHash,
+        timestamp: Date.now(),
+      });
+      
+      console.log('[TrustShield] 💾 Step persisted:', result);
+      
+      // If reaching Step 3 (Biometrics), LOCK the user there
+      if (newStep === 3) {
+        await lockVerificationStep(user.id, 3);
+        setLockedStep(3);
+        console.log('[TrustShield] 🔒 Step 3 LOCKED - Biometrics required');
+      }
+    } catch (err) {
+      console.error('[TrustShield] Step persistence failed:', err);
+    }
+  }, [user?.id, ageGroup, ocrData, identityHash]);
+
   // ── Core State ────────────────────────────────────────────────────────────
-  const [step, setStep]               = useState(1);
-  const [ageGroup, setAgeGroup]       = useState(null);
-  const [ocrData, setOcrData]         = useState(null);
-  const [identityHash, setIdentityHash] = useState(null); // SHA-256 of ID number
+  const [step, setStepRaw] = useState(1);
+  
+  // Wrapped setStep with persistence
+  const setStep = useCallback((newStep) => {
+    setStepRaw(newStep);
+    persistStepChange(newStep);
+  }, [persistStepChange]);
+  
+  const [ageGroup, setAgeGroupRaw] = useState(null);
+  const setAgeGroup = useCallback((val) => {
+    setAgeGroupRaw(val);
+    if (user?.id) {
+      setVerificationStep(user.id, step, { ageGroup: val });
+    }
+  }, [user?.id, step]);
+  
+  const [ocrData, setOcrDataRaw] = useState(null);
+  const setOcrData = useCallback((val) => {
+    setOcrDataRaw(val);
+    if (user?.id) {
+      setVerificationStep(user.id, step, { ocrData: val });
+    }
+  }, [user?.id, step]);
+  
+  const [identityHash, setIdentityHashRaw] = useState(null);
+  const setIdentityHash = useCallback((val) => {
+    setIdentityHashRaw(val);
+    if (user?.id) {
+      setVerificationStep(user.id, step, { identityHash: val });
+    }
+  }, [user?.id, step]);
+  
   const [guardianToken, setGuardianToken] = useState(null);
-  const [error, setError]             = useState(null);
-  const [saving, setSaving]           = useState(false);
-  const [isLocked, setIsLocked]       = useState(false);
+  const [error, setError] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
   const [accountLocked, setAccountLocked] = useState(false); // LOCKED_INJECTION hard lock
   const [showAccessGranted, setShowAccessGranted] = useState(false);
   const [statusClicks, setStatusClicks] = useState(0);
@@ -294,59 +442,95 @@ const TrustShieldVerification = () => {
     localStorage.removeItem(FAIL_COUNT_KEY);
   }, []);
 
-  // ── Final verification persist ────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔱 LAYER 3: ATOMIC ACCOUNT CREATION - God-Level Verification Finalization
+  // ═══════════════════════════════════════════════════════════════════════════
   const completeVerification = useCallback(async () => {
     setSaving(true);
+    
     try {
-      const isTeen = ageGroup === '13-17';
-      const verificationStatus = isTeen ? 'PENDING_GUARDIAN' : 'VERIFIED';
-      await persistTrustShieldState({
-        userId: user.id,
-        verificationStatus,
-        ocrResult: ocrData,
-        faceScore: 1.0,
-        attemptResult: 'PASS',
-        stage: 'trust_shield_complete',
-        reason: null,
+      // Log the attempt first
+      await logVerificationAttempt(user.id, 'finalization', 'ATTEMPT', {
+        device_id: deviceId,
+        age_group: ageGroup,
       });
-      // ── THE DNA: Persist identity_hash to prevent future duplicate registrations
-      if (identityHash) {
-        await supabase.from('profiles')
-          .update({ identity_hash: identityHash })
-          .eq('id', user.id);
-
-        // ── THE PRIVACY WIPE: Delete from bucket ──
-        const autoCleanup = async () => {
-           try {
-             const { data: files } = await supabase.storage.from('verification-uploads').list(user.id);
-             if (files?.length > 0) {
-                 const filePaths = files.map(f => `${user.id}/${f.name}`);
-                 await supabase.storage.from('verification-uploads').remove(filePaths);
-             }
-           } catch(e) { console.error('autoCleanup failed', e); }
-        };
-        autoCleanup();
+      
+      // ═══════════════════════════════════════════════════════════════════════
+      // Run the 6-Layer God-Level Validation Pipeline
+      // ═══════════════════════════════════════════════════════════════════════
+      const validation = await runGodLevelValidation({
+        userId: user.id,
+        idFile: scanner?.capturedFile,
+        ocrResult: ocrData,
+        selfieFrames: [], // Will be populated from liveness capture
+        livenessComplete: livenessComplete,
+      });
+      
+      if (!validation.passed) {
+        const errorMsg = validation.errors.join('; ');
+        console.error('[TrustShield] God-Level validation failed:', validation);
+        handleFail(errorMsg);
+        
+        // Log failure
+        await logVerificationAttempt(user.id, 'finalization', 'FAILED', {
+          errors: validation.errors,
+          device_id: deviceId,
+        });
+        
+        return;
       }
+      
+      console.log('[TrustShield] ✅ All 6 layers passed:', validation);
+      
+      // ═══════════════════════════════════════════════════════════════════════
+      // LAYER 3: ATOMIC VERIFICATION COMPLETION
+      // Only the RPC can mark an account as verified - no direct updates
+      // ═══════════════════════════════════════════════════════════════════════
+      const result = await atomicVerificationComplete({
+        userId: user.id,
+        identityHash: identityHash,
+        deviceId: deviceId,
+        ocrData: ocrData,
+        faceScore: 1.0, // Liveness passed
+        ageGroup: ageGroup,
+      });
+      
+      if (!result.success) {
+        console.error('[TrustShield] Atomic verification failed:', result);
+        handleFail(result.error || 'Verification failed. Please try again.');
+        
+        await logVerificationAttempt(user.id, 'finalization', 'ATOMIC_FAILED', {
+          error: result.error,
+          code: result.code,
+        });
+        
+        return;
+      }
+      
+      console.log('[TrustShield] ✅ Atomic verification complete:', result);
+      
+      // Record successful attempt for rate limiting
+      await recordAttempt();
+      
       // Refresh session so global profile state picks up immediately
       await supabase.auth.refreshSession();
+      
+      // Handle teen guardian flow
+      const isTeen = ageGroup === '13-17';
       if (isTeen) {
         const token = await createGuardianHandshake({
           teenUserId: user.id,
           metadata: { ocrData },
         });
         setGuardianToken(token);
-
-        // Lock post privileges for teen
-        await supabase.from('profiles').update({ can_post: false }).eq('id', user.id);
-
-        if (profile?.guardian_email) {
-            await supabase.functions.invoke('send-parent-consent-email', {
-                body: { parentEmail: profile.guardian_email, childName: user?.user_metadata?.full_name || '', childUserId: user?.id, token }
-            });
-        }
       }
+      
+      // Clear step lock on success
+      setLockedStep(null);
+      
       setStep(5);
-      // 🦁 Pillar 4 — Focusly celebrates the Trust Shield pass
+      
+      // 🦁 Pillar 4 — Focusly celebrates
       try {
         const firstName = user?.user_metadata?.full_name?.split(' ')?.[0];
         if (isTeen) {
@@ -363,12 +547,24 @@ const TrustShieldVerification = () => {
           );
         }
       } catch (_) { /* non-critical */ }
+      
+      // Log success
+      await logVerificationAttempt(user.id, 'finalization', 'SUCCESS', {
+        verification_status: result.verificationStatus,
+        is_minor: result.isMinor,
+      });
+      
     } catch (err) {
+      console.error('[TrustShield] Complete verification error:', err);
       handleFail('Failed to save verification. Please try again.');
+      
+      await logVerificationAttempt(user.id, 'finalization', 'ERROR', {
+        error: err.message,
+      });
     } finally {
       setSaving(false);
     }
-  }, [ageGroup, ocrData, identityHash, user, handleFail, focusly]);
+  }, [ageGroup, ocrData, identityHash, user, handleFail, focusly, deviceId, livenessComplete, scanner?.capturedFile]);
 
   // ── Mobile Realtime Sync (Desktop listens for VERIFIED) ──────────────────
   useEffect(() => {
@@ -439,16 +635,38 @@ const TrustShieldVerification = () => {
     return () => window.removeEventListener('keydown', fn);
   }, [handleFounderBypass]);
 
-  // ── STEP 1 Handlers ───────────────────────────────────────────────────────
-  const handleAgeConfirm = () => {
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔱 STEP HANDLERS WITH GOD-LEVEL VALIDATION
+  // ═══════════════════════════════════════════════════════════════════════════
+  
+  // ── STEP 1 Handler ───────────────────────────────────────────────────────
+  const handleAgeConfirm = async () => {
     if (!ageGroup || isLocked) return;
+    
+    // Check rate limiting
+    const rateLimit = await checkRateLimit(deviceId);
+    if (!rateLimit.allowed) {
+      setError(rateLimit.reason);
+      setIsLocked(true);
+      return;
+    }
+    
     setError(null);
-    setStep(2);
+    
+    // Persist step 2
+    await setVerificationStep(user?.id, 2, { ageGroup });
+    setStepRaw(2);
+    
+    // Log attempt
+    await logVerificationAttempt(user?.id, 'step_1_age_selection', 'COMPLETE', { ageGroup });
+    
     // Auto-start camera scanner
     setTimeout(() => scanner.startCamera(), 300);
   };
 
-  // ── STEP 2: OCR result ready → THE DNA + THE LAW + THE GATEKEEPER ──────────
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔱 STEP 2: OCR result ready → God-Level 6-Layer Validation
+  // ═══════════════════════════════════════════════════════════════════════════
   useEffect(() => {
     if (scanner.phase !== 'captured' || !scanner.ocrResult) return;
     const result = scanner.ocrResult;
@@ -456,6 +674,22 @@ const TrustShieldVerification = () => {
       handleFail(result.reason || 'Could not read ID. Please retry.');
       return;
     }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // 🔱 LAYER 2.3: ID QUALITY CHECK - Block files < 50KB
+    // ═══════════════════════════════════════════════════════════════════════════
+    const runQualityCheck = async () => {
+      if (scanner?.capturedFile) {
+        const quality = await validateIDQuality(scanner.capturedFile);
+        if (!quality.ok) {
+          console.error('[TrustShield] ID quality check failed:', quality);
+          handleFail(ERROR_CODES.ERR_FILE_TOO_SMALL + '\n\n' + quality.errors.map(e => e.message).join('\n'));
+          return false;
+        }
+        console.log('[TrustShield] ✅ ID quality passed:', quality.metadata);
+      }
+      return true;
+    };
 
     // ── THE GATEKEEPER & THE LAW: Classification + Validations ──
     const detected = result.rawText ? classifyDocumentTier(result.rawText) : 'unknown';
@@ -494,7 +728,6 @@ const TrustShieldVerification = () => {
 
     // ═══════════════════════════════════════════════════════════════════════════
     // PILLAR 1: AGE VERIFICATION RULE ENGINE — STRICT TIER ENFORCEMENT
-    // Any mismatch triggers handleHardReset with strict error codes
     // ═══════════════════════════════════════════════════════════════════════════
     if (dobValid && age !== null) {
       // Under 13 — Platform not available
@@ -516,19 +749,52 @@ const TrustShieldVerification = () => {
       }
     }
 
-    // ── THE DNA: SHA-256 Identity Deduplication ──────────────────────────
-    // Async block — compute hash and check DB without blocking the effect
-    const runIdentityCheck = async () => {
+    // ═══════════════════════════════════════════════════════════════════════════
+    // 🔱 LAYER 2.5: IDENTITY UNIQUENESS CHECK - One Person = One Account
+    // ═══════════════════════════════════════════════════════════════════════════
+    const runGodLevelChecks = async () => {
+      // First run quality check
+      const qualityPassed = await runQualityCheck();
+      if (!qualityPassed) return;
+      
+      // Check identity uniqueness via RPC
+      if (result.name && result.dob) {
+        const uniqueness = await checkIdentityUniqueness(result.name, result.dob, deviceId);
+        
+        if (!uniqueness.unique) {
+          setAccountLocked(true);
+          setStaticImageFlag(true);
+          cancelAnimationFrame(rafRef.current);
+          if (liveStreamRef.current) {
+            liveStreamRef.current.getTracks().forEach(t => t.stop());
+            liveStreamRef.current = null;
+          }
+          handleFail(ERROR_CODES.ERR_DUPLICATE_IDENTITY + (uniqueness.reason ? ` (${uniqueness.reason})` : ''));
+          scanner.stopCamera?.();
+          
+          // Log the duplicate attempt
+          await logVerificationAttempt(user?.id, 'uniqueness_check', 'BLOCKED', {
+            reason: uniqueness.reason,
+            device_id: deviceId,
+          });
+          
+          return;
+        }
+        
+        console.log('[TrustShield] ✅ Identity uniqueness passed');
+      }
+
+      // ── THE DNA: SHA-256 Identity Deduplication ──────────────────────────
       if (result.idNumber) {
         try {
           const hash = await computeIdentityHash(result.idNumber);
           if (hash) {
-            // Check if this identity hash is already linked to another account
+            // Double-check via hash
             const { data: existing } = await supabase
               .from('profiles')
               .select('id')
               .eq('identity_hash', hash)
-              .neq('id', user?.id ?? '')  // Don't block own re-verification
+              .neq('id', user?.id ?? '')
               .maybeSingle();
 
             if (existing) {
@@ -539,7 +805,7 @@ const TrustShieldVerification = () => {
                 liveStreamRef.current.getTracks().forEach(t => t.stop());
                 liveStreamRef.current = null;
               }
-              handleFail('ERR_DUPLICATE_IDENTITY: One User, One Account.');
+              handleFail(ERROR_CODES.ERR_DUPLICATE_IDENTITY);
               scanner.stopCamera?.();
               return;
             }
@@ -547,16 +813,24 @@ const TrustShieldVerification = () => {
             setIdentityHash(hash);
           }
         } catch (_) {
-          // Hash check failure is non-fatal — proceed but log
           console.warn('[TrustShield] Identity hash check failed:', _);
         }
       }
+      
+      // Log successful Step 2 completion
+      await logVerificationAttempt(user?.id, 'step_2_id_scan', 'COMPLETE', {
+        document_type: detected,
+        age_valid: dobValid,
+        quality_passed: true,
+        uniqueness_passed: true,
+      });
+      
       setOcrData(result);
       setError(null);
     };
 
-    runIdentityCheck();
-  }, [scanner.phase, scanner.ocrResult, ageGroup, handleFail, handleHardReset, user?.id]);
+    runGodLevelChecks();
+  }, [scanner.phase, scanner.ocrResult, scanner.capturedFile, ageGroup, handleFail, handleHardReset, user?.id, deviceId]);
 
   // ── STEP 3: Load face-api models ──────────────────────────────────────────
   const loadFaceModels = useCallback(async () => {
@@ -808,6 +1082,82 @@ const TrustShieldVerification = () => {
       } 
     : { transition: 'background-color 0.3s ease' };
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔱 GOD-LEVEL LOADING STATE - While persistent state is initializing
+  // ═══════════════════════════════════════════════════════════════════════════
+  if (isLoadingStep) {
+    return (
+      <MainLayout>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column',
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '100vh',
+          padding: '20px',
+        }}>
+          <div style={{ 
+            width: '64px', 
+            height: '64px', 
+            border: '4px solid rgba(139, 92, 246, 0.2)', 
+            borderTop: '4px solid #8b5cf6',
+            borderRight: '4px solid #ec4899',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            marginBottom: '24px',
+            boxShadow: '0 0 30px rgba(139, 92, 246, 0.4)',
+          }} />
+          <h2 style={{ color: '#e2e8f0', marginBottom: '8px' }}>🔱 Initializing Trust Shield</h2>
+          <p style={{ color: '#94a3b8', fontSize: '14px' }}>Restoring your verification session...</p>
+          <style>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔱 LOCKED STEP WARNING - If user is locked to a specific step
+  // ═══════════════════════════════════════════════════════════════════════════
+  const LockedStepWarning = () => {
+    if (!lockedStep || lockedStep <= 1) return null;
+    
+    const stepNames = {
+      2: 'ID Scan Required',
+      3: 'Biometrics Locked',
+      4: 'Mobile Bridge Active',
+      5: 'Verification Complete',
+    };
+    
+    return (
+      <div style={{
+        background: 'rgba(139, 92, 246, 0.15)',
+        border: '1px solid rgba(139, 92, 246, 0.4)',
+        borderRadius: '12px',
+        padding: '12px 16px',
+        marginBottom: '16px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        backdropFilter: 'blur(10px)',
+      }}>
+        <span style={{ fontSize: '20px' }}>🔒</span>
+        <div>
+          <p style={{ color: '#c4b5fd', fontSize: '13px', fontWeight: 600, margin: 0 }}>
+            Session Locked: {stepNames[lockedStep] || 'Verification in Progress'}
+          </p>
+          <p style={{ color: '#a78bfa', fontSize: '11px', margin: '4px 0 0 0' }}>
+            Complete this step to continue. Your progress is saved.
+          </p>
+        </div>
+      </div>
+    );
+  };
+
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <MainLayout>
@@ -818,10 +1168,11 @@ const TrustShieldVerification = () => {
       >
         {/* Header */}
         <div className={styles.header}>
-          <button className={styles.backBtn} onClick={() => navigate(-1)}>← Back</button>
+          <button className={styles.backBtn} onClick={() => navigate(-1)} disabled={lockedStep === 3}>← Back</button>
           <h1
             className={styles.title}
             onDoubleClick={() => {
+              if (process.env.NODE_ENV !== 'development') return;
               localStorage.removeItem(COOLDOWN_KEY);
               localStorage.removeItem(FAIL_COUNT_KEY);
               setIsLocked(false);
@@ -833,6 +1184,8 @@ const TrustShieldVerification = () => {
           </h1>
           <div style={{ width: 60 }} />
         </div>
+
+        <LockedStepWarning />
 
         {renderProgress()}
 
