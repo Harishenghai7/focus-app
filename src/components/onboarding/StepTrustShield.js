@@ -10,6 +10,15 @@ import {
     persistTrustShieldState,
     createGuardianHandshake,
 } from '../../utils/trustShieldEngineV2';
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 🔱 ULTRA STRICT IDENTITY CHECK - One Government ID = One Account
+// ═══════════════════════════════════════════════════════════════════════════════
+import {
+    checkIdentityUniqueness,
+    getDeviceId,
+    ERROR_CODES,
+} from '../../utils/trustShieldULTRA';
 import styles from './StepTrustShield.module.css';
 import { useAuth } from '../../hooks/useAuth';
 import useOCRScanner from '../../hooks/useOCRScanner';
@@ -366,7 +375,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
     // ═══════════════════════════════════════════════════════════════════════════
     // 🔥 INSTANT VERIFICATION - No async, no waiting, never hangs
     // ═══════════════════════════════════════════════════════════════════════════
-    const beginVerification = useCallback(() => {
+    const beginVerification = useCallback(async () => {
         if (!ocrResult?.name || !ocrResult?.dob) {
             setError('Name and DOB are required. Please scan your ID first.');
             return;
@@ -376,6 +385,55 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
             setError('ID file is required. Please upload your ID.');
             return;
         }
+        
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔒 ULTRA STRICT: One Government ID = One Account Check
+        // ═══════════════════════════════════════════════════════════════════════
+        console.log('[TrustShieldV3] 🔒 Checking identity uniqueness...');
+        
+        const deviceId = getDeviceId();
+        const idNumber = ocrResult?.idNumber || ocrResult?.id;
+        
+        if (!idNumber) {
+            setError('🔒 ID NUMBER MISSING: OCR did not detect ID number. Upload clearer image showing the ID number.');
+            return;
+        }
+        
+        // Check ID format first
+        const idPatterns = {
+            aadhaar: /^\d{12}$/,
+            pan: /^[A-Z]{5}[0-9]{4}[A-Z]$/,
+            passport: /^[A-Z][0-9]{7}$/,
+            voter: /^[A-Z]{3}[0-9]{7}$/,
+            dl: /^[A-Z]{2}[0-9]{13}$/,
+        };
+        
+        const cleanId = idNumber.toUpperCase().replace(/\s/g, '');
+        const isValidFormat = Object.values(idPatterns).some(pattern => pattern.test(cleanId));
+        
+        if (!isValidFormat) {
+            setError('🔒 INVALID ID FORMAT: Must be Aadhaar (12 digits), PAN (ABCDE1234F), Passport, Voter ID, or Driving License');
+            return;
+        }
+        
+        // CRITICAL: Check if ID already exists (One Person = One Account)
+        const uniquenessCheck = await checkIdentityUniqueness(
+            ocrResult?.name,
+            ocrResult?.dob,
+            cleanId,
+            deviceId,
+            user?.id
+        );
+        
+        if (!uniquenessCheck?.unique) {
+            console.error('[TrustShieldV3] 🔒 IDENTITY COLLISION:', uniquenessCheck);
+            setError(uniquenessCheck?.message || '🔒 ONE PERSON = ONE ACCOUNT: This government ID is already registered. Contact admin@focusapp.in to recover your account.');
+            setStage('result');
+            setMatchResult({ passed: false, reason: uniquenessCheck?.reason || 'DUPLICATE_IDENTITY' });
+            return;
+        }
+        
+        console.log('[TrustShieldV3] ✅ Identity is unique, proceeding...');
         
         console.log('[TrustShieldV3] ⚡ INSTANT VERIFICATION STARTING');
         
@@ -439,7 +497,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
             setError(result.reason || 'ID validation failed. Please upload a clearer photo.');
             setStage('result');
         }
-    }, [ocrResult, idFile, user, isTeen, updateFormData]);
+    }, [ocrResult, idFile, user, isTeen, updateFormData, setError, setMatchResult, setStage]);
 
     // ═══════════════════════════════════════════════════════════════════════════
     // 🛡️ FINISH FLOW - NON-BYPASSABLE GUARDS
