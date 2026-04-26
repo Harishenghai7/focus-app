@@ -343,85 +343,40 @@ export const recordUltraAttempt = () => {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export const checkUltraIdentityUniqueness = async (name, dob, idNumber, deviceId, userId = null) => {
-  // Normalize inputs for strict matching
-  const normalizedName = name?.toLowerCase().replace(/[^a-z0-9]/g, '').trim();
-  const normalizedDOB = dob?.replace(/[^0-9]/g, ''); // Remove separators
-  const normalizedId = idNumber?.replace(/[^0-9a-z]/gi, '').toUpperCase();
-  
-  // 1. Check identity_hash (exact match)
-  if (normalizedId) {
-    const { data: hashMatch } = await supabase
-      .from('profiles')
-      .select('id, verification_status')
-      .eq('identity_hash', normalizedId)
-      .neq('id', userId || '00000000-0000-0000-0000-000000000000')
-      .maybeSingle();
-    
-    if (hashMatch) {
-      return {
-        unique: false,
-        reason: 'EXACT_ID_MATCH',
-        message: ULTRA_ERRORS.ERR_DUPLICATE_IDENTITY,
-        existingStatus: hashMatch.verification_status,
-      };
-    }
-  }
-  
-  // 2. Check name + DOB combination via RPC
+  // USE WORKING SQL FUNCTION: check_identity_ultra
   try {
-    const { data: rpcResult, error } = await supabase.rpc('check_identity_uniqueness', {
+    const { data: rpcResult, error } = await supabase.rpc('check_identity_ultra', {
       p_name: name,
       p_dob: dob,
+      p_id_number: idNumber,
       p_device_id: deviceId,
+      p_user_id: userId,
     });
     
-    if (rpcResult && !rpcResult.unique) {
+    if (error) {
+      console.error('check_identity_ultra RPC error:', error);
+      return { unique: false, reason: 'RPC_ERROR', message: 'Identity check failed' };
+    }
+    
+    // SQL returns { valid: true/false, ... }
+    if (!rpcResult?.valid) {
       return {
         unique: false,
-        reason: rpcResult.reason,
-        message: rpcResult.message || ULTRA_ERRORS.ERR_DUPLICATE_NAME_DOB,
+        reason: rpcResult?.reason || 'CHECK_FAILED',
+        message: rpcResult?.message || ULTRA_ERRORS.ERR_DUPLICATE_IDENTITY,
+        idType: rpcResult?.id_type,
       };
     }
+    
+    return { 
+      unique: true, 
+      idType: rpcResult?.id_type,
+      idHash: rpcResult?.id_hash,
+    };
   } catch (e) {
-    console.error('RPC check failed, falling back:', e);
+    console.error('Identity check exception:', e);
+    return { unique: false, reason: 'EXCEPTION', message: 'Identity verification failed' };
   }
-  
-  // 3. Manual strict check (fallback)
-  const { data: nameDOBMatch } = await supabase
-    .from('profiles')
-    .select('id')
-    .ilike('full_name', name?.trim())
-    .or(`date_of_birth.eq.${dob},identity_metadata->>dob.eq.${dob}`)
-    .neq('id', userId || '00000000-0000-0000-0000-000000000000')
-    .limit(1)
-    .maybeSingle();
-  
-  if (nameDOBMatch) {
-    return {
-      unique: false,
-      reason: 'NAME_DOB_MATCH',
-      message: ULTRA_ERRORS.ERR_DUPLICATE_NAME_DOB,
-    };
-  }
-  
-  // 4. Check device for existing verified account
-  const { data: deviceMatch } = await supabase
-    .from('profiles')
-    .select('id, verification_status')
-    .eq('device_id', deviceId)
-    .eq('verification_status', 'VERIFIED')
-    .neq('id', userId || '00000000-0000-0000-0000-000000000000')
-    .maybeSingle();
-  
-  if (deviceMatch) {
-    return {
-      unique: false,
-      reason: 'DEVICE_HAS_VERIFIED_ACCOUNT',
-      message: ULTRA_ERRORS.ERR_DUPLICATE_DEVICE,
-    };
-  }
-  
-  return { unique: true };
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -477,7 +432,7 @@ export const validateUltraOCR = (ocrResult, manualInput) => {
 
 export const ultraFinalizeVerification = async ({
   userId,
-  identityHash,
+  idNumber,
   deviceId,
   ocrData,
   faceScore,
@@ -494,15 +449,16 @@ export const ultraFinalizeVerification = async ({
     return { success: false, error: ULTRA_ERRORS.ERR_ID_QUALITY_FAIL };
   }
   
-  if (faceScore < ULTRA_CONFIG.LIVENESS_MIN_SCORE) {
-    return { success: false, error: 'Biometric score too low. Complete challenges properly.' };
+  // SQL requires 0.88 minimum
+  if (faceScore < 0.88) {
+    return { success: false, error: '🔒 BIOMETRIC FAIL: Liveness score ' + faceScore.toFixed(2) + ' is below required threshold (0.88). Complete all 3 challenges with proper lighting.' };
   }
   
   try {
-    // Call RPC for atomic finalization
-    const { data, error } = await supabase.rpc('finalize_verification', {
+    // Call RPC using WORKING SQL function names
+    const { data, error } = await supabase.rpc('finalize_verification_ultra', {
       p_user_id: userId,
-      p_identity_hash: identityHash,
+      p_id_number: idNumber,
       p_device_id: deviceId,
       p_ocr_data: ocrData,
       p_face_score: faceScore,
