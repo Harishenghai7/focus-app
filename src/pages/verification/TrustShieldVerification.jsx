@@ -170,22 +170,48 @@ const TrustShieldVerification = () => {
         return;
       }
 
+      // 🔧 SAFETY TIMEOUT: Force exit loading after 5 seconds
+      const timeoutId = setTimeout(() => {
+        console.warn('[TrustShield] Loading timeout - forcing fallback to Step 1');
+        setIsLoadingStep(false);
+        setStepRaw(1);
+      }, 5000);
+
       try {
         // Get device fingerprint
         const did = getDeviceId();
         setDeviceId(did);
 
-        // Check rate limiting first
-        const rateLimit = await checkRateLimit(did);
+        // Check rate limiting first (with fallback)
+        let rateLimit = { allowed: true };
+        try {
+          rateLimit = await checkRateLimit(did);
+        } catch (e) {
+          console.warn('[TrustShield] Rate limit check failed:', e);
+        }
+        
         if (!rateLimit.allowed) {
           setError(rateLimit.reason);
+          clearTimeout(timeoutId);
           setIsLoadingStep(false);
           return;
         }
 
         // Get persistent verification state from DB + localStorage
-        const stepData = await getVerificationStep(user.id);
-        const locked = await getLockedStep(user.id);
+        let stepData = { step: 1, source: 'fallback' };
+        let locked = null;
+        
+        try {
+          stepData = await getVerificationStep(user.id);
+          locked = await getLockedStep(user.id);
+        } catch (e) {
+          console.warn('[TrustShield] DB step fetch failed:', e);
+          // Fallback: try localStorage only
+          const localStep = localStorage.getItem('trust_shield_step');
+          if (localStep) {
+            stepData = { step: parseInt(localStep), source: 'localStorage_fallback' };
+          }
+        }
         
         console.log('[TrustShield] 🔱 God-Level State Init:', {
           step: stepData.step,
@@ -197,12 +223,12 @@ const TrustShieldVerification = () => {
         // If there's a locked step from previous session, restore it
         if (locked && locked > 1) {
           setLockedStep(locked);
-          setStep(locked);
+          setStepRaw(locked);
           
           // Restore progress from metadata
-          if (stepData.progress?.ageGroup) setAgeGroup(stepData.progress.ageGroup);
-          if (stepData.progress?.ocrData) setOcrData(stepData.progress.ocrData);
-          if (stepData.progress?.identityHash) setIdentityHash(stepData.progress.identityHash);
+          if (stepData.progress?.ageGroup) setAgeGroupRaw(stepData.progress.ageGroup);
+          if (stepData.progress?.ocrData) setOcrDataRaw(stepData.progress.ocrData);
+          if (stepData.progress?.identityHash) setIdentityHashRaw(stepData.progress.identityHash);
           
           console.log('[TrustShield] 🔒 Restored to locked step:', locked);
         } else {
@@ -210,14 +236,16 @@ const TrustShieldVerification = () => {
           const fromState = location.state?.lockedStep;
           if (fromState && fromState > 1) {
             setLockedStep(fromState);
-            setStep(fromState);
+            setStepRaw(fromState);
           } else {
-            setStep(stepData.step || 1);
+            setStepRaw(stepData.step || 1);
           }
         }
       } catch (err) {
         console.error('[TrustShield] State init error:', err);
+        setStepRaw(1); // Fallback to step 1 on error
       } finally {
+        clearTimeout(timeoutId);
         setIsLoadingStep(false);
       }
     };
@@ -1109,6 +1137,27 @@ const TrustShieldVerification = () => {
           }} />
           <h2 style={{ color: '#e2e8f0', marginBottom: '8px' }}>🔱 Initializing Trust Shield</h2>
           <p style={{ color: '#94a3b8', fontSize: '14px' }}>Restoring your verification session...</p>
+          
+          {/* 🔧 EMERGENCY BYPASS - Click 5 times to skip loading */}
+          <div 
+            onClick={() => {
+              const clicks = parseInt(localStorage.getItem('loading_bypass_clicks') || '0') + 1;
+              localStorage.setItem('loading_bypass_clicks', clicks);
+              if (clicks >= 5) {
+                localStorage.removeItem('loading_bypass_clicks');
+                setIsLoadingStep(false);
+                console.log('[TrustShield] Emergency bypass activated');
+              }
+            }}
+            style={{ 
+              position: 'absolute', 
+              bottom: 100, 
+              width: 100, 
+              height: 100,
+              cursor: 'default',
+            }}
+          />
+          
           <style>{`
             @keyframes spin {
               0% { transform: rotate(0deg); }
