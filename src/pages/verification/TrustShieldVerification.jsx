@@ -12,7 +12,8 @@ import { useFocusly } from '../../context/FocuslyContext';
 import styles from './TrustShieldVerification.module.css';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// 🔱 GOD-LEVEL ENGINE IMPORTS - Layer 1-4 Integration
+// 🔱 TRUST SHIELD ULTRA - Maximum Security Enforcement
+// ONE GOVERNMENT ID = ONE PERSON = ONE ACCOUNT - STRICTEST MODE
 // ═══════════════════════════════════════════════════════════════════════════════
 import {
   getDeviceId,
@@ -28,7 +29,8 @@ import {
   atomicVerificationComplete,
   runGodLevelValidation,
   ERROR_CODES,
-} from '../../utils/trustShieldGodEngine';
+  ULTRA_CONFIG,
+} from '../../utils/trustShieldULTRA';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // PILLAR 1: ANTI-DEBUG / ANTI-TAMPER PROTECTION
