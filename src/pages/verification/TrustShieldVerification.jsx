@@ -573,17 +573,11 @@ const TrustShieldVerification = () => {
       }
       
       // ═══════════════════════════════════════════════════════════════════════
-      // ULTRA STRICT: Pass RAW ID number (not hash) - SQL hashes it internally
+      // ULTRA STRICT: Use raw ID from pre-check (already validated)
       // ═══════════════════════════════════════════════════════════════════════
-      const rawIdNumber = ocrData?.idNumber || ocrData?.id;
-      if (!rawIdNumber) {
-        handleFail('🔒 ID NUMBER MISSING: OCR did not detect ID number. Upload clearer image.');
-        return;
-      }
-      
       const result = await atomicVerificationComplete({
         userId: user.id,
-        idNumber: rawIdNumber, // RAW ID - SQL will SHA-256 hash it
+        idNumber: cleanId, // RAW ID - SQL will SHA-256 hash it
         deviceId: deviceId,
         ocrData: ocrData,
         faceScore: faceScore, // ACTUAL score from liveness
