@@ -1,70 +1,129 @@
 /**
- * 🔥 BULLETPROOF TRUST SHIELD V3 - INSTANT VERIFICATION
+ * 🔥 BULLETPROOF TRUST SHIELD V3 - ULTRA STRICT VERIFICATION
  * 
- * OPTION 1: Instant verification - returns SUCCESS immediately
- * Background checks run AFTER user proceeds (non-blocking)
- * 100% reliable, never hangs
+ * CRITICAL: Now uses SQL finalize_verification_ultra RPC
+ * Enforces: One Government ID = One Person = One Account
  */
 
 import { generateAdvancedFingerprint } from './deviceFingerprint';
+import { supabase } from '../lib/supabase';
 
-const TRUST_SHIELD_VERSION = '3.0-instant';
+const TRUST_SHIELD_VERSION = '3.0-ultra-strict';
 
 /**
- * 🔥 INSTANT VERIFICATION - Returns SUCCESS in < 100ms
- * All security checks run in background (non-blocking)
+ * 🔥 ULTRA STRICT VERIFICATION - Calls SQL RPC to enforce One ID = One Account
+ * This function NOW properly stores identity_hash and blocks duplicates
  */
-export const runBulletproofVerification = ({ 
+export const runBulletproofVerification = async ({ 
     idImageFile, 
     ocrResult,
     userId,
     userEmail
 }) => {
-    console.log('[TrustShieldV3] ⚡ INSTANT VERIFICATION - Returning success immediately');
+    console.log('[TrustShieldV3] 🔒 ULTRA STRICT VERIFICATION STARTING');
     
     // ═══════════════════════════════════════════════════════════════════════════
-    // 🔥 INSTANT SYNC VALIDATION (No async, no waiting)
+    // � VALIDATION LAYER 1: Basic OCR checks
     // ═══════════════════════════════════════════════════════════════════════════
     
-    // Basic OCR validation (synchronous)
     const hasValidOcr = ocrResult && ocrResult.name && ocrResult.dob && ocrResult.name.length >= 2;
     
-    // Basic file validation (synchronous)
-    const hasValidFile = idImageFile && idImageFile.size >= 10000; // At least 10KB
-    
-    // If basic checks fail, return immediate error
     if (!hasValidOcr) {
         return {
             passed: false,
             reason: 'Please upload a valid ID with Name and Date of Birth clearly visible.',
             layer: 'ocr_validation',
-            instant: true
+            instant: false
         };
     }
     
     // ═══════════════════════════════════════════════════════════════════════════
-    // 🔥 INSTANT SUCCESS - User can proceed NOW
+    // 🔒 VALIDATION LAYER 2: ID Number Extraction
     // ═══════════════════════════════════════════════════════════════════════════
     
-    // Generate simple device ID (non-blocking)
-    const simpleDeviceId = generateSimpleDeviceId();
+    const idNumber = ocrResult?.idNumber || ocrResult?.id;
+    if (!idNumber) {
+        return {
+            passed: false,
+            reason: '🔒 ID NUMBER NOT DETECTED: Please upload a clearer image showing your Aadhaar/PAN number.',
+            layer: 'id_extraction',
+            instant: false
+        };
+    }
     
-    // Fire background checks (don't await - let them run in background)
-    fireBackgroundChecks({ idImageFile, ocrResult, userId, userEmail, simpleDeviceId });
+    // ═══════════════════════════════════════════════════════════════════════════
+    // � VALIDATION LAYER 3: SQL Identity Check & Atomic Finalization
+    // ═══════════════════════════════════════════════════════════════════════════
     
-    // Return SUCCESS immediately (< 100ms)
-    return {
-        passed: true,
-        score: 0.88,
-        reason: 'ID verified successfully.',
-        deviceFingerprint: simpleDeviceId,
-        deviceId: simpleDeviceId,
-        ocrData: ocrResult,
-        verificationMethod: 'id_only_instant',
-        instant: true,
-        version: TRUST_SHIELD_VERSION,
-        timestamp: new Date().toISOString()
-    };
+    try {
+        const deviceId = generateSimpleDeviceId();
+        
+        // Call the ULTRA STRICT SQL function
+        const { data: result, error } = await supabase.rpc('finalize_verification_ultra', {
+            p_user_id: userId,
+            p_id_number: idNumber,
+            p_device_id: deviceId,
+            p_ocr_data: {
+                name: ocrResult.name,
+                dob: ocrResult.dob,
+                idNumber: idNumber,
+                idType: ocrResult.idType || 'unknown'
+            },
+            p_face_score: 0.95, // High confidence for ID-only verification
+            p_age_group: '18+' // Default to adult
+        });
+        
+        if (error) {
+            console.error('[TrustShieldV3] SQL Error:', error);
+            return {
+                passed: false,
+                reason: '🔒 VERIFICATION ERROR: ' + error.message,
+                layer: 'sql_error',
+                instant: false
+            };
+        }
+        
+        // Check result from SQL
+        if (!result?.success) {
+            const errorMsg = result?.error || result?.message || 'Identity verification failed';
+            console.error('[TrustShieldV3] Verification failed:', result);
+            return {
+                passed: false,
+                reason: errorMsg,
+                layer: result?.reason || 'verification_failed',
+                instant: false
+            };
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════════
+        // ✅ SUCCESS - Identity hash stored, duplicate check passed
+        // ═══════════════════════════════════════════════════════════════════════
+        
+        console.log('[TrustShieldV3] ✅ ULTRA VERIFICATION SUCCESS:', result);
+        
+        return {
+            passed: true,
+            score: 0.95,
+            reason: 'ID verified successfully.',
+            deviceFingerprint: deviceId,
+            deviceId: deviceId,
+            ocrData: ocrResult,
+            verificationMethod: 'ultra_strict_sql',
+            status: result?.status,
+            instant: false,
+            version: TRUST_SHIELD_VERSION,
+            timestamp: new Date().toISOString()
+        };
+        
+    } catch (err) {
+        console.error('[TrustShieldV3] Verification exception:', err);
+        return {
+            passed: false,
+            reason: '🔒 VERIFICATION ERROR: ' + err.message,
+            layer: 'exception',
+            instant: false
+        };
+    }
 };
 
 /**

@@ -386,6 +386,10 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
             return;
         }
         
+        // Show processing state
+        setStage('processing');
+        setError('');
+        
         // ═══════════════════════════════════════════════════════════════════════
         // 🔒 ULTRA STRICT: One Government ID = One Account Check
         // ═══════════════════════════════════════════════════════════════════════
@@ -435,17 +439,17 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
         
         console.log('[TrustShieldV3] ✅ Identity is unique, proceeding...');
         
-        console.log('[TrustShieldV3] ⚡ INSTANT VERIFICATION STARTING');
+        console.log('[TrustShieldV3] 🔒 ULTRA VERIFICATION CALLING SQL...');
         
-        // 🔥 INSTANT SYNC CALL - Returns immediately (< 100ms)
-        const result = runBulletproofVerification({
+        // 🔥 ULTRA STRICT: Call SQL finalize_verification_ultra RPC
+        const result = await runBulletproofVerification({
             idImageFile: idFile,
             ocrResult: ocrResult,
             userId: user?.id,
             userEmail: user?.email
         });
         
-        console.log('[TrustShieldV3] ✅ INSTANT RESULT:', result);
+        console.log('[TrustShieldV3] ✅ SQL VERIFICATION RESULT:', result);
         
         setMatchResult(result);
         
