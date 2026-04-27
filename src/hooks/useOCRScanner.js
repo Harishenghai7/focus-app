@@ -115,8 +115,26 @@ const validateDocumentForTier = (text, expectedTier, dobValid) => {
 
 // ── Text Parsers ──────────────────────────────────────────────────────────────
 
-// Aadhaar: 12-digit number in groups of 4
-const AADHAAR_REGEX = /\b\d{4}\s?\d{4}\s?\d{4}\b/;
+// Government ID Regex Patterns - ULTRA STRICT
+const ID_PATTERNS = {
+  // Aadhaar: 12-digit number (with or without spaces)
+  aadhaar: /\b\d{4}\s?\d{4}\s?\d{4}\b/,
+  // PAN: 5 letters + 4 digits + 1 letter (ABCDE1234F)
+  pan: /\b[A-Z]{5}[0-9]{4}[A-Z]\b/,
+  // Passport: 1 letter + 7 digits (A1234567)
+  passport: /\b[A-Z][0-9]{7}\b/,
+  // Voter ID: 3 letters + 7 digits (ABC1234567)
+  voter: /\b[A-Z]{3}[0-9]{7}\b/,
+  // Driving License: 2 letters + 13 digits (TN0123456789012)
+  dl: /\b[A-Z]{2}[0-9]{13}\b/,
+  // Generic 12-digit (fallback)
+  generic12: /\b\d{12}\b/,
+  // Generic 16-digit (some IDs)
+  generic16: /\b\d{16}\b/
+};
+
+// Legacy export for compatibility
+const AADHAAR_REGEX = ID_PATTERNS.aadhaar;
 
 const DOB_REGEX = /\b(\d{4}[-/.\\/](?:0?[1-9]|1[0-2])[-/.\\/](?:0?[1-9]|[12]\d|3[01])|(?:0?[1-9]|[12]\d|3[01])[-/.\\/](?:0?[1-9]|1[0-2])[-/.\\/]\d{4})\b/;
 
@@ -145,11 +163,60 @@ const parseIDText = (text) => {
 
   if (!text) return result;
 
-  // Detect Aadhaar
-  const aadhaarMatch = text.match(AADHAAR_REGEX);
-  if (aadhaarMatch) {
-    result.idNumber = aadhaarMatch[0].replace(/\s/g, '');
-    result.idType = 'aadhaar';
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🔒 ULTRA STRICT: Detect ALL Government ID Types (Priority Order)
+  // ═══════════════════════════════════════════════════════════════════════════
+  
+  // 1. Try PAN Card (Most specific pattern)
+  const panMatch = text.match(ID_PATTERNS.pan);
+  if (panMatch) {
+    result.idNumber = panMatch[0].toUpperCase();
+    result.idType = 'pan';
+  }
+  
+  // 2. Try Aadhaar (12-digit)
+  if (!result.idNumber) {
+    const aadhaarMatch = text.match(ID_PATTERNS.aadhaar);
+    if (aadhaarMatch) {
+      result.idNumber = aadhaarMatch[0].replace(/\s/g, '');
+      result.idType = 'aadhaar';
+    }
+  }
+  
+  // 3. Try Passport
+  if (!result.idNumber) {
+    const passportMatch = text.match(ID_PATTERNS.passport);
+    if (passportMatch) {
+      result.idNumber = passportMatch[0].toUpperCase();
+      result.idType = 'passport';
+    }
+  }
+  
+  // 4. Try Voter ID
+  if (!result.idNumber) {
+    const voterMatch = text.match(ID_PATTERNS.voter);
+    if (voterMatch) {
+      result.idNumber = voterMatch[0].toUpperCase();
+      result.idType = 'voter';
+    }
+  }
+  
+  // 5. Try Driving License
+  if (!result.idNumber) {
+    const dlMatch = text.match(ID_PATTERNS.dl);
+    if (dlMatch) {
+      result.idNumber = dlMatch[0].toUpperCase();
+      result.idType = 'dl';
+    }
+  }
+  
+  // 6. Fallback to generic 12-digit
+  if (!result.idNumber) {
+    const generic12Match = text.match(ID_PATTERNS.generic12);
+    if (generic12Match) {
+      result.idNumber = generic12Match[0];
+      result.idType = 'generic_12digit';
+    }
   }
 
   // Extract DOB
