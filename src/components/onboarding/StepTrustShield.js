@@ -777,6 +777,15 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                                         </div>
                                         <p><strong>Name:</strong> {ocrResult.name || 'Not found'}</p>
                                         <p><strong>DOB:</strong> {ocrResult.dob || 'Not found'}</p>
+                                        <p style={{ 
+                                            color: ocrResult.idNumber ? '#22c55e' : '#ef4444',
+                                            fontWeight: ocrResult.idNumber ? 'normal' : 'bold'
+                                        }}>
+                                            <strong>ID Number:</strong> {ocrResult.idNumber ? 
+                                                `${ocrResult.idNumber.substring(0, 4)}****${ocrResult.idNumber.slice(-4)} (${ocrResult.idType || 'ID'})` : 
+                                                '❌ NOT DETECTED - Upload clearer image'
+                                            }
+                                        </p>
                                         {formData?.ageInfo?.dateOfBirth && (
                                             <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '8px' }}>
                                                 Expected DOB: {formData.ageInfo.dateOfBirth}
@@ -788,9 +797,13 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                                 <Button 
                                     variant="primary" 
                                     onClick={beginVerification} 
-                                    disabled={!ocrResult || !ocrResult.dob || !ocrResult.name || /screenshot/i.test(ocrResult.name)}
+                                    disabled={!ocrResult || !ocrResult.dob || !ocrResult.name || !ocrResult.idNumber || /screenshot/i.test(ocrResult.name)}
+                                    style={{
+                                        opacity: (!ocrResult || !ocrResult.dob || !ocrResult.name || !ocrResult.idNumber) ? 0.5 : 1,
+                                        cursor: (!ocrResult || !ocrResult.dob || !ocrResult.name || !ocrResult.idNumber) ? 'not-allowed' : 'pointer'
+                                    }}
                                 >
-                                    🔒 Verify My Identity
+                                    {!ocrResult?.idNumber ? '❌ ID Number Required' : '🔒 Verify My Identity'}
                                 </Button>
                                 
                                 {!ocrResult && (
