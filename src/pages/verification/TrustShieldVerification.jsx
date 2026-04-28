@@ -309,6 +309,10 @@ const TrustShieldVerification = () => {
   const [ocrData, setOcrDataRaw] = useState(null);
   const [manualAadhaar, setManualAadhaar] = useState('');
   const [manualAadhaarError, setManualAadhaarError] = useState(null);
+  const [manualStudentId, setManualStudentId] = useState('');
+  const [manualInstitution, setManualInstitution] = useState('');
+  const [manualStudentIdError, setManualStudentIdError] = useState(null);
+  const [idConfirmed, setIdConfirmed] = useState(false);
   const setOcrData = useCallback((val) => {
     setOcrDataRaw((prev) => (typeof val === 'function' ? val(prev) : val));
     if (user?.id) {
@@ -366,7 +370,8 @@ const TrustShieldVerification = () => {
     const dup = await checkDuplicateID(cleaned, 'aadhaar');
     if (dup?.exists) {
       const alertConfig = getAlertConfig(dup.alertType);
-      handleFail(`${alertConfig.title}: ${alertConfig.message}\n\n${alertConfig.action}`);
+      setManualAadhaarError(`${alertConfig.title}: ${alertConfig.message}`);
+      setAccountLocked(true);
       setTimeout(() => {
         navigate(dup.redirectTo || '/auth', {
           state: {
@@ -394,10 +399,61 @@ const TrustShieldVerification = () => {
       if (hash) setIdentityHash(hash);
     } catch (_) {}
 
-    setManualAadhaar('');
     setManualAadhaarError(null);
     setError(null);
+    setIdConfirmed(true);
   }, [manualAadhaar, validateAadhaarVerhoeff, setOcrData, handleFail, navigate, setIdentityHash]);
+
+  const handleManualStudentIdSubmit = useCallback(async () => {
+    const cleaned = (manualStudentId || '').trim();
+    const inst = (manualInstitution || '').trim();
+    setManualStudentIdError(null);
+
+    if (cleaned.length < 4) {
+      setManualStudentIdError('Enter your Student ID / Roll Number (at least 4 characters).');
+      return;
+    }
+    if (inst.length < 2) {
+      setManualStudentIdError('Enter your School/College name.');
+      return;
+    }
+
+    const dup = await checkDuplicateStudentID(cleaned, inst);
+    if (dup?.exists) {
+      const alertConfig = getAlertConfig(dup.alertType);
+      setManualStudentIdError(`${alertConfig.title}: ${alertConfig.message}`);
+      setAccountLocked(true);
+      setTimeout(() => {
+        navigate(dup.redirectTo || '/auth', {
+          state: {
+            alert: {
+              type: 'error',
+              title: alertConfig.title,
+              message: alertConfig.message,
+              action: alertConfig.action,
+            },
+          },
+        });
+      }, 1500);
+      return;
+    }
+
+    setOcrData((prev) => ({
+      ...(prev || {}),
+      idNumber: cleaned,
+      idType: 'student',
+      institution: inst,
+    }));
+
+    try {
+      const hash = await computeIdentityHash(cleaned + ':' + inst);
+      if (hash) setIdentityHash(hash);
+    } catch (_) {}
+
+    setManualStudentIdError(null);
+    setError(null);
+    setIdConfirmed(true);
+  }, [manualStudentId, manualInstitution, setOcrData, handleFail, navigate, setIdentityHash]);
   
   const [identityHash, setIdentityHashRaw] = useState(null);
   const setIdentityHash = useCallback((val) => {
@@ -547,6 +603,12 @@ const TrustShieldVerification = () => {
     setAgeGroup(null);
     setOcrData(null);
     setIdentityHash(null);
+    setManualAadhaar('');
+    setManualAadhaarError(null);
+    setManualStudentId('');
+    setManualInstitution('');
+    setManualStudentIdError(null);
+    setIdConfirmed(false);
     setAccountLocked(false);
     setStaticImageFlag(false);
     setLivenessPhase(0);
@@ -573,21 +635,18 @@ const TrustShieldVerification = () => {
       // ═══════════════════════════════════════════════════════════════════════
       // 🔒 ULTRA STRICT: Pre-Validation Checks (Fail Fast)
       // ═══════════════════════════════════════════════════════════════════════
+
+      // GATE: ID must be confirmed via manual entry
+      if (!idConfirmed) {
+        handleFail('Please enter and verify your ID number before proceeding.');
+        setSaving(false);
+        return;
+      }
+
       const rawIdNumber = ocrData?.idNumber || ocrData?.id;
       
       const cleanId = (rawIdNumber || '').toUpperCase().replace(/\s/g, '');
-      if (ageGroup === '18+') {
-        if (!/^\d{12}$/.test(cleanId)) {
-          handleFail('Aadhaar required: Enter/scan your full 12-digit Aadhaar number.');
-          setSaving(false);
-          return;
-        }
-        if (!validateAadhaarVerhoeff(cleanId)) {
-          handleFail('Invalid Aadhaar number (checksum failed). Recheck digits.');
-          setSaving(false);
-          return;
-        }
-      }
+      
 
       let effectiveIdentityHash = identityHash;
       if (!effectiveIdentityHash) {
@@ -757,7 +816,7 @@ const TrustShieldVerification = () => {
     } finally {
       setSaving(false);
     }
-  }, [ageGroup, ocrData, user, handleFail, focusly, deviceId, livenessComplete, scanner?.capturedFile, identityHash, validateAadhaarVerhoeff, setIdentityHash]);
+  }, [ageGroup, ocrData, user, handleFail, focusly, deviceId, livenessComplete, scanner?.capturedFile, identityHash, idConfirmed, validateAadhaarVerhoeff, setIdentityHash]);
 
   // ── Mobile Realtime Sync (Desktop listens for VERIFIED) ──────────────────
   useEffect(() => {
@@ -863,31 +922,53 @@ const TrustShieldVerification = () => {
   useEffect(() => {
     if (scanner.phase !== 'captured' || !scanner.ocrResult) return;
     const result = scanner.ocrResult;
-    if (!result.ok) {
-      if (ageGroup === '18+' && result.idType === 'aadhaar_masked') {
-        setOcrData(result);
-        setError(result.reason || 'Aadhaar number is masked. Enter Aadhaar manually.');
-        return;
-      }
-      handleFail(result.reason || 'Could not read ID. Please retry.');
-      return;
+
+    const processOCRResult = async () => {
+    // ═══════════════════════════════════════════════════════════════════════════
+    // 🔱 PARADIGM SHIFT: OCR is a CONVENIENCE, not a GATE
+    // OCR auto-fills fields when it can. User ALWAYS enters/confirms ID number.
+    // OCR failure = fields not pre-filled, not a flow blocker.
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    // Always store whatever OCR extracted (name, DOB, partial ID)
+    setOcrData((prev) => ({
+      ...(prev || {}),
+      name: result.name || (prev || {}).name || null,
+      dob: result.dob || (prev || {}).dob || null,
+      idNumber: result.idNumber || (prev || {}).idNumber || null,
+      idType: result.idType || (prev || {}).idType || null,
+      idMaskedLast4: result.idMaskedLast4 || (prev || {}).idMaskedLast4 || null,
+      confidence: result.confidence || 0,
+      rawText: result.rawText || '',
+    }));
+
+    // Pre-fill manual entry fields from OCR
+    if (result.idNumber && /^\d{12}$/.test(result.idNumber.replace(/\s/g, ''))) {
+      setManualAadhaar(result.idNumber);
+    }
+    if (result.idNumber && result.idType === 'student') {
+      setManualStudentId(result.idNumber);
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // 🔱 LAYER 2.3: ID QUALITY CHECK - Block files < 50KB
+    // 🔱 LAYER 2.3: ID QUALITY CHECK - Block files < 50KB (always run)
     // ═══════════════════════════════════════════════════════════════════════════
-    const runQualityCheck = async () => {
-      if (scanner?.capturedFile) {
-        const quality = await validateIDQuality(scanner.capturedFile);
-        if (!quality.ok) {
-          console.error('[TrustShield] ID quality check failed:', quality);
-          handleFail(ERROR_CODES.ERR_FILE_TOO_SMALL + '\n\n' + quality.errors.map(e => e.message).join('\n'));
-          return false;
-        }
-        console.log('[TrustShield] ✅ ID quality passed:', quality.metadata);
+    if (scanner?.capturedFile) {
+      const quality = await validateIDQuality(scanner.capturedFile);
+      if (!quality.ok) {
+        console.error('[TrustShield] ID quality check failed:', quality);
+        handleFail(ERROR_CODES.ERR_FILE_TOO_SMALL + '\n\n' + quality.errors.map(e => e.message).join('\n'));
+        return;
       }
-      return true;
-    };
+      console.log('[TrustShield] ✅ ID quality passed:', quality.metadata);
+    }
+
+    // If OCR couldn't fully read the document, that's OK — user will fill in manually
+    if (!result.ok) {
+      console.log('[TrustShield] OCR partial read — user will fill in manually. Missing:', result.missingFields || 'unknown');
+      setError(null);
+      return;
+    }
 
     // ── THE GATEKEEPER & THE LAW: Classification + Validations ──
     const detected = result.rawText ? classifyDocumentTier(result.rawText) : 'unknown';
@@ -950,11 +1031,6 @@ const TrustShieldVerification = () => {
     // ═══════════════════════════════════════════════════════════════════════════
     // 🔱 LAYER 2.5: IDENTITY UNIQUENESS CHECK - One Person = One Account
     // ═══════════════════════════════════════════════════════════════════════════
-    const runGodLevelChecks = async () => {
-      // First run quality check
-      const qualityPassed = await runQualityCheck();
-      if (!qualityPassed) return;
-      
       // Check identity uniqueness via RPC
       if (result.name && result.dob) {
         const uniqueness = await checkIdentityUniqueness(result.name, result.dob, deviceId);
@@ -1088,9 +1164,9 @@ const TrustShieldVerification = () => {
       
       setOcrData(result);
       setError(null);
-    };
+    }; // end processOCRResult
 
-    runGodLevelChecks();
+    processOCRResult();
   }, [scanner.phase, scanner.ocrResult, scanner.capturedFile, ageGroup, handleFail, handleHardReset, user?.id, deviceId]);
 
   // ── STEP 3: Load face-api models ──────────────────────────────────────────
@@ -1514,7 +1590,7 @@ const TrustShieldVerification = () => {
                 {ageGroup === '13-17' ? '🎓 Scan Student ID' : '🪪 Scan Government ID'}
               </h2>
               <p className={styles.stepDesc}>
-                Hold your ID card inside the frame. The AI will auto-capture when it's sharp and well-lit.
+                Scan or upload your ID card. The AI will auto-detect details, then you'll confirm your ID number.
               </p>
 
               {/* Live camera feed */}
@@ -1611,52 +1687,57 @@ const TrustShieldVerification = () => {
                 </p>
               )}
 
-              {/* OCR Results */}
+              {/* OCR Auto-fill (informational) */}
               {scanner.phase === 'captured' && ocrData && (
                 <div className={styles.ocrResults}>
-                  <h3>📋 Extracted Identity Data</h3>
-                  {ocrData.name     && <div className={styles.ocrField}><span>Name</span><strong>{ocrData.name}</strong></div>}
-                  {ocrData.dob      && <div className={styles.ocrField}><span>Date of Birth</span><strong>{ocrData.dob}</strong></div>}
-                  {ocrData.idNumber && <div className={styles.ocrField}><span>ID Number</span><strong>XXXX XXXX {ocrData.idNumber.slice(-4)}</strong></div>}
-                  <div className={styles.ocrField}><span>Confidence</span><strong>{Math.round(ocrData.confidence * 100)}%</strong></div>
+                  <h3>📋 Auto-Detected from ID</h3>
+                  {ocrData.name && <div className={styles.ocrField}><span>Name</span><strong>{ocrData.name}</strong></div>}
+                  {ocrData.dob && <div className={styles.ocrField}><span>DOB</span><strong>{ocrData.dob}</strong></div>}
+                  {ocrData.idNumber && <div className={styles.ocrField}><span>ID</span><strong>XXXX XXXX {ocrData.idNumber.slice(-4)}</strong></div>}
+                  <div className={styles.ocrField}><span>OCR</span><strong>{Math.round((ocrData.confidence || 0) * 100)}%</strong></div>
                 </div>
               )}
 
-              {scanner.phase === 'captured' && ageGroup === '18+' && ocrData?.idType === 'aadhaar_masked' && (
-                <div className={styles.ocrResults}>
-                  <h3>🔒 Aadhaar Required</h3>
-                  <p className={styles.statusText} style={{ marginTop: 6 }}>
-                    Your uploaded Aadhaar shows only last 4 digits ({ocrData?.idMaskedLast4 || '****'}). Enter your full 12-digit Aadhaar to continue.
+              {/* ID ENTRY FORM — PRIMARY PATH (always visible after scan) */}
+              {scanner.phase === 'captured' && ageGroup === '18+' && (
+                <div className={styles.ocrResults} style={{ marginTop: 16 }}>
+                  <h3>🪪 Enter Aadhaar Number</h3>
+                  <p className={styles.statusText} style={{ marginTop: 6, color: '#94a3b8' }}>
+                    {idConfirmed ? '✅ Aadhaar verified — proceed below.'
+                      : ocrData?.idType === 'aadhaar_masked' ? `Masked Aadhaar detected (last 4: ${ocrData?.idMaskedLast4 || '****'}). Enter full 12 digits.`
+                      : 'Enter your 12-digit Aadhaar. One Aadhaar = One account.'}
                   </p>
-                  <div style={{ display: 'flex', gap: 10, marginTop: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-                    <input
-                      value={manualAadhaar}
-                      inputMode="numeric"
-                      autoComplete="off"
-                      placeholder="Enter 12-digit Aadhaar"
-                      onChange={(e) => {
-                        setManualAadhaarError(null);
-                        setManualAadhaar((e.target.value || '').replace(/[^0-9\s]/g, ''));
-                      }}
-                      style={{
-                        padding: '12px 14px',
-                        borderRadius: 12,
-                        border: '1px solid rgba(168, 85, 247, 0.35)',
-                        background: 'rgba(15, 23, 42, 0.35)',
-                        color: '#e2e8f0',
-                        width: 240,
-                        outline: 'none',
-                      }}
-                    />
-                    <button className={styles.primaryBtn} onClick={handleManualAadhaarSubmit}>
-                      Verify Aadhaar
-                    </button>
-                  </div>
-                  {manualAadhaarError && (
-                    <p className={styles.statusText} style={{ color: '#fca5a5', textAlign: 'center', marginTop: 10 }}>
-                      {manualAadhaarError}
-                    </p>
+                  {!idConfirmed && (
+                    <div style={{ display: 'flex', gap: 10, marginTop: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+                      <input value={manualAadhaar} inputMode="numeric" autoComplete="off" placeholder="12-digit Aadhaar"
+                        onChange={(e) => { setManualAadhaarError(null); setManualAadhaar((e.target.value || '').replace(/[^0-9\s]/g, '')); }}
+                        style={{ padding: '12px 14px', borderRadius: 12, border: '1px solid rgba(168,85,247,0.35)', background: 'rgba(15,23,42,0.35)', color: '#e2e8f0', width: 240, outline: 'none' }} />
+                      <button className={styles.primaryBtn} onClick={handleManualAadhaarSubmit}>Verify Aadhaar</button>
+                    </div>
                   )}
+                  {manualAadhaarError && <p className={styles.statusText} style={{ color: '#fca5a5', textAlign: 'center', marginTop: 10 }}>{manualAadhaarError}</p>}
+                </div>
+              )}
+
+              {scanner.phase === 'captured' && ageGroup === '13-17' && (
+                <div className={styles.ocrResults} style={{ marginTop: 16 }}>
+                  <h3>🎓 Enter Student ID</h3>
+                  <p className={styles.statusText} style={{ marginTop: 6, color: '#94a3b8' }}>
+                    {idConfirmed ? '✅ Student ID verified — proceed below.'
+                      : 'Enter your School/College ID and institution name. One student = One account.'}
+                  </p>
+                  {!idConfirmed && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12, alignItems: 'center' }}>
+                      <input value={manualStudentId} autoComplete="off" placeholder="Student ID / Roll No."
+                        onChange={(e) => { setManualStudentIdError(null); setManualStudentId(e.target.value); }}
+                        style={{ padding: '12px 14px', borderRadius: 12, border: '1px solid rgba(168,85,247,0.35)', background: 'rgba(15,23,42,0.35)', color: '#e2e8f0', width: 280, outline: 'none' }} />
+                      <input value={manualInstitution} autoComplete="off" placeholder="School / College Name"
+                        onChange={(e) => { setManualStudentIdError(null); setManualInstitution(e.target.value); }}
+                        style={{ padding: '12px 14px', borderRadius: 12, border: '1px solid rgba(168,85,247,0.35)', background: 'rgba(15,23,42,0.35)', color: '#e2e8f0', width: 280, outline: 'none' }} />
+                      <button className={styles.primaryBtn} onClick={handleManualStudentIdSubmit}>Verify Student ID</button>
+                    </div>
+                  )}
+                  {manualStudentIdError && <p className={styles.statusText} style={{ color: '#fca5a5', textAlign: 'center', marginTop: 10 }}>{manualStudentIdError}</p>}
                 </div>
               )}
 
@@ -1667,18 +1748,11 @@ const TrustShieldVerification = () => {
                 </div>
               )}
 
-              {ocrData && !error && scanner.phase === 'captured' && (() => {
-                const idNum = (ocrData?.idNumber || '').replace(/\s/g, '');
-                const canContinue = ageGroup === '18+'
-                  ? (ocrData?.idType === 'aadhaar' && /^\d{12}$/.test(idNum) && validateAadhaarVerhoeff(idNum))
-                  : !!ocrData?.idNumber;
-                if (!canContinue) return null;
-                return (
-                  <button className={styles.primaryBtn} onClick={() => { setStep(3); }}>
-                    Continue to Liveness →
-                  </button>
-                );
-              })()}
+              {idConfirmed && scanner.phase === 'captured' && (
+                <button className={styles.primaryBtn} onClick={() => { setStep(3); }}>
+                  Continue to Liveness →
+                </button>
+              )}
 
               {(scanner.phase === 'streaming' || scanner.phase === 'scanning') && (
                 <button className={styles.secondaryBtn} onClick={() => { scanner.stopCamera(); }}>
