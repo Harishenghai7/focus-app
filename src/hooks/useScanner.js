@@ -213,7 +213,7 @@ const useScanner = () => {
       }
 
       const text = data.text;
-
+      
       // ═══════════════════════════════════════════════════════════════════════════
       // 🔱 ULTRA AADHAAR-FOCUSED OCR - Camera Optimized with Error Correction
       // ═══════════════════════════════════════════════════════════════════════════
@@ -228,8 +228,15 @@ const useScanner = () => {
         .replace(/[G]/g, '6')    // G -> 6
         .replace(/[^0-9A-Za-z\s\-]/g, ''); // Remove special chars
       
+      // DEBUG: Log raw OCR output
+      console.log('[TrustShield OCR] Raw text:', text);
+      console.log('[TrustShield OCR] Cleaned text:', cleanedText);
+      
       // ── Field extraction ──────────────────────────────────────────────
+      // Name extraction - handles DigiLocker format (M. Hariharun, First Last, etc.)
       const nameMatch = text.match(/(?:Name|NAME|नाम)[:\s]+([A-Z][A-Za-z\s\.]{2,40})/i) ||
+                       text.match(/(?:^|\n)([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})(?:\s*\n|\s+\d)/m) ||
+                       text.match(/(?:^|\n)([A-Z]\.\s*[A-Za-z\s\.]{2,30})(?:\s*\n|\s+Male|\s+Female|\s+\d)/m) ||
                        text.match(/^([A-Z][A-Za-z\.]+(?:\s+[A-Z][A-Za-z\.]+){1,3})$/m);
       
       const dobPatterns = [
@@ -253,11 +260,14 @@ const useScanner = () => {
         /\b[0-9OIlSBJ]{4}\s*[0-9OIlSBJ]{4}\s*[0-9OIlSBJ]{4}\b/i, // OCR error tolerant
       ];
       
-      // Then, try MASKED Aadhaar (DigiLocker format: xxxxxxxx1234 or XXXX XXXX 1234)
+      // Then, try MASKED Aadhaar (DigiLocker format: xxxxxxxx1234, ××××××××1234, XXXX XXXX 1234)
       const MASKED_AADHAAR_PATTERNS = [
-        /\b[xX]{4,8}(\d{4})\b/,                   // xxxx1234 or xxxxxxxx1234
-        /\b[xX\*]{4}\s*[xX\*]{4}\s*(\d{4})\b/,  // XXXX XXXX 1234
-        /\b\d{4}\s+\d{4}\s+(\d{4})\b/,          // Partial capture: last 4 only
+        /[xX×✕✖*#\-]{4,12}(\d{4})\b/,                    // xxxxxxxx1234, ××××××××1234 (any masking char)
+        /[xX×✕✖*#]{4}\s*[xX×✕✖*#]{4}\s*(\d{4})\b/,   // XXXX XXXX 1234 with spaces
+        /[xX×]{8}[-\s]?(\d{4})\b/,                     // xxxxxxxx-1234 or xxxxxxxx 1234
+        /.{8,16}(\d{4})\b/,                             // Fallback: anything ending in 4 digits
+        /(?:Aadhaar|AADHAAR|आधार)[^\n]{0,100}[xX×*#\-]{4,}(\d{4})\b/i, // Aadhaar label + masked
+        /(?:Aadhaar|AADHAAR)[^\n]{0,50}:\s*[^\n]*(\d{4})\b/i, // Aadhaar: xxxxxx1234
       ];
       
       let idNumber = null;
@@ -284,12 +294,30 @@ const useScanner = () => {
           const match = text.match(pattern) || cleanedText.match(pattern);
           if (match) {
             const last4 = match[1]; // The captured last 4 digits
+            console.log('[TrustShield OCR] Masked pattern matched:', match[0], 'Last4:', last4);
             if (last4 && last4.length === 4 && /^\d{4}$/.test(last4)) {
               idNumber = 'MASKED-' + last4; // Format: MASKED-1234
               idType = 'aadhaar_masked';
               idSource = 'masked_aadhaar';
               break;
             }
+          }
+        }
+      }
+      
+      // 3. AGGRESSIVE FALLBACK: Look for line with masked chars ending in 4 digits
+      if (!idNumber) {
+        // Look for lines containing masking characters followed by 4 digits
+        const aggressiveMatch = text.match(/[x×*#\-\s]{4,}(\d{4})\b/i) ||
+                               text.match(/(?: masked|hidden|redacted|xxxx)[^\n]*(\d{4})\b/i) ||
+                               text.match(/\D{8,}(\d{4})\s*$/m); // Any 8+ non-digits ending in 4 digits
+        if (aggressiveMatch) {
+          const last4 = aggressiveMatch[1];
+          console.log('[TrustShield OCR] Aggressive pattern matched:', aggressiveMatch[0], 'Last4:', last4);
+          if (last4 && /^\d{4}$/.test(last4)) {
+            idNumber = 'MASKED-' + last4;
+            idType = 'aadhaar_masked';
+            idSource = 'masked_aadhaar_aggressive';
           }
         }
       }
@@ -383,6 +411,13 @@ const useScanner = () => {
           idNumber: !hasIdNumber
         }
       };
+      
+      // DEBUG: Final result
+      console.log('[TrustShield OCR] === RESULT ===');
+      console.log('  Name:', result.name, '| Match:', nameMatch?.[0]);
+      console.log('  DOB:', result.dob);
+      console.log('  ID Number:', result.idNumber, '| Type:', result.idType, '| Source:', result.idSource);
+      console.log('  Success:', result.ok, '| Reason:', result.reason);
 
       setOcrResult(result);
       setPhase('captured');
