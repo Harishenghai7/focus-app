@@ -10,7 +10,7 @@ import {
   finalizeVerificationV2,
   getAlertConfig 
 } from '../../utils/trustShieldDuplicateCheck';
-import { purifyIDImage } from '../../utils/imagePreprocessor';
+import { purifyIDImage } from '../../utils/imagePurityEngine';
 import MainLayout from '../../components/layout/MainLayout';
 import { QRCodeSVG } from 'qrcode.react';
 import { supabase } from '../../lib/supabase';
@@ -300,6 +300,19 @@ const TrustShieldVerification = () => {
     setStepRaw(newStep);
     persistStepChange(newStep);
   }, [persistStepChange]);
+
+  // ── PILLAR 1: Back Navigation Lock ─────────────────────────────────────────
+  useEffect(() => {
+    const handlePopState = (e) => {
+      if (step > 1) {
+        window.history.pushState(null, '', window.location.href);
+      }
+    };
+    window.history.pushState(null, '', window.location.href);
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [step]);
+
   
   const [ageGroup, setAgeGroupRaw] = useState(null);
   const setAgeGroup = useCallback((val) => {
@@ -382,7 +395,7 @@ const TrustShieldVerification = () => {
     setOcrPipelineActive(true);
     setOcrPipelinePhase(1);
     setOcrPipelinePct(10);
-    setOcrPipelineLabel('🔬 Image Purifying...');
+    setOcrPipelineLabel('🔬 Purifying Image...');
 
     // Small artificial delay so the user sees Phase 1
     await new Promise(r => setTimeout(r, 400));
@@ -420,7 +433,7 @@ const TrustShieldVerification = () => {
     // Phase 2 → Phase 3: Checking Global Uniqueness
     setOcrPipelinePhase(3);
     setOcrPipelinePct(80);
-    setOcrPipelineLabel('🔒 Checking Global Uniqueness...');
+    setOcrPipelineLabel('🔒 Verifying Uniqueness...');
 
     try {
       const hash = await computeIdentityHash(cleaned);
@@ -722,7 +735,7 @@ const TrustShieldVerification = () => {
 
       if (!sovereignCheck.unique) {
         // 🛑 THE REDIRECT LOCK: hard redirect + session clear
-        const msg = sovereignCheck.message || 'Identity already linked to another account. You cannot create multiple accounts on Focus.';
+        const msg = 'Identity already linked to another account.';
         alert(msg);
         setAccountLocked(true);
         setSaving(false);
@@ -1502,9 +1515,9 @@ const TrustShieldVerification = () => {
 
   // ══ OCR Pipeline Progress Bar Component ═══════════════════════════════════════════════════
   const PIPELINE_PHASES = [
-    { id: 1, label: '🔬 Image Purifying',          sublabel: 'OpenCV noise reduction + threshold' },
+    { id: 1, label: '🔬 Purifying Image',          sublabel: 'OpenCV noise reduction + threshold' },
     { id: 2, label: '🧬 Extracting Identity DNA',  sublabel: 'Tesseract sovereign OCR' },
-    { id: 3, label: '🔒 Checking Global Uniqueness', sublabel: 'One Person = One Account' },
+    { id: 3, label: '🔒 Verifying Uniqueness', sublabel: 'One Person = One Account' },
   ];
   const OcrPipelineProgress = () => {
     if (!ocrPipelineActive && ocrPipelinePhase === 0) return null;
@@ -1790,7 +1803,7 @@ const TrustShieldVerification = () => {
                           setOcrPipelineActive(true);
                           setOcrPipelinePhase(1);
                           setOcrPipelinePct(5);
-                          setOcrPipelineLabel('🔬 Image Purifying...');
+                          setOcrPipelineLabel('🔬 Purifying Image...');
                           try {
                             const purified = await purifyIDImage(file, (pct) => {
                               setOcrPipelinePct(5 + Math.round(pct * 0.30));

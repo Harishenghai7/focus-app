@@ -18,7 +18,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { createWorker } from 'tesseract.js';
-import { purifyIDImage, fileToImageElement } from '../utils/imagePreprocessor';
+import { purifyIDImage, fileToImageElement } from '../utils/imagePurityEngine';
 
 // ── ADULT & TEEN Document Markers (Weight-Based System) ──────────────────────
 const ADULT_KEYWORDS = ['GOVT', 'INDIA', 'INCOME TAX', 'ELECTION', 'AADHAAR', 'PAN', 'VOTER', 'DRIVING'];
@@ -344,13 +344,13 @@ export const useOCRScanner = () => {
       }
 
       // ── PHASE 1: Image Purification ───────────────────────────────────────
-      report(5, '🔬 Image Purifying...');
+      report(5, '🔬 Purifying Image...');
 
       let tesseractSource = imageSource;
       let purifyMethod = 'original';
       try {
         const purified = await purifyIDImage(imageSource, (pct) => {
-          report(5 + Math.round(pct * 0.30), '🔬 Image Purifying...');
+          report(5 + Math.round(pct * 0.30), '🔬 Purifying Image...');
         });
         tesseractSource = purified.canvas;
         purifyMethod    = purified.method;
@@ -406,7 +406,7 @@ export const useOCRScanner = () => {
       }
 
       // ── PHASE 3: Checking Global Uniqueness (parse + validate) ────────────
-      report(72, '🔒 Checking Global Uniqueness...');
+      report(72, '🔒 Verifying Uniqueness...');
 
       const parsed = parseIDText(text, tier);
 
@@ -433,7 +433,7 @@ export const useOCRScanner = () => {
         if (mismatch) throw new Error(mismatch);
       }
 
-      report(88, '🔒 Checking Global Uniqueness...');
+      report(88, '🔒 Verifying Uniqueness...');
 
       // ── SHA-256 Sovereign Identity Hash ──────────────────────────────────
       const identityHash = await computeIdentityHash(parsed.idNumber);
