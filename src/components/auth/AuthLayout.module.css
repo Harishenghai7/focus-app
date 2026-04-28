@@ -11,20 +11,13 @@
     align-items: center;
     justify-content: center;
     padding: 2rem;
-    background: var(--glass-bg-solid);
-    backdrop-filter: var(--blur-xl);
-    -webkit-backdrop-filter: var(--blur-xl);
-    border-left: 1px solid var(--glass-border);
-    box-shadow: -10px 0 50px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(135deg, rgba(126, 87, 194, 0.2), rgba(69, 39, 160, 0.2));
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border-left: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: -10px 0 50px rgba(0, 0, 0, 0.5), inset 0 0 100px rgba(139, 92, 246, 0.1);
     position: relative;
     overflow-y: auto;
-}
-.formPanel::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    box-shadow: inset 0 0 100px rgba(139, 92, 246, 0.1);
 }
 
 .formContent {

@@ -222,10 +222,22 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
     }, [formData?.trustShieldInitialized, formData?.trustShieldFaceScore, updateFormData]);
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // SYSTEM READY CHECK
+    // SYSTEM READY CHECK & POPSTATE ENFORCEMENT
     // ═══════════════════════════════════════════════════════════════════════════
     useEffect(() => {
-        console.log('[TrustShieldV2] ✅ ID-only verification system ready');
+        console.log('[TrustShieldV3] ✅ ID-only verification system ready & Locked');
+        
+        // Block the browser 'Back' button
+        const handlePopState = (event) => {
+            window.history.pushState(null, '', window.location.href);
+            setError('Verification is mandatory. You cannot go back.');
+            triggerHaptic(10);
+        };
+        
+        window.history.pushState(null, '', window.location.href);
+        window.addEventListener('popstate', handlePopState);
+        
+        return () => window.removeEventListener('popstate', handlePopState);
     }, []);
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -431,9 +443,24 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
         
         if (!uniquenessCheck?.unique) {
             console.error('[TrustShieldV3] 🔒 IDENTITY COLLISION:', uniquenessCheck);
-            setError(uniquenessCheck?.message || '🔒 ONE PERSON = ONE ACCOUNT: This government ID is already registered. Contact admin@focusapp.in to recover your account.');
+            
+            // 🔥 THE NUCLEAR RESET (God-Level Enforcement)
+            setError('IDENTITY COLLISION: One Person = One Account. Initiating Nuclear Reset...');
+            setErrorType('general');
+            
+            // Lock UI and reset everything
             setStage('result');
-            setMatchResult({ passed: false, reason: uniquenessCheck?.reason || 'DUPLICATE_IDENTITY' });
+            setMatchResult({ passed: false, reason: 'DUPLICATE_IDENTITY_NUCLEAR_LOCK' });
+            
+            setTimeout(async () => {
+                try {
+                    localStorage.clear();
+                    await supabase.auth.signOut();
+                    window.location.href = '/auth?error=identity_collision';
+                } catch (err) {
+                    window.location.href = '/auth?error=identity_collision';
+                }
+            }, 2500);
             return;
         }
         

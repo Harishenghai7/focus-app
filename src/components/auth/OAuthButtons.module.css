@@ -17,25 +17,28 @@
     font-size: 0.95rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     width: 100%;
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
 }
 
 .oauthButton:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.25);
 }
 
 .oauthButton:active:not(:disabled) {
-    transform: translateY(0);
+    transform: translateY(0) scale(0.98);
 }
 
 .oauthButton:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+    filter: grayscale(100%);
 }
 
 .icon {
@@ -43,6 +46,11 @@
     font-size: 1.2rem;
     display: flex;
     align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.oauthButton:hover:not(:disabled) .icon {
+    transform: scale(1.1) rotate(5deg);
 }
 
 /* Provider specific styles */
