@@ -47,40 +47,6 @@ const measureLuminance = (canvas) => {
   return total / (data.length / 4);
 };
 
-// ── Image Preprocessing for Better OCR ─────────────────────────────────────
-const preprocessImage = (canvas) => {
-  const ctx = canvas.getContext('2d');
-  const { width, height } = canvas;
-  const imageData = ctx.getImageData(0, 0, width, height);
-  const data = imageData.data;
-  
-  // 1. Convert to grayscale with better contrast
-  for (let i = 0; i < data.length; i += 4) {
-    // Grayscale conversion
-    const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-    
-    // Increase contrast (s-curve approximation)
-    const contrast = (gray - 128) * 1.5 + 128;
-    const final = Math.max(0, Math.min(255, contrast));
-    
-    data[i] = final;     // R
-    data[i + 1] = final; // G
-    data[i + 2] = final; // B
-  }
-  
-  // 2. Apply threshold for black/white effect (helps OCR)
-  const threshold = 128;
-  for (let i = 0; i < data.length; i += 4) {
-    const val = data[i] > threshold ? 255 : 0;
-    data[i] = val;
-    data[i + 1] = val;
-    data[i + 2] = val;
-  }
-  
-  ctx.putImageData(imageData, 0, 0);
-  return canvas;
-};
-
 // ── Main Hook ───────────────────────────────────────────────────────────────
 const useScanner = () => {
   const [phase, setPhase] = useState('idle'); // idle|requesting|streaming|scanning|captured|error
@@ -183,25 +149,37 @@ const useScanner = () => {
     setStatusMessage('🔍 Reading ID — please hold still...');
 
     // Capture the frame immediately
-    const frameDataUrl = canvas.toDataURL('image/jpeg', 0.92);
+    const preprocessForOCR = (srcCanvas) => {
+      const c = document.createElement('canvas');
+      c.width = srcCanvas.width;
+      c.height = srcCanvas.height;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(srcCanvas, 0, 0);
+      const img = ctx.getImageData(0, 0, c.width, c.height);
+      const d = img.data;
+      const contrast = 1.35;
+      const intercept = 128 * (1 - contrast);
+      for (let i = 0; i < d.length; i += 4) {
+        const r = d[i];
+        const g = d[i + 1];
+        const b = d[i + 2];
+        let y = 0.299 * r + 0.587 * g + 0.114 * b;
+        y = (y * contrast) + intercept;
+        y = y < 0 ? 0 : (y > 255 ? 255 : y);
+        const v = y > 155 ? 255 : 0;
+        d[i] = v;
+        d[i + 1] = v;
+        d[i + 2] = v;
+      }
+      ctx.putImageData(img, 0, 0);
+      return c.toDataURL('image/jpeg', 0.92);
+    };
+
+    const frameDataUrl = preprocessForOCR(canvas);
     setCapturedFrame(frameDataUrl);
 
     try {
-      // ═══════════════════════════════════════════════════════════════════════════
-      // 🔱 IMAGE PREPROCESSING - Enhance contrast for better OCR
-      // ═══════════════════════════════════════════════════════════════════════════
-      const processedCanvas = preprocessImage(canvas);
-      const processedDataUrl = processedCanvas.toDataURL('image/jpeg', 0.92);
-      
-      // Try OCR on both original and preprocessed images
-      let data = await workerRef.current.recognize(frameDataUrl);
-      let processedData = await workerRef.current.recognize(processedDataUrl);
-      
-      // Use the result with higher confidence
-      if (processedData.confidence > data.confidence) {
-        data = processedData;
-      }
-      
+      const { data } = await workerRef.current.recognize(frameDataUrl);
       const confidence = data.confidence;
 
       if (confidence < 60) {
@@ -213,7 +191,7 @@ const useScanner = () => {
       }
 
       const text = data.text;
-      
+
       // ═══════════════════════════════════════════════════════════════════════════
       // 🔱 ULTRA AADHAAR-FOCUSED OCR - Camera Optimized with Error Correction
       // ═══════════════════════════════════════════════════════════════════════════
@@ -228,15 +206,8 @@ const useScanner = () => {
         .replace(/[G]/g, '6')    // G -> 6
         .replace(/[^0-9A-Za-z\s\-]/g, ''); // Remove special chars
       
-      // DEBUG: Log raw OCR output
-      console.log('[TrustShield OCR] Raw text:', text);
-      console.log('[TrustShield OCR] Cleaned text:', cleanedText);
-      
       // ── Field extraction ──────────────────────────────────────────────
-      // Name extraction - handles DigiLocker format (M. Hariharun, First Last, etc.)
       const nameMatch = text.match(/(?:Name|NAME|नाम)[:\s]+([A-Z][A-Za-z\s\.]{2,40})/i) ||
-                       text.match(/(?:^|\n)([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})(?:\s*\n|\s+\d)/m) ||
-                       text.match(/(?:^|\n)([A-Z]\.\s*[A-Za-z\s\.]{2,30})(?:\s*\n|\s+Male|\s+Female|\s+\d)/m) ||
                        text.match(/^([A-Z][A-Za-z\.]+(?:\s+[A-Z][A-Za-z\.]+){1,3})$/m);
       
       const dobPatterns = [
@@ -249,76 +220,41 @@ const useScanner = () => {
       for (const p of dobPatterns) { const m = text.match(p); if (m) { dob = m[1]; break; } }
       
       // ═══════════════════════════════════════════════════════════════════════════
-      // 🔱 AADHAAR DETECTION - Handles FULL, MASKED, and CAMERA images
+      // 🔱 AADHAAR DETECTION - Multiple patterns for camera images
       // ═══════════════════════════════════════════════════════════════════════════
-      
-      // First, try to find FULL 12-digit Aadhaar
-      const FULL_AADHAAR_PATTERNS = [
+      const AADHAAR_PATTERNS = [
         /\b(\d{4}\s+\d{4}\s+\d{4})\b/,           // Standard: 1234 5678 9012
         /\b(\d{12})\b/,                          // No spaces: 123456789012
+        /\b(\d{4}\s+\d{8})\b/,                   // Partial: 1234 56789012
+        /\b(\d{8}\s+\d{4})\b/,                   // Partial: 12345678 9012
         /\b(\d{4}-\d{4}-\d{4})\b/,               // Dashed: 1234-5678-9012
         /\b[0-9OIlSBJ]{4}\s*[0-9OIlSBJ]{4}\s*[0-9OIlSBJ]{4}\b/i, // OCR error tolerant
       ];
       
-      // Then, try MASKED Aadhaar (DigiLocker format: xxxxxxxx1234, ××××××××1234, XXXX XXXX 1234)
-      const MASKED_AADHAAR_PATTERNS = [
-        /[xX×✕✖*#\-]{4,12}(\d{4})\b/,                    // xxxxxxxx1234, ××××××××1234 (any masking char)
-        /[xX×✕✖*#]{4}\s*[xX×✕✖*#]{4}\s*(\d{4})\b/,   // XXXX XXXX 1234 with spaces
-        /[xX×]{8}[-\s]?(\d{4})\b/,                     // xxxxxxxx-1234 or xxxxxxxx 1234
-        /.{8,16}(\d{4})\b/,                             // Fallback: anything ending in 4 digits
-        /(?:Aadhaar|AADHAAR|आधार)[^\n]{0,100}[xX×*#\-]{4,}(\d{4})\b/i, // Aadhaar label + masked
-        /(?:Aadhaar|AADHAAR)[^\n]{0,50}:\s*[^\n]*(\d{4})\b/i, // Aadhaar: xxxxxx1234
-      ];
-      
       let idNumber = null;
       let idType = 'unknown';
-      let idSource = 'unknown'; // 'full_aadhaar', 'masked_aadhaar', 'other_id'
+      let idMaskedLast4 = null;
       
-      // 1. Try FULL Aadhaar patterns first (best case)
-      for (const pattern of FULL_AADHAAR_PATTERNS) {
+      // Try ALL patterns on both raw and cleaned text
+      for (const pattern of AADHAAR_PATTERNS) {
         const match = text.match(pattern) || cleanedText.match(pattern);
         if (match) {
+          // Clean the matched ID - keep only digits
           const rawId = match[0].replace(/[^0-9]/g, '');
+          // Validate: must be exactly 12 digits (Aadhaar)
           if (rawId.length === 12) {
             idNumber = rawId;
             idType = 'aadhaar';
-            idSource = 'full_aadhaar';
             break;
           }
         }
       }
-      
-      // 2. If no full Aadhaar, try MASKED patterns (DigiLocker documents)
+
       if (!idNumber) {
-        for (const pattern of MASKED_AADHAAR_PATTERNS) {
-          const match = text.match(pattern) || cleanedText.match(pattern);
-          if (match) {
-            const last4 = match[1]; // The captured last 4 digits
-            console.log('[TrustShield OCR] Masked pattern matched:', match[0], 'Last4:', last4);
-            if (last4 && last4.length === 4 && /^\d{4}$/.test(last4)) {
-              idNumber = 'MASKED-' + last4; // Format: MASKED-1234
-              idType = 'aadhaar_masked';
-              idSource = 'masked_aadhaar';
-              break;
-            }
-          }
-        }
-      }
-      
-      // 3. AGGRESSIVE FALLBACK: Look for line with masked chars ending in 4 digits
-      if (!idNumber) {
-        // Look for lines containing masking characters followed by 4 digits
-        const aggressiveMatch = text.match(/[x×*#\-\s]{4,}(\d{4})\b/i) ||
-                               text.match(/(?: masked|hidden|redacted|xxxx)[^\n]*(\d{4})\b/i) ||
-                               text.match(/\D{8,}(\d{4})\s*$/m); // Any 8+ non-digits ending in 4 digits
-        if (aggressiveMatch) {
-          const last4 = aggressiveMatch[1];
-          console.log('[TrustShield OCR] Aggressive pattern matched:', aggressiveMatch[0], 'Last4:', last4);
-          if (last4 && /^\d{4}$/.test(last4)) {
-            idNumber = 'MASKED-' + last4;
-            idType = 'aadhaar_masked';
-            idSource = 'masked_aadhaar_aggressive';
-          }
+        const maskedMatch = text.match(/\b[Xx]{4,}\s*([0-9]{4})\b/) || cleanedText.match(/\b[Xx]{4,}\s*([0-9]{4})\b/);
+        if (maskedMatch) {
+          idMaskedLast4 = maskedMatch[1];
+          idType = 'aadhaar_masked';
         }
       }
       
@@ -383,6 +319,8 @@ const useScanner = () => {
       let failReason = null;
       if (!hasName && !hasDob && !hasIdNumber) {
         failReason = 'Could not read ID. Please ensure good lighting and hold the ID steady.';
+      } else if (idType === 'aadhaar_masked') {
+        failReason = 'Aadhaar number is masked in this document (shows only last 4 digits). Upload an unmasked Aadhaar photo (12 digits visible) or enter Aadhaar manually.';
       } else if (!hasIdNumber) {
         failReason = 'ID Number NOT DETECTED - Upload clearer image. Make sure the ID number is clearly visible.';
       } else if (!hasName) {
@@ -391,17 +329,13 @@ const useScanner = () => {
         failReason = 'Date of Birth not detected. Ensure the DOB field is clearly visible.';
       }
       
-      // Extract last 4 digits for deduplication (especially for masked Aadhaar)
-      const last4 = idNumber ? idNumber.slice(-4) : null;
-      
       const result = {
         ok: hasName && hasDob && hasIdNumber, // ALL 3 required
         name: nameMatch?.[1]?.trim() || null,
         dob: dob || null,
         idNumber: idNumber || null,
         idType: idType || null,
-        idSource: idSource || null, // 'full_aadhaar', 'masked_aadhaar', 'pan', etc.
-        last4: last4, // Last 4 digits for deduplication
+        idMaskedLast4: idMaskedLast4 || null,
         confidence: confidence / 100,
         rawText: text,
         reason: failReason,
@@ -411,13 +345,6 @@ const useScanner = () => {
           idNumber: !hasIdNumber
         }
       };
-      
-      // DEBUG: Final result
-      console.log('[TrustShield OCR] === RESULT ===');
-      console.log('  Name:', result.name, '| Match:', nameMatch?.[0]);
-      console.log('  DOB:', result.dob);
-      console.log('  ID Number:', result.idNumber, '| Type:', result.idType, '| Source:', result.idSource);
-      console.log('  Success:', result.ok, '| Reason:', result.reason);
 
       setOcrResult(result);
       setPhase('captured');

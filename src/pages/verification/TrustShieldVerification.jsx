@@ -7,7 +7,7 @@ import { computeIdentityHash, classifyDocumentTier } from '../../hooks/useOCRSca
 import { 
   checkDuplicateID, 
   checkDuplicateStudentID,
-  checkDuplicateMaskedAadhaar,
+  finalizeVerificationV2,
   getAlertConfig 
 } from '../../utils/trustShieldDuplicateCheck';
 import MainLayout from '../../components/layout/MainLayout';
@@ -307,12 +307,97 @@ const TrustShieldVerification = () => {
   }, [user?.id, step]);
   
   const [ocrData, setOcrDataRaw] = useState(null);
+  const [manualAadhaar, setManualAadhaar] = useState('');
+  const [manualAadhaarError, setManualAadhaarError] = useState(null);
   const setOcrData = useCallback((val) => {
-    setOcrDataRaw(val);
+    setOcrDataRaw((prev) => (typeof val === 'function' ? val(prev) : val));
     if (user?.id) {
-      setVerificationStep(user.id, step, { ocrData: val });
+      const computed = typeof val === 'function' ? val(ocrData) : val;
+      setVerificationStep(user.id, step, { ocrData: computed });
     }
-  }, [user?.id, step]);
+  }, [user?.id, step, ocrData]);
+
+  const validateAadhaarVerhoeff = useCallback((aadhaar) => {
+    const n = (aadhaar || '').replace(/\s/g, '');
+    if (!/^\d{12}$/.test(n)) return false;
+    const d = [
+      [0,1,2,3,4,5,6,7,8,9],
+      [1,2,3,4,0,6,7,8,9,5],
+      [2,3,4,0,1,7,8,9,5,6],
+      [3,4,0,1,2,8,9,5,6,7],
+      [4,0,1,2,3,9,5,6,7,8],
+      [5,9,8,7,6,0,4,3,2,1],
+      [6,5,9,8,7,1,0,4,3,2],
+      [7,6,5,9,8,2,1,0,4,3],
+      [8,7,6,5,9,3,2,1,0,4],
+      [9,8,7,6,5,4,3,2,1,0]
+    ];
+    const p = [
+      [0,1,2,3,4,5,6,7,8,9],
+      [1,5,7,6,2,8,3,0,9,4],
+      [5,8,0,3,7,9,6,1,4,2],
+      [8,9,1,6,0,4,3,5,2,7],
+      [9,4,5,3,1,2,6,8,7,0],
+      [4,2,8,6,5,7,3,9,0,1],
+      [2,7,9,3,8,0,6,4,1,5],
+      [7,0,4,6,9,1,3,2,5,8]
+    ];
+    let c = 0;
+    const arr = n.split('').map(Number).reverse();
+    for (let i = 0; i < arr.length; i++) {
+      c = d[c][p[i % 8][arr[i]]];
+    }
+    return c === 0;
+  }, []);
+
+  const handleManualAadhaarSubmit = useCallback(async () => {
+    const cleaned = (manualAadhaar || '').replace(/\s/g, '');
+    setManualAadhaarError(null);
+
+    if (!/^\d{12}$/.test(cleaned)) {
+      setManualAadhaarError('Enter your full 12-digit Aadhaar number.');
+      return;
+    }
+    if (!validateAadhaarVerhoeff(cleaned)) {
+      setManualAadhaarError('Invalid Aadhaar number (checksum failed). Recheck digits.');
+      return;
+    }
+
+    const dup = await checkDuplicateID(cleaned, 'aadhaar');
+    if (dup?.exists) {
+      const alertConfig = getAlertConfig(dup.alertType);
+      handleFail(`${alertConfig.title}: ${alertConfig.message}\n\n${alertConfig.action}`);
+      setTimeout(() => {
+        navigate(dup.redirectTo || '/auth', {
+          state: {
+            alert: {
+              type: 'error',
+              title: alertConfig.title,
+              message: alertConfig.message,
+              action: alertConfig.action,
+            },
+          },
+        });
+      }, 1500);
+      return;
+    }
+
+    setOcrData((prev) => ({
+      ...(prev || {}),
+      idNumber: cleaned,
+      idType: 'aadhaar',
+      idMaskedLast4: cleaned.slice(-4),
+    }));
+
+    try {
+      const hash = await computeIdentityHash(cleaned);
+      if (hash) setIdentityHash(hash);
+    } catch (_) {}
+
+    setManualAadhaar('');
+    setManualAadhaarError(null);
+    setError(null);
+  }, [manualAadhaar, validateAadhaarVerhoeff, setOcrData, handleFail, navigate, setIdentityHash]);
   
   const [identityHash, setIdentityHashRaw] = useState(null);
   const setIdentityHash = useCallback((val) => {
@@ -490,20 +575,29 @@ const TrustShieldVerification = () => {
       // ═══════════════════════════════════════════════════════════════════════
       const rawIdNumber = ocrData?.idNumber || ocrData?.id;
       
-      // Check 1: ID Number Format (Must be valid Govt ID)
-      const idPatterns = {
-        aadhaar: /^\d{12}$/,
-        pan: /^[A-Z]{5}[0-9]{4}[A-Z]$/,
-        passport: /^[A-Z][0-9]{7}$/,
-        voter: /^[A-Z]{3}[0-9]{7}$/,
-        dl: /^[A-Z]{2}[0-9]{13}$/,
-      };
-      
-      const cleanId = rawIdNumber?.toUpperCase().replace(/\s/g, '');
-      const isValidFormat = Object.values(idPatterns).some(pattern => pattern.test(cleanId));
-      
-      if (!isValidFormat) {
-        handleFail('🔒 INVALID ID FORMAT: Must be Aadhaar (12 digits), PAN (ABCDE1234F), Passport, Voter ID, or DL');
+      const cleanId = (rawIdNumber || '').toUpperCase().replace(/\s/g, '');
+      if (ageGroup === '18+') {
+        if (!/^\d{12}$/.test(cleanId)) {
+          handleFail('Aadhaar required: Enter/scan your full 12-digit Aadhaar number.');
+          setSaving(false);
+          return;
+        }
+        if (!validateAadhaarVerhoeff(cleanId)) {
+          handleFail('Invalid Aadhaar number (checksum failed). Recheck digits.');
+          setSaving(false);
+          return;
+        }
+      }
+
+      let effectiveIdentityHash = identityHash;
+      if (!effectiveIdentityHash) {
+        try {
+          effectiveIdentityHash = await computeIdentityHash(cleanId);
+          if (effectiveIdentityHash) setIdentityHash(effectiveIdentityHash);
+        } catch (_) {}
+      }
+      if (!effectiveIdentityHash) {
+        handleFail('Verification failed: identity hash missing. Please rescan your ID.');
         setSaving(false);
         return;
       }
@@ -581,19 +675,21 @@ const TrustShieldVerification = () => {
       // ═══════════════════════════════════════════════════════════════════════
       // ULTRA STRICT: Use raw ID from pre-check (already validated)
       // ═══════════════════════════════════════════════════════════════════════
-      const result = await atomicVerificationComplete({
+      const result = await finalizeVerificationV2({
         userId: user.id,
-        idNumber: cleanId, // RAW ID - SQL will SHA-256 hash it
+        identityHash: effectiveIdentityHash,
         deviceId: deviceId,
-        ocrData: ocrData,
-        faceScore: faceScore, // ACTUAL score from liveness
+        ocrData: {
+          ...(ocrData || {}),
+          idNumber: cleanId,
+          idType: ocrData?.idType || (ageGroup === '18+' ? 'aadhaar' : (ocrData?.idType || 'unknown')),
+        },
+        faceScore: faceScore,
         ageGroup: ageGroup,
-        livenessComplete: livenessComplete.filter(Boolean).length === 3,
-        idQualityPassed: true,
       });
       
       if (!result.success) {
-        console.error('[TrustShield] Atomic verification failed:', result);
+        console.error('[TrustShield] Verification finalization failed:', result);
         handleFail(result.error || 'Verification failed. Please try again.');
         
         await logVerificationAttempt(user.id, 'finalization', 'ATOMIC_FAILED', {
@@ -604,7 +700,7 @@ const TrustShieldVerification = () => {
         return;
       }
       
-      console.log('[TrustShield] ✅ Atomic verification complete:', result);
+      console.log('[TrustShield] ✅ Verification finalization complete:', result);
       
       // Record successful attempt for rate limiting
       await recordAttempt();
@@ -661,7 +757,7 @@ const TrustShieldVerification = () => {
     } finally {
       setSaving(false);
     }
-  }, [ageGroup, ocrData, user, handleFail, focusly, deviceId, livenessComplete, scanner?.capturedFile]);
+  }, [ageGroup, ocrData, user, handleFail, focusly, deviceId, livenessComplete, scanner?.capturedFile, identityHash, validateAadhaarVerhoeff, setIdentityHash]);
 
   // ── Mobile Realtime Sync (Desktop listens for VERIFIED) ──────────────────
   useEffect(() => {
@@ -768,6 +864,11 @@ const TrustShieldVerification = () => {
     if (scanner.phase !== 'captured' || !scanner.ocrResult) return;
     const result = scanner.ocrResult;
     if (!result.ok) {
+      if (ageGroup === '18+' && result.idType === 'aadhaar_masked') {
+        setOcrData(result);
+        setError(result.reason || 'Aadhaar number is masked. Enter Aadhaar manually.');
+        return;
+      }
       handleFail(result.reason || 'Could not read ID. Please retry.');
       return;
     }
@@ -928,16 +1029,8 @@ const TrustShieldVerification = () => {
               result.idNumber,
               result.institution || 'Unknown Institution'
             );
-          } else if (result.idType === 'aadhaar_masked' && result.last4 && result.name && result.dob) {
-            // For masked Aadhaar (DigiLocker), use Name + DOB + Last4 combination
-            console.log('[TrustShield] Checking masked Aadhaar with Name+DOB+Last4');
-            duplicateCheck = await checkDuplicateMaskedAadhaar(
-              result.name,
-              result.dob,
-              result.last4
-            );
           } else {
-            // For 18+ tier with full Aadhaar/PAN/Passport, check government ID duplicate
+            // For 18+ tier, check government ID duplicate
             duplicateCheck = await checkDuplicateID(result.idNumber, result.idType);
           }
           
@@ -1524,21 +1617,46 @@ const TrustShieldVerification = () => {
                   <h3>📋 Extracted Identity Data</h3>
                   {ocrData.name     && <div className={styles.ocrField}><span>Name</span><strong>{ocrData.name}</strong></div>}
                   {ocrData.dob      && <div className={styles.ocrField}><span>Date of Birth</span><strong>{ocrData.dob}</strong></div>}
-                  {ocrData.idNumber && (
-                    <div className={styles.ocrField}>
-                      <span>ID Number</span>
-                      <strong>
-                        {ocrData.idType === 'aadhaar' && ocrData.idNumber.length === 12
-                          ? `XXXX XXXX ${ocrData.idNumber.slice(-4)}` 
-                          : ocrData.idType === 'aadhaar_masked'
-                            ? `MASKED AADHAAR ending in ${ocrData.last4 || ocrData.idNumber.slice(-4)}`
-                            : ocrData.idType === 'pan'
-                              ? `${ocrData.idNumber.slice(0, 5)}...${ocrData.idNumber.slice(-1)}`
-                              : 'ID Verified'}
-                      </strong>
-                    </div>
-                  )}
+                  {ocrData.idNumber && <div className={styles.ocrField}><span>ID Number</span><strong>XXXX XXXX {ocrData.idNumber.slice(-4)}</strong></div>}
                   <div className={styles.ocrField}><span>Confidence</span><strong>{Math.round(ocrData.confidence * 100)}%</strong></div>
+                </div>
+              )}
+
+              {scanner.phase === 'captured' && ageGroup === '18+' && ocrData?.idType === 'aadhaar_masked' && (
+                <div className={styles.ocrResults}>
+                  <h3>🔒 Aadhaar Required</h3>
+                  <p className={styles.statusText} style={{ marginTop: 6 }}>
+                    Your uploaded Aadhaar shows only last 4 digits ({ocrData?.idMaskedLast4 || '****'}). Enter your full 12-digit Aadhaar to continue.
+                  </p>
+                  <div style={{ display: 'flex', gap: 10, marginTop: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <input
+                      value={manualAadhaar}
+                      inputMode="numeric"
+                      autoComplete="off"
+                      placeholder="Enter 12-digit Aadhaar"
+                      onChange={(e) => {
+                        setManualAadhaarError(null);
+                        setManualAadhaar((e.target.value || '').replace(/[^0-9\s]/g, ''));
+                      }}
+                      style={{
+                        padding: '12px 14px',
+                        borderRadius: 12,
+                        border: '1px solid rgba(168, 85, 247, 0.35)',
+                        background: 'rgba(15, 23, 42, 0.35)',
+                        color: '#e2e8f0',
+                        width: 240,
+                        outline: 'none',
+                      }}
+                    />
+                    <button className={styles.primaryBtn} onClick={handleManualAadhaarSubmit}>
+                      Verify Aadhaar
+                    </button>
+                  </div>
+                  {manualAadhaarError && (
+                    <p className={styles.statusText} style={{ color: '#fca5a5', textAlign: 'center', marginTop: 10 }}>
+                      {manualAadhaarError}
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -1549,11 +1667,18 @@ const TrustShieldVerification = () => {
                 </div>
               )}
 
-              {ocrData && !error && scanner.phase === 'captured' && (
-                <button className={styles.primaryBtn} onClick={() => { setStep(3); }}>
-                  Continue to Liveness →
-                </button>
-              )}
+              {ocrData && !error && scanner.phase === 'captured' && (() => {
+                const idNum = (ocrData?.idNumber || '').replace(/\s/g, '');
+                const canContinue = ageGroup === '18+'
+                  ? (ocrData?.idType === 'aadhaar' && /^\d{12}$/.test(idNum) && validateAadhaarVerhoeff(idNum))
+                  : !!ocrData?.idNumber;
+                if (!canContinue) return null;
+                return (
+                  <button className={styles.primaryBtn} onClick={() => { setStep(3); }}>
+                    Continue to Liveness →
+                  </button>
+                );
+              })()}
 
               {(scanner.phase === 'streaming' || scanner.phase === 'scanning') && (
                 <button className={styles.secondaryBtn} onClick={() => { scanner.stopCamera(); }}>
