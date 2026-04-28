@@ -1,11 +1,15 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
- * 🔱 TRUST SHIELD ULTRA - Maximum Security Edition
+ * 🔱 TRUST SHIELD ULTRA - Maximum Security Edition v2  (God-Level)
  * Strictest • Powerful • UnBypassable • Error-Free • Professional
  * ═══════════════════════════════════════════════════════════════════════════════
- * 
+ *
  * Core Principle: ONE GOVERNMENT ID = ONE PERSON = ONE ACCOUNT
  * No exceptions. No bypasses. No duplicates. Maximum enforcement.
+ *
+ * God-Level Additions:
+ *   - verifySovereignIdentity(hash, userId)  → calls verify_unique_identity RPC
+ *   - Step persistence ALSO syncs to Supabase profiles.verification_step
  */
 
 import { supabase } from '../lib/supabase';
@@ -587,11 +591,84 @@ export { validateUltraOCR as validateOCR };
 export { ultraFinalizeVerification as atomicVerificationComplete };
 export { runUltraValidation as runGodLevelValidation };
 
-// Legacy function mappings
+// ═══════════════════════════════════════════════════════════════════════════════
+// 🔱 GOD-LEVEL: SOVEREIGN IDENTITY VERIFICATION
+// Calls verify_unique_identity RPC — THE LAW.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Verify the sovereign identity hash is unique across all accounts.
+ * This is the "One Person = One Account" enforcement gate.
+ *
+ * @param {string} hash     — SHA-256 sovereign identity hash
+ * @param {string} userId   — Current user's auth id (excluded from check)
+ * @returns {Promise<{unique: boolean, message?: string, redirect?: string}>}
+ */
+export const verifySovereignIdentity = async (hash, userId = null) => {
+  if (!hash) return { unique: false, message: 'Identity hash missing — cannot verify.' };
+
+  try {
+    const { data, error } = await supabase.rpc('verify_unique_identity', {
+      p_hash:    hash,
+      p_user_id: userId || null,
+    });
+
+    if (error) {
+      console.error('[TrustShield] verify_unique_identity RPC error:', error);
+      // Fail-safe: if RPC errors, block rather than allow (no silent bypasses)
+      return {
+        unique:  false,
+        message: 'Identity verification service unavailable. Please try again.',
+      };
+    }
+
+    if (!data?.unique) {
+      return {
+        unique:   false,
+        message:  data?.message || 'Identity already linked to another account. You cannot create multiple accounts on Focus.',
+        redirect: data?.redirect || '/auth',
+      };
+    }
+
+    return { unique: true };
+  } catch (e) {
+    console.error('[TrustShield] verifySovereignIdentity exception:', e);
+    return { unique: false, message: 'Identity check failed. Please try again.' };
+  }
+};
+
+/**
+ * Store the sovereign hash on the profile after successful verification.
+ * @param {string} userId
+ * @param {string} hash
+ */
+export const storeSovereignHash = async (userId, hash) => {
+  if (!userId || !hash) return { success: false };
+  try {
+    const { error } = await supabase.rpc('update_sovereign_hash', {
+      p_user_id: userId,
+      p_hash:    hash,
+    });
+    if (error) {
+      // Fallback: direct update
+      await supabase.from('profiles')
+        .update({ sovereign_identity_hash: hash })
+        .eq('id', userId);
+    }
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 🔱 AUDIT LOG
+// ═══════════════════════════════════════════════════════════════════════════════
+
 export const logVerificationAttempt = async (userId, stage, result, metadata = {}) => {
   try {
     await supabase.from('verification_audit_trail').insert({
-      user_id: userId,
+      user_id:    userId,
       stage,
       result,
       metadata,
@@ -602,26 +679,88 @@ export const logVerificationAttempt = async (userId, stage, result, metadata = {
   }
 };
 
-// Step management (backward compatible)
+// ═══════════════════════════════════════════════════════════════════════════════
+// 🔱 GOD-LEVEL: PERSISTENT STEP MANAGEMENT
+// Syncs verification_step to BOTH localStorage AND Supabase profiles table.
+// On page-load the DB value is authoritative (defeats session clears).
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Get the current verification step.
+ * Priority: 1. Supabase DB (persistent across devices)  2. localStorage (fast)
+ */
 export const getVerificationStep = async (userId) => {
+  // Always read localStorage immediately for instant UI render
   const localStep = parseInt(localStorage.getItem('trust_shield_step') || '1', 10);
-  return { step: localStep, source: 'local' };
+
+  if (!userId) return { step: localStep, source: 'local_no_user' };
+
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('verification_step')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (!error && data?.verification_step) {
+      const dbStep = data.verification_step;
+      // DB is authoritative — sync to localStorage
+      localStorage.setItem('trust_shield_step', dbStep.toString());
+      return { step: dbStep, source: 'supabase' };
+    }
+  } catch (e) {
+    console.warn('[TrustShield] DB step read failed — using localStorage:', e);
+  }
+
+  return { step: localStep, source: 'local_fallback' };
 };
 
+/**
+ * Persist the verification step to BOTH localStorage and Supabase.
+ * Called on every successful step transition.
+ */
 export const setVerificationStep = async (userId, step, metadata = {}) => {
+  // localStorage: instant
   localStorage.setItem('trust_shield_step', step.toString());
+
+  // Supabase: persistent across devices / browser clears
+  if (userId) {
+    try {
+      const { error } = await supabase.rpc('sync_verification_step', {
+        p_user_id: userId,
+        p_step:    step,
+      });
+      if (error) {
+        // Fallback: direct update
+        await supabase.from('profiles')
+          .update({ verification_step: step })
+          .eq('id', userId);
+      }
+    } catch (e) {
+      console.warn('[TrustShield] DB step sync failed:', e);
+    }
+  }
+
   return { success: true, step };
 };
 
 export const lockVerificationStep = async (userId, step) => {
-  localStorage.setItem('trust_shield_step', step.toString());
+  localStorage.setItem('trust_shield_step',   step.toString());
   localStorage.setItem('trust_shield_locked', 'true');
+  // Also persist lock to DB
+  if (userId) {
+    try {
+      await supabase.from('profiles')
+        .update({ verification_step: step })
+        .eq('id', userId);
+    } catch {}
+  }
   return { success: true };
 };
 
 export const getLockedStep = async (userId) => {
   const locked = localStorage.getItem('trust_shield_locked') === 'true';
-  const step = parseInt(localStorage.getItem('trust_shield_step') || '1', 10);
+  const step   = parseInt(localStorage.getItem('trust_shield_step') || '1', 10);
   return locked && step > 1 ? step : null;
 };
 
@@ -637,4 +776,6 @@ export default {
   validateUltraOCR,
   ultraFinalizeVerification,
   runUltraValidation,
+  verifySovereignIdentity,
+  storeSovereignHash,
 };

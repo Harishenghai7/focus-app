@@ -1,17 +1,24 @@
-/* TrustShieldVerification.module.css — H2 Innovative Focus Trust Shield v2.0 */
+/* TrustShieldVerification.module.css — H2 Innovative Focus Trust Shield v3.0 (God-Level) */
 
-/* ── Global Glassmorphism Variables ──────────────────────────────────────── */
+/* ══ H2 Sovereign Black Theme Variables ════════════════════════════════════════ */
 :root {
-  --glass-blur: 16px;
-  --glass-border: 1px solid rgba(255, 255, 255, 0.10);
-  --glass-bg: rgba(124, 107, 254, 0.04);
-  --glass-shadow: 0 20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08);
+  /* Spec: Black #000000, 20px glass blur, satin borders */
+  --glass-blur:    20px;
+  --glass-border:  1px solid rgba(255, 255, 255, 0.12);
+  --glass-bg:      rgba(255, 255, 255, 0.03);
+  --glass-shadow:  0 24px 64px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.15);
+  --satin-border:  1px solid rgba(255, 255, 255, 0.12);
+  --satin-inset:   inset 0 1px 0 rgba(255,255,255,0.15);
+  --sovereign-purple: #8b5cf6;
+  --sovereign-magenta: #ec4899;
+  --sovereign-gold: #f59e0b;
   --transition-cinematic: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a0b14 0%, #111228 50%, #0d0f1f 100%);
+  /* 🔱 GOD-LEVEL: Pure sovereign black — #000000 */
+  background: #000000;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -791,4 +798,163 @@
   .stepCard { padding: 24px 18px; }
   .ageGrid  { grid-template-columns: 1fr; }
   .progressLabel { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════ */
+/* 🔱 GOD-LEVEL: H2 SOVEREIGN GLASS CARDS — Upgraded from v2.0                        */
+/* Black #000 base · 20px blur · satin borders · velvet inset glow                      */
+/* ═══════════════════════════════════════════════════════════════════════════════ */
+
+.stepCard {
+  /* Override base stepCard with sovereign glass */
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  background: rgba(255, 255, 255, 0.030);
+  border: var(--satin-border);
+  box-shadow: var(--satin-inset), 0 32px 80px rgba(0,0,0,0.85);
+}
+
+/* Age cards get satin hover */
+.ageCard {
+  border: var(--satin-border);
+  box-shadow: var(--satin-inset);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+.ageCard:hover {
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: var(--satin-inset), 0 0 24px rgba(139, 92, 246, 0.25);
+  transform: translateY(-2px);
+}
+.ageCardSelected {
+  border-color: var(--sovereign-purple) !important;
+  box-shadow: var(--satin-inset), 0 0 32px rgba(139, 92, 246, 0.45) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════ */
+/* 🔱 GOD-LEVEL: 3-PHASE OCR PIPELINE PROGRESS BAR                                     */
+/* Phases: Image Purifying → Extracting Identity DNA → Checking Global Uniqueness         */
+/* ═══════════════════════════════════════════════════════════════════════════════ */
+
+.ocrPipelineWrap {
+  width: 100%;
+  max-width: 420px;
+  margin: 16px auto;
+  padding: 16px 18px;
+  background: rgba(139, 92, 246, 0.06);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+  animation: slideUpFade 0.3s ease;
+}
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Main progress bar track */
+.ocrPipelineBar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+}
+
+/* Animated fill */
+.ocrPipelineFill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #8b5cf6, #ec4899, #f59e0b);
+  background-size: 200% 100%;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: pipelineShimmer 2s linear infinite;
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.6);
+}
+
+@keyframes pipelineShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Phase list */
+.ocrPipelinePhases {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ocrPipelinePhase {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+/* Active phase */
+.ocrPhaseActive {
+  background: rgba(139, 92, 246, 0.10) !important;
+  border-color: rgba(139, 92, 246, 0.35) !important;
+  animation: phaseActivePulse 1.2s ease-in-out infinite;
+}
+
+@keyframes phaseActivePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.2); }
+  50%       { box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.0); }
+}
+
+/* Completed phase */
+.ocrPhaseDone {
+  background: rgba(34, 197, 94, 0.06) !important;
+  border-color: rgba(34, 197, 94, 0.20) !important;
+}
+
+.ocrPhaseIcon {
+  font-size: 16px;
+  min-width: 20px;
+  text-align: center;
+  margin-top: 1px;
+}
+
+.ocrPhaseLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #c4b5fd;
+  letter-spacing: 0.02em;
+}
+
+.ocrPhaseSub {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.ocrPhaseDone .ocrPhaseLabel { color: #4ade80; }
+.ocrPhaseActive .ocrPhaseLabel { color: #a78bfa; }
+
+/* Done banner */
+.ocrPipelineDone {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4ade80;
+  text-align: center;
+  animation: donePulse 0.5s ease;
+}
+
+@keyframes donePulse {
+  0%   { transform: scale(0.96); opacity: 0; }
+  60%  { transform: scale(1.02); }
+  100% { transform: scale(1);    opacity: 1; }
 }

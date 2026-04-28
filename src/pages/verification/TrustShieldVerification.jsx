@@ -3,13 +3,14 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import useScanner from '../../hooks/useScanner';
 import { persistTrustShieldState, createGuardianHandshake } from '../../utils/trustShieldEngine';
-import { computeIdentityHash, classifyDocumentTier } from '../../hooks/useOCRScanner';
+import { computeIdentityHash, classifyDocumentTier, crossCheckOCRData } from '../../hooks/useOCRScanner';
 import { 
   checkDuplicateID, 
   checkDuplicateStudentID,
   finalizeVerificationV2,
   getAlertConfig 
 } from '../../utils/trustShieldDuplicateCheck';
+import { purifyIDImage } from '../../utils/imagePreprocessor';
 import MainLayout from '../../components/layout/MainLayout';
 import { QRCodeSVG } from 'qrcode.react';
 import { supabase } from '../../lib/supabase';
@@ -18,7 +19,7 @@ import { useFocusly } from '../../context/FocuslyContext';
 import styles from './TrustShieldVerification.module.css';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// 🔱 TRUST SHIELD ULTRA - Maximum Security Enforcement
+// 🔱 TRUST SHIELD ULTRA - Maximum Security Enforcement  (GOD-LEVEL v2)
 // ONE GOVERNMENT ID = ONE PERSON = ONE ACCOUNT - STRICTEST MODE
 // ═══════════════════════════════════════════════════════════════════════════════
 import {
@@ -34,6 +35,8 @@ import {
   logVerificationAttempt,
   atomicVerificationComplete,
   runGodLevelValidation,
+  verifySovereignIdentity,
+  storeSovereignHash,
   ERROR_CODES,
   ULTRA_CONFIG,
 } from '../../utils/trustShieldULTRA';
@@ -313,6 +316,14 @@ const TrustShieldVerification = () => {
   const [manualInstitution, setManualInstitution] = useState('');
   const [manualStudentIdError, setManualStudentIdError] = useState(null);
   const [idConfirmed, setIdConfirmed] = useState(false);
+
+  // ══ OCR Pipeline Progress State (God-Level Progress Bar) ═══════════════════════════
+  const [ocrPipelineActive, setOcrPipelineActive]   = useState(false);
+  const [ocrPipelinePhase, setOcrPipelinePhase]     = useState(0);   // 0=idle 1=purify 2=dna 3=uniqueness
+  const [ocrPipelinePct, setOcrPipelinePct]         = useState(0);
+  const [ocrPipelineLabel, setOcrPipelineLabel]     = useState('');
+  const [ocrPurifyMethod, setOcrPurifyMethod]       = useState('');  // 'opencv_full'|'fallback_css'
+
   const setOcrData = useCallback((val) => {
     setOcrDataRaw((prev) => (typeof val === 'function' ? val(prev) : val));
     if (user?.id) {
@@ -367,6 +378,18 @@ const TrustShieldVerification = () => {
       return;
     }
 
+    // 🔱 GOD-LEVEL: Activate OCR Pipeline Progress Bar
+    setOcrPipelineActive(true);
+    setOcrPipelinePhase(1);
+    setOcrPipelinePct(10);
+    setOcrPipelineLabel('🔬 Image Purifying...');
+
+    // Small artificial delay so the user sees Phase 1
+    await new Promise(r => setTimeout(r, 400));
+    setOcrPipelinePhase(2);
+    setOcrPipelinePct(45);
+    setOcrPipelineLabel('🧬 Extracting Identity DNA...');
+
     const dup = await checkDuplicateID(cleaned, 'aadhaar');
     if (dup?.exists) {
       const alertConfig = getAlertConfig(dup.alertType);
@@ -394,15 +417,27 @@ const TrustShieldVerification = () => {
       idMaskedLast4: cleaned.slice(-4),
     }));
 
+    // Phase 2 → Phase 3: Checking Global Uniqueness
+    setOcrPipelinePhase(3);
+    setOcrPipelinePct(80);
+    setOcrPipelineLabel('🔒 Checking Global Uniqueness...');
+
     try {
       const hash = await computeIdentityHash(cleaned);
       if (hash) setIdentityHash(hash);
     } catch (_) {}
 
+    // Done
+    setOcrPipelinePct(100);
+    setOcrPurifyMethod('sovereign_hash');
+    setOcrPipelineActive(false);
+
     setManualAadhaarError(null);
     setError(null);
     setIdConfirmed(true);
-  }, [manualAadhaar, validateAadhaarVerhoeff, setOcrData, handleFail, navigate, setIdentityHash]);
+  }, [manualAadhaar, validateAadhaarVerhoeff, setOcrData, handleFail, navigate, setIdentityHash,
+      setOcrPipelineActive, setOcrPipelinePhase, setOcrPipelinePct, setOcrPipelineLabel, setOcrPurifyMethod]);
+
 
   const handleManualStudentIdSubmit = useCallback(async () => {
     const cleaned = (manualStudentId || '').trim();
@@ -438,6 +473,14 @@ const TrustShieldVerification = () => {
       return;
     }
 
+    // 🔱 GOD-LEVEL: Activate OCR Pipeline Progress Bar for Student ID
+    setOcrPipelineActive(true);
+    setOcrPipelinePhase(1);
+    setOcrPipelinePct(10);
+    await new Promise(r => setTimeout(r, 350));
+    setOcrPipelinePhase(2);
+    setOcrPipelinePct(45);
+
     setOcrData((prev) => ({
       ...(prev || {}),
       idNumber: cleaned,
@@ -445,15 +488,24 @@ const TrustShieldVerification = () => {
       institution: inst,
     }));
 
+    setOcrPipelinePhase(3);
+    setOcrPipelinePct(80);
+
     try {
       const hash = await computeIdentityHash(cleaned + ':' + inst);
       if (hash) setIdentityHash(hash);
     } catch (_) {}
 
+    setOcrPipelinePct(100);
+    setOcrPurifyMethod('student_id');
+    setOcrPipelineActive(false);
+
     setManualStudentIdError(null);
     setError(null);
     setIdConfirmed(true);
-  }, [manualStudentId, manualInstitution, setOcrData, handleFail, navigate, setIdentityHash]);
+  }, [manualStudentId, manualInstitution, setOcrData, handleFail, navigate, setIdentityHash,
+      setOcrPipelineActive, setOcrPipelinePhase, setOcrPipelinePct, setOcrPurifyMethod]);
+
   
   const [identityHash, setIdentityHashRaw] = useState(null);
   const setIdentityHash = useCallback((val) => {
@@ -632,9 +684,9 @@ const TrustShieldVerification = () => {
     setSaving(true);
     
     try {
-      // ═══════════════════════════════════════════════════════════════════════
+      // ═════════════════════════════════════════════════════════════════════
       // 🔒 ULTRA STRICT: Pre-Validation Checks (Fail Fast)
-      // ═══════════════════════════════════════════════════════════════════════
+      // ═════════════════════════════════════════════════════════════════════
 
       // GATE: ID must be confirmed via manual entry
       if (!idConfirmed) {
@@ -660,7 +712,32 @@ const TrustShieldVerification = () => {
         setSaving(false);
         return;
       }
-      
+
+      // ═════════════════════════════════════════════════════════════════════
+      // 🔱 GOD-LEVEL: SOVEREIGN IDENTITY CHECK
+      // verify_unique_identity RPC — One Person = One Account. THE LAW.
+      // ═════════════════════════════════════════════════════════════════════
+      console.log('[TrustShield] 🔱 Sovereign identity check...');
+      const sovereignCheck = await verifySovereignIdentity(effectiveIdentityHash, user?.id);
+
+      if (!sovereignCheck.unique) {
+        // 🛑 THE REDIRECT LOCK: hard redirect + session clear
+        const msg = sovereignCheck.message || 'Identity already linked to another account. You cannot create multiple accounts on Focus.';
+        alert(msg);
+        setAccountLocked(true);
+        setSaving(false);
+
+        // Clear local session data
+        try { localStorage.clear(); sessionStorage.clear(); } catch {}
+        // Sign out of Supabase
+        try { await supabase.auth.signOut(); } catch {}
+        // Hard redirect to Step 1 (Auth)
+        setTimeout(() => navigate('/auth', { replace: true }), 800);
+        return;
+      }
+
+      console.log('[TrustShield] ✅ Sovereign hash is unique');
+
       // Check 2: Identity Uniqueness (CRITICAL - One Person = One Account)
       console.log('[TrustShield] 🔒 ULTRA: Checking identity uniqueness...');
       const uniquenessCheck = await checkIdentityUniqueness(
@@ -688,9 +765,9 @@ const TrustShieldVerification = () => {
         id_type: uniquenessCheck?.idType,
       });
       
-      // ═══════════════════════════════════════════════════════════════════════
+      // ═════════════════════════════════════════════════════════════════════
       // Run the 6-Layer God-Level Validation Pipeline
-      // ═══════════════════════════════════════════════════════════════════════
+      // ═════════════════════════════════════════════════════════════════════
       const validation = await runGodLevelValidation({
         userId: user.id,
         idFile: scanner?.capturedFile,
@@ -715,14 +792,14 @@ const TrustShieldVerification = () => {
       
       console.log('[TrustShield] ✅ All 6 layers passed:', validation);
       
-      // ═══════════════════════════════════════════════════════════════════════
+      // ═════════════════════════════════════════════════════════════════════
       // LAYER 3: ATOMIC VERIFICATION COMPLETION
       // Only the RPC can mark an account as verified - no direct updates
-      // ═══════════════════════════════════════════════════════════════════════
-      // ═══════════════════════════════════════════════════════════════════════
+      // ═════════════════════════════════════════════════════════════════════
+      // ═════════════════════════════════════════════════════════════════════
       // ULTRA STRICT: Calculate actual face score from liveness
       // Must be >= 0.88 to pass SQL check
-      // ═══════════════════════════════════════════════════════════════════════
+      // ═════════════════════════════════════════════════════════════════════
       const completedChallenges = livenessComplete.filter(Boolean).length;
       const faceScore = completedChallenges === 3 ? 0.95 : (completedChallenges / 3);
       
@@ -730,10 +807,13 @@ const TrustShieldVerification = () => {
         handleFail('🔒 LIVENESS FAIL: Complete all 3 biometric challenges with proper lighting. Score: ' + faceScore.toFixed(2));
         return;
       }
+
+      // 🔱 GOD-LEVEL: Store sovereign hash on the profile
+      await storeSovereignHash(user.id, effectiveIdentityHash);
       
-      // ═══════════════════════════════════════════════════════════════════════
+      // ═════════════════════════════════════════════════════════════════════
       // ULTRA STRICT: Use raw ID from pre-check (already validated)
-      // ═══════════════════════════════════════════════════════════════════════
+      // ═════════════════════════════════════════════════════════════════════
       const result = await finalizeVerificationV2({
         userId: user.id,
         identityHash: effectiveIdentityHash,
@@ -1407,17 +1487,69 @@ const TrustShieldVerification = () => {
   // When luminance < 0.3, force the entire UI to pure white to illuminate face
   // ═══════════════════════════════════════════════════════════════════════════
   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
-  const shouldActivateRingLight = step === 3 && livenessLuminance < 0.3 && !accountLocked;
+  // 🔱 GOD-LEVEL: Luminance threshold upgraded to 0.4 (spec: "if livenessLuminance < 0.4")
+  const shouldActivateRingLight = step === 3 && livenessLuminance < 0.4 && !accountLocked;
   const ringLightStyles = shouldActivateRingLight 
     ? { 
         backgroundColor: '#FFFFFF', 
-        filter: 'brightness(1.0)', // 100% brightness
+        filter: 'brightness(1.0)',
         transition: 'all 0.3s ease',
         position: 'fixed',
         inset: 0,
         zIndex: 9998,
       } 
     : { transition: 'background-color 0.3s ease' };
+
+  // ══ OCR Pipeline Progress Bar Component ═══════════════════════════════════════════════════
+  const PIPELINE_PHASES = [
+    { id: 1, label: '🔬 Image Purifying',          sublabel: 'OpenCV noise reduction + threshold' },
+    { id: 2, label: '🧬 Extracting Identity DNA',  sublabel: 'Tesseract sovereign OCR' },
+    { id: 3, label: '🔒 Checking Global Uniqueness', sublabel: 'One Person = One Account' },
+  ];
+  const OcrPipelineProgress = () => {
+    if (!ocrPipelineActive && ocrPipelinePhase === 0) return null;
+    const isDone = !ocrPipelineActive && ocrPipelinePhase >= 3;
+    return (
+      <div className={styles.ocrPipelineWrap}>
+        <div className={styles.ocrPipelineBar}>
+          <div
+            className={styles.ocrPipelineFill}
+            style={{ width: `${isDone ? 100 : ocrPipelinePct}%` }}
+          />
+        </div>
+        <div className={styles.ocrPipelinePhases}>
+          {PIPELINE_PHASES.map((ph) => {
+            const isActive  = ocrPipelinePhase === ph.id && ocrPipelineActive;
+            const isDonePhase = ocrPipelinePhase > ph.id || isDone;
+            return (
+              <div
+                key={ph.id}
+                className={[
+                  styles.ocrPipelinePhase,
+                  isActive    ? styles.ocrPhaseActive  : '',
+                  isDonePhase ? styles.ocrPhaseDone    : '',
+                ].join(' ')}
+              >
+                <span className={styles.ocrPhaseIcon}>
+                  {isDonePhase ? '✅' : isActive ? '⏳' : '⬜'}
+                </span>
+                <div>
+                  <div className={styles.ocrPhaseLabel}>{ph.label}</div>
+                  <div className={styles.ocrPhaseSub}>{ph.sublabel}</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        {isDone && (
+          <div className={styles.ocrPipelineDone}>
+            ✅ Identity DNA extracted · Method: {ocrPurifyMethod || 'standard'}
+          </div>
+        )}
+      </div>
+    );
+  };
+
 
   // ═══════════════════════════════════════════════════════════════════════════
   // 🔱 GOD-LEVEL LOADING STATE - While persistent state is initializing
@@ -1526,7 +1658,7 @@ const TrustShieldVerification = () => {
       >
         {/* Header */}
         <div className={styles.header}>
-          <button className={styles.backBtn} onClick={() => navigate(-1)} disabled={lockedStep === 3}>← Back</button>
+          <button className={styles.backBtn} onClick={() => navigate(-1)} disabled={step >= 2 || !!lockedStep} title={step >= 2 ? 'Verification is one-way — no going back' : ''}>← Back</button>
           <h1
             className={styles.title}
             onDoubleClick={() => {
@@ -1546,6 +1678,9 @@ const TrustShieldVerification = () => {
         <LockedStepWarning />
 
         {renderProgress()}
+
+        {/* 🔱 GOD-LEVEL: 3-Phase OCR Pipeline Progress Bar — visible during Step 2 ID submission */}
+        {step === 2 && <OcrPipelineProgress />}
 
         <div className={styles.content}>
           <FocuslyLion />
@@ -1650,19 +1785,39 @@ const TrustShieldVerification = () => {
                        hidden 
                        onChange={async (e) => {
                           const file = e.target.files?.[0];
-                          if (file) {
-                             const img = new Image();
-                             const url = URL.createObjectURL(file);
-                             img.onload = () => {
-                                 const canvas = document.createElement('canvas');
-                                 canvas.width = img.width;
-                                 canvas.height = img.height;
-                                 const ctx = canvas.getContext('2d');
-                                 ctx.drawImage(img, 0, 0);
-                                 URL.revokeObjectURL(url);
-                                 if (scanner.runOCR) scanner.runOCR(canvas);
-                             };
-                             img.src = url;
+                          if (!file) return;
+                          // 🔱 GOD-LEVEL: Run purification BEFORE scanner.runOCR
+                          setOcrPipelineActive(true);
+                          setOcrPipelinePhase(1);
+                          setOcrPipelinePct(5);
+                          setOcrPipelineLabel('🔬 Image Purifying...');
+                          try {
+                            const purified = await purifyIDImage(file, (pct) => {
+                              setOcrPipelinePct(5 + Math.round(pct * 0.30));
+                            });
+                            setOcrPurifyMethod(purified.method);
+                            setOcrPipelinePhase(2);
+                            setOcrPipelinePct(38);
+                            setOcrPipelineLabel('🧬 Extracting Identity DNA...');
+                            if (scanner.runOCR) {
+                              await scanner.runOCR(purified.canvas);
+                            }
+                            setOcrPipelinePhase(3);
+                            setOcrPipelinePct(100);
+                          } catch (err) {
+                            console.warn('[Purify] Fallback to original:', err);
+                            const img = new Image();
+                            const url = URL.createObjectURL(file);
+                            img.onload = () => {
+                              const canvas = document.createElement('canvas');
+                              canvas.width = img.width; canvas.height = img.height;
+                              canvas.getContext('2d').drawImage(img, 0, 0);
+                              URL.revokeObjectURL(url);
+                              if (scanner.runOCR) scanner.runOCR(canvas);
+                            };
+                            img.src = url;
+                          } finally {
+                            setOcrPipelineActive(false);
                           }
                        }}
                     />
@@ -1670,8 +1825,11 @@ const TrustShieldVerification = () => {
                 </div>
               )}
 
-              {/* Progress */}
-              {(scanner.phase === 'scanning' || scanner.progress > 0) && (
+              {/* 🔱 GOD-LEVEL: 3-Phase OCR Pipeline Progress Bar */}
+              <OcrPipelineProgress />
+
+              {/* Legacy scanner progress (shown only when pipeline bar not active) */}
+              {!ocrPipelineActive && (scanner.phase === 'scanning' || scanner.progress > 0) && (
                 <div className={styles.ocrProgress}>
                   <div className={styles.ocrProgressBar}>
                     <div className={styles.ocrProgressFill} style={{ width: `${scanner.progress}%` }} />
@@ -1681,7 +1839,7 @@ const TrustShieldVerification = () => {
               )}
 
               {/* Status message */}
-              {scanner.phase !== 'scanning' && scanner.statusMessage && (
+              {scanner.phase !== 'scanning' && scanner.statusMessage && !ocrPipelineActive && (
                 <p className={styles.statusText} style={{ textAlign: 'center', color: '#a78bfa' }}>
                   {scanner.statusMessage}
                 </p>
