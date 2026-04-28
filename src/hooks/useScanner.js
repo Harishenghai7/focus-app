@@ -166,26 +166,146 @@ const useScanner = () => {
 
       const text = data.text;
 
+      // ═══════════════════════════════════════════════════════════════════════════
+      // 🔱 ULTRA AADHAAR-FOCUSED OCR - Camera Optimized with Error Correction
+      // ═══════════════════════════════════════════════════════════════════════════
+      
+      // Clean up common OCR errors from camera images
+      const cleanedText = text
+        .replace(/[oO]/g, '0')   // O -> 0
+        .replace(/[lI]/g, '1')   // l, I -> 1
+        .replace(/[S]/g, '5')    // S -> 5
+        .replace(/[B]/g, '8')    // B -> 8
+        .replace(/[Z]/g, '2')    // Z -> 2
+        .replace(/[G]/g, '6')    // G -> 6
+        .replace(/[^0-9A-Za-z\s\-]/g, ''); // Remove special chars
+      
       // ── Field extraction ──────────────────────────────────────────────
-      const nameMatch = text.match(/(?:Name|NAME)[:\s]+([A-Z][A-Z\s]{3,40})/i);
+      const nameMatch = text.match(/(?:Name|NAME|नाम)[:\s]+([A-Z][A-Za-z\s\.]{2,40})/i) ||
+                       text.match(/^([A-Z][A-Za-z\.]+(?:\s+[A-Z][A-Za-z\.]+){1,3})$/m);
+      
       const dobPatterns = [
-        /(?:DOB|Date of Birth|D\.O\.B)[:\s]+(\d{1,2}[\/-]\d{1,2}[\/-]\d{2,4})/i,
-        /\b(\d{2}[\/\-]\d{2}[\/\-]\d{4})\b/,
-        /\b(\d{4}[\/\-]\d{2}[\/\-]\d{2})\b/,
+        /(?:DOB|Date of Birth|D\.O\.B|जन्म तिथि)[:\s]+(\d{1,2}[\/-]\d{1,2}[\/-]\d{2,4})/i,
+        /\b(\d{2}[\/-]\d{2}[\/-]\d{4})\b/,
+        /\b(\d{4}[\/-]\d{2}[\/-]\d{2})\b/,
+        /\b(\d{2}[\/-]\d{2}[\/-]\d{2})\b/,  // YY format fallback
       ];
       let dob = null;
       for (const p of dobPatterns) { const m = text.match(p); if (m) { dob = m[1]; break; } }
-      const aadhaarMatch = text.match(/\b(\d{4}\s?\d{4}\s?\d{4})\b/);
-      const idNumber = aadhaarMatch?.[1]?.replace(/\s/g, '');
+      
+      // ═══════════════════════════════════════════════════════════════════════════
+      // 🔱 AADHAAR DETECTION - Multiple patterns for camera images
+      // ═══════════════════════════════════════════════════════════════════════════
+      const AADHAAR_PATTERNS = [
+        /\b(\d{4}\s+\d{4}\s+\d{4})\b/,           // Standard: 1234 5678 9012
+        /\b(\d{12})\b/,                          // No spaces: 123456789012
+        /\b(\d{4}\s+\d{8})\b/,                   // Partial: 1234 56789012
+        /\b(\d{8}\s+\d{4})\b/,                   // Partial: 12345678 9012
+        /\b(\d{4}-\d{4}-\d{4})\b/,               // Dashed: 1234-5678-9012
+        /\b[0-9OIlSBJ]{4}\s*[0-9OIlSBJ]{4}\s*[0-9OIlSBJ]{4}\b/i, // OCR error tolerant
+      ];
+      
+      let idNumber = null;
+      let idType = 'unknown';
+      
+      // Try ALL patterns on both raw and cleaned text
+      for (const pattern of AADHAAR_PATTERNS) {
+        const match = text.match(pattern) || cleanedText.match(pattern);
+        if (match) {
+          // Clean the matched ID - keep only digits
+          const rawId = match[0].replace(/[^0-9]/g, '');
+          // Validate: must be exactly 12 digits (Aadhaar)
+          if (rawId.length === 12) {
+            idNumber = rawId;
+            idType = 'aadhaar';
+            break;
+          }
+        }
+      }
+      
+      // Try PAN Card if no Aadhaar found
+      if (!idNumber) {
+        const panMatch = text.match(/\b([A-Z]{5}[0-9]{4}[A-Z])\b/i) ||
+                        cleanedText.match(/\b([A-Z]{5}[0-9]{4}[A-Z])\b/i);
+        if (panMatch) {
+          idNumber = panMatch[0].toUpperCase().replace(/\s/g, '');
+          idType = 'pan';
+        }
+      }
+      
+      // Try other Government IDs
+      if (!idNumber) {
+        const passportMatch = text.match(/\b([A-Z][0-9]{7})\b/);
+        const voterMatch = text.match(/\b([A-Z]{3}[0-9]{7})\b/);
+        const dlMatch = text.match(/\b([A-Z]{2}[0-9]{13})\b/);
+        
+        if (passportMatch) { idNumber = passportMatch[0].toUpperCase(); idType = 'passport'; }
+        else if (voterMatch) { idNumber = voterMatch[0].toUpperCase(); idType = 'voter'; }
+        else if (dlMatch) { idNumber = dlMatch[0].toUpperCase(); idType = 'dl'; }
+      }
+      
+      // ═══════════════════════════════════════════════════════════════════════════
+      // 🔱 STUDENT ID DETECTION - For 13-17 Teen Tier
+      // ═══════════════════════════════════════════════════════════════════════════
+      if (!idNumber) {
+        // Common Student ID patterns
+        const studentPatterns = [
+          // Student ID: various formats
+          /\b(?:Student\s*ID|ID\s*No|Roll\s*No|Reg\.?\s*No)[:\s]+([A-Z0-9]{5,20})\b/i,
+          // Admission number
+          /\b(?:Admission|Adm)[:\s]+([A-Z0-9]{5,20})\b/i,
+          // Generic ID patterns
+          /\b(?:ID|ID\s*Number)[:\s]+([A-Z0-9]{6,20})\b/i,
+        ];
+        
+        for (const pattern of studentPatterns) {
+          const match = text.match(pattern);
+          if (match) {
+            const studentId = match[1].trim().toUpperCase();
+            // Validate it looks like an ID (not a date or random number)
+            if (studentId.length >= 5 && /[A-Z]/.test(studentId) && /[0-9]/.test(studentId)) {
+              idNumber = studentId;
+              idType = 'student';
+              break;
+            }
+          }
+        }
+      }
 
+      // ═══════════════════════════════════════════════════════════════════════════
+      // 🔱 VALIDATION: All 3 fields required for successful scan
+      // Name, DOB, and ID Number must ALL be detected
+      // ═══════════════════════════════════════════════════════════════════════════
+      const hasName = !!nameMatch?.[1]?.trim();
+      const hasDob = !!dob;
+      const hasIdNumber = !!idNumber && idNumber.length >= 4;
+      
+      // Build specific error message for what's missing
+      let failReason = null;
+      if (!hasName && !hasDob && !hasIdNumber) {
+        failReason = 'Could not read ID. Please ensure good lighting and hold the ID steady.';
+      } else if (!hasIdNumber) {
+        failReason = 'ID Number NOT DETECTED - Upload clearer image. Make sure the ID number is clearly visible.';
+      } else if (!hasName) {
+        failReason = 'Name not detected. Ensure the name field is clearly visible.';
+      } else if (!hasDob) {
+        failReason = 'Date of Birth not detected. Ensure the DOB field is clearly visible.';
+      }
+      
       const result = {
-        ok: !!nameMatch || !!dob,
+        ok: hasName && hasDob && hasIdNumber, // ALL 3 required
         name: nameMatch?.[1]?.trim() || null,
         dob: dob || null,
         idNumber: idNumber || null,
+        idType: idType || null,
         confidence: confidence / 100,
         rawText: text,
-        reason: !nameMatch && !dob ? 'Could not extract Name or DOB. Try better lighting.' : null,
+        reason: failReason,
+        missingFields: {
+          name: !hasName,
+          dob: !hasDob,
+          idNumber: !hasIdNumber
+        }
       };
 
       setOcrResult(result);

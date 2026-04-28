@@ -115,25 +115,42 @@ const validateDocumentForTier = (text, expectedTier, dobValid) => {
 
 // ── Text Parsers ──────────────────────────────────────────────────────────────
 
-// Government ID Regex Patterns - ULTRA STRICT
+// ═══════════════════════════════════════════════════════════════════════════
+// 🔱 ULTRA AADHAAR-FOCUSED OCR PATTERNS (Camera-Optimized)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Aadhaar patterns - multiple formats for camera images
+const AADHAAR_PATTERNS = [
+  // Standard format: 1234 5678 9012
+  /\b\d{4}\s+\d{4}\s+\d{4}\b/,
+  // No spaces: 123456789012
+  /\b\d{12}\b/,
+  // Partial spaces: 1234 56789012 or 12345678 9012
+  /\b\d{4}\s+\d{8}\b/,
+  /\b\d{8}\s+\d{4}\b/,
+  // Dashed format: 1234-5678-9012
+  /\b\d{4}-\d{4}-\d{4}\b/,
+  // OCR errors (common in camera): O->0, I->1, l->1, S->5, B->8
+  /\b[0-9OIlSBJ]{4}\s*[0-9OIlSBJ]{4}\s*[0-9OIlSBJ]{4}\b/i,
+];
+
+// PAN Card patterns
+const PAN_PATTERNS = [
+  /\b[A-Z]{5}[0-9]{4}[A-Z]\b/,  // ABCDE1234F
+  /\b[A-Z]{5}\s*[0-9]{4}\s*[A-Z]\b/,  // With spaces
+];
+
+// Other Government IDs
 const ID_PATTERNS = {
-  // Aadhaar: 12-digit number (with or without spaces)
-  aadhaar: /\b\d{4}\s?\d{4}\s?\d{4}\b/,
-  // PAN: 5 letters + 4 digits + 1 letter (ABCDE1234F)
-  pan: /\b[A-Z]{5}[0-9]{4}[A-Z]\b/,
-  // Passport: 1 letter + 7 digits (A1234567)
+  aadhaar: AADHAAR_PATTERNS[0],
+  aadhaar_nospace: /\b\d{12}\b/,
+  pan: PAN_PATTERNS[0],
   passport: /\b[A-Z][0-9]{7}\b/,
-  // Voter ID: 3 letters + 7 digits (ABC1234567)
   voter: /\b[A-Z]{3}[0-9]{7}\b/,
-  // Driving License: 2 letters + 13 digits (TN0123456789012)
   dl: /\b[A-Z]{2}[0-9]{13}\b/,
-  // Generic 12-digit (fallback)
-  generic12: /\b\d{12}\b/,
-  // Generic 16-digit (some IDs)
-  generic16: /\b\d{16}\b/
 };
 
-// Legacy export for compatibility
+// Legacy export
 const AADHAAR_REGEX = ID_PATTERNS.aadhaar;
 
 const DOB_REGEX = /\b(\d{4}[-/.\\/](?:0?[1-9]|1[0-2])[-/.\\/](?:0?[1-9]|[12]\d|3[01])|(?:0?[1-9]|[12]\d|3[01])[-/.\\/](?:0?[1-9]|1[0-2])[-/.\\/]\d{4})\b/;
@@ -164,58 +181,58 @@ const parseIDText = (text) => {
   if (!text) return result;
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 🔒 ULTRA STRICT: Detect ALL Government ID Types (Priority Order)
+  // � ULTRA AADHAAR-FOCUSED: Try ALL patterns for camera images
   // ═══════════════════════════════════════════════════════════════════════════
   
-  // 1. Try PAN Card (Most specific pattern)
-  const panMatch = text.match(ID_PATTERNS.pan);
-  if (panMatch) {
-    result.idNumber = panMatch[0].toUpperCase();
-    result.idType = 'pan';
-  }
+  // Clean up common OCR errors from camera images
+  const cleanedText = text
+    .replace(/[oO]/g, '0')  // O -> 0
+    .replace(/[lI]/g, '1')  // l, I -> 1
+    .replace(/[S]/g, '5')   // S -> 5
+    .replace(/[B]/g, '8')   // B -> 8
+    .replace(/[^0-9A-Za-z\s\-]/g, ''); // Remove special chars
   
-  // 2. Try Aadhaar (12-digit)
-  if (!result.idNumber) {
-    const aadhaarMatch = text.match(ID_PATTERNS.aadhaar);
-    if (aadhaarMatch) {
-      result.idNumber = aadhaarMatch[0].replace(/\s/g, '');
-      result.idType = 'aadhaar';
+  // 1. Try ALL Aadhaar patterns (PRIORITY - Most common in India)
+  for (const pattern of AADHAAR_PATTERNS) {
+    const match = text.match(pattern) || cleanedText.match(pattern);
+    if (match) {
+      // Clean the matched ID - keep only digits
+      const rawId = match[0].replace(/[^0-9]/g, '');
+      // Validate: must be exactly 12 digits
+      if (rawId.length === 12) {
+        result.idNumber = rawId;
+        result.idType = 'aadhaar';
+        break;
+      }
     }
   }
   
-  // 3. Try Passport
+  // 2. Try PAN Card patterns
   if (!result.idNumber) {
-    const passportMatch = text.match(ID_PATTERNS.passport);
-    if (passportMatch) {
-      result.idNumber = passportMatch[0].toUpperCase();
-      result.idType = 'passport';
+    for (const pattern of PAN_PATTERNS) {
+      const match = text.match(pattern);
+      if (match) {
+        result.idNumber = match[0].toUpperCase().replace(/\s/g, '');
+        result.idType = 'pan';
+        break;
+      }
     }
   }
   
-  // 4. Try Voter ID
+  // 3. Try other Government IDs
   if (!result.idNumber) {
-    const voterMatch = text.match(ID_PATTERNS.voter);
-    if (voterMatch) {
-      result.idNumber = voterMatch[0].toUpperCase();
-      result.idType = 'voter';
-    }
-  }
-  
-  // 5. Try Driving License
-  if (!result.idNumber) {
-    const dlMatch = text.match(ID_PATTERNS.dl);
-    if (dlMatch) {
-      result.idNumber = dlMatch[0].toUpperCase();
-      result.idType = 'dl';
-    }
-  }
-  
-  // 6. Fallback to generic 12-digit
-  if (!result.idNumber) {
-    const generic12Match = text.match(ID_PATTERNS.generic12);
-    if (generic12Match) {
-      result.idNumber = generic12Match[0];
-      result.idType = 'generic_12digit';
+    const patterns = [
+      { pattern: ID_PATTERNS.passport, type: 'passport' },
+      { pattern: ID_PATTERNS.voter, type: 'voter' },
+      { pattern: ID_PATTERNS.dl, type: 'dl' },
+    ];
+    for (const { pattern, type } of patterns) {
+      const match = text.match(pattern);
+      if (match) {
+        result.idNumber = match[0].toUpperCase();
+        result.idType = type;
+        break;
+      }
     }
   }
 

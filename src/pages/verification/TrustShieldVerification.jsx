@@ -4,6 +4,11 @@ import { useAuth } from '../../hooks/useAuth';
 import useScanner from '../../hooks/useScanner';
 import { persistTrustShieldState, createGuardianHandshake } from '../../utils/trustShieldEngine';
 import { computeIdentityHash, classifyDocumentTier } from '../../hooks/useOCRScanner';
+import { 
+  checkDuplicateID, 
+  checkDuplicateStudentID,
+  getAlertConfig 
+} from '../../utils/trustShieldDuplicateCheck';
 import MainLayout from '../../components/layout/MainLayout';
 import { QRCodeSVG } from 'qrcode.react';
 import { supabase } from '../../lib/supabase';
@@ -905,6 +910,69 @@ const TrustShieldVerification = () => {
           }
         } catch (_) {
           console.warn('[TrustShield] Identity hash check failed:', _);
+        }
+      }
+      
+      // ═══════════════════════════════════════════════════════════════════════════
+      // 🔱 LAYER 2.6: ID NUMBER DUPLICATE CHECK - One ID = One Account
+      // This catches duplicates even if the identity hash somehow differs
+      // ═══════════════════════════════════════════════════════════════════════════
+      if (result.idNumber && result.idType) {
+        try {
+          let duplicateCheck;
+          
+          if (ageGroup === '13-17' && result.idType === 'student') {
+            // For teen tier, check student ID duplicate
+            duplicateCheck = await checkDuplicateStudentID(
+              result.idNumber,
+              result.institution || 'Unknown Institution'
+            );
+          } else {
+            // For 18+ tier, check government ID duplicate
+            duplicateCheck = await checkDuplicateID(result.idNumber, result.idType);
+          }
+          
+          if (duplicateCheck?.exists) {
+            setAccountLocked(true);
+            setStaticImageFlag(true);
+            cancelAnimationFrame(rafRef.current);
+            if (liveStreamRef.current) {
+              liveStreamRef.current.getTracks().forEach(t => t.stop());
+              liveStreamRef.current = null;
+            }
+            
+            const alertConfig = getAlertConfig(duplicateCheck.alertType);
+            handleFail(`${alertConfig.title}: ${alertConfig.message}\n\n${alertConfig.action}`);
+            scanner.stopCamera?.();
+            
+            // Log the duplicate ID attempt
+            await logVerificationAttempt(user?.id, 'id_duplicate_check', 'BLOCKED', {
+              id_type: result.idType,
+              alert_type: duplicateCheck.alertType,
+              device_id: deviceId,
+            });
+            
+            // Redirect after short delay
+            setTimeout(() => {
+              navigate(duplicateCheck.redirectTo || '/auth', {
+                state: { 
+                  alert: {
+                    type: 'error',
+                    title: alertConfig.title,
+                    message: alertConfig.message,
+                    action: alertConfig.action
+                  }
+                }
+              });
+            }, 3000);
+            
+            return;
+          }
+          
+          console.log('[TrustShield] ✅ ID number duplicate check passed');
+        } catch (dupErr) {
+          console.warn('[TrustShield] ID duplicate check error:', dupErr);
+          // Continue even if check fails - we still have identity_hash check
         }
       }
       
