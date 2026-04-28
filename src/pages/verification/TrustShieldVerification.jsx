@@ -7,6 +7,7 @@ import { computeIdentityHash, classifyDocumentTier } from '../../hooks/useOCRSca
 import { 
   checkDuplicateID, 
   checkDuplicateStudentID,
+  checkDuplicateMaskedAadhaar,
   getAlertConfig 
 } from '../../utils/trustShieldDuplicateCheck';
 import MainLayout from '../../components/layout/MainLayout';
@@ -927,8 +928,16 @@ const TrustShieldVerification = () => {
               result.idNumber,
               result.institution || 'Unknown Institution'
             );
+          } else if (result.idType === 'aadhaar_masked' && result.last4 && result.name && result.dob) {
+            // For masked Aadhaar (DigiLocker), use Name + DOB + Last4 combination
+            console.log('[TrustShield] Checking masked Aadhaar with Name+DOB+Last4');
+            duplicateCheck = await checkDuplicateMaskedAadhaar(
+              result.name,
+              result.dob,
+              result.last4
+            );
           } else {
-            // For 18+ tier, check government ID duplicate
+            // For 18+ tier with full Aadhaar/PAN/Passport, check government ID duplicate
             duplicateCheck = await checkDuplicateID(result.idNumber, result.idType);
           }
           
@@ -1515,7 +1524,20 @@ const TrustShieldVerification = () => {
                   <h3>📋 Extracted Identity Data</h3>
                   {ocrData.name     && <div className={styles.ocrField}><span>Name</span><strong>{ocrData.name}</strong></div>}
                   {ocrData.dob      && <div className={styles.ocrField}><span>Date of Birth</span><strong>{ocrData.dob}</strong></div>}
-                  {ocrData.idNumber && <div className={styles.ocrField}><span>ID Number</span><strong>XXXX XXXX {ocrData.idNumber.slice(-4)}</strong></div>}
+                  {ocrData.idNumber && (
+                    <div className={styles.ocrField}>
+                      <span>ID Number</span>
+                      <strong>
+                        {ocrData.idType === 'aadhaar' && ocrData.idNumber.length === 12
+                          ? `XXXX XXXX ${ocrData.idNumber.slice(-4)}` 
+                          : ocrData.idType === 'aadhaar_masked'
+                            ? `MASKED AADHAAR ending in ${ocrData.last4 || ocrData.idNumber.slice(-4)}`
+                            : ocrData.idType === 'pan'
+                              ? `${ocrData.idNumber.slice(0, 5)}...${ocrData.idNumber.slice(-1)}`
+                              : 'ID Verified'}
+                      </strong>
+                    </div>
+                  )}
                   <div className={styles.ocrField}><span>Confidence</span><strong>{Math.round(ocrData.confidence * 100)}%</strong></div>
                 </div>
               )}

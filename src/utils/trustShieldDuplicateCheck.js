@@ -58,6 +58,53 @@ export const checkDuplicateID = async (idNumber, idType = 'aadhaar') => {
 };
 
 /**
+ * Check if a MASKED Aadhaar already exists using Name + DOB + Last4.
+ * For DigiLocker documents where only last 4 digits are visible.
+ * 
+ * @param {string} name - Full name from ID
+ * @param {string} dob - Date of Birth
+ * @param {string} last4 - Last 4 digits of Aadhaar
+ * @returns {Promise<{exists: boolean, error?: string, redirectTo?: string, alertType?: string}>}
+ */
+export const checkDuplicateMaskedAadhaar = async (name, dob, last4) => {
+  if (!name || !dob || !last4 || last4.length !== 4) {
+    return { exists: false, error: 'Missing required fields for masked Aadhaar check' };
+  }
+
+  try {
+    const { data, error } = await supabase.rpc('check_masked_aadhaar_duplicate', {
+      p_name: name,
+      p_dob: dob,
+      p_last4: last4
+    });
+
+    if (error) {
+      console.error('[TrustShield] Masked Aadhaar duplicate check failed:', error);
+      return { exists: false, error: error.message };
+    }
+
+    if (data?.exists) {
+      return {
+        exists: true,
+        error: data.message || 'This Aadhaar is already registered',
+        redirectTo: data.redirect_to || '/auth',
+        alertType: data.alert_type || 'ID_ALREADY_REGISTERED',
+        existingUser: {
+          id: data.existing_user_id,
+          name: data.existing_user_name,
+          createdAt: data.created_at
+        }
+      };
+    }
+
+    return { exists: false, message: 'Aadhaar is available' };
+  } catch (err) {
+    console.error('[TrustShield] Masked Aadhaar check error:', err);
+    return { exists: false, error: err.message };
+  }
+};
+
+/**
  * Check if a Student ID (School/College) already exists.
  * For 13-17 tier verification.
  * 
@@ -275,6 +322,7 @@ export const getAlertConfig = (alertType) => {
 export default {
   checkDuplicateID,
   checkDuplicateStudentID,
+  checkDuplicateMaskedAadhaar,
   storeIDNumber,
   storeStudentID,
   finalizeVerificationV2,

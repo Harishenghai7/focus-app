@@ -414,12 +414,97 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- FUNCTION: Check MASKED Aadhaar duplicate (for DigiLocker documents)
+-- Uses Name + DOB + Last 4 digits as composite key
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+CREATE OR REPLACE FUNCTION check_masked_aadhaar_duplicate(
+    p_name TEXT,
+    p_dob TEXT,
+    p_last4 TEXT
+) RETURNS JSONB AS $$
+DECLARE
+    v_result JSONB;
+    v_existing RECORD;
+    v_composite_hash TEXT;
+BEGIN
+    -- Validate input
+    IF p_name IS NULL OR p_dob IS NULL OR p_last4 IS NULL OR LENGTH(p_last4) != 4 THEN
+        RETURN jsonb_build_object(
+            'exists', false,
+            'error', 'Invalid input for masked Aadhaar check'
+        );
+    END IF;
+    
+    -- Create composite hash: normalized name + dob + last4
+    v_composite_hash := encode(digest(
+        lower(regexp_replace(p_name, '\s', '', 'g')) || 
+        regexp_replace(p_dob, '[^0-9]', '', 'g') ||
+        p_last4,
+        'sha256'
+    ), 'hex');
+    
+    -- Check for existing masked Aadhaar with same Name + DOB + Last4
+    SELECT id, full_name, verification_status, created_at
+    INTO v_existing
+    FROM profiles
+    WHERE id_type = 'aadhaar_masked'
+        AND id_number LIKE '%' || p_last4
+        AND (
+            LOWER(REPLACE(REPLACE(full_name, ' ', ''), '-', '')) = 
+            LOWER(REPLACE(REPLACE(p_name, ' ', ''), '-', ''))
+            OR verification_metadata->>'ocr_data'->>'name' = p_name
+        )
+        AND (
+            verification_metadata->>'ocr_data'->>'dob' = p_dob
+            OR verification_metadata->>'ocr_data'->>'last4' = p_last4
+        )
+    LIMIT 1;
+    
+    -- Also check full Aadhaar records (if someone tries to register same person with full Aadhaar later)
+    IF v_existing IS NULL THEN
+        SELECT id, full_name, verification_status, created_at
+        INTO v_existing
+        FROM profiles
+        WHERE id_type = 'aadhaar'
+            AND id_number LIKE '%' || p_last4
+            AND (
+                LOWER(REPLACE(REPLACE(full_name, ' ', ''), '-', '')) = 
+                LOWER(REPLACE(REPLACE(p_name, ' ', ''), '-', ''))
+            )
+        LIMIT 1;
+    END IF;
+    
+    IF v_existing IS NOT NULL THEN
+        v_result := jsonb_build_object(
+            'exists', true,
+            'existing_user_id', v_existing.id,
+            'existing_user_name', v_existing.full_name,
+            'verification_status', v_existing.verification_status,
+            'created_at', v_existing.created_at,
+            'message', 'This Aadhaar (ending in ' || p_last4 || ') is already registered. One Aadhaar can only be used for one Focus account.',
+            'redirect_to', '/auth',
+            'alert_type', 'ID_ALREADY_REGISTERED'
+        );
+        RETURN v_result;
+    END IF;
+    
+    -- Not found - this Aadhaar is available
+    RETURN jsonb_build_object(
+        'exists', false,
+        'message', 'Masked Aadhaar is available for registration'
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Grant permissions
 GRANT EXECUTE ON FUNCTION check_id_duplicate TO authenticated;
 GRANT EXECUTE ON FUNCTION store_id_number TO authenticated;
 GRANT EXECUTE ON FUNCTION finalize_verification_v2 TO authenticated;
 GRANT EXECUTE ON FUNCTION check_student_id_duplicate TO authenticated;
 GRANT EXECUTE ON FUNCTION store_student_id TO authenticated;
+GRANT EXECUTE ON FUNCTION check_masked_aadhaar_duplicate TO authenticated;
 
 -- Comments
 COMMENT ON FUNCTION check_id_duplicate IS 'Check if Aadhaar/PAN/Passport already registered - for early detection at Step 1';
@@ -427,3 +512,4 @@ COMMENT ON FUNCTION store_id_number IS 'Store ID number with hash - enforces one
 COMMENT ON FUNCTION finalize_verification_v2 IS 'Enhanced verification finalization with ID deduplication';
 COMMENT ON FUNCTION check_student_id_duplicate IS 'Check if Student ID already registered';
 COMMENT ON FUNCTION store_student_id IS 'Store Student ID with institution - enforces one student = one account';
+COMMENT ON FUNCTION check_masked_aadhaar_duplicate IS 'Check if masked Aadhaar (Name+DOB+Last4) already registered - for DigiLocker';

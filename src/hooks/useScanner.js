@@ -47,6 +47,40 @@ const measureLuminance = (canvas) => {
   return total / (data.length / 4);
 };
 
+// ── Image Preprocessing for Better OCR ─────────────────────────────────────
+const preprocessImage = (canvas) => {
+  const ctx = canvas.getContext('2d');
+  const { width, height } = canvas;
+  const imageData = ctx.getImageData(0, 0, width, height);
+  const data = imageData.data;
+  
+  // 1. Convert to grayscale with better contrast
+  for (let i = 0; i < data.length; i += 4) {
+    // Grayscale conversion
+    const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+    
+    // Increase contrast (s-curve approximation)
+    const contrast = (gray - 128) * 1.5 + 128;
+    const final = Math.max(0, Math.min(255, contrast));
+    
+    data[i] = final;     // R
+    data[i + 1] = final; // G
+    data[i + 2] = final; // B
+  }
+  
+  // 2. Apply threshold for black/white effect (helps OCR)
+  const threshold = 128;
+  for (let i = 0; i < data.length; i += 4) {
+    const val = data[i] > threshold ? 255 : 0;
+    data[i] = val;
+    data[i + 1] = val;
+    data[i + 2] = val;
+  }
+  
+  ctx.putImageData(imageData, 0, 0);
+  return canvas;
+};
+
 // ── Main Hook ───────────────────────────────────────────────────────────────
 const useScanner = () => {
   const [phase, setPhase] = useState('idle'); // idle|requesting|streaming|scanning|captured|error
@@ -153,7 +187,21 @@ const useScanner = () => {
     setCapturedFrame(frameDataUrl);
 
     try {
-      const { data } = await workerRef.current.recognize(frameDataUrl);
+      // ═══════════════════════════════════════════════════════════════════════════
+      // 🔱 IMAGE PREPROCESSING - Enhance contrast for better OCR
+      // ═══════════════════════════════════════════════════════════════════════════
+      const processedCanvas = preprocessImage(canvas);
+      const processedDataUrl = processedCanvas.toDataURL('image/jpeg', 0.92);
+      
+      // Try OCR on both original and preprocessed images
+      let data = await workerRef.current.recognize(frameDataUrl);
+      let processedData = await workerRef.current.recognize(processedDataUrl);
+      
+      // Use the result with higher confidence
+      if (processedData.confidence > data.confidence) {
+        data = processedData;
+      }
+      
       const confidence = data.confidence;
 
       if (confidence < 60) {
@@ -194,31 +242,54 @@ const useScanner = () => {
       for (const p of dobPatterns) { const m = text.match(p); if (m) { dob = m[1]; break; } }
       
       // ═══════════════════════════════════════════════════════════════════════════
-      // 🔱 AADHAAR DETECTION - Multiple patterns for camera images
+      // 🔱 AADHAAR DETECTION - Handles FULL, MASKED, and CAMERA images
       // ═══════════════════════════════════════════════════════════════════════════
-      const AADHAAR_PATTERNS = [
+      
+      // First, try to find FULL 12-digit Aadhaar
+      const FULL_AADHAAR_PATTERNS = [
         /\b(\d{4}\s+\d{4}\s+\d{4})\b/,           // Standard: 1234 5678 9012
         /\b(\d{12})\b/,                          // No spaces: 123456789012
-        /\b(\d{4}\s+\d{8})\b/,                   // Partial: 1234 56789012
-        /\b(\d{8}\s+\d{4})\b/,                   // Partial: 12345678 9012
         /\b(\d{4}-\d{4}-\d{4})\b/,               // Dashed: 1234-5678-9012
         /\b[0-9OIlSBJ]{4}\s*[0-9OIlSBJ]{4}\s*[0-9OIlSBJ]{4}\b/i, // OCR error tolerant
       ];
       
+      // Then, try MASKED Aadhaar (DigiLocker format: xxxxxxxx1234 or XXXX XXXX 1234)
+      const MASKED_AADHAAR_PATTERNS = [
+        /\b[xX]{4,8}(\d{4})\b/,                   // xxxx1234 or xxxxxxxx1234
+        /\b[xX\*]{4}\s*[xX\*]{4}\s*(\d{4})\b/,  // XXXX XXXX 1234
+        /\b\d{4}\s+\d{4}\s+(\d{4})\b/,          // Partial capture: last 4 only
+      ];
+      
       let idNumber = null;
       let idType = 'unknown';
+      let idSource = 'unknown'; // 'full_aadhaar', 'masked_aadhaar', 'other_id'
       
-      // Try ALL patterns on both raw and cleaned text
-      for (const pattern of AADHAAR_PATTERNS) {
+      // 1. Try FULL Aadhaar patterns first (best case)
+      for (const pattern of FULL_AADHAAR_PATTERNS) {
         const match = text.match(pattern) || cleanedText.match(pattern);
         if (match) {
-          // Clean the matched ID - keep only digits
           const rawId = match[0].replace(/[^0-9]/g, '');
-          // Validate: must be exactly 12 digits (Aadhaar)
           if (rawId.length === 12) {
             idNumber = rawId;
             idType = 'aadhaar';
+            idSource = 'full_aadhaar';
             break;
+          }
+        }
+      }
+      
+      // 2. If no full Aadhaar, try MASKED patterns (DigiLocker documents)
+      if (!idNumber) {
+        for (const pattern of MASKED_AADHAAR_PATTERNS) {
+          const match = text.match(pattern) || cleanedText.match(pattern);
+          if (match) {
+            const last4 = match[1]; // The captured last 4 digits
+            if (last4 && last4.length === 4 && /^\d{4}$/.test(last4)) {
+              idNumber = 'MASKED-' + last4; // Format: MASKED-1234
+              idType = 'aadhaar_masked';
+              idSource = 'masked_aadhaar';
+              break;
+            }
           }
         }
       }
@@ -292,12 +363,17 @@ const useScanner = () => {
         failReason = 'Date of Birth not detected. Ensure the DOB field is clearly visible.';
       }
       
+      // Extract last 4 digits for deduplication (especially for masked Aadhaar)
+      const last4 = idNumber ? idNumber.slice(-4) : null;
+      
       const result = {
         ok: hasName && hasDob && hasIdNumber, // ALL 3 required
         name: nameMatch?.[1]?.trim() || null,
         dob: dob || null,
         idNumber: idNumber || null,
         idType: idType || null,
+        idSource: idSource || null, // 'full_aadhaar', 'masked_aadhaar', 'pan', etc.
+        last4: last4, // Last 4 digits for deduplication
         confidence: confidence / 100,
         rawText: text,
         reason: failReason,
