@@ -255,13 +255,13 @@ export const preprocessIDImage = async (source, opts = {}) => {
           const srcPts = cv.matFromArray(4, 1, cv.CV_32FC2, [tl.x, tl.y, tr.x, tr.y, br.x, br.y, bl.x, bl.y]);
           const dstPts = cv.matFromArray(4, 1, cv.CV_32FC2, [0, 0, w, 0, w, h, 0, h]);
 
-          const M = cv.getPerspectiveTransform(srcPts, dstPts);
+          const perspectiveMatrix = cv.getPerspectiveTransform(srcPts, dstPts);
           const tempWarped = new cv.Mat();
-          cv.warpPerspective(blurred, tempWarped, M, new cv.Size(w, h));
+          cv.warpPerspective(blurred, tempWarped, perspectiveMatrix, new cv.Size(w, h));
           
           srcPts.delete();
           dstPts.delete();
-          M.delete();
+          perspectiveMatrix.delete();
           warped.delete(); // Free the clone
           warped = tempWarped;
         }
