@@ -19,6 +19,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { createWorker } from 'tesseract.js';
 import { purifyIDImage, fileToImageElement } from '../utils/imagePurityEngine';
+import { supabase } from '../lib/supabase';
 
 // ── ADULT & TEEN Document Markers (Weight-Based System) ──────────────────────
 const ADULT_KEYWORDS = ['GOVT', 'INDIA', 'INCOME TAX', 'ELECTION', 'AADHAAR', 'PAN', 'VOTER', 'DRIVING'];
@@ -406,7 +407,7 @@ export const useOCRScanner = () => {
       }
 
       // ── PHASE 3: Checking Global Uniqueness (parse + validate) ────────────
-      report(72, '🔒 Verifying Uniqueness...');
+      report(72, '🔒 Checking Global Uniqueness...');
 
       const parsed = parseIDText(text, tier);
 
@@ -433,10 +434,39 @@ export const useOCRScanner = () => {
         if (mismatch) throw new Error(mismatch);
       }
 
-      report(88, '🔒 Verifying Uniqueness...');
+      report(88, '🔒 Checking Global Uniqueness...');
 
       // ── SHA-256 Sovereign Identity Hash ──────────────────────────────────
       const identityHash = await computeIdentityHash(parsed.idNumber);
+      
+      // ── The Uniqueness Handshake ──────────────────────────────────────────
+      if (identityHash) {
+        try {
+          const { data: isUnique, error: rpcErr } = await supabase.rpc('verify_unique_identity', {
+            p_id_hash: identityHash,
+            p_step: 3 // Progression step lock, typical to advance to liveness
+          });
+
+          if (rpcErr) throw rpcErr;
+
+          if (isUnique === false) {
+            // NUCLEAR RESET
+            try {
+              await supabase.auth.signOut();
+              localStorage.clear();
+              sessionStorage.clear();
+            } catch (_) {}
+            
+            alert('Identity already linked to another account.');
+            window.location.href = '/auth';
+            
+            // Abort further execution
+            return { ok: false, reason: 'Duplicate ID detected' };
+          }
+        } catch (rpcCatch) {
+          console.error('[TrustShield] RPC Check Failed:', rpcCatch);
+        }
+      }
 
       report(100, '✅ Identity DNA Extracted');
 

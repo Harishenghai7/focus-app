@@ -134,8 +134,8 @@ const HighSecurityGuard = ({ children }) => {
         });
     }
 
-    // Lock the user into onboarding — they cannot access /home or any protected route
-    return <Navigate to="/onboarding" replace />;
+    // Lock the user into verification — they cannot access /home or any protected route
+    return <Navigate to="/verification/trust-shield" replace />;
 };
 
 const AppContent = () => {
@@ -233,7 +233,7 @@ const AppContent = () => {
                               : (
                                 // 🔱 GOD-LEVEL: Check for locked step redirect
                                 // If user was locked to a specific step, they go directly there
-                                <Onboarding />
+                                <Navigate to="/verification/trust-shield" replace />
                               )
                           )
                         : <Navigate to="/auth" replace />

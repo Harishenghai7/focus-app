@@ -191,52 +191,112 @@ export const preprocessIDImage = async (source, opts = {}) => {
     cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
     progress(45);
 
-    // ── Step 3: Gaussian Blur (3×3) — noise reduction ─────────────────────
+    // ── Step 3: Gaussian Blur (Noise Reduction) ───────────────────────────
     blurred = new cv.Mat();
     const ksize = new cv.Size(3, 3);
     cv.GaussianBlur(gray, blurred, ksize, 0, 0, cv.BORDER_DEFAULT);
     progress(55);
 
-    // ── Step 4: Adaptive Threshold — text pops ────────────────────────────
+    // ── Step 4: Perspective Warp (flatten card angles) ────────────────────
+    let warped = blurred.clone();
+
+    if (!skipPerspective) {
+      try {
+        const edges = new cv.Mat();
+        cv.Canny(blurred, edges, 50, 150);
+
+        const contours = new cv.MatVector();
+        const hierarchy = new cv.Mat();
+        cv.findContours(edges, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+
+        let bestContour = null;
+        let bestArea = 0;
+        const imgArea = blurred.rows * blurred.cols;
+
+        for (let i = 0; i < contours.size(); i++) {
+          const cnt = contours.get(i);
+          const area = cv.contourArea(cnt);
+
+          if (area >= imgArea * 0.30) {
+            const peri = cv.arcLength(cnt, true);
+            const approx = new cv.Mat();
+            cv.approxPolyDP(cnt, approx, 0.02 * peri, true);
+
+            if (approx.rows === 4 && area > bestArea) {
+              bestArea = area;
+              if (bestContour) bestContour.delete();
+              bestContour = approx;
+            } else {
+              approx.delete();
+            }
+          }
+          cnt.delete();
+        }
+
+        edges.delete();
+        contours.delete();
+        hierarchy.delete();
+
+        if (bestContour) {
+          const points = [];
+          for (let i = 0; i < 4; i++) {
+            points.push({ x: bestContour.data32S[i * 2], y: bestContour.data32S[i * 2 + 1] });
+          }
+          bestContour.delete();
+
+          points.sort((a, b) => a.y - b.y);
+          const top = points.slice(0, 2).sort((a, b) => a.x - b.x);
+          const bot = points.slice(2, 4).sort((a, b) => a.x - b.x);
+          const [tl, tr, bl, br] = [top[0], top[1], bot[0], bot[1]];
+
+          const w = Math.max(Math.hypot(tr.x - tl.x, tr.y - tl.y), Math.hypot(br.x - bl.x, br.y - bl.y));
+          const h = Math.max(Math.hypot(bl.x - tl.x, bl.y - tl.y), Math.hypot(br.x - tr.x, br.y - tr.y));
+
+          const srcPts = cv.matFromArray(4, 1, cv.CV_32FC2, [tl.x, tl.y, tr.x, tr.y, br.x, br.y, bl.x, bl.y]);
+          const dstPts = cv.matFromArray(4, 1, cv.CV_32FC2, [0, 0, w, 0, w, h, 0, h]);
+
+          const M = cv.getPerspectiveTransform(srcPts, dstPts);
+          const tempWarped = new cv.Mat();
+          cv.warpPerspective(blurred, tempWarped, M, new cv.Size(w, h));
+          
+          srcPts.delete();
+          dstPts.delete();
+          M.delete();
+          warped.delete(); // Free the clone
+          warped = tempWarped;
+        }
+      } catch (perspErr) {
+        console.warn('[OpenCV] Perspective transform skipped:', perspErr.message);
+      }
+    }
+    progress(75);
+
+    // ── Step 5: Adaptive Thresholding ─────────────────────────────────────
     thresh = new cv.Mat();
     cv.adaptiveThreshold(
-      blurred,
+      warped,
       thresh,
       255,
       cv.ADAPTIVE_THRESH_GAUSSIAN_C,
       cv.THRESH_BINARY,
-      11,  // block size
-      2    // C constant
+      11,
+      2
     );
-    progress(65);
-
-    // ── Step 5: Perspective Transform (card edge detection) ───────────────
-    let warped = thresh;
-
-    if (!skipPerspective) {
-      try {
-        warped = attemptPerspectiveTransform(cv, src, thresh) || thresh;
-      } catch (perspErr) {
-        console.warn('[OpenCV] Perspective transform skipped:', perspErr.message);
-        warped = thresh;
-      }
-    }
-
-    progress(80);
+    progress(85);
 
     // ── Step 6: Write result to output canvas ─────────────────────────────
     result = document.createElement('canvas');
-    result.width = warped.cols || srcCanvas.width;
-    result.height = warped.rows || srcCanvas.height;
-    cv.imshow(result, warped);
+    result.width = thresh.cols || srcCanvas.width;
+    result.height = thresh.rows || srcCanvas.height;
+    cv.imshow(result, thresh);
     progress(95);
 
     // ── Cleanup ───────────────────────────────────────────────────────────
     src.delete();
     gray.delete();
     blurred.delete();
+    warped.delete();
     thresh.delete();
-    if (warped !== thresh) warped.delete();
 
     progress(100);
 
@@ -261,117 +321,6 @@ export const preprocessIDImage = async (source, opts = {}) => {
       method: 'fallback_error',
       luminance,
     };
-  }
-};
-
-// ── Internal: Perspective Transform ────────────────────────────────────────
-
-/**
- * Detect card edges and warp to flat rectangle.
- * Returns null if no clear card contour found.
- */
-const attemptPerspectiveTransform = (cv, colorSrc, threshSrc) => {
-  // Use Canny on grayscale for edge detection
-  const edges = new cv.Mat();
-  const gray2 = new cv.Mat();
-  cv.cvtColor(colorSrc, gray2, cv.COLOR_RGBA2GRAY);
-  cv.Canny(gray2, edges, 50, 150);
-
-  const contours = new cv.MatVector();
-  const hierarchy = new cv.Mat();
-  cv.findContours(edges, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
-
-  let bestContour = null;
-  let bestArea = 0;
-  const imgArea = colorSrc.rows * colorSrc.cols;
-
-  for (let i = 0; i < contours.size(); i++) {
-    const cnt = contours.get(i);
-    const area = cv.contourArea(cnt);
-
-    // Card must be at least 30% of the image area
-    if (area < imgArea * 0.30) {
-      cnt.delete();
-      continue;
-    }
-
-    const peri = cv.arcLength(cnt, true);
-    const approx = new cv.Mat();
-    cv.approxPolyDP(cnt, approx, 0.02 * peri, true);
-
-    // A card is approximately a quadrilateral (4 corners)
-    if (approx.rows === 4 && area > bestArea) {
-      bestArea = area;
-      if (bestContour) bestContour.delete();
-      bestContour = approx;
-    } else {
-      approx.delete();
-    }
-    cnt.delete();
-  }
-
-  edges.delete();
-  gray2.delete();
-  contours.delete();
-  hierarchy.delete();
-
-  if (!bestContour) return null;
-
-  try {
-    // Extract 4 corner points
-    const points = [];
-    for (let i = 0; i < 4; i++) {
-      points.push({ x: bestContour.data32S[i * 2], y: bestContour.data32S[i * 2 + 1] });
-    }
-    bestContour.delete();
-
-    // Sort: top-left, top-right, bottom-right, bottom-left
-    points.sort((a, b) => a.y - b.y);
-    const top = points.slice(0, 2).sort((a, b) => a.x - b.x);
-    const bot = points.slice(2, 4).sort((a, b) => a.x - b.x);
-    const [tl, tr, bl, br] = [top[0], top[1], bot[0], bot[1]];
-
-    // Target dimensions: standard ID card ratio 85.6mm × 53.98mm ≈ 1.586
-    const w = Math.max(
-      Math.hypot(tr.x - tl.x, tr.y - tl.y),
-      Math.hypot(br.x - bl.x, br.y - bl.y)
-    );
-    const h = Math.max(
-      Math.hypot(bl.x - tl.x, bl.y - tl.y),
-      Math.hypot(br.x - tr.x, br.y - tr.y)
-    );
-
-    const srcPts = cv.matFromArray(4, 1, cv.CV_32FC2, [
-      tl.x, tl.y, tr.x, tr.y, br.x, br.y, bl.x, bl.y,
-    ]);
-    const dstPts = cv.matFromArray(4, 1, cv.CV_32FC2, [
-      0, 0, w, 0, w, h, 0, h,
-    ]);
-
-    const M = cv.getPerspectiveTransform(srcPts, dstPts);
-    const warped = new cv.Mat();
-    const dsize = new cv.Size(w, h);
-    cv.warpPerspective(colorSrc, warped, M, dsize);
-
-    // Now apply grayscale + threshold on warped
-    const wGray = new cv.Mat();
-    cv.cvtColor(warped, wGray, cv.COLOR_RGBA2GRAY);
-    const wBlur = new cv.Mat();
-    cv.GaussianBlur(wGray, wBlur, new cv.Size(3, 3), 0);
-    const wThresh = new cv.Mat();
-    cv.adaptiveThreshold(wBlur, wThresh, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2);
-
-    srcPts.delete();
-    dstPts.delete();
-    M.delete();
-    warped.delete();
-    wGray.delete();
-    wBlur.delete();
-
-    return wThresh;
-  } catch (e) {
-    bestContour?.delete();
-    return null;
   }
 };
 

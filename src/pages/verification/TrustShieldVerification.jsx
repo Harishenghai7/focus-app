@@ -433,7 +433,7 @@ const TrustShieldVerification = () => {
     // Phase 2 → Phase 3: Checking Global Uniqueness
     setOcrPipelinePhase(3);
     setOcrPipelinePct(80);
-    setOcrPipelineLabel('🔒 Verifying Uniqueness...');
+    setOcrPipelineLabel('🔒 Checking Global Uniqueness...');
 
     try {
       const hash = await computeIdentityHash(cleaned);
