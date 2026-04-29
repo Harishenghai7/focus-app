@@ -25,7 +25,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useFocusUser } from '../../context/FocusUserContext';
 import { supabase } from '../../lib/supabase';
-import { getDeviceId, getVerificationStep, checkRateLimit } from '../../utils/trustShieldGodEngine';
+import { getDeviceId, getVerificationStep, checkRateLimit } from '../../utils/trustShieldULTRA';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // H2 UNIVERSAL THEME - Glass Blur Loading Screen

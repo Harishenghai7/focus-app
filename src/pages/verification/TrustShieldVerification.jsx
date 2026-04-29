@@ -11,7 +11,6 @@ import {
   getAlertConfig 
 } from '../../utils/trustShieldDuplicateCheck';
 import { purifyIDImage } from '../../utils/imagePurityEngine';
-import MainLayout from '../../components/layout/MainLayout';
 import { QRCodeSVG } from 'qrcode.react';
 import { supabase } from '../../lib/supabase';
 import * as faceapi from 'face-api.js';
@@ -138,6 +137,26 @@ const getEAR = (eye) => {
   if (w === 0) return 1.0;
   return (d(eye[1], eye[5]) + d(eye[2], eye[4])) / (2.0 * w);
 };
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PERSISTENT NAVIGATION LOCK
+  // ═══════════════════════════════════════════════════════════════════════════
+  useEffect(() => {
+    // Prevent backward navigation
+    window.history.pushState(null, null, window.location.href);
+    const handlePopState = (event) => {
+      window.history.pushState(null, null, window.location.href);
+      console.warn('[TrustShield] Backward navigation blocked during verification.');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STATE MANAGEMENT
+  // ═══════════════════════════════════════════════════════════════════════════
 
 // ── Focusly AI Mascot ─────────────────────────────────────────────────────────
 // NOTE: No click-to-bypass — Pillar 1 spec: "Physically remove 'Skip' buttons".
@@ -1569,7 +1588,7 @@ const TrustShieldVerification = () => {
   // ═══════════════════════════════════════════════════════════════════════════
   if (isLoadingStep) {
     return (
-      <MainLayout>
+      <div className={styles.trustShieldWrapper}>
         <div style={{ 
           display: 'flex', 
           flexDirection: 'column',
@@ -1619,7 +1638,7 @@ const TrustShieldVerification = () => {
             }
           `}</style>
         </div>
-      </MainLayout>
+      </div>
     );
   }
 
@@ -1663,7 +1682,7 @@ const TrustShieldVerification = () => {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <MainLayout>
+    <div className={styles.trustShieldWrapper}>
       <div 
         className={styles.container} 
         style={ringLightStyles}
@@ -2282,7 +2301,7 @@ const TrustShieldVerification = () => {
           `}</style>
         </div>
       )}
-    </MainLayout>
+    </div>
   );
 };
 

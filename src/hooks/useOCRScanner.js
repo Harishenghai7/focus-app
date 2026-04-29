@@ -38,9 +38,9 @@ export const computeIdentityHash = async (idNumber) => {
       (typeof process !== 'undefined' && process.env && (
         process.env.REACT_APP_TRUST_SHIELD_SALT ||
         process.env.VITE_TRUST_SHIELD_SALT
-      )) || '';
-    if (!salt && typeof console !== 'undefined') {
-      console.warn('[TrustShield] REACT_APP_TRUST_SHIELD_SALT is not set — hashes are UNSALTED.');
+      )) || import.meta.env?.VITE_TRUST_SHIELD_SALT || 'fallback_salt_override_me';
+    if (salt === 'fallback_salt_override_me' && typeof console !== 'undefined') {
+      console.warn('[TrustShield] VITE_TRUST_SHIELD_SALT is not set — hashes are using fallback salt. Highly insecure!');
     }
     const payload = `${normalized}${salt}`;
     const encoder = new TextEncoder();
@@ -444,7 +444,7 @@ export const useOCRScanner = () => {
         try {
           const { data: isUnique, error: rpcErr } = await supabase.rpc('verify_unique_identity', {
             p_id_hash: identityHash,
-            p_step: 3 // Progression step lock, typical to advance to liveness
+            p_target_step: 3 // Set target step as per prompt
           });
 
           if (rpcErr) throw rpcErr;
