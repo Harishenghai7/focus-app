@@ -10,6 +10,34 @@
 
 import { supabase } from '../lib/supabase';
 
+const invokeTrustShieldDna = async (payload) => {
+  const { data, error } = await supabase.functions.invoke('trust-shield-dna', {
+    body: payload,
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};
+
+export const computeIdentityDnaHash = async ({
+  idNumber,
+  idType,
+  institutionName,
+  userId,
+  commit = false,
+}) => {
+  return invokeTrustShieldDna({
+    idNumber,
+    idType,
+    institutionName,
+    userId,
+    commit,
+  });
+};
+
 /**
  * Check if an Aadhaar or Government ID already exists in the system.
  * Called at Step 1 when user selects age tier.
@@ -24,27 +52,21 @@ export const checkDuplicateID = async (idNumber, idType = 'aadhaar') => {
   }
 
   try {
-    const { data, error } = await supabase.rpc('check_id_duplicate', {
-      p_id_number: idNumber,
-      p_id_type: idType
+    const data = await invokeTrustShieldDna({
+      idNumber,
+      idType,
     });
-
-    if (error) {
-      console.error('[TrustShield] Duplicate check failed:', error);
-      // Fail open - let them proceed if check fails
-      return { exists: false, error: error.message };
-    }
 
     if (data?.exists) {
       return {
         exists: true,
-        error: data.message || 'This ID is already registered',
-        redirectTo: data.redirect_to || '/auth',
-        alertType: data.alert_type || 'ID_ALREADY_REGISTERED',
+        error: 'This ID is already registered',
+        redirectTo: '/auth',
+        alertType: 'ID_ALREADY_REGISTERED',
         existingUser: {
-          id: data.existing_user_id,
-          name: data.existing_user_name,
-          createdAt: data.created_at
+          id: null,
+          name: null,
+          createdAt: null
         }
       };
     }
@@ -71,23 +93,19 @@ export const checkDuplicateStudentID = async (studentId, institutionName) => {
   }
 
   try {
-    const { data, error } = await supabase.rpc('check_student_id_duplicate', {
-      p_student_id: studentId,
-      p_institution_name: institutionName || ''
+    const data = await invokeTrustShieldDna({
+      idNumber: studentId,
+      idType: 'student',
+      institutionName: institutionName || '',
     });
-
-    if (error) {
-      console.error('[TrustShield] Student ID duplicate check failed:', error);
-      return { exists: false, error: error.message };
-    }
 
     if (data?.exists) {
       return {
         exists: true,
-        error: data.message || 'This Student ID is already registered',
-        redirectTo: data.redirect_to || '/auth',
-        alertType: data.alert_type || 'STUDENT_ID_ALREADY_REGISTERED',
-        institution: data.institution
+        error: 'This Student ID is already registered',
+        redirectTo: '/auth',
+        alertType: 'STUDENT_ID_ALREADY_REGISTERED',
+        institution: null
       };
     }
 
@@ -201,9 +219,19 @@ export const finalizeVerificationV2 = async ({
   }
 
   try {
+    const dna = await computeIdentityDnaHash({
+      idNumber: ocrData?.idNumber,
+      idType: ocrData?.idType || 'unknown',
+      institutionName: ocrData?.institution,
+      userId,
+      commit: true,
+    });
+
+    const effectiveHash = dna?.identity_dna_hash || identityHash;
+
     const { data, error } = await supabase.rpc('finalize_verification_v2', {
       p_user_id: userId,
-      p_identity_hash: identityHash,
+      p_identity_hash: effectiveHash,
       p_device_id: deviceId,
       p_ocr_data: ocrData,
       p_face_score: faceScore,

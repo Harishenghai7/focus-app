@@ -1,0 +1,293 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   SOVEREIGN FRAME STYLES — H2 Glassmorphism Camera Overlay
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.sovereignContainer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+/* ══ Main Sovereign Frame ═══════════════════════════════════════════════════ */
+.sovereignFrame {
+  position: relative;
+  width: 85%;
+  max-width: 360px;
+  aspect-ratio: 1.58 / 1; /* Standard ID card ratio */
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  border-radius: 20px;
+  background: transparent;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ══ Animated Corner Accents ════════════════════════════════════════════════ */
+.corner {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border-style: solid;
+  border-color: inherit;
+  transition: all 0.3s ease;
+}
+
+.cornerTL {
+  top: -2px;
+  left: -2px;
+  border-width: 3px 0 0 3px;
+  border-top-left-radius: 20px;
+}
+
+.cornerTR {
+  top: -2px;
+  right: -2px;
+  border-width: 3px 3px 0 0;
+  border-top-right-radius: 20px;
+}
+
+.cornerBL {
+  bottom: -2px;
+  left: -2px;
+  border-width: 0 0 3px 3px;
+  border-bottom-left-radius: 20px;
+}
+
+.cornerBR {
+  bottom: -2px;
+  right: -2px;
+  border-width: 0 3px 3px 0;
+  border-bottom-right-radius: 20px;
+}
+
+.cornerGlow {
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* ══ ID Card Guide Overlay ══════════════════════════════════════════════════ */
+.idCardGuide {
+  position: absolute;
+  inset: 16px;
+  border: 1px dashed rgba(139, 92, 246, 0.3);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.idCardInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.6;
+}
+
+.idCardIcon {
+  font-size: 32px;
+  filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.5));
+}
+
+.idCardLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ══ Scanning Beam Animation ════════════════════════════════════════════════ */
+.scanBeam {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.scanBeamLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(139, 92, 246, 0.8) 20%,
+    rgba(236, 72, 153, 0.9) 50%,
+    rgba(139, 92, 246, 0.8) 80%,
+    transparent 100%
+  );
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.8), 0 0 40px rgba(236, 72, 153, 0.5);
+  animation: scanBeamMove 2s ease-in-out infinite;
+}
+
+@keyframes scanBeamMove {
+  0% {
+    top: 10%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 90%;
+    opacity: 0;
+  }
+}
+
+/* ══ Alignment HUD ═══════════════════════════════════════════════════════════ */
+.alignmentHud {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 90%;
+  max-width: 320px;
+}
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid;
+  border-radius: 24px;
+  backdrop-filter: blur(20px);
+  font-size: 13px;
+  font-weight: 600;
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px 4px rgba(139, 92, 246, 0.1);
+  }
+}
+
+.statusIcon {
+  font-size: 14px;
+}
+
+.statusText {
+  white-space: nowrap;
+}
+
+/* ══ Quality Meters ══════════════════════════════════════════════════════════ */
+.qualityMeters {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  justify-content: center;
+}
+
+.qualityMeter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  max-width: 80px;
+}
+
+.qualityLabel {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.qualityBar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.qualityFill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ══ Edge Detection Glow ════════════════════════════════════════════════════ */
+.edgeGlow {
+  position: absolute;
+  inset: -20px;
+  border-radius: 40px;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  filter: blur(20px);
+}
+
+/* ══ Responsive Adjustments ══════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .sovereignFrame {
+    width: 92%;
+    border-radius: 16px;
+  }
+
+  .corner {
+    width: 24px;
+    height: 24px;
+  }
+
+  .cornerTL,
+  .cornerTR,
+  .cornerBL,
+  .cornerBR {
+    border-radius: 12px;
+  }
+
+  .alignmentHud {
+    bottom: 24px;
+  }
+
+  .qualityMeters {
+    gap: 8px;
+  }
+
+  .qualityMeter {
+    max-width: 60px;
+  }
+
+  .idCardIcon {
+    font-size: 24px;
+  }
+}
+
+/* ══ High Contrast / Reduced Motion ═══════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .scanBeamLine {
+    animation: none;
+    top: 50%;
+    opacity: 0.5;
+  }
+
+  .statusPill {
+    animation: none;
+  }
+
+  .cornerGlow,
+  .edgeGlow {
+    transition: none;
+  }
+}

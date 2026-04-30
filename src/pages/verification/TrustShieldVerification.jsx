@@ -15,6 +15,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { supabase } from '../../lib/supabase';
 import * as faceapi from 'face-api.js';
 import { useFocusly } from '../../context/FocuslyContext';
+import SovereignFrame from '../../components/SovereignFrame';
 import styles from './TrustShieldVerification.module.css';
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -137,22 +138,6 @@ const getEAR = (eye) => {
   if (w === 0) return 1.0;
   return (d(eye[1], eye[5]) + d(eye[2], eye[4])) / (2.0 * w);
 };
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // PERSISTENT NAVIGATION LOCK
-  // ═══════════════════════════════════════════════════════════════════════════
-  useEffect(() => {
-    // Prevent backward navigation
-    window.history.pushState(null, null, window.location.href);
-    const handlePopState = (event) => {
-      window.history.pushState(null, null, window.location.href);
-      console.warn('[TrustShield] Backward navigation blocked during verification.');
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, []);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // STATE MANAGEMENT
@@ -284,6 +269,92 @@ const TrustShieldVerification = () => {
   }, [user?.id, location.state]);
 
   // ═══════════════════════════════════════════════════════════════════════════
+  // ALL STATE DECLARATIONS — must come before any callbacks that reference them
+  // ═══════════════════════════════════════════════════════════════════════════
+  const [step, setStepRaw] = useState(1);
+  const [ageGroup, setAgeGroupRaw] = useState(null);
+  const [ocrData, setOcrDataRaw] = useState(null);
+  const [identityHash, setIdentityHashRaw] = useState(null);
+  const [manualAadhaar, setManualAadhaar] = useState('');
+  const [manualAadhaarError, setManualAadhaarError] = useState(null);
+  const [manualStudentId, setManualStudentId] = useState('');
+  const [manualInstitution, setManualInstitution] = useState('');
+  const [manualStudentIdError, setManualStudentIdError] = useState(null);
+  const [idConfirmed, setIdConfirmed] = useState(false);
+  const [guardianToken, setGuardianToken] = useState(null);
+  const [guardianTokenInput, setGuardianTokenInput] = useState('');
+  const [error, setError] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
+  const [accountLocked, setAccountLocked] = useState(false);
+  const [showAccessGranted, setShowAccessGranted] = useState(false);
+  const [statusClicks, setStatusClicks] = useState(0);
+  const [handoffSessionId] = useState(() => generateHandoffSessionId());
+
+  // ══ OCR Pipeline Progress State ═══════════════════════════════════════════
+  const [ocrPipelineActive, setOcrPipelineActive]   = useState(false);
+  const [ocrPipelinePhase, setOcrPipelinePhase]     = useState(0);
+  const [ocrPipelinePct, setOcrPipelinePct]         = useState(0);
+  const [ocrPipelineLabel, setOcrPipelineLabel]     = useState('');
+  const [ocrPurifyMethod, setOcrPurifyMethod]       = useState('');
+
+  // ── Liveness State ────────────────────────────────────────────────────────
+  const challengeSequenceRef = useRef([]);
+  const [livenessPhase, setLivenessPhase] = useState(0);
+  const [livenessLuminance, setLivenessLuminance] = useState(1);
+  const [livenessStatus, setLivenessStatus] = useState('');
+  const [livenessComplete, setLivenessComplete] = useState([false, false, false]);
+  const [faceModelsLoaded, setFaceModelsLoaded] = useState(false);
+  const [staticImageFlag, setStaticImageFlag] = useState(false);
+
+  // ── Liveness Refs ─────────────────────────────────────────────────────────
+  const liveVideoRef      = useRef(null);
+  const liveStreamRef     = useRef(null);
+  const rafRef            = useRef(null);
+  const earBufferRef      = useRef([]);
+  const baselineEARRef    = useRef(null);
+  const yawHistoryRef     = useRef([]);
+  const blinkCountRef     = useRef(0);
+  const tiltHoldRef       = useRef(0);
+  const smileHoldRef      = useRef(0);
+  const prevYawRef        = useRef(null);
+  const prevFaceCenterRef = useRef(null);
+  const teleportCountRef  = useRef(0);
+
+  // ── Scanner Hook ──────────────────────────────────────────────────────────
+  const scanner = useScanner();
+
+  // ── Typewriter ────────────────────────────────────────────────────────────
+  const [typewriterText, setTypewriterText] = useState('');
+  const fullWaitingText = "Mobile Bridge active. Complete the ritual on your phone, Macha. I'm watching the gate here.";
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // WRAPPED SETTERS WITH PERSISTENCE
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  const setIdentityHash = useCallback((val) => {
+    setIdentityHashRaw(val);
+    if (user?.id) {
+      setVerificationStep(user.id, step, { identityHash: val });
+    }
+  }, [user?.id, step]);
+
+  const setAgeGroup = useCallback((val) => {
+    setAgeGroupRaw(val);
+    if (user?.id) {
+      setVerificationStep(user.id, step, { ageGroup: val });
+    }
+  }, [user?.id, step]);
+
+  const setOcrData = useCallback((val) => {
+    setOcrDataRaw((prev) => (typeof val === 'function' ? val(prev) : val));
+    if (user?.id) {
+      const computed = typeof val === 'function' ? val(ocrData) : val;
+      setVerificationStep(user.id, step, { ocrData: computed });
+    }
+  }, [user?.id, step, ocrData]);
+
+  // ═══════════════════════════════════════════════════════════════════════════
   // 🔱 LAYER 1: STEP PERSISTENCE - Save step changes to DB + localStorage
   // ═══════════════════════════════════════════════════════════════════════════
   const persistStepChange = useCallback(async (newStep, metadata = {}) => {
@@ -311,9 +382,6 @@ const TrustShieldVerification = () => {
     }
   }, [user?.id, ageGroup, ocrData, identityHash]);
 
-  // ── Core State ────────────────────────────────────────────────────────────
-  const [step, setStepRaw] = useState(1);
-  
   // Wrapped setStep with persistence
   const setStep = useCallback((newStep) => {
     setStepRaw(newStep);
@@ -331,38 +399,6 @@ const TrustShieldVerification = () => {
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, [step]);
-
-  
-  const [ageGroup, setAgeGroupRaw] = useState(null);
-  const setAgeGroup = useCallback((val) => {
-    setAgeGroupRaw(val);
-    if (user?.id) {
-      setVerificationStep(user.id, step, { ageGroup: val });
-    }
-  }, [user?.id, step]);
-  
-  const [ocrData, setOcrDataRaw] = useState(null);
-  const [manualAadhaar, setManualAadhaar] = useState('');
-  const [manualAadhaarError, setManualAadhaarError] = useState(null);
-  const [manualStudentId, setManualStudentId] = useState('');
-  const [manualInstitution, setManualInstitution] = useState('');
-  const [manualStudentIdError, setManualStudentIdError] = useState(null);
-  const [idConfirmed, setIdConfirmed] = useState(false);
-
-  // ══ OCR Pipeline Progress State (God-Level Progress Bar) ═══════════════════════════
-  const [ocrPipelineActive, setOcrPipelineActive]   = useState(false);
-  const [ocrPipelinePhase, setOcrPipelinePhase]     = useState(0);   // 0=idle 1=purify 2=dna 3=uniqueness
-  const [ocrPipelinePct, setOcrPipelinePct]         = useState(0);
-  const [ocrPipelineLabel, setOcrPipelineLabel]     = useState('');
-  const [ocrPurifyMethod, setOcrPurifyMethod]       = useState('');  // 'opencv_full'|'fallback_css'
-
-  const setOcrData = useCallback((val) => {
-    setOcrDataRaw((prev) => (typeof val === 'function' ? val(prev) : val));
-    if (user?.id) {
-      const computed = typeof val === 'function' ? val(ocrData) : val;
-      setVerificationStep(user.id, step, { ocrData: computed });
-    }
-  }, [user?.id, step, ocrData]);
 
   const validateAadhaarVerhoeff = useCallback((aadhaar) => {
     const n = (aadhaar || '').replace(/\s/g, '');
@@ -1006,24 +1042,104 @@ const TrustShieldVerification = () => {
   // ── STEP 1 Handler ───────────────────────────────────────────────────────
   const handleAgeConfirm = async () => {
     if (!ageGroup || isLocked) return;
-    
-    // Check rate limiting
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // PHASE 2 STEP 1: Guardian Link Path — Skip ID scan, validate token
+    // ═══════════════════════════════════════════════════════════════════════
+    if (ageGroup === 'guardian-link') {
+      if (!guardianTokenInput) {
+        setError('Please enter your guardian approval token or link.');
+        return;
+      }
+
+      setSaving(true);
+      try {
+        // Extract token from full URL if pasted
+        let token = guardianTokenInput;
+        if (guardianTokenInput.includes('token=')) {
+          const url = new URL(guardianTokenInput);
+          token = url.searchParams.get('token') || url.searchParams.get('t') || guardianTokenInput;
+        }
+
+        // Validate token via guardian handshake RPC
+        const { data: handshakeData, error: handshakeError } = await supabase
+          .rpc('verify_guardian_token', { p_token: token });
+
+        if (handshakeError || !handshakeData?.valid) {
+          setError('Invalid or expired guardian link. Please ask your parent/guardian for a new approval link.');
+          setSaving(false);
+          return;
+        }
+
+        // Token valid — activate teen account immediately
+        setGuardianToken(token);
+
+        // Update profile to verified status (teen with guardian approval)
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({
+            verification_status: 'VERIFIED',
+            trust_shield_status: 'VERIFIED',
+            focus_trust_status: 'VERIFIED',
+            is_verified: true,
+            trust_tier: 3, // Teen tier with guardian approval
+            is_teen_mode: true,
+            guardian_consent_status: 'approved',
+            can_post: true,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', user?.id);
+
+        if (updateError) {
+          setError('Account activation failed. Please try again.');
+          setSaving(false);
+          return;
+        }
+
+        // Log success
+        await logVerificationAttempt(user?.id, 'guardian_link_activation', 'SUCCESS', { token_prefix: token.slice(0, 8) });
+
+        // Navigate to success step
+        setStepRaw(5);
+        focusly?.celebrate('Your account is now active! Welcome to Focus, Macha! 🎉');
+        return;
+      } catch (err) {
+        console.error('[TrustShield] Guardian link activation error:', err);
+        setError('Failed to activate account. Please check your token and try again.');
+        setSaving(false);
+        return;
+      }
+    }
+
+    // Standard paths (Student ID / Government ID)
     const rateLimit = await checkRateLimit(deviceId);
     if (!rateLimit.allowed) {
       setError(rateLimit.reason);
       setIsLocked(true);
       return;
     }
-    
+
     setError(null);
-    
-    // Persist step 2
-    await setVerificationStep(user?.id, 2, { ageGroup });
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // PHASE 2: OCR Template Preparation per selected path
+    // ═══════════════════════════════════════════════════════════════════════
+    const ocrTemplate = ageGroup === '13-17'
+      ? { type: 'student', patterns: ['STUDENT_ID', 'ROLL_NO', 'ADMISSION_NO'], whitelist: 'alphanumeric' }
+      : { type: 'government', patterns: ['AADHAAR', 'PAN', 'PASSPORT'], whitelist: ageGroup === '18+' ? 'digits' : 'alphanumeric' };
+
+    console.log('[TrustShield] OCR Template prepared:', ocrTemplate);
+
+    // Persist step 2 with OCR template metadata
+    await setVerificationStep(user?.id, 2, { ageGroup, ocrTemplate });
     setStepRaw(2);
-    
-    // Log attempt
-    await logVerificationAttempt(user?.id, 'step_1_age_selection', 'COMPLETE', { ageGroup });
-    
+
+    // Log attempt with template info
+    await logVerificationAttempt(user?.id, 'step_1_path_selection', 'COMPLETE', {
+      ageGroup,
+      ocrTemplate: ocrTemplate.type,
+    });
+
     // Auto-start camera scanner
     setTimeout(() => scanner.startCamera(), 300);
   };
@@ -1717,36 +1833,123 @@ const TrustShieldVerification = () => {
         <div className={styles.content}>
           <FocuslyLion />
 
-          {/* ── STEP 1: AGE SELECTION ── */}
+          {/* ── STEP 1: TRUST SHIELD ENTRY — 3 CLEAR PATHS ── */}
           {step === 1 && (
             <div className={styles.stepCard}>
               <div className={styles.shieldIcon}>🛡️</div>
-              <h2 className={styles.stepTitle}>Identity Verification</h2>
+              <h2 className={styles.stepTitle}>Trust Shield Verification</h2>
               <p className={styles.stepDesc}>
-                Focus uses live biometric verification to protect every citizen. No bots. No fakes. No exceptions.
+                One verified human. One account. Choose your path to join India's authentic social network.
               </p>
-              <div className={styles.ageGrid}>
+
+              {/* ═══════════════════════════════════════════════════════════════════════
+                  PHASE 2 STEP 1: THREE CLEAR PATHS — Student / Government / Guardian
+                  Each path prepares OCR templates dynamically for the capture phase.
+              ═══════════════════════════════════════════════════════════════════════ */}
+              <div className={styles.pathGrid}>
+                {/* Path 1: Student ID (Teen Tier) */}
                 <button
-                  className={`${styles.ageCard} ${ageGroup === '13-17' ? styles.ageCardSelected : ''}`}
-                  onClick={() => setAgeGroup('13-17')} disabled={isLocked}
+                  className={`${styles.pathCard} ${ageGroup === '13-17' ? styles.pathCardSelected : ''}`}
+                  onClick={() => setAgeGroup('13-17')}
+                  disabled={isLocked}
+                  data-path="student"
                 >
-                  <span className={styles.ageIcon}>🎓</span>
-                  <strong>Ages 13–17</strong>
-                  <small>Student ID required<br/>+ Guardian approval</small>
+                  <div className={styles.pathIconRing}>
+                    <span className={styles.pathIcon}>🎓</span>
+                  </div>
+                  <strong className={styles.pathTitle}>Student ID</strong>
+                  <small className={styles.pathMeta}>Ages 13–17 • School/College ID</small>
+                  <ul className={styles.pathFeatures}>
+                    <li>📚 Student ID Card scan</li>
+                    <li>👨‍👩‍👧 Guardian approval required</li>
+                    <li>🔒 Full safety protections</li>
+                  </ul>
+                  {ageGroup === '13-17' && (
+                    <div className={styles.pathSelectedBadge}>✓ Selected</div>
+                  )}
                 </button>
+
+                {/* Path 2: Government ID (Adult Tier) */}
                 <button
-                  className={`${styles.ageCard} ${ageGroup === '18+' ? styles.ageCardSelected : ''}`}
-                  onClick={() => setAgeGroup('18+')} disabled={isLocked}
+                  className={`${styles.pathCard} ${ageGroup === '18+' ? styles.pathCardSelected : ''}`}
+                  onClick={() => setAgeGroup('18+')}
+                  disabled={isLocked}
+                  data-path="government"
                 >
-                  <span className={styles.ageIcon}>🪪</span>
-                  <strong>Ages 18+</strong>
-                  <small>Government ID required<br/>(Aadhaar / Passport)</small>
+                  <div className={styles.pathIconRing}>
+                    <span className={styles.pathIcon}>🪪</span>
+                  </div>
+                  <strong className={styles.pathTitle}>Government ID</strong>
+                  <small className={styles.pathMeta}>Ages 18+ • Aadhaar/PAN/Passport</small>
+                  <ul className={styles.pathFeatures}>
+                    <li>🆔 Govt ID scan (Aadhaar/PAN)</li>
+                    <li>✅ Instant verification</li>
+                    <li>🏆 Full platform access</li>
+                  </ul>
+                  {ageGroup === '18+' && (
+                    <div className={styles.pathSelectedBadge}>✓ Selected</div>
+                  )}
+                </button>
+
+                {/* Path 3: Guardian Link (Already have approval) */}
+                <button
+                  className={`${styles.pathCard} ${ageGroup === 'guardian-link' ? styles.pathCardSelected : ''}`}
+                  onClick={() => setAgeGroup('guardian-link')}
+                  disabled={isLocked}
+                  data-path="guardian"
+                >
+                  <div className={styles.pathIconRing}>
+                    <span className={styles.pathIcon}>🔗</span>
+                  </div>
+                  <strong className={styles.pathTitle}>I Have a Guardian Link</strong>
+                  <small className={styles.pathMeta}>Already approved • Skip to activation</small>
+                  <ul className={styles.pathFeatures}>
+                    <li>🔗 Paste your guardian token</li>
+                    <li>⚡ Instant account activation</li>
+                    <li>📱 No ID scan needed</li>
+                  </ul>
+                  {ageGroup === 'guardian-link' && (
+                    <div className={styles.pathSelectedBadge}>✓ Selected</div>
+                  )}
                 </button>
               </div>
+
+              {/* Guardian Link Input (shown when guardian-link path selected) */}
+              {ageGroup === 'guardian-link' && (
+                <div className={styles.guardianTokenInput}>
+                  <label htmlFor="guardian-token">Guardian Approval Token</label>
+                  <input
+                    id="guardian-token"
+                    type="text"
+                    placeholder="Paste your guardian link or token here..."
+                    value={guardianTokenInput || ''}
+                    onChange={(e) => setGuardianTokenInput(e.target.value)}
+                    className={styles.tokenInput}
+                    disabled={isLocked}
+                  />
+                  <p className={styles.tokenHint}>
+                    Ask your parent/guardian to send you the approval link from their email.
+                  </p>
+                </div>
+              )}
+
               {error && <div className={styles.errorBox}>{error}</div>}
-              <button className={styles.primaryBtn} onClick={handleAgeConfirm} disabled={!ageGroup || isLocked}>
-                Continue — Start Camera →
+
+              <button
+                className={styles.primaryBtn}
+                onClick={handleAgeConfirm}
+                disabled={!ageGroup || isLocked || (ageGroup === 'guardian-link' && !guardianTokenInput)}
+              >
+                {ageGroup === 'guardian-link' ? 'Activate Account →' : 'Continue — Start Camera →'}
               </button>
+
+              {/* OCR Template Indicator (technical but reassuring) */}
+              {ageGroup && ageGroup !== 'guardian-link' && (
+                <div className={styles.ocrTemplateBadge}>
+                  <span className={styles.ocrTemplateDot} />
+                  OCR Template Loaded: {ageGroup === '13-17' ? 'Student ID Parser' : 'Government ID Parser (Aadhaar/PAN)'}
+                </div>
+              )}
             </div>
           )}
 
@@ -1760,7 +1963,10 @@ const TrustShieldVerification = () => {
                 Scan or upload your ID card. The AI will auto-detect details, then you'll confirm your ID number.
               </p>
 
-              {/* Live camera feed */}
+              {/* ═══════════════════════════════════════════════════════════════════════
+                  PHASE 2 STEP 2: SOVEREIGN FRAME — Glassmorphism Camera Overlay
+                  Animated corners, edge detection glow, real-time alignment feedback
+              ═══════════════════════════════════════════════════════════════════════ */}
               {(scanner.phase === 'streaming' || scanner.phase === 'requesting' || scanner.phase === 'scanning') && (
                 <div className={styles.liveScannerWrap}>
                   <video
@@ -1769,29 +1975,27 @@ const TrustShieldVerification = () => {
                     className={styles.liveScannerVideo}
                   />
                   <canvas ref={scanner.canvasRef} style={{ display: 'none' }} />
-                  {/* Scanning frame overlay */}
-                  <div className={styles.liveScannerFrame}>
-                    <span className={styles.frameCornerTL} />
-                    <span className={styles.frameCornerTR} />
-                    <span className={styles.frameCornerBL} />
-                    <span className={styles.frameCornerBR} />
-                    {scanner.phase === 'scanning' && <div className={styles.scanBeam} />}
-                  </div>
-                  {/* Low-light warning */}
-                  {scanner.lightWarning && (
-                    <div className={styles.lowLightToast}>
-                      <span className={styles.lowLightIcon}>💡</span>
-                      <div>
-                        <strong>Low Light Detected</strong>
-                        <p>Move closer to a lamp or window</p>
-                      </div>
-                    </div>
-                  )}
-                  {/* Quality indicator */}
+
+                  {/* 🔱 SOVEREIGN FRAME: H2 Glassmorphism Overlay */}
+                  <SovereignFrame
+                    isActive={true}
+                    alignmentScore={scanner.sharpnessOk ? 85 : 40}
+                    sharpness={scanner.sharpnessOk ? 90 : 30}
+                    luminance={scanner.lightWarning ? 35 : 85}
+                    isScanning={scanner.phase === 'scanning'}
+                    documentDetected={scanner.sharpnessOk && !scanner.lightWarning}
+                    ageGroup={ageGroup}
+                  />
+
+                  {/* Legacy quality chip (backup) */}
                   <div className={styles.qualityChip} style={{
                     background: scanner.sharpnessOk ? 'rgba(34,197,94,0.2)' : 'rgba(251,191,36,0.2)',
                     borderColor: scanner.sharpnessOk ? '#22c55e' : '#fbbf24',
                     color: scanner.sharpnessOk ? '#22c55e' : '#fbbf24',
+                    position: 'absolute',
+                    top: '12px',
+                    right: '12px',
+                    zIndex: 20,
                   }}>
                     {scanner.sharpnessOk ? '✅ Sharp' : '📷 Aligning...'}
                   </div>
