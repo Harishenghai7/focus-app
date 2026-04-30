@@ -28,7 +28,6 @@
  */
 
 import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
-import FocuslyToastLayer from '../components/focusly/FocuslyToastLayer';
 
 const FocuslyContext = createContext(null);
 
@@ -137,7 +136,6 @@ export const FocuslyProvider = ({ children }) => {
     return (
         <FocuslyContext.Provider value={value}>
             {children}
-            <FocuslyToastLayer />
         </FocuslyContext.Provider>
     );
 };

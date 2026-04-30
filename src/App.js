@@ -11,6 +11,7 @@ import { AudioProvider } from './context/AudioProvider';
 import { ThemeProvider } from './context/ThemeContext';
 import { QueryProvider } from './context/QueryProvider';
 import { FocuslyProvider } from './context/FocuslyContext';
+import FocuslyToastLayer from './components/focusly/FocuslyToastLayer';
 import { useFocuslySentiment } from './hooks/useFocuslySentiment';
 
 import { supabase } from './lib/supabase';
@@ -326,6 +327,7 @@ function App() {
                                 <FocuslyProvider>
                                     <AudioProvider>
                                         <AppContent />
+                                        <FocuslyToastLayer />
                                         <ToastContainer position="bottom-right" theme="dark" limit={3} />
                                     </AudioProvider>
                                 </FocuslyProvider>

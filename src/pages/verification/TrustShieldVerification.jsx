@@ -574,57 +574,6 @@ const TrustShieldVerification = () => {
   }, [manualStudentId, manualInstitution, setOcrData, handleFail, navigate, setIdentityHash,
       setOcrPipelineActive, setOcrPipelinePhase, setOcrPipelinePct, setOcrPurifyMethod]);
 
-  
-  const [identityHash, setIdentityHashRaw] = useState(null);
-  const setIdentityHash = useCallback((val) => {
-    setIdentityHashRaw(val);
-    if (user?.id) {
-      setVerificationStep(user.id, step, { identityHash: val });
-    }
-  }, [user?.id, step]);
-  
-  const [guardianToken, setGuardianToken] = useState(null);
-  const [error, setError] = useState(null);
-  const [saving, setSaving] = useState(false);
-  const [isLocked, setIsLocked] = useState(false);
-  const [accountLocked, setAccountLocked] = useState(false); // LOCKED_INJECTION hard lock
-  const [showAccessGranted, setShowAccessGranted] = useState(false);
-  const [statusClicks, setStatusClicks] = useState(0);
-  // Unique session ID for this mobile handoff
-  const [handoffSessionId] = useState(() => generateHandoffSessionId());
-
-  // ── Liveness State ────────────────────────────────────────────────────────
-  // Randomize challenge order each session — 'Chaos Engine'
-  const challengeSequenceRef = useRef([]);
-  const [livenessPhase, setLivenessPhase] = useState(0);
-  const [livenessLuminance, setLivenessLuminance] = useState(1);
-  const [livenessStatus, setLivenessStatus] = useState('');
-  const [livenessComplete, setLivenessComplete] = useState([false, false, false]);
-  const [faceModelsLoaded, setFaceModelsLoaded] = useState(false);
-  const [staticImageFlag, setStaticImageFlag] = useState(false);
-
-  // ── Liveness Refs ─────────────────────────────────────────────────────────
-  const liveVideoRef      = useRef(null);
-  const liveStreamRef     = useRef(null);
-  const rafRef            = useRef(null);
-  const earBufferRef      = useRef([]);
-  const baselineEARRef    = useRef(null);
-  const yawHistoryRef     = useRef([]);
-  const blinkCountRef     = useRef(0);
-  const tiltHoldRef       = useRef(0); // Consecutive frames with |yaw| > threshold
-  const smileHoldRef      = useRef(0); // Consecutive frames with expressions.happy > threshold
-  // ── Teleport / Injection Detection ────────────────────────────────────────
-  const prevYawRef        = useRef(null);    // Previous frame yaw for delta check
-  const prevFaceCenterRef = useRef(null);
-  const teleportCountRef  = useRef(0);       // Consecutive teleport events
-
-  // ── Scanner Hook ──────────────────────────────────────────────────────────
-  const scanner = useScanner();
-
-  // ── Typewriter ────────────────────────────────────────────────────────────
-  const [typewriterText, setTypewriterText] = useState('');
-  const fullWaitingText = "Mobile Bridge active. Complete the ritual on your phone, Macha. I'm watching the gate here.";
-
   useEffect(() => {
     if (step !== 4) return;
     setTypewriterText('');
@@ -1097,7 +1046,7 @@ const TrustShieldVerification = () => {
         }
 
         // Log success
-        await logVerificationAttempt(user?.id, 'guardian_link_activation', 'SUCCESS', { token_prefix: token.slice(0, 8) });
+        await logVerificationAttempt(user?.id, 'guardian_link_activation', 'SUCCESS', { token_prefix: token?.slice(0, 8) || 'N/A' });
 
         // Navigate to success step
         setStepRaw(5);

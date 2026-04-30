@@ -4,6 +4,7 @@ import App from './App';
 
 // CRITICAL: Import theme.css FIRST before any other styles
 import './styles/theme.css';
+import './styles/h2-theme.css'; // H2 Universal UI/UX - Glassmorphism Design System
 import './styles/reset.css';
 import './styles/globals.css';
 import './styles/design-system.css';
