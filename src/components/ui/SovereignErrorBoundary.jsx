@@ -164,9 +164,35 @@ class SovereignErrorBoundary extends React.Component {
   handleReload = () => {
     this.setState({ isRecovering: true });
     
-    // Add a dramatic delay for the vault animation
+    // 🏛️ SOVEREIGN CLEAR: Wipe all caches before reload
+    try {
+      // Clear browser caches
+      if (window.caches) {
+        window.caches.keys().then(names => {
+          names.forEach(name => window.caches.delete(name));
+        });
+      }
+      
+      // Clear service worker caches
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          registrations.forEach(reg => reg.unregister());
+        });
+      }
+      
+      // Clear storage
+      sessionStorage.clear();
+      
+      // Clear chunk error tracking
+      localStorage.removeItem('chunk_error_count');
+      localStorage.removeItem('chunk_error_timestamp');
+    } catch (_) {}
+    
+    // Add a dramatic delay for the vault animation, then HARD reload with cache-bust
     setTimeout(() => {
-      window.location.reload();
+      // Force hard reload with cache-busting query param
+      const separator = window.location.href.indexOf('?') > -1 ? '&' : '?';
+      window.location.href = window.location.href + separator + '_sovereign=' + Date.now();
     }, 800);
   };
 
