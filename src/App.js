@@ -30,7 +30,7 @@ import ProtectedTrustRoute from './components/auth/ProtectedTrustRoute';
 import IncomingCallModal from './components/calls/IncomingCallModal';
 import { InAppNotificationProvider, useInAppNotifications } from './components/notifications/InAppNotificationBanner';
 import AnimatedRoutes from './components/ui/AnimatedRoutes';
-import GlobalErrorBoundary from './components/ui/GlobalErrorBoundary';
+import SovereignErrorBoundary from './components/ui/SovereignErrorBoundary';
 
 // 4. Page Imports (Critical Pages - Load Instantly)
 import Auth from './pages/Auth';
@@ -201,7 +201,7 @@ const AppContent = () => {
 
     return (
         <BiometricLock>
-            <GlobalErrorBoundary>
+            <SovereignErrorBoundary>
             {/* Suspense handles the loading state for Lazy Loaded pages */}
             <Suspense fallback={<div style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)' }}>Loading...</div>}>
                 <AnimatedRoutes>
@@ -301,7 +301,7 @@ const AppContent = () => {
                     } />
                 </AnimatedRoutes>
             </Suspense>
-            </GlobalErrorBoundary>
+            </SovereignErrorBoundary>
 
             {/* Global Modal */}
             {user && incomingCall && (
