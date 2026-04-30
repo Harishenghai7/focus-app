@@ -45,7 +45,8 @@ import {
 // PILLAR 1: ANTI-DEBUG / ANTI-TAMPER PROTECTION
 // Detects DevTools, console manipulation, and debugger injection attempts
 // ═══════════════════════════════════════════════════════════════════════════
-const initAntiDebug = () => {
+// 🏛️ SOVEREIGN FIX: Using function declaration to avoid TDZ issues
+function initAntiDebug() {
   if (typeof window === 'undefined') return;
   
   // Detect DevTools opening via console size
@@ -87,16 +88,17 @@ const initAntiDebug = () => {
     }
   };
   setInterval(debuggerTrap, 2000);
-};
+}
 
 // ── Mobile Handoff ──────────────────────────────────────────────────────
-const generateHandoffSessionId = () => {
+// 🏛️ SOVEREIGN FIX: Using function declaration to avoid TDZ issues
+function generateHandoffSessionId() {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
     return 'xxxx-xxxx-4xxx-yxxx-xxxx'.replace(/[xy]/g, (c) => {
         const r = Math.random() * 16 | 0;
         return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
     });
-};
+}
 const HANDOFF_BASE_URL =
     process.env.REACT_APP_VERCEL_URL ||
     (typeof window !== 'undefined' ? window.location.origin : 'https://focus-app.vercel.app');
@@ -120,24 +122,26 @@ const LIVENESS_CHALLENGE_POOL = [
   { id: 'tilt',  label: 'Tilt / turn head 20°',    icon: '↩️' },
 ];
 
+// 🏛️ SOVEREIGN FIX: Using function declaration to avoid TDZ issues
 /** Fisher-Yates in-place shuffle — produces a new random 3-step ritual each session */
-const shuffleChallenges = (arr) => {
+function shuffleChallenges(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
-};
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-const getEAR = (eye) => {
+// 🏛️ SOVEREIGN FIX: Using function declaration to avoid TDZ issues
+function getEAR(eye) {
   if (!eye || eye.length !== 6) return 1.0;
   const d = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
   const w = d(eye[0], eye[3]);
   if (w === 0) return 1.0;
   return (d(eye[1], eye[5]) + d(eye[2], eye[4])) / (2.0 * w);
-};
+}
 
   // ═══════════════════════════════════════════════════════════════════════════
   // STATE MANAGEMENT
@@ -146,15 +150,18 @@ const getEAR = (eye) => {
 // ── Focusly AI Mascot ─────────────────────────────────────────────────────────
 // NOTE: No click-to-bypass — Pillar 1 spec: "Physically remove 'Skip' buttons".
 // The Continue button is math-locked to AI confirmation. No manual overrides.
-const FocuslyLion = () => (
-  <div className={styles.focuslyContainer} style={{ userSelect: 'none' }} data-testid="focusly-lion-guardian">
-    <div className={styles.focuslyAvatar}>🦁</div>
-    <div className={styles.focuslySpeech}>
-      <strong>Focusly AI (Guardian Mode)</strong>
-      <p>"Real people make a real nation. Let's verify your soul, Macha!"</p>
+// 🏛️ SOVEREIGN FIX: Using function declaration to avoid TDZ issues
+function FocuslyLion() {
+  return (
+    <div className={styles.focuslyContainer} style={{ userSelect: 'none' }} data-testid="focusly-lion-guardian">
+      <div className={styles.focuslyAvatar}>🦁</div>
+      <div className={styles.focuslySpeech}>
+        <strong>Focusly AI (Guardian Mode)</strong>
+        <p>"Real people make a real nation. Let's verify your soul, Macha!"</p>
+      </div>
     </div>
-  </div>
-);
+  );
+}
 
 // ── Main Component ─────────────────────────────────────────────────────────────
 const TrustShieldVerification = () => {
