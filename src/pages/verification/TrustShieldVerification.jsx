@@ -164,7 +164,8 @@ function FocuslyLion() {
 }
 
 // ── Main Component ─────────────────────────────────────────────────────────────
-const TrustShieldVerification = () => {
+// 🏛️ SOVEREIGN FIX: Using function declaration to avoid TDZ issues
+function TrustShieldVerification() {
   const navigate = useNavigate();
   const location = useLocation();
   const { profile, user } = useAuth();
@@ -1574,46 +1575,48 @@ const TrustShieldVerification = () => {
   // Cleanup on unmount
   useEffect(() => () => stopLivenessCamera(), [stopLivenessCamera]);
 
-  // ── Progress Bar ──────────────────────────────────────────────────────────
-  const renderProgress = () => (
+// ── Progress Bar ──────────────────────────────────────────────────────────
+function renderProgress() {
+  return (
     <div className={styles.progressBar}>
       {STEPS.map((s) => (
         <div key={s.id} className={`${styles.progressStep} ${step >= s.id ? styles.progressActive : ''} ${step === s.id ? styles.progressCurrent : ''}`}>
-          <div className={styles.progressDot}>{step > s.id ? '✓' : s.icon}</div>
-          <span className={styles.progressLabel}>{s.label}</span>
+          <div className={styles.progressIcon}>{s.icon}</div>
+          <div className={styles.progressLabel}>{s.label}</div>
         </div>
       ))}
     </div>
   );
+}
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // PILLAR 1: ENHANCED VISUAL RING-LIGHT — FORCE 100% BRIGHTNESS ON MOBILE
-  // When luminance < 0.3, force the entire UI to pure white to illuminate face
-  // ═══════════════════════════════════════════════════════════════════════════
-  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
-  // 🔱 GOD-LEVEL: Luminance threshold upgraded to 0.4 (spec: "if livenessLuminance < 0.4")
-  const shouldActivateRingLight = step === 3 && livenessLuminance < 0.4 && !accountLocked;
-  const ringLightStyles = shouldActivateRingLight 
-    ? { 
-        backgroundColor: '#FFFFFF', 
-        filter: 'brightness(1.0)',
-        transition: 'all 0.3s ease',
-        position: 'fixed',
-        inset: 0,
-        zIndex: 9998,
-      } 
-    : { transition: 'background-color 0.3s ease' };
+// ═══════════════════════════════════════════════════════════════════════════
+// PILLAR 1: ENHANCED VISUAL RING-LIGHT — FORCE 100% BRIGHTNESS ON MOBILE
+// When luminance < 0.3, force the entire UI to pure white to illuminate face
+// ═══════════════════════════════════════════════════════════════════════════
+const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+// 🔱 GOD-LEVEL: Luminance threshold upgraded to 0.4 (spec: "if livenessLuminance < 0.4")
+const shouldActivateRingLight = step === 3 && livenessLuminance < 0.4 && !accountLocked;
+const ringLightStyles = shouldActivateRingLight 
+  ? { 
+      backgroundColor: '#FFFFFF', 
+      filter: 'brightness(1.0)',
+      transition: 'all 0.3s ease',
+      position: 'fixed',
+      inset: 0,
+      zIndex: 9998,
+    } 
+  : { transition: 'background-color 0.3s ease' };
 
-  // ══ OCR Pipeline Progress Bar Component ═══════════════════════════════════════════════════
-  const PIPELINE_PHASES = [
-    { id: 1, label: '🔬 Purifying Image',          sublabel: 'OpenCV noise reduction + threshold' },
-    { id: 2, label: '🧬 Extracting Identity DNA',  sublabel: 'Tesseract sovereign OCR' },
-    { id: 3, label: '🔒 Verifying Uniqueness', sublabel: 'One Person = One Account' },
-  ];
-  const OcrPipelineProgress = () => {
-    if (!ocrPipelineActive && ocrPipelinePhase === 0) return null;
-    const isDone = !ocrPipelineActive && ocrPipelinePhase >= 3;
-    return (
+// ══ OCR Pipeline Progress Bar Component ═══════════════════════════════════════════════════
+const PIPELINE_PHASES = [
+  { id: 1, label: '🔬 Purifying Image',          sublabel: 'OpenCV noise reduction + threshold' },
+  { id: 2, label: '🧬 Extracting Identity DNA',  sublabel: 'Tesseract sovereign OCR' },
+  { id: 3, label: '🔒 Verifying Uniqueness', sublabel: 'One Person = One Account' },
+];
+function OcrPipelineProgress() {
+  if (!ocrPipelineActive && ocrPipelinePhase === 0) return null;
+  const isDone = !ocrPipelineActive && ocrPipelinePhase >= 3;
+  return (
       <div className={styles.ocrPipelineWrap}>
         <div className={styles.ocrPipelineBar}>
           <div
@@ -1651,106 +1654,45 @@ const TrustShieldVerification = () => {
           </div>
         )}
       </div>
-    );
-  };
+  );
+}
 
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // 🔱 GOD-LEVEL LOADING STATE - While persistent state is initializing
-  // ═══════════════════════════════════════════════════════════════════════════
-  if (isLoadingStep) {
-    return (
-      <div className={styles.trustShieldWrapper}>
-        <div style={{ 
-          display: 'flex', 
-          flexDirection: 'column',
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          height: '100vh',
-          padding: '20px',
-        }}>
-          <div style={{ 
-            width: '64px', 
-            height: '64px', 
-            border: '4px solid rgba(139, 92, 246, 0.2)', 
-            borderTop: '4px solid #8b5cf6',
-            borderRight: '4px solid #ec4899',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            marginBottom: '24px',
-            boxShadow: '0 0 30px rgba(139, 92, 246, 0.4)',
-          }} />
-          <h2 style={{ color: '#e2e8f0', marginBottom: '8px' }}>🔱 Initializing Trust Shield</h2>
-          <p style={{ color: '#94a3b8', fontSize: '14px' }}>Restoring your verification session...</p>
-          
-          {/* 🔧 EMERGENCY BYPASS - Click 5 times to skip loading */}
-          <div 
-            onClick={() => {
-              const clicks = parseInt(localStorage.getItem('loading_bypass_clicks') || '0') + 1;
-              localStorage.setItem('loading_bypass_clicks', clicks);
-              if (clicks >= 5) {
-                localStorage.removeItem('loading_bypass_clicks');
-                setIsLoadingStep(false);
-                console.log('[TrustShield] Emergency bypass activated');
-              }
-            }}
-            style={{ 
-              position: 'absolute', 
-              bottom: 100, 
-              width: 100, 
-              height: 100,
-              cursor: 'default',
-            }}
-          />
-          
-          <style>{`
-            @keyframes spin {
-              0% { transform: rotate(0deg); }
-              100% { transform: rotate(360deg); }
-            }
-          `}</style>
-        </div>
-      </div>
-    );
-  }
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // 🔱 LOCKED STEP WARNING - If user is locked to a specific step
-  // ═══════════════════════════════════════════════════════════════════════════
-  const LockedStepWarning = () => {
-    if (!lockedStep || lockedStep <= 1) return null;
-    
-    const stepNames = {
+// ═══════════════════════════════════════════════════════════════════════════
+// 🔱 LOCKED STEP WARNING - If user is locked to a specific step
+// ═══════════════════════════════════════════════════════════════════════════
+function LockedStepWarning() {
+  if (!lockedStep || lockedStep <= 1) return null;
+  
+  const stepNames = {
       2: 'ID Scan Required',
       3: 'Biometrics Locked',
       4: 'Mobile Bridge Active',
       5: 'Verification Complete',
     };
-    
-    return (
-      <div style={{
-        background: 'rgba(139, 92, 246, 0.15)',
-        border: '1px solid rgba(139, 92, 246, 0.4)',
-        borderRadius: '12px',
-        padding: '12px 16px',
-        marginBottom: '16px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
-        backdropFilter: 'blur(10px)',
-      }}>
-        <span style={{ fontSize: '20px' }}>🔒</span>
-        <div>
-          <p style={{ color: '#c4b5fd', fontSize: '13px', fontWeight: 600, margin: 0 }}>
-            Session Locked: {stepNames[lockedStep] || 'Verification in Progress'}
-          </p>
-          <p style={{ color: '#a78bfa', fontSize: '11px', margin: '4px 0 0 0' }}>
-            Complete this step to continue. Your progress is saved.
-          </p>
-        </div>
+  return (
+    <div style={{
+      background: 'rgba(139, 92, 246, 0.15)',
+      border: '1px solid rgba(139, 92, 246, 0.4)',
+      borderRadius: '12px',
+      padding: '12px 16px',
+      marginBottom: '16px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+      backdropFilter: 'blur(10px)',
+    }}>
+      <span style={{ fontSize: '20px' }}>🔒</span>
+      <div>
+        <p style={{ color: '#c4b5fd', fontSize: '13px', fontWeight: 600, margin: 0 }}>
+          Session Locked: {stepNames[lockedStep] || 'Verification in Progress'}
+        </p>
+        <p style={{ color: '#a78bfa', fontSize: '11px', margin: '4px 0 0 0' }}>
+          Complete this step to continue. Your progress is saved.
+        </p>
       </div>
-    );
-  };
+    </div>
+  );
+}
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
@@ -2463,6 +2405,6 @@ const TrustShieldVerification = () => {
       )}
     </div>
   );
-};
+}
 
 export default TrustShieldVerification;
