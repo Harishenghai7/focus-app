@@ -6,17 +6,21 @@ import { toast } from 'react-toastify';
 import { useGuardianHandshake } from '../../hooks/useGuardianHandshake';
 import styles from './ParentConsent.module.css';
 
-const FocuslyGuardian = ({ message }) => (
-  <div className={styles.focuslyContainer}>
-    <div className={styles.focuslyAvatar}>🦁</div>
-    <div className={styles.focuslySpeech}>
-      <strong>Focusly AI (Guardian Mode)</strong>
-      <p>"{message}"</p>
+// 🏛️ SOVEREIGN FIX: Using function declaration to avoid TDZ issues
+function FocuslyGuardian({ message }) {
+  return (
+    <div className={styles.focuslyContainer}>
+      <div className={styles.focuslyAvatar}>🦁</div>
+      <div className={styles.focuslySpeech}>
+        <strong>Focusly AI (Guardian Mode)</strong>
+        <p>"{message}"</p>
+      </div>
     </div>
-  </div>
-);
+  );
+}
 
-const ParentConsent = () => {
+// 🏛️ SOVEREIGN FIX: Using function declaration to avoid TDZ issues
+function ParentConsent() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
@@ -274,6 +278,6 @@ const ParentConsent = () => {
       </div>
     </div>
   );
-};
+}
 
 export default ParentConsent;

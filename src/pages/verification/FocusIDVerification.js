@@ -15,50 +15,57 @@ import { useFocusID, TIER_LABELS, TIER_ICONS, TIER_COLORS } from '../../hooks/us
 import styles from './FocusIDVerification.module.css';
 
 /* ── Step card ──────────────────────────────────────────────── */
-const SignalRow = ({ label, earned, points, action, onAction }) => (
-    <div className={`${styles.signalRow} ${earned ? styles.earned : ''}`}>
-        <div className={styles.signalLeft}>
-            <span className={styles.signalCheck}>{earned ? '✅' : '⬜'}</span>
-            <div>
-                <p className={styles.signalLabel}>{label}</p>
-                {!earned && action && (
-                    <button className={styles.signalAction} onClick={onAction}>{action}</button>
-                )}
+// 🏛️ SOVEREIGN FIX: Using function declaration to avoid TDZ issues
+function SignalRow({ label, earned, points, action, onAction }) {
+    return (
+        <div className={`${styles.signalRow} ${earned ? styles.earned : ''}`}>
+            <div className={styles.signalLeft}>
+                <span className={styles.signalCheck}>{earned ? '✅' : '⬜'}</span>
+                <div>
+                    <p className={styles.signalLabel}>{label}</p>
+                    {!earned && action && (
+                        <button className={styles.signalAction} onClick={onAction}>{action}</button>
+                    )}
+                </div>
             </div>
+            <span className={styles.signalPoints}>+{points} pts</span>
         </div>
-        <span className={styles.signalPoints}>+{points} pts</span>
-    </div>
-);
+    );
+}
 
 /* ── Tier progress bar ──────────────────────────────────────── */
-const TierProgress = ({ score, tier, progressPct, nextTierScore }) => (
-    <div className={styles.progressSection}>
-        <div className={styles.progressHeader}>
-            <span className={styles.progressCurrent}>
-                {TIER_ICONS[tier]} {TIER_LABELS[tier]}
-            </span>
-            <span className={styles.progressScore}>{score} / 100 pts</span>
+// 🏛️ SOVEREIGN FIX: Using function declaration to avoid TDZ issues
+function TierProgress({ score, tier, progressPct, nextTierScore }) {
+    return (
+        <div className={styles.progressSection}>
+            <div className={styles.progressHeader}>
+                <span className={styles.progressCurrent}>
+                    {TIER_ICONS[tier]} {TIER_LABELS[tier]}
+                </span>
+                <span className={styles.progressScore}>{score} / 100 pts</span>
+            </div>
+            <div className={styles.progressBar}>
+                <div
+                    className={styles.progressFill}
+                    style={{ width: `${progressPct}%`, background: TIER_COLORS[tier] }}
+                />
+            </div>
+            {tier < 4 && (
+                <p className={styles.progressHint}>
+                    {nextTierScore - score} more points to reach{' '}
+                    <strong>{TIER_ICONS[tier + 1]} {TIER_LABELS[tier + 1]}</strong>
+                </p>
+            )}
+            {tier === 4 && (
+                <p className={styles.progressHint}>🎉 You have reached maximum trust!</p>
+            )}
         </div>
-        <div className={styles.progressBar}>
-            <div
-                className={styles.progressFill}
-                style={{ width: `${progressPct}%`, background: TIER_COLORS[tier] }}
-            />
-        </div>
-        {tier < 4 && (
-            <p className={styles.progressHint}>
-                {nextTierScore - score} more points to reach{' '}
-                <strong>{TIER_ICONS[tier + 1]} {TIER_LABELS[tier + 1]}</strong>
-            </p>
-        )}
-        {tier === 4 && (
-            <p className={styles.progressHint}>🎉 You have reached maximum trust!</p>
-        )}
-    </div>
-);
+    );
+}
 
 /* ── Main page ──────────────────────────────────────────────── */
-const FocusIDVerification = () => {
+// 🏛️ SOVEREIGN FIX: Using function declaration to avoid TDZ issues
+function FocusIDVerification() {
     const navigate = useNavigate();
     const {
         signals, score, tier, loading,
@@ -245,6 +252,6 @@ const FocusIDVerification = () => {
             </div>
         </MainLayout>
     );
-};
+}
 
 export default FocusIDVerification;
