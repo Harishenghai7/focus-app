@@ -5,7 +5,7 @@ import {
     FaCompass,
     FaIdCard,
     FaShieldAlt,
-    FaSparkles,
+    FaStar,
     FaUserFriends,
     FaUserPlus
 } from 'react-icons/fa';
@@ -26,7 +26,7 @@ const STEP_DETAILS = [
         shortLabel: 'Identity',
         title: 'Create your real introduction',
         description: 'Shape your handle, visible name, and first impression for the Focus community.',
-        icon: <FaSparkles />
+        icon: <FaStar />
     },
     {
         step: 2,
