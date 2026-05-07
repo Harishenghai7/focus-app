@@ -8,6 +8,7 @@ import './styles/h2-theme.css'; // H2 Universal UI/UX - Glassmorphism Design Sys
 import './styles/reset.css';
 import './styles/globals.css';
 import './styles/design-system.css';
+import './styles/animations.css';
 import './styles/mobile.css';
 
 import { BrowserRouter } from 'react-router-dom';

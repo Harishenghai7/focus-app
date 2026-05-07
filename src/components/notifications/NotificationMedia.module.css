@@ -6,7 +6,7 @@
     height: 60px;
     border-radius: var(--radius-md);
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(var(--text-primary-rgb), 0.05);
 }
 
 .media {
@@ -29,7 +29,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(var(--bg-primary-rgb), 0.7);
     border-radius: 50%;
     backdrop-filter: blur(4px);
 }

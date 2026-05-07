@@ -20,7 +20,7 @@
     width: 100%;
     max-width: 400px;
     overflow: hidden;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    box-shadow: 0 12px 40px rgba(var(--bg-primary-rgb), 0.3);
     animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -136,7 +136,7 @@
 
 .shareBtn:hover .iconWrapper {
     transform: translateY(-4px) scale(1.1);
-    box-shadow: 0 8px 16px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 8px 16px rgba(var(--primary-rgb), 0.2);
 }
 
 .shareBtn span {

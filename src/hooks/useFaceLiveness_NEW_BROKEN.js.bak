@@ -1,0 +1,293 @@
+/**
+ * useFaceLiveness.js - Clean Version
+ * Real-time face liveness detection using face-api.js
+ * 3-action challenge: Blink, Smile, Tilt
+ */
+
+import { useState, useEffect, useRef, useCallback } from 'react';
+import * as faceapi from 'face-api.js';
+
+// Challenge Pool
+const CHALLENGE_POOL = [
+  { id: 'blink', label: 'Blink your eyes', icon: '👁️', description: 'Slowly blink both eyes once' },
+  { id: 'smile', label: 'Smile naturally', icon: '😊', description: 'Show a genuine smile' },
+  { id: 'tilt', label: 'Tilt your head left', icon: '🧀', description: 'Gently tilt your head to your left side' },
+];
+
+const THRESHOLDS = {
+  smile: 0.35,
+  blink: 0.22,
+  tilt: 12,
+  detectionMinScore: 0.5,
+};
+
+const getRandomChallenges = (count = 3) => {
+  const shuffled = [...CHALLENGE_POOL].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+};
+
+export const useFaceLiveness = ({
+  videoRef,
+  onComplete,
+  onFail,
+  challengeCount = 3,
+  timeoutMs = 60000,
+} = {}) => {
+  const [modelsLoaded, setModelsLoaded] = useState(false);
+  const [challenges, setChallenges] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [completedChallenges, setCompletedChallenges] = useState([]);
+  const [isDetecting, setIsDetecting] = useState(false);
+  const [faceDetected, setFaceDetected] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('Loading AI models...');
+  const [progress, setProgress] = useState(0);
+  const [livenessScore, setLivenessScore] = useState(0);
+  const [capturedFrames, setCapturedFrames] = useState([]);
+
+  const detectionLoopRef = useRef(null);
+  const timeoutRef = useRef(null);
+  const challengeHoldRef = useRef(null);
+  const currentIndexRef = useRef(0);
+  const pauseRef = useRef(false);
+
+  // Load models
+  const loadModels = useCallback(async () => {
+    try {
+      setStatusMessage('Loading AI...');
+      const MODEL_URL = '/models';
+
+      await Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+        faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+        faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+        faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
+      ]);
+
+      setModelsLoaded(true);
+      setStatusMessage('Position your face in the frame');
+
+      const selected = getRandomChallenges(challengeCount);
+      setChallenges(selected);
+    } catch (err) {
+      setStatusMessage('Failed to load AI models. Please refresh.');
+    }
+  }, [challengeCount]);
+
+  useEffect(() => {
+    loadModels();
+    return () => { stopDetection(); };
+    // eslint-disable-next-line
+  }, []);
+
+  // Start detection
+  const startDetection = useCallback(() => {
+    if (!modelsLoaded || !videoRef?.current) return;
+
+    setIsDetecting(true);
+    setCurrentIndex(0);
+    currentIndexRef.current = 0;
+    setCompletedChallenges([]);
+    setProgress(0);
+    setLivenessScore(0);
+    setCapturedFrames([]);
+
+    timeoutRef.current = setTimeout(() => {
+      stopDetection();
+      onFail?.('Liveness check timed out. Please try again.');
+    }, timeoutMs);
+
+    runDetectionLoop();
+    // eslint-disable-next-line
+  }, [modelsLoaded, videoRef, timeoutMs]);
+
+  // Detection loop
+  const runDetectionLoop = useCallback(() => {
+    let frameCount = 0;
+
+    const detect = async () => {
+      frameCount++;
+
+      if (!videoRef?.current || videoRef.current.paused || pauseRef.current) {
+        detectionLoopRef.current = requestAnimationFrame(detect);
+        return;
+      }
+
+      // Run every 3rd frame for performance
+      if (frameCount % 3 !== 0) {
+        detectionLoopRef.current = requestAnimationFrame(detect);
+        return;
+      }
+
+      try {
+        const detections = await faceapi
+          .detectSingleFace(videoRef.current, new faceapi.TinyFaceDetectorOptions({ 
+            inputSize: 416, 
+            scoreThreshold: THRESHOLDS.detectionMinScore 
+          }))
+          .withFaceLandmarks()
+          .withFaceExpressions()
+          .withFaceDescriptor();
+
+        if (!detections) {
+          if (faceDetected) setFaceDetected(false);
+          setStatusMessage('Looking for your face...');
+          detectionLoopRef.current = requestAnimationFrame(detect);
+          return;
+        }
+
+        // Reset timeout on activity
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = setTimeout(() => {
+            stopDetection();
+            onFail?.('Liveness check timed out. Please try again.');
+          }, timeoutMs);
+        }
+
+        const { expressions, landmarks, descriptor } = detections;
+
+        if (!faceDetected) setFaceDetected(true);
+
+        // Capture frame
+        setCapturedFrames(prev => {
+          const updated = [...prev, Array.from(descriptor)];
+          return updated.slice(-5);
+        });
+
+        // Check challenge
+        const stableIndex = currentIndexRef.current;
+        const currentChallenge = challenges[stableIndex];
+
+        if (currentChallenge) {
+          setStatusMessage(`${currentChallenge.icon} ${currentChallenge.label}`);
+          
+          const passed = evaluateChallenge(currentChallenge.id, expressions, landmarks);
+
+          if (passed) {
+            if (!challengeHoldRef.current) {
+              challengeHoldRef.current = setTimeout(() => {
+                challengeHoldRef.current = null;
+                
+                setCompletedChallenges(prev => [...prev, currentChallenge.id]);
+                setStatusMessage('✅ Challenge complete!');
+                if (navigator?.vibrate) navigator.vibrate(200);
+                pauseRef.current = true;
+
+                setTimeout(() => {
+                  const nextIndex = stableIndex + 1;
+                  setCurrentIndex(nextIndex);
+                  currentIndexRef.current = nextIndex;
+                  setProgress(Math.round((nextIndex / challenges.length) * 100));
+                  setLivenessScore(prev => prev + (100 / challenges.length));
+
+                  if (nextIndex >= challenges.length) {
+                    stopDetection();
+                    setStatusMessage('✅ All challenges passed!');
+                    if (navigator?.vibrate) navigator.vibrate([400, 100, 400]);
+
+                    setTimeout(() => {
+                      onComplete?.({
+                        score: 1.0,
+                        capturedFrames: [...capturedFrames, Array.from(descriptor)],
+                        completedChallenges: [...completedChallenges, currentChallenge.id],
+                      });
+                    }, 1000);
+                  } else {
+                    pauseRef.current = false;
+                    const nextChallenge = challenges[nextIndex];
+                    setStatusMessage(`${nextChallenge.icon} ${nextChallenge.label}`);
+                  }
+                }, 1000);
+              }, 500);
+            }
+          } else {
+            if (challengeHoldRef.current) {
+              clearTimeout(challengeHoldRef.current);
+              challengeHoldRef.current = null;
+            }
+          }
+        }
+      } catch (err) {
+        // Silent error handling
+      }
+
+      detectionLoopRef.current = requestAnimationFrame(detect);
+    };
+
+    detectionLoopRef.current = requestAnimationFrame(detect);
+  }, [challenges, capturedFrames, completedChallenges, onComplete, videoRef, timeoutMs]);
+
+  // Challenge evaluator
+  const evaluateChallenge = (challengeId, expressions, landmarks) => {
+    switch (challengeId) {
+      case 'smile':
+        return expressions.happy >= THRESHOLDS.smile;
+
+      case 'blink': {
+        const pts = landmarks.positions;
+        const calcEAR = (eyeIdx) => {
+          const p0 = pts[eyeIdx];
+          const p1 = pts[eyeIdx + 1];
+          const p2 = pts[eyeIdx + 2];
+          const p3 = pts[eyeIdx + 3];
+          const p4 = pts[eyeIdx + 4];
+          const p5 = pts[eyeIdx + 5];
+          const v1 = Math.hypot(p1.x - p5.x, p1.y - p5.y);
+          const v2 = Math.hypot(p2.x - p4.x, p2.y - p4.y);
+          const h = Math.hypot(p0.x - p3.x, p0.y - p3.y);
+          return (v1 + v2) / (2.0 * h);
+        };
+        const leftEAR = calcEAR(36);
+        const rightEAR = calcEAR(42);
+        return leftEAR < THRESHOLDS.blink || rightEAR < THRESHOLDS.blink;
+      }
+
+      case 'tilt': {
+        const pts = landmarks.positions;
+        const leftEarY = pts[0].y;
+        const rightEarY = pts[16].y;
+        const faceW = Math.abs(pts[16].x - pts[0].x) || 1;
+        const rollDeg = ((rightEarY - leftEarY) / faceW) * 90;
+        return rollDeg > THRESHOLDS.tilt;
+      }
+
+      default:
+        return false;
+    }
+  };
+
+  // Stop detection
+  const stopDetection = useCallback(() => {
+    if (detectionLoopRef.current) {
+      cancelAnimationFrame(detectionLoopRef.current);
+      detectionLoopRef.current = null;
+    }
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    if (challengeHoldRef.current) {
+      clearTimeout(challengeHoldRef.current);
+      challengeHoldRef.current = null;
+    }
+    pauseRef.current = false;
+    setIsDetecting(false);
+  }, []);
+
+  return {
+    modelsLoaded,
+    challenges,
+    currentIndex,
+    completedChallenges,
+    isDetecting,
+    faceDetected,
+    statusMessage,
+    progress,
+    livenessScore,
+    capturedFrames,
+    startDetection,
+    stopDetection,
+  };
+};
+
+export default useFaceLiveness;

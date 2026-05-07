@@ -102,14 +102,8 @@ const PostOptionsModal = ({ postId, postData, isOwn, onClose, onUpdate }) => {
         setIsSaving(true);
 
         try {
-            console.log('📡 Updating caption via REST API...');
-            console.log('Post ID:', postId);
-            console.log('New Caption:', editCaption);
-
             // Use REST API - much faster and more reliable!
             await updatePostCaption(postId, editCaption);
-
-            console.log('✅ Caption updated successfully!');
             toast.success('Caption updated successfully!');
 
             // Notify parent component to update the post
@@ -125,7 +119,7 @@ const PostOptionsModal = ({ postId, postData, isOwn, onClose, onUpdate }) => {
             onClose();
 
         } catch (error) {
-            console.error('❌ Error updating post:', error);
+            console.error('Error updating post:', error);
             toast.error(`Failed: ${error.message}`);
             setIsSaving(false);
         }

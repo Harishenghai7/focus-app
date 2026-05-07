@@ -1,0 +1,378 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   BoltzErrorFallback — GOD-LEVEL | H2 Royal Lavender
+   Glassmorphism Emergency Fallback with Focusly AI
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.container {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(
+        135deg,
+        rgba(124, 58, 237, 0.15) 0%,
+        rgba(10, 4, 21, 0.95) 50%,
+        rgba(var(--primary-rgb), 0.1) 100%
+    );
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.12);
+    overflow: hidden;
+    z-index: 50;
+}
+
+/* ── Glassmorphism Background Layer ──────────────────────────────────────────── */
+.glassLayer {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 30% 20%, rgba(var(--primary-rgb), 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 80%, rgba(167, 139, 250, 0.1) 0%, transparent 50%),
+        linear-gradient(180deg, rgba(10, 4, 21, 0.9) 0%, rgba(26, 15, 46, 0.95) 100%);
+    pointer-events: none;
+}
+
+/* ── Animated Particles ───────────────────────────────────────────────────────── */
+.particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: rgba(196, 181, 253, 0.6);
+    border-radius: 50%;
+    left: var(--x);
+    top: var(--y);
+    animation: floatParticle 8s ease-in-out infinite;
+    animation-delay: var(--delay);
+    box-shadow: 0 0 10px rgba(196, 181, 253, 0.8);
+}
+
+@keyframes floatParticle {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.6;
+    }
+    50% {
+        transform: translateY(-30px) scale(1.5);
+        opacity: 1;
+    }
+}
+
+/* ── Focusly AI Avatar ─────────────────────────────────────────────────────────── */
+.avatarContainer {
+    position: relative;
+    margin-bottom: 24px;
+    z-index: 10;
+}
+
+.avatarRing {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatarInner {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(
+        135deg,
+        rgba(var(--primary-rgb), 0.8) 0%,
+        rgba(124, 58, 237, 0.9) 100%
+    );
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(var(--text-primary-rgb), 0.3);
+    box-shadow:
+        0 0 40px rgba(var(--primary-rgb), 0.5),
+        inset 0 2px 4px rgba(var(--text-primary-rgb), 0.2);
+    animation: avatarPulse 3s ease-in-out infinite;
+    z-index: 2;
+}
+
+.sparkleIcon {
+    color: white;
+    filter: drop-shadow(0 0 8px rgba(var(--text-primary-rgb), 0.8));
+    animation: sparkleFloat 2s ease-in-out infinite;
+}
+
+@keyframes avatarPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow:
+            0 0 40px rgba(var(--primary-rgb), 0.5),
+            inset 0 2px 4px rgba(var(--text-primary-rgb), 0.2);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow:
+            0 0 60px rgba(var(--primary-rgb), 0.7),
+            inset 0 2px 4px rgba(var(--text-primary-rgb), 0.3);
+    }
+}
+
+@keyframes sparkleFloat {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-4px) rotate(5deg);
+    }
+}
+
+/* ── Rotating Rings ────────────────────────────────────────────────────────────── */
+.rotatingRing1 {
+    position: absolute;
+    inset: -15px;
+    border: 1px solid rgba(196, 181, 253, 0.3);
+    border-radius: 50%;
+    border-top-color: rgba(196, 181, 253, 0.8);
+    border-bottom-color: transparent;
+    animation: rotateRing 8s linear infinite;
+}
+
+.rotatingRing2 {
+    position: absolute;
+    inset: -25px;
+    border: 1px solid rgba(167, 139, 250, 0.2);
+    border-radius: 50%;
+    border-left-color: rgba(167, 139, 250, 0.6);
+    border-right-color: transparent;
+    animation: rotateRingReverse 12s linear infinite;
+}
+
+@keyframes rotateRing {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes rotateRingReverse {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+}
+
+/* ── Connection Status ──────────────────────────────────────────────────────────── */
+.statusContainer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding: 8px 16px;
+    background: rgba(var(--bg-primary-rgb), 0.3);
+    border-radius: 20px;
+    border: 1px solid rgba(var(--text-primary-rgb), 0.1);
+    backdrop-filter: blur(10px);
+    z-index: 10;
+}
+
+.statusIcon {
+    color: var(--text-primary);
+    animation: statusPulse 2s ease-in-out infinite;
+}
+
+.statusText {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.02em;
+}
+
+@keyframes statusPulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* ── Focusly AI Message ────────────────────────────────────────────────────────── */
+.messageContainer {
+    max-width: 280px;
+    text-align: center;
+    margin-bottom: 24px;
+    z-index: 10;
+}
+
+.focuslyMessage {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.6;
+    text-shadow:
+        0 2px 8px rgba(var(--bg-primary-rgb), 0.8),
+        0 1px 4px rgba(var(--bg-primary-rgb), 0.9);
+    margin: 0;
+    animation: messageFadeIn 0.5s ease-out;
+}
+
+@keyframes messageFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Progress Bar ──────────────────────────────────────────────────────────────── */
+.progressContainer {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    z-index: 10;
+}
+
+.progressBar {
+    width: 100%;
+    height: 3px;
+    background: rgba(var(--text-primary-rgb), 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progressFill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(
+        90deg,
+        rgba(var(--primary-rgb), 0.8) 0%,
+        rgba(196, 181, 253, 1) 50%,
+        rgba(var(--primary-rgb), 0.8) 100%
+    );
+    border-radius: 3px;
+    transition: width 0.3s ease;
+    box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.5);
+}
+
+.progressFill.animating {
+    animation: progressFill 2s ease-in-out infinite;
+}
+
+@keyframes progressFill {
+    0% { width: 0%; opacity: 0.5; }
+    50% { width: 70%; opacity: 1; }
+    100% { width: 100%; opacity: 0.5; }
+}
+
+.retryCount {
+    font-size: 11px;
+    color: rgba(var(--text-primary-rgb), 0.6);
+    letter-spacing: 0.02em;
+}
+
+/* ── Retry Button ─────────────────────────────────────────────────────────────── */
+.retryButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: rgba(var(--primary-rgb), 0.2);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(196, 181, 253, 0.4);
+    border-radius: 24px;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 10;
+    box-shadow:
+        0 4px 16px rgba(var(--bg-primary-rgb), 0.3),
+        0 0 0 1px rgba(var(--primary-rgb), 0.1);
+}
+
+.retryButton:hover {
+    background: rgba(var(--primary-rgb), 0.35);
+    transform: scale(1.05) translateY(-2px);
+    box-shadow:
+        0 8px 24px rgba(var(--primary-rgb), 0.3),
+        0 0 0 1px rgba(196, 181, 253, 0.3);
+    border-color: rgba(196, 181, 253, 0.6);
+}
+
+.retryButton:active {
+    transform: scale(0.98);
+}
+
+.retryButton.retrying {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.retryButton span {
+    letter-spacing: 0.02em;
+}
+
+.spinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ── Satin Finish Overlay ──────────────────────────────────────────────────────── */
+.satinOverlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        180deg,
+        transparent 0%,
+        rgba(var(--text-primary-rgb), 0.02) 50%,
+        transparent 100%
+    );
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* ── Mobile Optimizations ──────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .avatarRing {
+        width: 80px;
+        height: 80px;
+    }
+
+    .avatarInner {
+        width: 56px;
+        height: 56px;
+    }
+
+    .sparkleIcon {
+        width: 24px;
+        height: 24px;
+    }
+
+    .rotatingRing1 {
+        inset: -12px;
+    }
+
+    .rotatingRing2 {
+        inset: -20px;
+    }
+
+    .focuslyMessage {
+        font-size: 14px;
+    }
+
+    .retryButton {
+        padding: 10px 20px;
+        font-size: 13px;
+    }
+}

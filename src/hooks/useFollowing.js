@@ -14,7 +14,7 @@ export const useFollowing = (userId) => {
             if (!userId) return;
 
             setLoading(true);
-            console.log('🚀 [Following] Starting fetch for:', userId);
+
 
             try {
                 // 1. Get Config
@@ -45,7 +45,7 @@ export const useFollowing = (userId) => {
                 if (!token) throw new Error('Not authenticated');
 
                 // 3. Fetch Follows
-                console.log('📡 [Following] Fetching list...');
+
                 const followsUrl = `${supabaseUrl}/rest/v1/follows?follower_id=eq.${userId}&select=following_id,created_at`;
 
                 const followsRes = await fetch(followsUrl, {
@@ -61,7 +61,7 @@ export const useFollowing = (userId) => {
                 if (!followsRes.ok) throw new Error(`Fetch error: ${followsRes.status}`);
 
                 const followsData = await followsRes.json();
-                console.log('✅ [Following] List data:', followsData.length);
+
 
                 if (followsData.length === 0) {
                     if (isMounted) {
@@ -88,7 +88,7 @@ export const useFollowing = (userId) => {
                 if (!profilesRes.ok) throw new Error(`Profiles error: ${profilesRes.status}`);
 
                 const profilesData = await profilesRes.json();
-                console.log('✅ [Following] Profiles data:', profilesData.length);
+
 
                 // 5. Combine
                 const combined = followsData.map(f => {

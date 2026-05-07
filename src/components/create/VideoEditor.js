@@ -105,7 +105,9 @@ const VideoEditor = ({ file, onSave, onCancel }) => {
             if (isPlaying) {
                 videoRef.current.pause();
             } else {
-                videoRef.current.play().catch(console.log);
+                videoRef.current.play().catch(() => {
+                  // Autoplay prevented
+                });
             }
             setIsPlaying(!isPlaying);
         }
@@ -184,12 +186,12 @@ const VideoEditor = ({ file, onSave, onCancel }) => {
 
             if (!hasEdits) {
                 // FAST PATH: No edits, use original file (instant!)
-                console.log('⚡ No edits detected - using original file');
+
                 exportedFile = file;
                 setExportProgress(100);
             } else {
                 // SLOW PATH: Process video with edits
-                console.log('🎬 Processing video edits...');
+
                 
                 const stickersWithImages = await Promise.all(
                     stickers.map(async (sticker) => {

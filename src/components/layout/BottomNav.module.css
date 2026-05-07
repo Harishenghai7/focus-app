@@ -1,4 +1,4 @@
-/* Bottom Navigation - Mobile-First Design System Compliant */
+/* Bottom Navigation - H2 Universal Theme | Glass Capsule */
 
 .bottomNav {
     position: fixed;
@@ -6,17 +6,32 @@
     left: var(--space-4);
     right: var(--space-4);
     height: 64px;
-    background: var(--glass-surface);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-full);
+    background: rgba(var(--text-primary-rgb), 0.05);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.08);
+    border-radius: 50px;
     display: flex;
     align-items: center;
     justify-content: space-around;
-    padding: 0 var(--space-2);
+    padding: 0 16px;
     z-index: 1000;
-    backdrop-filter: var(--blur-xl);
-    -webkit-backdrop-filter: var(--blur-xl);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), inset 0 2px 10px rgba(255,255,255,0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 12px 40px rgba(var(--bg-primary-rgb), 0.3), inset 0 1px 0 rgba(var(--text-primary-rgb), 0.08);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Scrolled state - increases blur to 30px and shrinks slightly */
+.scrolled {
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    height: 58px;
+    left: calc(var(--space-4) + 8px);
+    right: calc(var(--space-4) + 8px);
+    background: rgba(var(--text-primary-rgb), 0.08);
+    border-color: rgba(var(--text-primary-rgb), 0.12);
+    box-shadow: 
+        0 8px 32px rgba(var(--bg-primary-rgb), 0.4),
+        inset 0 1px 0 rgba(var(--text-primary-rgb), 0.1);
 }
 
 /* Safe area padding adjustments for edge cases */
@@ -63,7 +78,7 @@
 .active .navIconWrapper {
     background: var(--glass-surface-hover);
     color: var(--primary-lavender);
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.15);
     transform: translateY(-2px);
 }
 

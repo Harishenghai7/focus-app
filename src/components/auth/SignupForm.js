@@ -161,7 +161,7 @@ const SignupForm = () => {
                 await createUserPresence(data.user.id);
             } catch (recordError) {
                 // Ignore errors - trigger likely already created records
-                console.log('Records may already exist from trigger:', recordError);
+
             }
 
             // V1.0: Skip email verification - immediately log user in and navigate to onboarding

@@ -5,7 +5,7 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #1a0f2e;
+  background: var(--bg-elevated);
 }
 
 /* Main Content Layout */
@@ -20,14 +20,14 @@
   display: flex;
   flex-direction: column;
   border-right: 1px solid rgba(167, 139, 250, 0.2);
-  background: #1a0f2e;
+  background: var(--bg-elevated);
 }
 
 .windowContainer {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: #1a0f2e;
+  background: var(--bg-elevated);
 }
 
 .loaderContainer {
@@ -49,7 +49,7 @@
 .title {
   font-size: 28px;
   font-weight: 700;
-  background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin: 0;
@@ -75,7 +75,7 @@
 .emptyStateTitle {
   font-size: 24px;
   font-weight: 700;
-  color: #f8f7ff;
+  color: var(--text-primary);
   margin: 0 0 12px 0;
 }
 

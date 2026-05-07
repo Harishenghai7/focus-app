@@ -10,7 +10,7 @@ import styles from './VerificationCenter.module.css';
 
 const VerificationCenter = () => {
     const navigate = useNavigate();
-    const { user, loading: authLoading } = useAuth();
+    const { user, profile, loading: authLoading } = useAuth();
     const { verifications, verifyStep, loading } = useVerifications();
     const [showOAuthOptions, setShowOAuthOptions] = useState(false);
 
@@ -68,7 +68,7 @@ const VerificationCenter = () => {
             icon: FaUser,
             points: 200,
             badge: 'Elite Security',
-            status: 'pending',
+            status: profile?.trust_shield_status === 'VERIFIED' || profile?.verification_status === 'VERIFIED' || user?.trust_shield_status === 'VERIFIED' || user?.verification_status === 'VERIFIED' ? 'completed' : 'pending',
             action: () => navigate('/verification/trust-shield')
         },
         {
@@ -87,7 +87,7 @@ const VerificationCenter = () => {
             icon: FaFingerprint,
             points: 100,
             badge: 'Trust Score',
-            status: user?.trust_tier >= 4 ? 'completed' : 'pending',
+            status: (profile?.trust_tier >= 4 || user?.trust_tier >= 4) ? 'completed' : 'pending',
             action: () => navigate('/verification/focus-id')
         },
         {

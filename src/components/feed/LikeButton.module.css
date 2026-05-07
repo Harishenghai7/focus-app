@@ -44,7 +44,7 @@
     cursor: pointer;
     padding: 6px 8px;
     border-radius: var(--radius-full, 999px);
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
     font-family: inherit;
     font-size: 0.87rem;
     font-weight: 600;
@@ -55,11 +55,11 @@
 
 .likeBtn:hover:not(.pending) {
     background: rgba(255, 48, 64, 0.08);
-    color: #ff3040;
+    color: var(--error);
 }
 
 .likeBtn.liked {
-    color: #ff3040;
+    color: var(--error);
 }
 
 .likeBtn.pending {
@@ -139,5 +139,5 @@
 }
 
 .liked .count {
-    color: #ff3040;
+    color: var(--error);
 }

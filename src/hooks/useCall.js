@@ -16,7 +16,7 @@ export const useCall = (conversationId = null, listenForIncoming = false) => {
         if (!user) return null;
 
         try {
-            console.log(`📞 Initiating ${type} call to:`, recipientId);
+
             setCallStatus('calling');
             setCallType(type);
             setRemoteUserId(recipientId);
@@ -55,7 +55,7 @@ export const useCall = (conversationId = null, listenForIncoming = false) => {
             }
 
             const [call] = await response.json();
-            console.log('📞 Call record created:', call.id);
+
 
             setActiveCall(call);
             playRingtone();
@@ -72,7 +72,7 @@ export const useCall = (conversationId = null, listenForIncoming = false) => {
     // Answer incoming call
     const answerCall = useCallback(async (callId, type = 'audio') => {
         try {
-            console.log('✅ Answering call:', callId, 'Type:', type);
+
 
             // Set active call and type
             setActiveCall({ id: callId });
@@ -87,7 +87,7 @@ export const useCall = (conversationId = null, listenForIncoming = false) => {
                 .eq('id', callId);
 
             stopRingtone();
-            console.log('✅ Call answered');
+
         } catch (err) {
             console.error('Error answering call:', err);
         }
@@ -96,7 +96,7 @@ export const useCall = (conversationId = null, listenForIncoming = false) => {
     // Decline incoming call
     const declineCall = useCallback(async (callId) => {
         try {
-            console.log('❌ Declining call:', callId);
+
 
             await supabase
                 .from('calls')
@@ -119,7 +119,7 @@ export const useCall = (conversationId = null, listenForIncoming = false) => {
         if (!activeCall) return;
 
         try {
-            console.log('📴 Ending call:', activeCall.id);
+
 
             const endTime = new Date();
             const startTime = new Date(activeCall.started_at);
@@ -163,7 +163,7 @@ export const useCall = (conversationId = null, listenForIncoming = false) => {
             audio.play().catch(err => {
                 // Ignore NotSupportedError (missing file) to prevent console noise
                 if (err.name !== 'NotSupportedError') {
-                    console.log('Ringtone play failed:', err);
+
                 }
             });
             window.activeRingtone = audio;
@@ -176,12 +176,12 @@ export const useCall = (conversationId = null, listenForIncoming = false) => {
     useEffect(() => {
         if (!user || !listenForIncoming) {
             if (!listenForIncoming) {
-                console.log('📡 useCall: NOT setting up call subscription (listenForIncoming is false)');
+
             }
             return;
         }
 
-        console.log('📡 useCall: Setting up call subscription');
+
 
         const subscription = supabase
             .channel(`calls-${user.id}`)
@@ -193,7 +193,7 @@ export const useCall = (conversationId = null, listenForIncoming = false) => {
                     filter: `receiver_id=eq.${user.id}`
                 },
                 (payload) => {
-                    console.log('🔔 Incoming call detected:', payload.new);
+
                     setIncomingCall(payload.new);
                     playRingtone();
                 }

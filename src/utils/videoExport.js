@@ -52,7 +52,7 @@ export const exportEditedVideo = async ({
                 };
             }
 
-            console.log('Using MediaRecorder with:', mediaRecorderOptions);
+
             const mediaRecorder = new MediaRecorder(stream, mediaRecorderOptions);
 
             mediaRecorder.ondataavailable = (e) => {
@@ -83,7 +83,7 @@ export const exportEditedVideo = async ({
                     
                     const onSeeked = () => {
                         video.removeEventListener('seeked', onSeeked);
-                        console.log(`Video seeked to ${video.currentTime}s`);
+
                         resolveSeek();
                     };
 
@@ -112,7 +112,7 @@ export const exportEditedVideo = async ({
             });
 
             // Start recording
-            console.log('Starting MediaRecorder');
+
             mediaRecorder.start();
 
             // Helper to apply filters
@@ -137,7 +137,7 @@ export const exportEditedVideo = async ({
             let currentFrame = 0;
             let exportTimeout;
 
-            console.log(`Starting export: ${duration}s, ${totalFrames} frames`);
+
 
             // Safety timeout to prevent infinite export
             const safetyTimeout = setTimeout(() => {
@@ -151,7 +151,7 @@ export const exportEditedVideo = async ({
                 try {
                     // Check if we've reached the end
                     if (video.currentTime >= trimRange[1] || video.ended || currentFrame >= totalFrames) {
-                        console.log('Export complete');
+
                         clearTimeout(safetyTimeout);
                         video.pause();
                         mediaRecorder.stop();

@@ -1,32 +1,38 @@
-/* Loader Component - Royal Lavender Theme */
+/* ═══════════════════════════════════════════════════════════════════════════
+   LOADER SYSTEM — Focus Universal Theme (Conic Pulse)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes conicPulse {
+  0% { --angle: 0deg; transform: rotate(0deg); }
+  100% { --angle: 360deg; transform: rotate(360deg); }
+}
 
 .loader {
-    border: 3px solid rgba(124, 58, 237, 0.3);
-    border-radius: var(--radius-full);
-    border-top-color: var(--royal-purple);
-    animation: spin 1s ease-in-out infinite;
+    position: relative;
+    border-radius: 50%;
+    background: conic-gradient(from var(--angle, 0deg), var(--primary), var(--error), var(--primary));
+    animation: conicPulse 2s linear infinite;
 }
 
-.loader-sm {
-    width: 20px;
-    height: 20px;
-    border-width: 2px;
+.loader::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: var(--bg-primary);
 }
 
-.loader-md {
-    width: 32px;
-    height: 32px;
-    border-width: 3px;
-}
+.loader-sm { width: 24px; height: 24px; }
+.loader-sm::before { inset: 3px; }
 
-.loader-lg {
-    width: 48px;
-    height: 48px;
-    border-width: 4px;
-}
+.loader-md { width: 40px; height: 40px; }
+.loader-md::before { inset: 4px; }
 
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
+.loader-lg { width: 64px; height: 64px; }
+.loader-lg::before { inset: 5px; }

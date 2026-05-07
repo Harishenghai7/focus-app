@@ -35,7 +35,7 @@ const useSpeechRecognition = () => {
 
         // Event handlers
         recognition.onstart = () => {
-            console.log('🎤 Speech recognition started');
+
             setIsListening(true);
             setError(null);
         };
@@ -79,7 +79,7 @@ const useSpeechRecognition = () => {
         };
 
         recognition.onend = () => {
-            console.log('🎤 Speech recognition ended');
+
             setIsListening(false);
             setInterimTranscript('');
         };

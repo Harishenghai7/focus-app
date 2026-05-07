@@ -165,7 +165,7 @@ export const notifyBadgeEligible = (badgeName) => {
  */
 export const sendBadgeEmail = async (userId, type, badgeName, data = {}) => {
     // This would integrate with your email service (SendGrid, AWS SES, etc.)
-    console.log(`Email notification: ${type} for badge ${badgeName} to user ${userId}`, data);
+
 
     // Example implementation:
     // await fetch('/api/send-badge-email', {

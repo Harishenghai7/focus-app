@@ -20,12 +20,12 @@
     background: rgba(10, 12, 22, 0.55);
     backdrop-filter: blur(20px) saturate(140%);
     -webkit-backdrop-filter: blur(20px) saturate(140%);
-    border: 1px solid rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.10);
     box-shadow:
-        0 18px 42px -12px rgba(0, 0, 0, 0.7),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 18px 42px -12px rgba(var(--bg-primary-rgb), 0.7),
+        inset 0 1px 0 rgba(var(--text-primary-rgb), 0.08),
         0 0 0 1px var(--focusly-accent, rgba(0, 195, 255, 0.25));
-    color: #fff;
+    color: var(--text-primary);
     position: relative;
     overflow: hidden;
     transition: border-color 0.4s ease, box-shadow 0.4s ease;
@@ -40,8 +40,8 @@
     bottom: 12%;
     width: 3px;
     border-radius: 3px;
-    background: var(--focusly-accent, #00c3ff);
-    box-shadow: 0 0 12px var(--focusly-accent, #00c3ff);
+    background: var(--focusly-accent, var(--text-muted));
+    box-shadow: 0 0 12px var(--focusly-accent, var(--text-muted));
 }
 
 .mascotSlot {
@@ -64,15 +64,15 @@
     font-weight: 600;
     font-size: 0.85rem;
     letter-spacing: 0.02em;
-    color: var(--focusly-accent, #00c3ff);
+    color: var(--focusly-accent, var(--text-muted));
     text-shadow: 0 0 18px var(--focusly-accent, rgba(0, 195, 255, 0.6));
 }
 
 .closeBtn {
     appearance: none;
-    background: rgba(255, 255, 255, 0.06);
-    color: rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(var(--text-primary-rgb), 0.06);
+    color: rgba(var(--text-primary-rgb), 0.8);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.1);
     border-radius: 999px;
     width: 24px;
     height: 24px;
@@ -82,7 +82,7 @@
     transition: background 0.2s ease, transform 0.2s ease;
 }
 .closeBtn:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(var(--text-primary-rgb), 0.12);
     transform: scale(1.06);
 }
 
@@ -90,7 +90,7 @@
     margin: 2px 0 0 0;
     font-size: 0.95rem;
     line-height: 1.45;
-    color: #fff;
+    color: var(--text-primary);
     font-weight: 500;
     letter-spacing: 0.005em;
 }
@@ -109,11 +109,11 @@
 }
 
 @keyframes celebratePulseBorder {
-    0%, 100% { box-shadow: 0 18px 42px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 220, 0, 0.35); }
+    0%, 100% { box-shadow: 0 18px 42px -12px rgba(var(--bg-primary-rgb), 0.7), 0 0 0 1px rgba(255, 220, 0, 0.35); }
     50%      { box-shadow: 0 18px 52px -10px rgba(255, 220, 0, 0.4), 0 0 0 2px rgba(255, 220, 0, 0.7); }
 }
 @keyframes concernPulseBorder {
-    0%, 100% { box-shadow: 0 18px 42px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 80, 80, 0.35); }
+    0%, 100% { box-shadow: 0 18px 42px -12px rgba(var(--bg-primary-rgb), 0.7), 0 0 0 1px rgba(255, 80, 80, 0.35); }
     50%      { box-shadow: 0 18px 52px -10px rgba(255, 80, 80, 0.35), 0 0 0 2px rgba(255, 80, 80, 0.6); }
 }
 

@@ -95,9 +95,22 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     let mounted = true;
 
+    // Non-blocking warm-up to reduce first-touch latency on Edge Functions.
+    // Safe: best-effort, ignores failures.
+    const warmUpSovereignJudge = async () => {
+      try {
+        await supabase.functions.invoke('sovereign-judge', {
+          body: { warmup: true },
+        });
+      } catch (_) {
+        // ignore warm-up failures
+      }
+    };
+
     // C. Initialize Session
     const initializeAuth = async () => {
       try {
+        warmUpSovereignJudge();
         const { data: { session: initialSession } } = await supabase.auth.getSession();
 
         if (mounted && initialSession) {

@@ -4,7 +4,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(var(--bg-primary-rgb), 0.7);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -19,7 +19,7 @@
     max-width: 500px;
     max-height: 80vh;
     overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 60px rgba(var(--bg-primary-rgb), 0.3);
     border: 1px solid var(--border-default);
 }
 

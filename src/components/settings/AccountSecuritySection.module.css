@@ -1,0 +1,325 @@
+/* ==========================================================
+   Province 1: Account & Security Styles
+   ========================================================== */
+
+/* Trust Shield Section */
+.trustShieldContent {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.verificationStatus {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+/* Sessions List */
+.sessionsList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sessionItem {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: rgba(var(--text-primary-rgb), 0.02);
+    border-radius: 12px;
+    border: 1px solid rgba(var(--text-primary-rgb), 0.05);
+}
+
+.sessionIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(var(--primary-rgb), 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--royal-lavender-light, var(--primary));
+    font-size: 1.1rem;
+}
+
+.sessionInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.sessionName {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary, var(--text-primary));
+    margin: 0 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.currentBadge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    background: rgba(76, 175, 80, 0.2);
+    color: var(--glass-bg-solid);
+    border-radius: 10px;
+    letter-spacing: 0.5px;
+}
+
+.sessionDetails {
+    font-size: 0.8rem;
+    color: var(--text-muted, var(--text-muted));
+    margin: 0;
+}
+
+.terminateButton {
+    padding: 8px 14px;
+    background: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    color: var(--error);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 200ms ease;
+}
+
+.terminateButton:hover {
+    background: rgba(244, 67, 54, 0.2);
+    transform: translateY(-1px);
+}
+
+.noSessions {
+    text-align: center;
+    color: var(--text-muted, var(--text-muted));
+    font-size: 0.9rem;
+    padding: 20px;
+}
+
+.terminateAllButton {
+    margin-top: 16px;
+}
+
+/* Identity Card */
+.identityCard {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: rgba(var(--text-primary-rgb), 0.02);
+    border-radius: 16px;
+    border: 1px solid rgba(var(--text-primary-rgb), 0.05);
+}
+
+.identityInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.identityName {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary, var(--text-primary));
+    margin: 0 0 4px;
+}
+
+.identityHandle {
+    font-size: 0.95rem;
+    color: var(--text-secondary, var(--text-muted));
+    margin: 0 0 4px;
+}
+
+.identityEmail {
+    font-size: 0.8rem;
+    color: var(--text-muted, var(--text-muted));
+    margin: 0 0 12px;
+}
+
+.verifiedBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(76, 175, 80, 0.15);
+    color: var(--glass-bg-solid);
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.verifiedBadge svg {
+    font-size: 0.7rem;
+}
+
+/* Danger Zone */
+.dangerActions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.dangerAction {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px;
+    background: rgba(244, 67, 54, 0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(244, 67, 54, 0.1);
+}
+
+.dangerActionInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.dangerActionTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--error);
+    margin: 0 0 6px;
+}
+
+.dangerActionDescription {
+    font-size: 0.85rem;
+    color: var(--text-muted, var(--text-muted));
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Biometric Modal */
+.biometricModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(var(--bg-primary-rgb), 0.8);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.biometricModalContent {
+    background: rgba(20, 20, 30, 0.95);
+    border: 1px solid rgba(var(--primary-rgb), 0.3);
+    border-radius: 24px;
+    padding: 40px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.biometricIcon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(var(--primary-rgb), 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    color: var(--royal-lavender, var(--primary));
+    font-size: 2rem;
+}
+
+.biometricModalContent h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary, var(--text-primary));
+    margin: 0;
+}
+
+.biometricModalContent p {
+    font-size: 0.95rem;
+    color: var(--text-muted, var(--text-muted));
+    margin: 0 0 8px;
+    line-height: 1.5;
+}
+
+/* Delete Confirmation */
+.deleteList {
+    text-align: left;
+    margin: 8px 0;
+    padding-left: 20px;
+    color: var(--text-secondary, var(--text-muted));
+    font-size: 0.9rem;
+    line-height: 1.8;
+}
+
+.deleteList li {
+    margin-bottom: 4px;
+}
+
+.deleteConfirmText {
+    font-size: 0.9rem;
+    color: var(--text-primary, var(--text-primary));
+    margin: 16px 0 8px;
+}
+
+.deleteInput {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(var(--text-primary-rgb), 0.05);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    border-radius: 12px;
+    color: var(--text-primary, var(--text-primary));
+    font-size: 1rem;
+    text-align: center;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    transition: all 200ms ease;
+}
+
+.deleteInput:focus {
+    outline: none;
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1);
+}
+
+.deleteInput::placeholder {
+    color: var(--text-muted, var(--text-muted));
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .identityCard {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .dangerAction {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .sessionItem {
+        flex-wrap: wrap;
+    }
+
+    .terminateButton {
+        width: 100%;
+        margin-top: 8px;
+    }
+
+    .biometricModalContent {
+        padding: 28px 24px;
+    }
+}

@@ -1,4 +1,7 @@
-/* BoltzUserInfo - Fixed Visibility and Size */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   BoltzUserInfo — GOD-LEVEL | H2 Royal Lavender
+   Trust Shield Sovereign Pulse & Verified User Glow
+   ═══════════════════════════════════════════════════════════════════════════════ */
 
 .container {
     position: absolute;
@@ -8,20 +11,77 @@
     z-index: 100;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--space-2);
     pointer-events: auto;
 }
 
 .userRow {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-3);
+}
+
+/* ── AVATAR WRAPPER: Trust Shield Sovereign Ring ────────────────────────────────── */
+.avatarWrapper {
+    position: relative;
+    display: inline-flex;
+}
+
+.avatarWrapper.verifiedGlow .avatar {
+    border: 2px solid var(--primary-light);
+    box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.6),
+                0 0 40px rgba(var(--primary-rgb), 0.3);
+}
+
+/* ── SOVEREIGN PULSE RING: Animated Lavender Glow ───────────────────────────────── */
+.sovereignRing {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.pulseRing {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(167, 139, 250, 0.6);
+    animation: sovereignPulse 2s ease-in-out infinite;
+}
+
+.pulseRing::before,
+.pulseRing::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid rgba(167, 139, 250, 0.4);
+    animation: sovereignPulse 2s ease-in-out infinite 0.5s;
+}
+
+.pulseRing::after {
+    inset: -8px;
+    border-color: rgba(167, 139, 250, 0.2);
+    animation-delay: 1s;
+}
+
+@keyframes sovereignPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+        box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.4);
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.7;
+        box-shadow: 0 0 40px rgba(var(--primary-rgb), 0.6);
+    }
 }
 
 .userDetails {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-3);
     flex: 1;
     min-width: 0;
 }
@@ -30,64 +90,104 @@
     width: 36px !important;
     height: 36px !important;
     border-radius: 50%;
-    border: 2px solid #ffffff;
+    border: 2px solid var(--text-primary);
     cursor: pointer;
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(var(--bg-primary-rgb), 0.8);
     flex-shrink: 0;
 }
 
-.avatar:hover { transform: scale(1.1); }
+.avatar:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(var(--primary-rgb), 0.4);
+}
+
 .avatar:active { transform: scale(0.95); }
 
+/* ── USERNAME: Satin Typography ─────────────────────────────────────────────────── */
 .username {
     font-size: 14px;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-primary);
     text-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.9),
-        0 1px 4px rgba(0, 0, 0, 1);
+        0 2px 8px rgba(var(--bg-primary-rgb), 0.9),
+        0 1px 4px rgba(var(--bg-primary-rgb), 1);
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: var(--space-1);
     cursor: pointer;
     transition: all 0.2s ease;
     letter-spacing: 0.01em;
 }
 
 .username:hover {
-    opacity: 0.8;
+    opacity: 0.85;
+    color: var(--text-primary);
 }
 
 .username:active {
     transform: scale(0.98);
 }
 
-.verified {
-    color: #a78bfa;
-    font-size: 14px;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+/* ── VERIFIED USERNAME: Lavender Glow ──────────────────────────────────────────── */
+.verifiedUsername {
+    color: var(--text-primary);
+    text-shadow:
+        0 2px 8px rgba(var(--bg-primary-rgb), 0.9),
+        0 0 16px rgba(var(--primary-rgb), 0.4);
 }
 
+/* ── TRUST SHIELD BADGE: Sovereign Pulse ───────────────────────────────────────── */
+.trustShieldBadge {
+    position: relative;
+    display: inline-flex;
+    color: var(--primary-light);
+    font-size: 14px;
+    filter: drop-shadow(0 2px 4px rgba(var(--bg-primary-rgb), 0.8));
+}
+
+.shieldPulse {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(var(--primary-rgb), 0.4) 0%, transparent 70%);
+    animation: shieldGlow 2s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes shieldGlow {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scale(1.3);
+        opacity: 0.3;
+    }
+}
+
+/* ── FOLLOW BUTTON: Glassmorphism Variant ──────────────────────────────────────── */
 .followBtn {
     padding: 6px 16px;
-    background: #ffffff;
-    border: none;
-    border-radius: 6px;
-    color: #000000;
+    background: var(--glass-surface, rgba(var(--text-primary-rgb), 0.95));
+    border: 1px solid rgba(var(--text-primary-rgb), 0.2);
+    border-radius: var(--radius-lg, 8px);
+    color: var(--bg-primary);
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     text-transform: none;
     letter-spacing: 0.3px;
     white-space: nowrap;
     flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(var(--bg-primary-rgb), 0.3);
 }
 
 .followBtn:hover {
     transform: scale(1.05);
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(var(--text-primary-rgb), 1);
+    box-shadow: 0 4px 16px rgba(var(--primary-rgb), 0.3);
 }
 
 .followBtn:active {
@@ -96,11 +196,11 @@
 
 .caption {
     font-size: 14px;
-    color: #ffffff;
+    color: var(--text-primary);
     line-height: 1.4;
     text-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.9),
-        0 1px 4px rgba(0, 0, 0, 1);
+        0 2px 8px rgba(var(--bg-primary-rgb), 0.9),
+        0 1px 4px rgba(var(--bg-primary-rgb), 1);
     max-height: 60px;
     overflow: hidden;
     display: -webkit-box;
@@ -119,20 +219,20 @@
 .seeMore {
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(var(--text-primary-rgb), 0.8);
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     padding: 2px 0;
     margin-top: 2px;
     text-shadow:
-        0 2px 6px rgba(0, 0, 0, 0.8),
-        0 1px 3px rgba(0, 0, 0, 0.9);
+        0 2px 6px rgba(var(--bg-primary-rgb), 0.8),
+        0 1px 3px rgba(var(--bg-primary-rgb), 0.9);
     transition: all 0.2s ease;
 }
 
 .seeMore:hover {
-    color: #ffffff;
+    color: var(--text-primary);
 }
 
 .seeMore:active {

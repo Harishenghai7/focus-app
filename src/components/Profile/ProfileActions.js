@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from '../ui/Button';
 import Icon from '../ui/Icon';
 import SettingsMenu from './SettingsMenu';
+import EditProfileModal from './EditProfileModal';
 import { useFollow } from '../../hooks/useFollow';
 import { useAuth } from '../../hooks/useAuth';
 import { supabaseUrl, supabaseAnonKey, supabase } from '../../lib/supabase';
@@ -12,12 +13,14 @@ const ProfileActions = ({
     profile,
     isOwnProfile,
     isFollowing: initialFollowingState,
-    onFollowStatusChange
+    onFollowStatusChange,
+    onProfileUpdate
 }) => {
     const navigate = useNavigate();
     const { user: currentUser, session } = useAuth();
     const { toggleFollow } = useFollow();
     const [showMenu, setShowMenu] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isFollowing, setIsFollowing] = useState(initialFollowingState);
     const [verifying, setVerifying] = useState(true);
@@ -111,7 +114,7 @@ const ProfileActions = ({
         }
 
         try {
-            console.log('🔍 Finding/creating conversation with (FETCH):', profile.username);
+
 
             // Step 1: Get my participations
             const myParticipations = await apiCall(`conversation_participants?select=conversation_id&user_id=eq.${currentUser.id}`);
@@ -130,7 +133,7 @@ const ProfileActions = ({
                     const existingConvs = await apiCall(`conversations?select=id,is_group&id=in.${sharedIdsParam}&is_group=eq.false&limit=1`);
 
                     if (existingConvs.length > 0) {
-                        console.log('✅ Found existing conversation:', existingConvs[0].id);
+
                         navigate(`/messages/${existingConvs[0].id}`);
                         return;
                     }
@@ -138,7 +141,7 @@ const ProfileActions = ({
             }
 
             // Step 4: Create new conversation
-            console.log('📝 Creating new conversation...');
+
             const newConvs = await apiCall('conversations', {
                 method: 'POST',
                 body: JSON.stringify({
@@ -148,10 +151,10 @@ const ProfileActions = ({
             });
 
             const newConv = newConvs[0];
-            console.log('✅ Created:', newConv.id);
+
 
             // Step 5: Add participants
-            console.log('📝 Adding participants...');
+
             await apiCall('conversation_participants', {
                 method: 'POST',
                 body: JSON.stringify([
@@ -160,7 +163,7 @@ const ProfileActions = ({
                 ])
             });
 
-            console.log('✅ Success! Navigating to:', newConv.id);
+
             navigate(`/messages/${newConv.id}`);
 
         } catch (error) {
@@ -170,33 +173,45 @@ const ProfileActions = ({
     };
 
     const handleEditProfile = () => {
-        navigate('/settings', { state: { section: 'profile' } });
+        setShowEditModal(true);
+    };
+
+    const handleProfileUpdate = (updates) => {
+        onProfileUpdate?.(updates);
     };
 
     if (isOwnProfile) {
         return (
-            <div className={styles.actions}>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleEditProfile}
-                >
-                    Edit Profile
-                </Button>
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    icon={<Icon name="Settings" size={20} />}
-                    onClick={() => setShowMenu(!showMenu)}
-                    aria-label="Profile settings"
-                />
-                {showMenu && (
-                    <SettingsMenu
-                        isOwnProfile={true}
-                        onClose={() => setShowMenu(false)}
+            <>
+                <div className={styles.actions}>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleEditProfile}
+                    >
+                        Edit Profile
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        icon={<Icon name="Settings" size={20} />}
+                        onClick={() => setShowMenu(!showMenu)}
+                        aria-label="Profile settings"
                     />
-                )}
-            </div>
+                    {showMenu && (
+                        <SettingsMenu
+                            isOwnProfile={true}
+                            onClose={() => setShowMenu(false)}
+                        />
+                    )}
+                </div>
+                <EditProfileModal
+                    isOpen={showEditModal}
+                    onClose={() => setShowEditModal(false)}
+                    profile={profile}
+                    onUpdate={handleProfileUpdate}
+                />
+            </>
         );
     }
 

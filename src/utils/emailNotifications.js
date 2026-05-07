@@ -36,7 +36,7 @@ const sendEmail = async (templateParams) => {
 
   try {
     const response = await emailjs.send(serviceId, templateId, templateParams);
-    console.log('✅ Email sent successfully!', response.status, response.text);
+
     return { success: true, data: response };
   } catch (error) {
     console.error('❌ Error sending email:', error);

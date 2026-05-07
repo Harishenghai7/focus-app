@@ -14,6 +14,7 @@ const BoltzPreviewRow = () => {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [loadedThumbs, setLoadedThumbs] = useState({});
+    const [erroredThumbs, setErroredThumbs] = useState({});
 
     useEffect(() => {
         let cancelled = false;
@@ -84,7 +85,8 @@ const BoltzPreviewRow = () => {
                         b.poster_url ||
                         b.preview_url ||
                         null;
-                    const imageSrc = looksLikeImage(thumb) ? thumb : null;
+                    const imageSrc = !erroredThumbs[b.id] && looksLikeImage(thumb) ? thumb : null;
+                    const videoSrc = !imageSrc ? (b._videoFallback || b.video_url || null) : null;
 
                     return (
                         <Link
@@ -101,9 +103,17 @@ const BoltzPreviewRow = () => {
                                     loading="lazy"
                                     onLoad={() => setLoadedThumbs((prev) => ({ ...prev, [b.id]: true }))}
                                     onError={(e) => {
-                                        // Hide broken image and keep a clean fallback tile.
-                                        e.currentTarget.style.display = 'none';
+                                        setErroredThumbs((prev) => ({ ...prev, [b.id]: true }));
+                                        e.currentTarget.removeAttribute('src');
                                     }}
+                                />
+                            ) : videoSrc ? (
+                                <video
+                                    src={videoSrc}
+                                    className={`${styles.thumb} ${styles.thumbLoaded}`}
+                                    muted
+                                    playsInline
+                                    preload="metadata"
                                 />
                             ) : (
                                 <div className={styles.placeholder}>Focusly</div>

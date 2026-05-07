@@ -15,13 +15,13 @@ const NotificationSoundPicker = ({ value, onChange }) => {
     const [playing, setPlaying] = useState(null);
 
     const handleSoundSelect = async (soundId) => {
-        console.log('🔊 Sound selected:', soundId);
-        console.log('📝 Current value:', value);
+
+
 
         // Update database via parent component FIRST
         if (onChange) {
             onChange(soundId);
-            console.log('✅ onChange called with:', soundId);
+
         }
 
         // Update localStorage for immediate access

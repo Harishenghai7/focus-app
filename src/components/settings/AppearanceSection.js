@@ -41,7 +41,7 @@ const AppearanceSection = ({ isExpanded, onToggle, settings, onUpdateSetting, sa
 
             // Store in localStorage as backup
             localStorage.setItem('focus-theme', theme);
-            console.log(`✅ Theme applied: ${theme}`);
+
         }
     }, [settings?.theme]);
 
@@ -58,7 +58,7 @@ const AppearanceSection = ({ isExpanded, onToggle, settings, onUpdateSetting, sa
 
             // Store in localStorage as backup
             localStorage.setItem('focus-font-size', fontSize);
-            console.log(`✅ Font size applied: ${fontSize}`);
+
         }
     }, [settings?.font_size]);
 
@@ -70,7 +70,7 @@ const AppearanceSection = ({ isExpanded, onToggle, settings, onUpdateSetting, sa
             } else {
                 document.documentElement.classList.remove('glassmorphism-enabled');
             }
-            console.log(`✅ Glassmorphism: ${settings.glassmorphism_enabled ? 'enabled' : 'disabled'}`);
+
         }
     }, [settings?.glassmorphism_enabled]);
 
@@ -82,7 +82,7 @@ const AppearanceSection = ({ isExpanded, onToggle, settings, onUpdateSetting, sa
             } else {
                 document.documentElement.classList.remove('high-contrast');
             }
-            console.log(`✅ High contrast: ${settings.high_contrast_mode ? 'enabled' : 'disabled'}`);
+
         }
     }, [settings?.high_contrast_mode]);
 

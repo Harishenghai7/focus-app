@@ -40,7 +40,7 @@ const TeenCareGuardianDashboard = () => {
 
         const fetchActivity = async () => {
             try {
-                console.log('📊 Fetching activity for teen:', selectedTeen.teen_id);
+
                 const endDate = new Date().toISOString();
                 const startDate = new Date();
                 startDate.setDate(startDate.getDate() - 7); // Last 7 days
@@ -51,7 +51,7 @@ const TeenCareGuardianDashboard = () => {
                     endDate
                 );
 
-                console.log('✅ Activity summary fetched:', summary);
+
                 setActivityData(summary);
             } catch (error) {
                 console.error('❌ Error fetching activity:', error);

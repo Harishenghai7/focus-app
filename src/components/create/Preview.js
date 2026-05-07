@@ -55,16 +55,16 @@ const Preview = ({ mode, media, caption, tags, music, onEdit, onPublish }) => {
 
                 <div className={styles.details}>
                     {caption && <p className={styles.caption}>{caption}</p>}
-                    {tags.length > 0 && (
+                    {tags && tags.length > 0 && (
                         <div className={styles.tags}>
                             {tags.map((tag, i) => (
                                 <span key={i} className={styles.tag}>#{tag}</span>
                             ))}
                         </div>
                     )}
-                    {music && (
+                    {music && (music.name || music.artist_name) && (
                         <div className={styles.music}>
-                            🎵 {music.name} - {music.artist_name}
+                            🎵 {music.name || 'Unknown Track'} - {music.artist_name || 'Unknown Artist'}
                         </div>
                     )}
                 </div>

@@ -28,7 +28,7 @@
 .active {
     border-color: var(--primary);
     background: var(--glass-surface-hover);
-    box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 0 30px rgba(var(--primary-rgb), 0.4);
     transform: scale(1.02);
 }
 

@@ -14,7 +14,7 @@
     align-items: center;
     gap: 20px;
     padding-bottom: 20px;
-    border-bottom: 1px solid var(--border-subtle, rgba(255,255,255,0.07));
+    border-bottom: 1px solid var(--border-subtle, rgba(var(--text-primary-rgb), 0.07));
 }
 
 .avatarWrapper {
@@ -25,7 +25,7 @@
 .avatarOverlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(var(--bg-primary-rgb), 0.4);
     backdrop-filter: blur(2px);
     border-radius: 50%;
     display: flex;
@@ -34,7 +34,7 @@
     opacity: 0;
     cursor: pointer;
     transition: all var(--transition-bounce);
-    color: #fff;
+    color: var(--text-primary);
     border: 2px solid transparent;
 }
 .avatarWrapper:hover .avatarOverlay { 
@@ -46,7 +46,7 @@
 .uploadingOverlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.65);
+    background: rgba(var(--bg-primary-rgb), 0.65);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -56,8 +56,8 @@
 .uploadSpinner {
     width: 24px;
     height: 24px;
-    border: 3px solid rgba(255,255,255,0.2);
-    border-top-color: #fff;
+    border: 3px solid rgba(var(--text-primary-rgb), 0.2);
+    border-top-color: var(--text-primary);
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
 }
@@ -71,13 +71,13 @@
 
 .avatarHint {
     font-size: 0.875rem;
-    color: var(--text-secondary, #aaa);
+    color: var(--text-secondary, var(--text-muted));
     margin: 0;
 }
 
 .avatarSubHint {
     font-size: 0.78rem;
-    color: var(--text-muted, #666);
+    color: var(--text-muted, var(--glass-bg-solid));
     margin: 0;
 }
 
@@ -104,16 +104,16 @@
 .label {
     font-size: 0.82rem;
     font-weight: 600;
-    color: var(--text-secondary, #aaa);
+    color: var(--text-secondary, var(--text-muted));
     letter-spacing: 0.02em;
     text-transform: uppercase;
 }
 
 .charCount {
     font-size: 0.75rem;
-    color: var(--text-muted, #666);
+    color: var(--text-muted, var(--glass-bg-solid));
 }
-.charOver { color: #ef4444; }
+.charOver { color: var(--error); }
 
 /* ── Textarea ────────────────────────────────────────────── */
 .textarea {
@@ -136,7 +136,7 @@
 .textarea:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 4px var(--primary-dim), 0 4px 20px rgba(139, 92, 246, 0.15);
+    box-shadow: 0 0 0 4px var(--primary-dim), 0 4px 20px rgba(var(--primary-rgb), 0.15);
     background: var(--glass-surface-hover);
 }
 
@@ -147,5 +147,5 @@
     display: flex;
     justify-content: flex-end;
     padding-top: 16px;
-    border-top: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+    border-top: 1px solid var(--border-subtle, rgba(var(--text-primary-rgb), 0.06));
 }

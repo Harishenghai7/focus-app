@@ -49,7 +49,7 @@
 .filterPreview {
     width: 60px;
     height: 60px;
-    background: #ddd;
+    background: var(--text-secondary);
     border-radius: var(--radius-md);
     border: 2px solid transparent;
 }

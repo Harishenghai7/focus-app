@@ -1,6 +1,6 @@
 .card {
     padding: 16px;
-    border: 2px solid #E5E7EB;
+    border: 2px solid var(--text-secondary);
     border-radius: 12px;
     background: white;
     cursor: pointer;
@@ -14,14 +14,14 @@
 }
 
 .card:hover {
-    border-color: #C4B5FD;
+    border-color: var(--primary-light);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.15);
 }
 
 .card.selected {
-    border-color: #8B5CF6;
-    background: #F3E8FF;
+    border-color: var(--primary);
+    background: var(--text-primary);
 }
 
 .emoji {
@@ -32,19 +32,19 @@
 .label {
     font-size: 14px;
     font-weight: 500;
-    color: #374151;
+    color: var(--text-muted);
     text-align: center;
 }
 
 .card.selected .label {
-    color: #7C3AED;
+    color: var(--primary);
 }
 
 .check {
     position: absolute;
     top: 8px;
     right: 8px;
-    color: #8B5CF6;
+    color: var(--primary);
     font-size: 14px;
 }
 

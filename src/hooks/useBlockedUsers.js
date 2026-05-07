@@ -30,7 +30,7 @@ export const useBlockedUsers = () => {
                 table: 'blocks',
                 filter: `blocker_id=eq.${user.id}`
             }, (payload) => {
-                console.log('🚫 Blocked users updated:', payload);
+
                 if (payload.eventType === 'INSERT') {
                     fetchBlockedUsers();
                 } else if (payload.eventType === 'DELETE') {
@@ -47,7 +47,7 @@ export const useBlockedUsers = () => {
     const fetchBlockedUsers = async () => {
         try {
             setLoading(true);
-            console.log('🚫 Fetching blocked users...');
+
 
             const { data, error: fetchError } = await supabase
                 .from('blocks')
@@ -68,7 +68,7 @@ export const useBlockedUsers = () => {
 
             if (fetchError) throw fetchError;
 
-            console.log('✅ Blocked users fetched:', data?.length || 0);
+
             setBlockedUsers(data || []);
             setError(null);
         } catch (err) {
@@ -92,7 +92,7 @@ export const useBlockedUsers = () => {
 
             if (error) throw error;
 
-            console.log('✅ User blocked successfully');
+
             await fetchBlockedUsers();
             return { success: true };
         } catch (err) {
@@ -111,7 +111,7 @@ export const useBlockedUsers = () => {
 
             if (error) throw error;
 
-            console.log('✅ User unblocked successfully');
+
             setBlockedUsers(prev => prev.filter(u => u.blocked_id !== userId));
             return { success: true };
         } catch (err) {

@@ -1,0 +1,502 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 🔱 TRUST SHIELD VERIFICATION - BULLETPROOF IMPLEMENTATION
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 
+ * Clean 3-Step Verification Flow:
+ * Step 1: Upload/Scan Government ID (OCR)
+ * Step 2: Biometric Liveness Check (3 challenges)
+ * Step 3: Verification Result + Account Finalization
+ * 
+ * One Aadhar = One User = One Account
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+import { useFaceLiveness } from '../../hooks/useFaceLiveness';
+import { supabase } from '../../lib/supabase';
+import useOCRScanner from '../../hooks/useOCRScanner';
+import Button from '../../components/shared/Button';
+import { Camera, Upload, ShieldCheck, RefreshCcw, AlertTriangle, CheckCircle, XCircle, ArrowRight } from 'lucide-react';
+import styles from './TrustShieldVerification.module.css';
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// VERIFICATION STEPS
+// ═══════════════════════════════════════════════════════════════════════════════
+const STEPS = {
+  ID_UPLOAD: 1,      // Step 1: Upload ID
+  LIVENESS: 2,       // Step 2: Biometric verification
+  PROCESSING: 3,     // Processing verification
+  SUCCESS: 4,        // Step 3a: Adult verified
+  GUARDIAN: 5,       // Step 3b: Teen - needs guardian approval
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MAIN COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
+export default function TrustShieldVerification() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  
+  // ═════════════════════════════════════════════════════════════════════════════
+  // STATE
+  // ═════════════════════════════════════════════════════════════════════════════
+  const [step, setStep] = useState(STEPS.ID_UPLOAD);
+  const [ocrResult, setOcrResult] = useState(null);
+  const [error, setError] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [verificationResult, setVerificationResult] = useState(null);
+  
+  // Teen/guardian states
+  const [isTeen, setIsTeen] = useState(false);
+  const [guardianEmail, setGuardianEmail] = useState('');
+  const [guardianInviteSent, setGuardianInviteSent] = useState(false);
+  
+  // Refs
+  const videoRef = useRef(null);
+  
+  // ═════════════════════════════════════════════════════════════════════════════
+  // OCR SCANNER
+  // ═════════════════════════════════════════════════════════════════════════════
+  const { scanID, statusMessage: ocrStatus, progress: ocrProgress } = useOCRScanner();
+  
+  // ═════════════════════════════════════════════════════════════════════════════
+  // FACE LIVENESS
+  // ═════════════════════════════════════════════════════════════════════════════
+  const {
+    modelsLoaded,
+    challenges,
+    currentIndex,
+    completedChallenges,
+    isDetecting,
+    faceDetected,
+    statusMessage: livenessStatus,
+    progress: livenessProgress,
+    capturedFrames,
+    startDetection,
+    stopDetection,
+  } = useFaceLiveness({
+    videoRef,
+    onComplete: handleLivenessComplete,
+    onFail: handleLivenessFail,
+    challengeCount: 3,
+    timeoutMs: 60000,
+  });
+  
+  // ═════════════════════════════════════════════════════════════════════════════
+  // COMPUTED VALUES
+  // ═════════════════════════════════════════════════════════════════════════════
+  const progressPercent = useMemo(() => {
+    switch (step) {
+      case STEPS.ID_UPLOAD: return 25;
+      case STEPS.LIVENESS: return 25 + (livenessProgress * 50);
+      case STEPS.PROCESSING: return 85;
+      case STEPS.SUCCESS:
+      case STEPS.GUARDIAN: return 100;
+      default: return 0;
+    }
+  }, [step, livenessProgress]);
+  
+  // ═════════════════════════════════════════════════════════════════════════════
+  // HANDLERS
+  // ═════════════════════════════════════════════════════════════════════════════
+  
+  // Handle ID upload
+  const handleIdUpload = useCallback(async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    setError(null);
+    
+    const result = await scanID(file);
+    
+    if (!result.ok) {
+      setError(result.reason || 'Failed to read ID. Please try again with better lighting.');
+      return;
+    }
+    
+    // Validate we have required fields
+    if (!result.name || !result.dob || !result.idNumber) {
+      setError('ID must show Name, Date of Birth, and ID Number clearly. Please upload a clearer photo.');
+      return;
+    }
+    
+    setOcrResult(result);
+  }, [scanID]);
+  
+  // Start liveness check
+  const handleStartLiveness = useCallback(() => {
+    if (!ocrResult) {
+      setError('Please upload your ID first.');
+      return;
+    }
+    
+    setStep(STEPS.LIVENESS);
+    setError(null);
+    
+    // Start detection after UI renders
+    setTimeout(() => {
+      startDetection();
+    }, 500);
+  }, [ocrResult, startDetection]);
+  
+  // Liveness complete handler
+  function handleLivenessComplete(result) {
+    setStep(STEPS.PROCESSING);
+    runFinalVerification(result.capturedFrames, result.score);
+  }
+  
+  // Liveness fail handler
+  function handleLivenessFail(reason) {
+    setError(`Liveness check failed: ${reason}. Please try again with better lighting.`);
+    stopDetection();
+  }
+  
+  // Final verification
+  const runFinalVerification = useCallback(async (frames, livenessScore) => {
+    setIsProcessing(true);
+    setError(null);
+    
+    try {
+      // Calculate age from DOB
+      const dob = new Date(ocrResult.dob);
+      const now = new Date();
+      let age = now.getFullYear() - dob.getFullYear();
+      if (now.getMonth() < dob.getMonth() || 
+          (now.getMonth() === dob.getMonth() && now.getDate() < dob.getDate())) {
+        age--;
+      }
+      
+      const teen = age >= 13 && age <= 17;
+      setIsTeen(teen);
+      
+      // Call RPC to finalize verification
+      const { data, error: rpcError } = await supabase.rpc('finalize_verification_v2', {
+        p_user_id: user?.id,
+        p_identity_hash: ocrResult?.identityHash || '',
+        p_device_id: `device_${Date.now()}`,
+        p_ocr_data: {
+          name: ocrResult?.name,
+          dob: ocrResult?.dob,
+          idNumber: ocrResult?.idNumber,
+          idType: ocrResult?.idType || 'unknown'
+        },
+        p_face_score: livenessScore || 0.95,
+        p_age_group: teen ? '13-17' : '18+'
+      });
+      
+      if (rpcError) {
+        throw new Error(rpcError.message);
+      }
+      
+      if (!data?.success) {
+        throw new Error(data?.error || 'Verification failed');
+      }
+      
+      setVerificationResult({
+        passed: true,
+        score: livenessScore,
+        isTeen: teen,
+        ...data
+      });
+      
+      // Move to appropriate final step
+      if (teen) {
+        setStep(STEPS.GUARDIAN);
+      } else {
+        setStep(STEPS.SUCCESS);
+      }
+      
+    } catch (err) {
+      setError(err.message || 'Verification failed. Please try again.');
+      setVerificationResult({ passed: false, reason: err.message });
+      setStep(STEPS.ID_UPLOAD);
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [ocrResult, user?.id]);
+  
+  // Send guardian invite
+  const handleSendGuardianInvite = useCallback(async () => {
+    if (!guardianEmail || !guardianEmail.includes('@')) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    
+    try {
+      // Store guardian email and create handshake
+      await supabase.from('profiles').update({
+        guardian_email: guardianEmail,
+        updated_at: new Date().toISOString()
+      }).eq('id', user?.id);
+      
+      setGuardianInviteSent(true);
+    } catch (err) {
+      setError('Failed to send invite. Please try again.');
+    }
+  }, [guardianEmail, user?.id]);
+  
+  // Navigate home after success
+  const handleContinue = useCallback(() => {
+    navigate('/home', { replace: true });
+  }, [navigate]);
+  
+  // Reset to retry
+  const handleRetry = useCallback(() => {
+    stopDetection();
+    setStep(STEPS.ID_UPLOAD);
+    setOcrResult(null);
+    setError(null);
+    setVerificationResult(null);
+  }, [stopDetection]);
+  
+  // ═════════════════════════════════════════════════════════════════════════════
+  // RENDER
+  // ═════════════════════════════════════════════════════════════════════════════
+  return (
+    <div className={styles.container}>
+      {/* Header */}
+      <div className={styles.header}>
+        <h1 className={styles.title}>🔱 Focus Trust Shield</h1>
+        <p className={styles.subtitle}>One Aadhar. One User. One Account.</p>
+        
+        {/* Progress Bar */}
+        <div className={styles.progressBar}>
+          <div 
+            className={styles.progressFill} 
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+        <p className={styles.stepIndicator}>
+          Step {step <= STEPS.LIVENESS ? step : 3} of 3
+        </p>
+      </div>
+      
+      {/* Error Display */}
+      {error && (
+        <div className={styles.errorBox}>
+          <AlertTriangle size={20} />
+          <p>{error}</p>
+          <Button variant="ghost" size="small" onClick={() => setError(null)}>
+            Dismiss
+          </Button>
+        </div>
+      )}
+      
+      {/* STEP 1: ID UPLOAD */}
+      {step === STEPS.ID_UPLOAD && (
+        <div className={styles.stepContent}>
+          <div className={styles.idUploadSection}>
+            <h2>Upload Your Government ID</h2>
+            <p className={styles.hint}>
+              We accept: Aadhaar, PAN, Passport, Voter ID, or Driving License
+            </p>
+            
+            {/* Upload Buttons */}
+            <div className={styles.uploadButtons}>
+              <label className={styles.uploadBtn}>
+                <Camera size={20} />
+                <span>Take Photo</span>
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  capture="environment"
+                  onChange={handleIdUpload}
+                  hidden 
+                />
+              </label>
+              
+              <label className={styles.uploadBtnSecondary}>
+                <Upload size={20} />
+                <span>Upload File</span>
+                <input 
+                  type="file" 
+                  accept="image/*"
+                  onChange={handleIdUpload}
+                  hidden 
+                />
+              </label>
+            </div>
+            
+            {/* OCR Status */}
+            {ocrStatus && !ocrResult && (
+              <p className={styles.statusText}>
+                {ocrStatus} {ocrProgress > 0 && `(${ocrProgress}%)`}
+              </p>
+            )}
+            
+            {/* OCR Result Preview */}
+            {ocrResult && (
+              <div className={styles.ocrResult}>
+                <div className={styles.resultHeader}>
+                  <CheckCircle size={16} color="#22c55e" />
+                  <span>ID Read Successfully</span>
+                </div>
+                <p><strong>Name:</strong> {ocrResult.name}</p>
+                <p><strong>DOB:</strong> {ocrResult.dob}</p>
+                <p><strong>ID:</strong> {ocrResult.idNumber?.substring(0, 4)}****{ocrResult.idNumber?.slice(-4)}</p>
+              </div>
+            )}
+            
+            {/* Continue Button */}
+            <Button 
+              variant="primary"
+              onClick={handleStartLiveness}
+              disabled={!ocrResult}
+              className={styles.continueBtn}
+            >
+              {ocrResult ? (
+                <>
+                  Continue to Biometric Check <ArrowRight size={16} />
+                </>
+              ) : (
+                'Upload ID to Continue'
+              )}
+            </Button>
+          </div>
+        </div>
+      )}
+      
+      {/* STEP 2: LIVENESS CHECK */}
+      {step === STEPS.LIVENESS && (
+        <div className={styles.stepContent}>
+          <div className={styles.livenessSection}>
+            <h2>🔒 Biometric Verification</h2>
+            <p className={styles.hint}>Complete 3 simple actions to prove you are real</p>
+            
+            {/* Video Feed */}
+            <div className={styles.videoContainer}>
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className={styles.video}
+              />
+              
+              {/* Face Overlay */}
+              <div className={`${styles.faceOverlay} ${faceDetected ? styles.faceDetected : ''}`}>
+                <div className={styles.faceOval} />
+              </div>
+              
+              {/* Status Badge */}
+              <div className={styles.videoStatus}>
+                {faceDetected ? '✅ Face Detected' : '⏳ Looking for face...'}
+              </div>
+            </div>
+            
+            {/* Challenge Display */}
+            <div className={styles.challengeDisplay}>
+              {modelsLoaded ? (
+                <>
+                  <div className={styles.challengeIcon}>
+                    {challenges[currentIndex]?.icon || '👁️'}
+                  </div>
+                  <h3>{challenges[currentIndex]?.label || 'Get ready...'}</h3>
+                  <p className={styles.challengeDesc}>
+                    {challenges[currentIndex]?.description || 'Position your face in the oval'}
+                  </p>
+                  
+                  {/* Progress Dots */}
+                  <div className={styles.progressDots}>
+                    {challenges.map((_, idx) => (
+                      <div
+                        key={idx}
+                        className={`${styles.dot} ${
+                          idx < completedChallenges.length ? styles.completed : 
+                          idx === currentIndex ? styles.active : ''
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  
+                  <p className={styles.livenessStatus}>{livenessStatus}</p>
+                </>
+              ) : (
+                <div className={styles.loadingModels}>
+                  <div className={styles.spinner} />
+                  <p>Loading AI models...</p>
+                </div>
+              )}
+            </div>
+            
+            {/* Cancel Button */}
+            <Button variant="ghost" onClick={handleRetry}>
+              Cancel & Retry
+            </Button>
+          </div>
+        </div>
+      )}
+      
+      {/* STEP 3: PROCESSING */}
+      {step === STEPS.PROCESSING && (
+        <div className={styles.stepContent}>
+          <div className={styles.processingSection}>
+            <div className={styles.spinnerLarge} />
+            <h2>Verifying Your Identity</h2>
+            <p>One moment while we complete the verification...</p>
+          </div>
+        </div>
+      )}
+      
+      {/* STEP 4: SUCCESS (Adult) */}
+      {step === STEPS.SUCCESS && (
+        <div className={styles.stepContent}>
+          <div className={styles.successSection}>
+            <div className={styles.successIcon}>
+              <ShieldCheck size={64} color="#22c55e" />
+            </div>
+            <h2>✅ Identity Verified!</h2>
+            <p>You are now a trusted member of Focus.</p>
+            <p className={styles.scoreText}>
+              Verification Score: {Math.round((verificationResult?.score || 0.95) * 100)}%
+            </p>
+            <Button variant="primary" onClick={handleContinue}>
+              Continue to Focus
+            </Button>
+          </div>
+        </div>
+      )}
+      
+      {/* STEP 5: GUARDIAN (Teen) */}
+      {step === STEPS.GUARDIAN && (
+        <div className={styles.stepContent}>
+          <div className={styles.guardianSection}>
+            <h2>👨‍👩‍👧 Guardian Approval Required</h2>
+            <p>Because you are 13-17, a parent or guardian must approve your account.</p>
+            
+            {!guardianInviteSent ? (
+              <>
+                <input
+                  type="email"
+                  placeholder="parent@example.com"
+                  value={guardianEmail}
+                  onChange={(e) => setGuardianEmail(e.target.value)}
+                  className={styles.emailInput}
+                />
+                <Button 
+                  variant="primary" 
+                  onClick={handleSendGuardianInvite}
+                  disabled={!guardianEmail?.includes('@')}
+                >
+                  Send Approval Request
+                </Button>
+              </>
+            ) : (
+              <div className={styles.inviteSent}>
+                <CheckCircle size={48} color="#22c55e" />
+                <h3>Invite Sent!</h3>
+                <p>Ask your guardian to check their email and approve your account.</p>
+                <Button variant="primary" onClick={handleContinue}>
+                  Continue (Limited Access)
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

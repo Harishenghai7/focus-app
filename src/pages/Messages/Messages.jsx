@@ -84,7 +84,7 @@ const Messages = () => {
 
     // Debug: Log activeChat state
     React.useEffect(() => {
-        console.log('📋 activeChat changed:', {
+
             hasActiveChat: !!activeChat,
             activeChatId,
             hasCurrent: !!currentActiveChat,

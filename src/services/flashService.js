@@ -1,7 +1,6 @@
 // src/services/flashService.js
 // 🛡️ PILLAR 2: shadow-moderation filter applied
 import { supabase } from '../lib/supabase';
-import { applyStealthShield } from './postService';
 
 export const fetchFlashStories = async (viewerId = null) => {
     let query = supabase
@@ -22,8 +21,6 @@ export const fetchFlashStories = async (viewerId = null) => {
             new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
         )
         .order('created_at', { ascending: false });
-
-    query = applyStealthShield(query, viewerId);
 
     const { data, error } = await query;
     if (error) throw error;

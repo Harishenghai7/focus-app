@@ -53,7 +53,7 @@ export const useWebRTC = (localUserId, remoteUserId, conversationId) => {
                 });
 
             if (error) throw error;
-            console.log('📤 Signal sent:', signal.type);
+
         } catch (err) {
             console.error('❌ Error sending signal:', err);
         }
@@ -67,7 +67,7 @@ export const useWebRTC = (localUserId, remoteUserId, conversationId) => {
             // Handle ICE candidates
             peerConnection.current.onicecandidate = (event) => {
                 if (event.candidate) {
-                    console.log('📡 Sending ICE candidate:', event.candidate);
+
                     sendSignal({
                         type: 'ice-candidate',
                         candidate: event.candidate,
@@ -79,14 +79,14 @@ export const useWebRTC = (localUserId, remoteUserId, conversationId) => {
 
             // Handle remote stream
             peerConnection.current.ontrack = (event) => {
-                console.log('📥 Received remote track:', event.streams[0]);
+
                 setRemoteStream(event.streams[0]);
             };
 
             // Handle connection state changes
             peerConnection.current.onconnectionstatechange = () => {
                 const state = peerConnection.current.connectionState;
-                console.log('🔗 Connection state:', state);
+
                 setIsConnected(state === 'connected');
 
                 if (state === 'failed' || state === 'disconnected') {
@@ -94,7 +94,7 @@ export const useWebRTC = (localUserId, remoteUserId, conversationId) => {
                 }
             };
 
-            console.log('✅ Peer connection initialized');
+
         } catch (err) {
             console.error('❌ Error initializing peer connection:', err);
             setError(err.message);
@@ -103,7 +103,7 @@ export const useWebRTC = (localUserId, remoteUserId, conversationId) => {
 
     // Handle incoming signaling messages
     const handleSignal = useCallback(async (signal) => {
-        console.log('📨 Received signal:', signal.type);
+
 
         try {
             switch (signal.type) {
@@ -145,7 +145,7 @@ export const useWebRTC = (localUserId, remoteUserId, conversationId) => {
     // Start call (initiator)
     const startCall = useCallback(async (audioOnly = false) => {
         try {
-            console.log('📞 Starting call...', audioOnly ? 'Audio only' : 'Audio + Video');
+
 
             // Get local media stream
             const stream = await navigator.mediaDevices.getUserMedia({
@@ -174,7 +174,7 @@ export const useWebRTC = (localUserId, remoteUserId, conversationId) => {
                 to: remoteUserId
             });
 
-            console.log('✅ Call started');
+
         } catch (err) {
             console.error('❌ Error starting call:', err);
             setError(err.message);
@@ -184,7 +184,7 @@ export const useWebRTC = (localUserId, remoteUserId, conversationId) => {
     // Answer call (receiver)
     const answerCall = useCallback(async (audioOnly = false) => {
         try {
-            console.log('📞 Answering call...');
+
 
             // Initialize peer connection if not already done
             if (!peerConnection.current) {
@@ -204,7 +204,7 @@ export const useWebRTC = (localUserId, remoteUserId, conversationId) => {
                 peerConnection.current.addTrack(track, stream);
             });
 
-            console.log('✅ Call answered, waiting for offer');
+
         } catch (err) {
             console.error('❌ Error answering call:', err);
             setError(err.message);
@@ -213,7 +213,7 @@ export const useWebRTC = (localUserId, remoteUserId, conversationId) => {
 
     // End call
     const endCall = useCallback(() => {
-        console.log('📴 Ending call...');
+
 
         // Stop local stream
         if (localStream) {
@@ -229,7 +229,7 @@ export const useWebRTC = (localUserId, remoteUserId, conversationId) => {
 
         setRemoteStream(null);
         setIsConnected(false);
-        console.log('✅ Call ended');
+
     }, [localStream]);
 
     // Toggle audio
@@ -260,7 +260,7 @@ export const useWebRTC = (localUserId, remoteUserId, conversationId) => {
     useEffect(() => {
         if (!conversationId || !localUserId) return;
 
-        console.log('🔌 Setting up signaling channel...');
+
 
         try {
             // Subscribe to call signals
@@ -272,13 +272,13 @@ export const useWebRTC = (localUserId, remoteUserId, conversationId) => {
                     table: 'call_signals',
                     filter: `to_user_id=eq.${localUserId}`
                 }, (payload) => {
-                    console.log('📨 Signal received via Realtime');
+
                     handleSignal(payload.new.signal_data);
                 })
                 .subscribe((status) => {
-                    console.log('📡 Signaling channel status:', status);
+
                     if (status === 'SUBSCRIBED') {
-                        console.log('✅ Signaling channel ready');
+
                     } else if (status === 'CHANNEL_ERROR') {
                         console.error('❌ Signaling channel error - table may not exist. Run create_calls_tables.sql migration.');
                     }
@@ -286,7 +286,7 @@ export const useWebRTC = (localUserId, remoteUserId, conversationId) => {
 
             return () => {
                 if (signalingChannel.current) {
-                    console.log('🔌 Unsubscribing from signaling channel');
+
                     signalingChannel.current.unsubscribe();
                 }
             };

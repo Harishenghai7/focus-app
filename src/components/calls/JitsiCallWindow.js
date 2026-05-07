@@ -7,7 +7,7 @@ import styles from './JitsiCallWindow.module.css';
  */
 const JitsiCallWindow = ({ roomName, displayName, onEndCall, audioOnly = true }) => {
     useEffect(() => {
-        console.log('🎥 JitsiCallWindow mounted', { roomName, displayName });
+
 
         // Load Jitsi API
         const script = document.createElement('script');
@@ -15,7 +15,7 @@ const JitsiCallWindow = ({ roomName, displayName, onEndCall, audioOnly = true })
         script.async = true;
 
         script.onload = () => {
-            console.log('✅ Jitsi API loaded');
+
 
             const domain = 'meet.jit.si';
             const options = {
@@ -59,22 +59,22 @@ const JitsiCallWindow = ({ roomName, displayName, onEndCall, audioOnly = true })
 
             // Event listeners
             api.addEventListener('videoConferenceJoined', () => {
-                console.log('✅ Joined Jitsi conference');
+
             });
 
             api.addEventListener('videoConferenceLeft', () => {
-                console.log('📴 Left Jitsi conference');
+
                 if (onEndCall) onEndCall();
             });
 
             api.addEventListener('readyToClose', () => {
-                console.log('🚪 Jitsi ready to close');
+
                 if (onEndCall) onEndCall();
             });
 
             // Cleanup
             return () => {
-                console.log('🧹 Cleaning up Jitsi');
+
                 api.dispose();
             };
         };

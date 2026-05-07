@@ -1,0 +1,669 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   🔐 SOVEREIGN WHISPER - Royal Lavender Glassmorphism Theme
+   End-to-End Encrypted Messaging Interface
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────
+   CSS Variables - H2 Royal Lavender Palette
+   ───────────────────────────────────────────────────────────────────── */
+:root {
+    /* Core Lavender Palette */
+    --sovereign-lavender-primary: var(--primary);
+    --sovereign-lavender-light: var(--primary-light);
+    --sovereign-lavender-dark: var(--primary);
+    --sovereign-lavender-accent: var(--primary);
+    --sovereign-lavender-glow: rgba(var(--primary-rgb), 0.4);
+    
+    /* Obsidian Dark Theme */
+    --sovereign-obsidian: var(--bg-primary);
+    --sovereign-obsidian-light: var(--bg-primary);
+    --sovereign-obsidian-card: rgba(26, 26, 46, 0.6);
+    
+    /* Satin Silver Text */
+    --sovereign-satin: var(--text-primary);
+    --sovereign-satin-muted: rgba(232, 232, 240, 0.7);
+    --sovereign-satin-subtle: rgba(232, 232, 240, 0.5);
+    
+    /* Glassmorphism */
+    --sovereign-glass-bg: rgba(var(--primary-rgb), 0.05);
+    --sovereign-glass-border: rgba(var(--primary-rgb), 0.2);
+    --sovereign-glass-blur: blur(25px);
+    
+    /* Trust Shield */
+    --trust-shield-gold: var(--warning);
+    --trust-shield-glow: rgba(255, 215, 0, 0.3);
+    
+    /* Status Colors */
+    --status-sent: var(--primary);
+    --status-delivered: var(--primary);
+    --status-read: var(--success);
+    
+    /* Shadows */
+    --sovereign-shadow: 0 8px 32px rgba(var(--primary-rgb), 0.15);
+    --sovereign-shadow-strong: 0 12px 48px rgba(var(--primary-rgb), 0.25);
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Chat Container - Glassmorphism Background
+   ───────────────────────────────────────────────────────────────────── */
+.sovereignChatPane {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    background: var(--bg-primary);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Ambient background glow */
+.sovereignChatPane::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+        ellipse at 50% 0%,
+        rgba(var(--primary-rgb), 0.08) 0%,
+        transparent 50%
+    );
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Chat Header - Glassmorphism Bar
+   ───────────────────────────────────────────────────────────────────── */
+.sovereignHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: var(--sovereign-glass-bg);
+    backdrop-filter: var(--sovereign-glass-blur);
+    -webkit-backdrop-filter: var(--sovereign-glass-blur);
+    border-bottom: 1px solid var(--sovereign-glass-border);
+    position: relative;
+    z-index: 10;
+}
+
+.sovereignHeaderLeft {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sovereignHeaderInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.sovereignUsername {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--sovereign-satin);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sovereignStatus {
+    font-size: 13px;
+    color: var(--sovereign-satin-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sovereignStatusDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--sovereign-lavender-light);
+    box-shadow: 0 0 8px var(--sovereign-lavender-glow);
+    animation: sovereignPulse 2s ease-in-out infinite;
+}
+
+.sovereignStatusDot.online {
+    background: var(--success);
+    box-shadow: 0 0 8px rgba(0, 230, 118, 0.5);
+}
+
+@keyframes sovereignPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Trust Shield Badge
+   ───────────────────────────────────────────────────────────────────── */
+.trustShieldBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, var(--trust-shield-gold), var(--warning));
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--trust-shield-glow);
+    animation: trustShieldGlow 3s ease-in-out infinite;
+}
+
+.trustShieldBadge svg {
+    width: 12px;
+    height: 12px;
+    color: var(--sovereign-obsidian);
+}
+
+@keyframes trustShieldGlow {
+    0%, 100% { box-shadow: 0 0 8px var(--trust-shield-glow); }
+    50% { box-shadow: 0 0 16px var(--trust-shield-glow), 0 0 24px rgba(255, 215, 0, 0.2); }
+}
+
+.encryptionIndicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: rgba(0, 230, 118, 0.1);
+    border: 1px solid rgba(0, 230, 118, 0.3);
+    border-radius: 12px;
+    font-size: 11px;
+    color: var(--success);
+    font-weight: 500;
+}
+
+.encryptionIndicator svg {
+    width: 12px;
+    height: 12px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Message List - Scrollable Area
+   ───────────────────────────────────────────────────────────────────── */
+.sovereignMessageList {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+    z-index: 1;
+    scrollbar-width: thin;
+    scrollbar-color: var(--sovereign-lavender-dark) transparent;
+}
+
+.sovereignMessageList::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sovereignMessageList::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sovereignMessageList::-webkit-scrollbar-thumb {
+    background: var(--sovereign-lavender-dark);
+    border-radius: 3px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Message Bubbles - Royal Lavender Design
+   ───────────────────────────────────────────────────────────────────── */
+.messageWrapper {
+    display: flex;
+    width: 100%;
+    margin-bottom: 4px;
+    animation: messageFadeIn 0.3s ease-out;
+}
+
+.messageWrapper.sent {
+    justify-content: flex-end;
+}
+
+.messageWrapper.received {
+    justify-content: flex-start;
+}
+
+@keyframes messageFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Sent Message Bubble - Royal Lavender Gradient */
+.messageBubbleSent {
+    max-width: 70%;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, 
+        rgba(var(--primary-rgb), 0.9) 0%, 
+        rgba(81, 45, 168, 0.95) 100%
+    );
+    border-radius: 18px;
+    border-bottom-right-radius: 4px;
+    color: var(--sovereign-satin);
+    font-size: 14px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    box-shadow: 
+        0 2px 8px rgba(var(--primary-rgb), 0.3),
+        inset 0 1px 0 rgba(var(--text-primary-rgb), 0.1);
+    position: relative;
+    backdrop-filter: blur(10px);
+    transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.messageBubbleSent:hover {
+    transform: translateY(-1px);
+    box-shadow: 
+        0 4px 14px rgba(var(--primary-rgb), 0.35),
+        inset 0 1px 0 rgba(var(--text-primary-rgb), 0.1);
+}
+
+/* Received Message Bubble - Deep Obsidian */
+.messageBubbleReceived {
+    max-width: 70%;
+    padding: 12px 16px;
+    background: var(--sovereign-obsidian-card);
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
+    border-radius: 18px;
+    border-bottom-left-radius: 4px;
+    color: var(--sovereign-satin);
+    font-size: 14px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    box-shadow: 0 2px 8px rgba(var(--bg-primary-rgb), 0.2);
+    backdrop-filter: blur(10px);
+    transition: transform 200ms ease, border-color 200ms ease;
+}
+
+.messageBubbleReceived:hover {
+    transform: translateY(-1px);
+    border-color: rgba(var(--primary-rgb), 0.35);
+}
+
+/* Message with lavender border highlight */
+.messageBubbleEncrypted {
+    border: 1px solid rgba(var(--primary-rgb), 0.5);
+    box-shadow: 
+        0 2px 8px rgba(var(--primary-rgb), 0.3),
+        inset 0 0 20px rgba(var(--primary-rgb), 0.05);
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Message Meta (Time, Status)
+   ───────────────────────────────────────────────────────────────────── */
+.messageMeta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--sovereign-satin-subtle);
+}
+
+.messageTime {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Status Ticks - Lavender Double-Tick */
+.statusTicks {
+    display: flex;
+    align-items: center;
+}
+
+.statusTicks svg {
+    width: 14px;
+    height: 14px;
+}
+
+.statusSent {
+    color: var(--sovereign-satin-subtle);
+}
+
+.statusDelivered {
+    color: var(--status-delivered);
+}
+
+.statusRead {
+    color: var(--status-read);
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Input Bar - Floating Glass Capsule
+   ───────────────────────────────────────────────────────────────────── */
+.sovereignInputContainer {
+    padding: 12px 16px 20px;
+    background: transparent;
+    position: relative;
+    z-index: 10;
+}
+
+.sovereignInputBar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    background: var(--sovereign-obsidian-card);
+    backdrop-filter: var(--sovereign-glass-blur);
+    -webkit-backdrop-filter: var(--sovereign-glass-blur);
+    border: 1px solid var(--sovereign-glass-border);
+    border-radius: 28px;
+    box-shadow: var(--sovereign-shadow);
+    transition: all 0.3s ease;
+}
+
+.sovereignInputBar:focus-within {
+    border-color: var(--sovereign-lavender-accent);
+    box-shadow: 
+        var(--sovereign-shadow),
+        0 0 20px var(--sovereign-lavender-glow);
+}
+
+.sovereignInputBar.typing {
+    border-color: var(--sovereign-lavender-light);
+    box-shadow: 
+        var(--sovereign-shadow-strong),
+        0 0 30px var(--sovereign-lavender-glow);
+}
+
+.sovereignInput {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--sovereign-satin);
+    font-size: 15px;
+    padding: 8px 0;
+    resize: none;
+    min-height: 24px;
+    max-height: 120px;
+    font-family: inherit;
+}
+
+.sovereignInput::placeholder {
+    color: var(--sovereign-satin-subtle);
+}
+
+/* Input action buttons */
+.inputButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    color: var(--sovereign-satin-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.inputButton:hover {
+    background: rgba(var(--primary-rgb), 0.2);
+    color: var(--sovereign-satin);
+}
+
+.inputButton.send {
+    background: linear-gradient(135deg, var(--sovereign-lavender-primary), var(--sovereign-lavender-dark));
+    color: white;
+    box-shadow: 0 2px 8px var(--sovereign-lavender-glow);
+    transition: all 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.inputButton.send:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 20px var(--sovereign-lavender-glow);
+}
+
+.inputButton.send:active {
+    transform: scale(0.95);
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Typing Indicator
+   ───────────────────────────────────────────────────────────────────── */
+.typingIndicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+}
+
+.typingDots {
+    display: flex;
+    gap: 4px;
+}
+
+.typingDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--sovereign-lavender-light);
+    animation: typingBounce 1.4s ease-in-out infinite;
+}
+
+.typingDot:nth-child(1) { animation-delay: 0s; }
+.typingDot:nth-child(2) { animation-delay: 0.2s; }
+.typingDot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-8px); }
+}
+
+.typingText {
+    font-size: 13px;
+    color: var(--sovereign-lavender-light);
+    font-style: italic;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Empty State
+   ───────────────────────────────────────────────────────────────────── */
+.sovereignEmptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 40px;
+    text-align: center;
+    color: var(--sovereign-satin-muted);
+}
+
+.sovereignEmptyIcon {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+    opacity: 0.3;
+    color: var(--sovereign-lavender-light);
+}
+
+.sovereignEmptyTitle {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--sovereign-satin);
+    margin-bottom: 8px;
+}
+
+.sovereignEmptyText {
+    font-size: 14px;
+    color: var(--sovereign-satin-subtle);
+    max-width: 300px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Date Divider
+   ───────────────────────────────────────────────────────────────────── */
+.dateDivider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+    position: relative;
+}
+
+.dateDivider::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--sovereign-glass-border),
+        transparent
+    );
+}
+
+.dateDividerText {
+    background: var(--sovereign-obsidian-light);
+    padding: 4px 16px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: var(--sovereign-satin-muted);
+    position: relative;
+    z-index: 1;
+    border: 1px solid var(--sovereign-glass-border);
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Reply Preview
+   ───────────────────────────────────────────────────────────────────── */
+.replyPreview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    margin: 0 16px 8px;
+    background: rgba(var(--primary-rgb), 0.1);
+    border-left: 3px solid var(--sovereign-lavender-primary);
+    border-radius: 8px;
+}
+
+.replyPreviewText {
+    flex: 1;
+    font-size: 13px;
+    color: var(--sovereign-satin-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.replyPreviewClose {
+    background: none;
+    border: none;
+    color: var(--sovereign-satin-subtle);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.replyPreviewClose:hover {
+    color: var(--sovereign-satin);
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Loading State
+   ───────────────────────────────────────────────────────────────────── */
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 16px;
+}
+
+.loadingSpinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--sovereign-glass-border);
+    border-top-color: var(--sovereign-lavender-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loadingText {
+    font-size: 14px;
+    color: var(--sovereign-satin-muted);
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Responsive Adjustments
+   ───────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .sovereignHeader {
+        padding: 10px 16px;
+    }
+    
+    .sovereignMessageList {
+        padding: 12px;
+    }
+    
+    .messageBubbleSent,
+    .messageBubbleReceived {
+        max-width: 85%;
+        padding: 10px 14px;
+    }
+    
+    .sovereignInputContainer {
+        padding: 8px 12px 16px;
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Animations
+   ───────────────────────────────────────────────────────────────────── */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animateFadeIn {
+    animation: fadeInUp 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Accessibility — Reduced Motion
+   ───────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    .messageWrapper,
+    .animateFadeIn {
+        animation: none;
+    }
+
+    .typingDot {
+        animation: none;
+    }
+
+    .sovereignStatusDot,
+    .trustShieldBadge {
+        animation: none;
+    }
+}

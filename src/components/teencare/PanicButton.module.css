@@ -5,7 +5,7 @@
     align-items: center;
     gap: var(--space-3);
     padding: 14px 24px;
-    background: linear-gradient(135deg, var(--error) 0%, #dc2626 100%);
+    background: linear-gradient(135deg, var(--error) 0%, var(--error) 100%);
     color: var(--text-primary);
     border: none;
     border-radius: var(--radius-full);
@@ -13,7 +13,7 @@
     font-weight: var(--font-bold);
     font-family: var(--font-primary);
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    box-shadow: 0 4px 12px rgba(var(--error-rgb), 0.4);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: fixed;
     bottom: var(--space-6);
@@ -25,7 +25,7 @@
 
 .panicButton:hover:not(:disabled) {
     transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.6);
+    box-shadow: 0 8px 20px rgba(var(--error-rgb), 0.6);
 }
 
 .panicButton:active:not(:disabled) {
@@ -62,7 +62,7 @@
 
 /* Activated State */
 .activated {
-    background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+    background: linear-gradient(135deg, var(--success) 0%, var(--glass-bg-solid) 100%);
     flex-direction: column;
     padding: var(--space-5) var(--space-8);
     cursor: default;
@@ -104,7 +104,7 @@
 
 .activatedText p {
     font-size: var(--font-xs);
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(var(--text-primary-rgb), 0.9);
     margin: 0;
 }
 

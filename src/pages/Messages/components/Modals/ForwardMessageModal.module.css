@@ -8,7 +8,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(var(--bg-primary-rgb), 0.8);
     backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
@@ -41,7 +41,7 @@
 .header h2 {
     font-size: 24px;
     font-weight: 700;
-    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin: 0;
@@ -81,7 +81,7 @@
 
 .previewContent {
     font-size: 15px;
-    color: #f8f7ff;
+    color: var(--text-primary);
     line-height: 1.5;
     max-height: 60px;
     overflow: hidden;
@@ -117,8 +117,8 @@
 }
 
 .conversationCard.selected {
-    background: rgba(139, 92, 246, 0.15);
-    border-color: #8b5cf6;
+    background: rgba(var(--primary-rgb), 0.15);
+    border-color: var(--primary);
 }
 
 .checkbox {
@@ -134,8 +134,8 @@
 }
 
 .conversationCard.selected .checkbox {
-    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
-    border-color: #8b5cf6;
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
+    border-color: var(--primary);
     color: white;
 }
 
@@ -147,7 +147,7 @@
 .name {
     font-size: 16px;
     font-weight: 600;
-    color: #f8f7ff;
+    color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -184,7 +184,7 @@
 
 .forwardButton {
     padding: 12px 24px;
-    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
     border: none;
     border-radius: 12px;
     color: white;

@@ -5,7 +5,7 @@
     width: 70px;
     height: 70px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #a78bfa 0%, #c084fc 50%, #ee7bfa 100%);
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-light) 50%, var(--primary-light) 100%);
     border: none;
     cursor: pointer;
     display: flex;
@@ -26,8 +26,8 @@
     inset: 0;
     border-radius: 50%;
     padding: 3px;
-    background: linear-gradient(135deg, #a78bfa, #c084fc, #ee7bfa, #a78bfa);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    background: linear-gradient(135deg, var(--primary-light), var(--primary-light), var(--primary-light), var(--primary-light));
+    -webkit-mask: linear-gradient(var(--text-primary) 0 0) content-box, linear-gradient(var(--text-primary) 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     animation: rotate 3s linear infinite;
@@ -59,7 +59,7 @@
     width: 42px;
     height: 42px;
     object-fit: contain;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+    filter: drop-shadow(0 2px 8px rgba(var(--bg-primary-rgb), 0.3));
     animation: sparkle 2s ease-in-out infinite;
 }
 
@@ -76,7 +76,7 @@
     position: absolute;
     top: -4px;
     right: -4px;
-    background: linear-gradient(135deg, #ef4444 0%, #ff6b6b 100%);
+    background: linear-gradient(135deg, var(--error) 0%, var(--error) 100%);
     color: white;
     font-size: 0.7rem;
     font-weight: 700;
@@ -135,7 +135,7 @@
     0%,
     100% {
         transform: scale(1) rotate(0deg);
-        filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) brightness(1);
+        filter: drop-shadow(0 2px 8px rgba(var(--bg-primary-rgb), 0.3)) brightness(1);
     }
 
     50% {

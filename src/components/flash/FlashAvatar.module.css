@@ -3,9 +3,9 @@
    ========================================================== */
 
 @keyframes ringPulse {
-    0%   { box-shadow: 0 0 0 0 rgba(126, 87, 194, 0.6); }
-    70%  { box-shadow: 0 0 0 6px rgba(126, 87, 194, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(126, 87, 194, 0); }
+    0%   { box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0.6); }
+    70%  { box-shadow: 0 0 0 6px rgba(var(--primary-rgb), 0); }
+    100% { box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0); }
 }
 
 @keyframes flashFadeIn {
@@ -54,7 +54,7 @@
 
 /* Unseen — gradient ring */
 .ringUnseen {
-    background: linear-gradient(135deg, #7E57C2, #EC4899, #F97316);
+    background: linear-gradient(135deg, var(--primary), var(--error), var(--warning));
 }
 
 /* Pulse on unseen ring */
@@ -64,7 +64,7 @@
 
 /* Watched — subtle grey ring */
 .ringWatched {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(var(--text-primary-rgb), 0.15);
 }
 
 /* Inner: the actual avatar container */
@@ -72,7 +72,7 @@
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background: var(--bg-primary, #1a0f2e);
+    background: var(--bg-primary, var(--bg-elevated));
     padding: 2px;
     display: flex;
     align-items: center;
@@ -84,7 +84,7 @@
 .label {
     font-size: 0.68rem;
     font-weight: 500;
-    color: var(--text-secondary, #e9d5ff);
+    color: var(--text-secondary, var(--primary-light));
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -99,10 +99,10 @@
     right: 4px;
     width: 20px;
     height: 20px;
-    background: var(--royal-purple, #7E57C2);
-    border: 2.5px solid var(--bg-primary, #1a0f2e);
+    background: var(--royal-purple, var(--primary));
+    border: 2.5px solid var(--bg-primary, var(--bg-elevated));
     border-radius: 50%;
-    color: #fff;
+    color: var(--text-primary);
     font-size: 14px;
     font-weight: 700;
     line-height: 1;
@@ -110,5 +110,5 @@
     align-items: center;
     justify-content: center;
     z-index: 2;
-    box-shadow: 0 0 8px rgba(126, 87, 194, 0.6);
+    box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.6);
 }

@@ -4,7 +4,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(var(--bg-primary-rgb), 0.6);
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
@@ -17,13 +17,13 @@
     width: 90%;
     max-width: 500px;
     max-height: 85vh;
-    background: rgba(255, 255, 255, 0.98);
+    background: rgba(var(--text-primary-rgb), 0.98);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(139, 92, 246, 0.2);
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
     border-radius: 20px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 20px 60px rgba(139, 92, 246, 0.3);
+    box-shadow: 0 20px 60px rgba(var(--primary-rgb), 0.3);
     animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -32,14 +32,14 @@
     align-items: center;
     justify-content: space-between;
     padding: 20px 24px;
-    border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.1);
 }
 
 .header h2 {
     margin: 0;
     font-size: 20px;
     font-weight: 700;
-    color: #1f2937;
+    color: var(--bg-secondary);
 }
 
 .closeButton {
@@ -48,7 +48,7 @@
     border: none;
     background: transparent;
     border-radius: 50%;
-    color: #9ca3af;
+    color: var(--text-muted);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -57,13 +57,13 @@
 }
 
 .closeButton:hover {
-    background: rgba(139, 92, 246, 0.1);
-    color: #8b5cf6;
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
 }
 
 .preview {
     padding: 16px 24px;
-    border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.1);
 }
 
 .preview img,
@@ -78,7 +78,7 @@
 .preview p {
     margin: 0;
     font-size: 14px;
-    color: #6b7280;
+    color: var(--text-muted);
 }
 
 .checkbox {
@@ -88,7 +88,7 @@
     padding: 12px 24px;
     cursor: pointer;
     font-size: 14px;
-    color: #6b7280;
+    color: var(--text-muted);
 }
 
 .checkbox input[type="checkbox"] {
@@ -104,24 +104,24 @@
 .captionInput textarea {
     width: 100%;
     padding: 12px;
-    border: 1px solid rgba(139, 92, 246, 0.2);
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
     border-radius: 12px;
     font-size: 14px;
     font-family: inherit;
     resize: none;
-    background: rgba(139, 92, 246, 0.03);
+    background: rgba(var(--primary-rgb), 0.03);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .captionInput textarea:focus {
     outline: none;
-    border-color: #8b5cf6;
+    border-color: var(--primary);
     background: white;
 }
 
 .searchSection {
     padding: 0 24px 16px;
-    border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.1);
 }
 
 .searchBar {
@@ -129,19 +129,19 @@
     align-items: center;
     gap: 12px;
     padding: 12px 16px;
-    background: rgba(139, 92, 246, 0.05);
-    border: 1px solid rgba(139, 92, 246, 0.1);
+    background: rgba(var(--primary-rgb), 0.05);
+    border: 1px solid rgba(var(--primary-rgb), 0.1);
     border-radius: 12px;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .searchBar:focus-within {
     background: white;
-    border-color: #8b5cf6;
+    border-color: var(--primary);
 }
 
 .searchBar svg {
-    color: #8b5cf6;
+    color: var(--primary);
     flex-shrink: 0;
 }
 
@@ -165,7 +165,7 @@
     align-items: center;
     gap: 6px;
     padding: 6px 12px;
-    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--text-muted) 100%);
     color: white;
     border-radius: 20px;
     font-size: 13px;
@@ -176,7 +176,7 @@
     width: 18px;
     height: 18px;
     border: none;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(var(--text-primary-rgb), 0.2);
     border-radius: 50%;
     color: white;
     cursor: pointer;
@@ -188,7 +188,7 @@
 }
 
 .chip button:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(var(--text-primary-rgb), 0.3);
 }
 
 .usersList {
@@ -202,7 +202,7 @@
 }
 
 .usersList::-webkit-scrollbar-thumb {
-    background: rgba(139, 92, 246, 0.2);
+    background: rgba(var(--primary-rgb), 0.2);
     border-radius: 3px;
 }
 
@@ -210,7 +210,7 @@
     margin: 0 0 12px;
     font-size: 14px;
     font-weight: 600;
-    color: #9ca3af;
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -226,11 +226,11 @@
 }
 
 .userItem:hover {
-    background: rgba(139, 92, 246, 0.05);
+    background: rgba(var(--primary-rgb), 0.05);
 }
 
 .userItem.selected {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(var(--primary-rgb), 0.1);
 }
 
 .avatar {
@@ -253,7 +253,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--text-muted) 100%);
     color: white;
     font-size: 18px;
     font-weight: 600;
@@ -270,29 +270,29 @@
 .username {
     font-size: 15px;
     font-weight: 600;
-    color: #1f2937;
+    color: var(--bg-secondary);
 }
 
 .fullName {
     font-size: 13px;
-    color: #9ca3af;
+    color: var(--text-muted);
 }
 
 .userItem .checkbox {
     padding: 0;
     width: 24px;
     height: 24px;
-    border: 2px solid rgba(139, 92, 246, 0.3);
+    border: 2px solid rgba(var(--primary-rgb), 0.3);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #8b5cf6;
+    color: var(--primary);
 }
 
 .userItem.selected .checkbox {
-    background: #8b5cf6;
-    border-color: #8b5cf6;
+    background: var(--primary);
+    border-color: var(--primary);
     color: white;
 }
 
@@ -300,7 +300,7 @@
 .empty {
     text-align: center;
     padding: 24px;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-size: 14px;
 }
 
@@ -308,7 +308,7 @@
     display: flex;
     gap: 12px;
     padding: 20px 24px;
-    border-top: 1px solid rgba(139, 92, 246, 0.1);
+    border-top: 1px solid rgba(var(--primary-rgb), 0.1);
 }
 
 .cancelButton,
@@ -324,23 +324,23 @@
 }
 
 .cancelButton {
-    background: rgba(139, 92, 246, 0.1);
-    color: #8b5cf6;
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
 }
 
 .cancelButton:hover {
-    background: rgba(139, 92, 246, 0.15);
+    background: rgba(var(--primary-rgb), 0.15);
 }
 
 .forwardButton {
-    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--text-muted) 100%);
     color: white;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
 }
 
 .forwardButton:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 6px 20px rgba(var(--primary-rgb), 0.4);
 }
 
 .forwardButton:disabled {

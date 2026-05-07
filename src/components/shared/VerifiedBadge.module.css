@@ -1,5 +1,107 @@
+/* ==========================================================
+   VerifiedBadge — Trust Shield Sovereign Mirror
+   ========================================================== */
+
+.badgeContainer {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    vertical-align: middle;
+}
+
 .badge {
     display: inline-block;
     vertical-align: middle;
     margin-left: 4px;
+    filter: drop-shadow(0 0 4px rgba(var(--primary-rgb), 0.4));
+}
+
+/* Trust Shield — Sovereign Pulse Effect */
+.trustShield {
+    margin-left: 6px;
+}
+
+.trustShield .badge {
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 0 8px rgba(var(--primary-rgb), 0.6));
+}
+
+.shimmer {
+    animation: shimmerRotate 3s linear infinite;
+}
+
+@keyframes shimmerRotate {
+    0% {
+        filter: drop-shadow(0 0 8px rgba(var(--primary-rgb), 0.6)) brightness(1);
+    }
+    50% {
+        filter: drop-shadow(0 0 16px rgba(167, 139, 250, 0.9)) brightness(1.2);
+    }
+    100% {
+        filter: drop-shadow(0 0 8px rgba(var(--primary-rgb), 0.6)) brightness(1);
+    }
+}
+
+/* Pulse Ring — Royal Lavender Glow */
+.pulseRing {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 1px solid rgba(var(--primary-rgb), 0.3);
+    animation: pulseRing 2s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes pulseRing {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.6;
+        border-color: rgba(var(--primary-rgb), 0.3);
+    }
+    50% {
+        transform: scale(1.15);
+        opacity: 0.2;
+        border-color: rgba(167, 139, 250, 0.6);
+    }
+}
+
+/* Conic gradient shimmer for badge background */
+.trustShield::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    padding: 2px;
+    background: conic-gradient(
+        from 0deg,
+        transparent 0%,
+        rgba(var(--primary-rgb), 0.6) 20%,
+        rgba(167, 139, 250, 0.8) 40%,
+        transparent 60%,
+        rgba(var(--primary-rgb), 0.6) 80%,
+        transparent 100%
+    );
+    -webkit-mask:
+        linear-gradient(var(--text-primary) 0 0) content-box,
+        linear-gradient(var(--text-primary) 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+        linear-gradient(var(--text-primary) 0 0) content-box,
+        linear-gradient(var(--text-primary) 0 0);
+    mask-composite: exclude;
+    animation: badgeShimmer 4s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes badgeShimmer {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }

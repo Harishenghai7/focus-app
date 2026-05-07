@@ -9,7 +9,9 @@ const VideoPlayer = ({ src, isActive, onEnded }) => {
 
     useEffect(() => {
         if (isActive) {
-            videoRef.current.play().catch(e => console.log('Autoplay prevented', e));
+            videoRef.current.play().catch(() => {
+                // Autoplay prevented
+            });
             setIsPlaying(true);
         } else {
             videoRef.current.pause();

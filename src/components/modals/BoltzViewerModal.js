@@ -1,9 +1,13 @@
-import React from 'react';
-import { X, Heart, MessageCircle, Share2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { X } from 'lucide-react';
 import styles from './BoltzViewerModal.module.css';
 import Avatar from '../shared/Avatar';
+import InteractionBar from '../shared/InteractionBar';
+import SovereignCommentSheet from '../comments/SovereignCommentSheet';
 
 const BoltzViewerModal = ({ post, onClose }) => {
+    const [showComments, setShowComments] = useState(false);
+    
     if (!post) return null;
 
     return (
@@ -25,18 +29,11 @@ const BoltzViewerModal = ({ post, onClose }) => {
 
                 <div className={styles.overlayContent}>
                     <div className={styles.sidebar}>
-                        <div className={styles.actionButton}>
-                            <Heart size={28} fill="white" />
-                            <span>{post.likes_count}</span>
-                        </div>
-                        <div className={styles.actionButton}>
-                            <MessageCircle size={28} fill="white" />
-                            <span>{post.comments_count}</span>
-                        </div>
-                        <div className={styles.actionButton}>
-                            <Share2 size={28} fill="white" />
-                            <span>Share</span>
-                        </div>
+                        <InteractionBar
+                            item={post}
+                            type="boltz"
+                            onCommentsClick={() => setShowComments(true)}
+                        />
                     </div>
 
                     <div className={styles.bottomInfo}>
@@ -49,6 +46,13 @@ const BoltzViewerModal = ({ post, onClose }) => {
                         </div>
                     </div>
                 </div>
+
+                <SovereignCommentSheet
+                    isOpen={showComments}
+                    onClose={() => setShowComments(false)}
+                    targetId={post.id}
+                    targetType="boltz"
+                />
             </div>
         </div>
     );

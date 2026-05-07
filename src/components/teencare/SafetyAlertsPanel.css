@@ -15,7 +15,7 @@
 .alerts-header h2 {
     font-size: 22px;
     font-weight: 700;
-    color: var(--text-primary, #1f2937);
+    color: var(--text-primary, var(--bg-secondary));
     margin: 0;
 }
 
@@ -26,11 +26,11 @@
 
 .filter-select {
     padding: 8px 16px;
-    border: 2px solid var(--border-color, #e5e7eb);
+    border: 2px solid var(--border-color, var(--text-secondary));
     border-radius: 10px;
     font-size: 13px;
     font-weight: 600;
-    color: var(--text-primary, #1f2937);
+    color: var(--text-primary, var(--bg-secondary));
     background: white;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -38,8 +38,8 @@
 
 .filter-select:focus {
     outline: none;
-    border-color: var(--primary-color, #8b5cf6);
-    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+    border-color: var(--primary-color, var(--primary));
+    box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.1);
 }
 
 /* Alerts List */
@@ -57,12 +57,12 @@
 }
 
 .alerts-list::-webkit-scrollbar-track {
-    background: #f3f4f6;
+    background: var(--text-primary);
     border-radius: 10px;
 }
 
 .alerts-list::-webkit-scrollbar-thumb {
-    background: #d1d5db;
+    background: var(--text-secondary);
     border-radius: 10px;
 }
 
@@ -76,29 +76,29 @@
 }
 
 .alert-card.unread {
-    background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
+    background: linear-gradient(135deg, var(--warning) 0%, var(--warning) 100%);
     box-shadow: 0 4px 12px rgba(251, 191, 36, 0.15);
 }
 
 .alert-card.critical {
-    border-color: #ef4444;
+    border-color: var(--error);
 }
 
 .alert-card.high {
-    border-color: #f59e0b;
+    border-color: var(--warning);
 }
 
 .alert-card.medium {
-    border-color: #eab308;
+    border-color: var(--warning);
 }
 
 .alert-card.low {
-    border-color: #10b981;
+    border-color: var(--glass-bg-solid);
 }
 
 .alert-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 24px rgba(var(--bg-primary-rgb), 0.1);
 }
 
 /* Alert Header Content */
@@ -130,7 +130,7 @@
 
 .alert-time {
     font-size: 12px;
-    color: var(--text-tertiary, #9ca3af);
+    color: var(--text-tertiary, var(--text-muted));
     font-weight: 500;
 }
 
@@ -138,13 +138,13 @@
 .alert-content h3 {
     font-size: 16px;
     font-weight: 700;
-    color: var(--text-primary, #1f2937);
+    color: var(--text-primary, var(--bg-secondary));
     margin: 0 0 8px;
 }
 
 .alert-content p {
     font-size: 14px;
-    color: var(--text-secondary, #6b7280);
+    color: var(--text-secondary, var(--text-muted));
     line-height: 1.6;
     margin: 0 0 12px;
 }
@@ -155,20 +155,20 @@
     gap: 8px;
     margin-bottom: 12px;
     padding: 8px 12px;
-    background: var(--background-secondary, #f3f4f6);
+    background: var(--background-secondary, var(--text-primary));
     border-radius: 8px;
 }
 
 .info-label {
     font-size: 12px;
     font-weight: 600;
-    color: var(--text-secondary, #6b7280);
+    color: var(--text-secondary, var(--text-muted));
 }
 
 .info-value {
     font-size: 13px;
     font-weight: 600;
-    color: var(--primary-color, #8b5cf6);
+    color: var(--primary-color, var(--primary));
 }
 
 /* Confidence Score */
@@ -182,21 +182,21 @@
 .confidence-label {
     font-size: 12px;
     font-weight: 600;
-    color: var(--text-secondary, #6b7280);
+    color: var(--text-secondary, var(--text-muted));
     white-space: nowrap;
 }
 
 .confidence-bar {
     flex: 1;
     height: 6px;
-    background: #e5e7eb;
+    background: var(--text-secondary);
     border-radius: 10px;
     overflow: hidden;
 }
 
 .confidence-fill {
     height: 100%;
-    background: linear-gradient(90deg, #8b5cf6 0%, #7c3aed 100%);
+    background: linear-gradient(90deg, var(--primary) 0%, var(--primary) 100%);
     border-radius: 10px;
     transition: width 0.3s ease;
 }
@@ -204,7 +204,7 @@
 .confidence-value {
     font-size: 12px;
     font-weight: 700;
-    color: var(--primary-color, #8b5cf6);
+    color: var(--primary-color, var(--primary));
     white-space: nowrap;
 }
 
@@ -214,7 +214,7 @@
     gap: 8px;
     margin-top: 16px;
     padding-top: 16px;
-    border-top: 1px solid var(--border-color, #e5e7eb);
+    border-top: 1px solid var(--border-color, var(--text-secondary));
 }
 
 .action-btn {
@@ -229,32 +229,32 @@
 }
 
 .action-btn.review {
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-    color: #1e40af;
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-muted) 100%);
+    color: var(--glass-bg-solid);
 }
 
 .action-btn.review:hover {
-    background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+    background: linear-gradient(135deg, var(--text-muted) 0%, var(--text-muted) 100%);
     transform: translateY(-1px);
 }
 
 .action-btn.resolve {
-    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-    color: #065f46;
+    background: linear-gradient(135deg, var(--success) 0%, var(--success) 100%);
+    color: var(--bg-secondary);
 }
 
 .action-btn.resolve:hover {
-    background: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
+    background: linear-gradient(135deg, var(--success) 0%, var(--success) 100%);
     transform: translateY(-1px);
 }
 
 .action-btn.false {
-    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-    color: #991b1b;
+    background: linear-gradient(135deg, var(--error-dim) 0%, var(--error) 100%);
+    color: var(--error);
 }
 
 .action-btn.false:hover {
-    background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+    background: linear-gradient(135deg, var(--error) 0%, var(--error) 100%);
     transform: translateY(-1px);
 }
 
@@ -262,11 +262,11 @@
     display: inline-flex;
     align-items: center;
     padding: 8px 16px;
-    background: var(--background-secondary, #f3f4f6);
+    background: var(--background-secondary, var(--text-primary));
     border-radius: 10px;
     font-size: 13px;
     font-weight: 600;
-    color: var(--text-secondary, #6b7280);
+    color: var(--text-secondary, var(--text-muted));
 }
 
 /* Empty Alerts */
@@ -283,13 +283,13 @@
 .empty-alerts h3 {
     font-size: 22px;
     font-weight: 700;
-    color: #10b981;
+    color: var(--glass-bg-solid);
     margin: 0 0 8px;
 }
 
 .empty-alerts p {
     font-size: 15px;
-    color: var(--text-secondary, #6b7280);
+    color: var(--text-secondary, var(--text-muted));
     margin: 0;
 }
 

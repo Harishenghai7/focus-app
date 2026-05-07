@@ -48,7 +48,7 @@ const MODERATION_CONFIG = {
     
     // API Configuration (Sightengine fallback)
     SIGHTENGINE: {
-        ENABLED: Boolean(import.meta.env.VITE_SIGHTENGINE_API_USER && import.meta.env.VITE_SIGHTENGINE_API_SECRET),
+        ENABLED: Boolean(process.env.REACT_APP_SIGHTENGINE_API_USER && process.env.REACT_APP_SIGHTENGINE_API_SECRET),
         API_URL: 'https://api.sightengine.com/1.0/check.json',
         MODELS: 'nudity,wad,offensive,text-content,face-attributes,gore,qr-content',
     },
@@ -70,7 +70,7 @@ export const initializeModerationModels = async () => {
     if (modelsLoaded || modelsLoading) return;
     
     modelsLoading = true;
-    console.log('[ContentModeration] Initializing AI guardians...');
+
     
     try {
         // Load toxicity model for text analysis
@@ -88,7 +88,7 @@ export const initializeModerationModels = async () => {
         nsfwModel = await nsfwjs.load('/models/nsfwjs/', { type: 'graph' });
         
         modelsLoaded = true;
-        console.log('[ContentModeration] AI guardians ready');
+
     } catch (error) {
         console.error('[ContentModeration] Model initialization failed:', error);
         // Continue without models - will use API fallback
@@ -305,8 +305,8 @@ export const analyzeImageSightengine = async (file) => {
         const formData = new FormData();
         formData.append('media', file);
         formData.append('models', MODERATION_CONFIG.SIGHTENGINE.MODELS);
-        formData.append('api_user', import.meta.env.VITE_SIGHTENGINE_API_USER);
-        formData.append('api_secret', import.meta.env.VITE_SIGHTENGINE_API_SECRET);
+        formData.append('api_user', process.env.REACT_APP_SIGHTENGINE_API_USER);
+        formData.append('api_secret', process.env.REACT_APP_SIGHTENGINE_API_SECRET);
         
         const response = await fetch(MODERATION_CONFIG.SIGHTENGINE.API_URL, {
             method: 'POST',
@@ -572,16 +572,29 @@ export const performPurityScan = async (content) => {
  * @returns {Promise<Object>} Media scan results
  */
 const scanMediaFile = async (file) => {
+    // Guard against null/undefined file
+    if (!file) {
+        return {
+            fileName: 'unknown',
+            fileType: 'unknown',
+            isSafe: false,
+            safetyScore: 0,
+            violations: [{ type: 'INVALID_FILE', message: 'No file provided' }],
+            warnings: [],
+            qualityIssues: [],
+        };
+    }
+
     const result = {
-        fileName: file.name,
-        fileType: file.type,
+        fileName: file?.name || 'unknown',
+        fileType: file?.type || 'unknown',
         isSafe: true,
         safetyScore: 1.0,
         violations: [],
         warnings: [],
         qualityIssues: [],
     };
-    
+
     try {
         // 1. Check file type
         if (!isAllowedFileType(file)) {
@@ -778,6 +791,7 @@ const estimateBlur = (imageData, width, height) => {
 };
 
 const isAllowedFileType = (file) => {
+    if (!file || !file.type) return false;
     const allowedTypes = [
         'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
         'video/mp4', 'video/quicktime', 'video/webm'

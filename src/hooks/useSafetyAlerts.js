@@ -17,7 +17,7 @@ export const useSafetyAlerts = (teenId = null) => {
     // Fetch safety alerts
     const fetchAlerts = useCallback(async () => {
         if (!user) {
-            console.log('⚠️ useSafetyAlerts: No user found');
+
             setAlerts([]);
             setUnreadCount(0);
             setLoading(false);
@@ -26,7 +26,7 @@ export const useSafetyAlerts = (teenId = null) => {
 
         try {
             setLoading(true);
-            console.log('🔍 Fetching safety alerts for:', { userId: user.id, teenId });
+
 
             let query = supabase
                 .from('safety_alerts')
@@ -62,7 +62,7 @@ export const useSafetyAlerts = (teenId = null) => {
                 throw fetchError;
             }
 
-            console.log('✅ Safety alerts fetched:', data?.length || 0);
+
             setAlerts(data || []);
 
             // Count unread (status = 'new' or 'notified')
@@ -186,7 +186,7 @@ export const useSafetyAlerts = (teenId = null) => {
                     filter: teenId ? `teen_id=eq.${teenId}` : `parent_id=eq.${user.id}`
                 },
                 (payload) => {
-                    console.log('Safety alert change:', payload);
+
                     fetchAlerts();
                 }
             )

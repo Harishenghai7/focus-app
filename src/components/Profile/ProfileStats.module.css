@@ -1,60 +1,141 @@
 /* ==========================================================
-   ProfileStats — Focus App Premium
+   ProfileStats — Sovereign Mirror Glassmorphism
    ========================================================== */
 
 .stats {
     display: flex;
-    gap: 32px;
+    gap: var(--space-4);
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .stat {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
-    background: var(--glass-surface);
-    backdrop-filter: var(--blur-md);
-    -webkit-backdrop-filter: var(--blur-md);
-    border: 1px solid var(--glass-border);
-    padding: var(--space-3) var(--space-4);
+    gap: var(--space-1);
+    background: rgba(var(--text-primary-rgb), 0.04);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.08);
+    padding: var(--space-3) var(--space-5);
     cursor: pointer;
-    transition: transform var(--transition-bounce), box-shadow var(--transition-base), opacity 0.15s;
+    transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-sm);
-    min-width: 80px;
+    box-shadow: 0 4px 24px rgba(var(--bg-primary-rgb), 0.4), 0 0 0 1px rgba(var(--text-primary-rgb), 0.03);
+    min-width: 90px;
+    position: relative;
+    overflow: hidden;
 }
+
+/* Satin border shimmer effect */
+.stat::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+        135deg,
+        rgba(var(--text-primary-rgb), 0.1) 0%,
+        rgba(var(--primary-rgb), 0.2) 50%,
+        rgba(var(--text-primary-rgb), 0.1) 100%
+    );
+    -webkit-mask:
+        linear-gradient(var(--text-primary) 0 0) content-box,
+        linear-gradient(var(--text-primary) 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+        linear-gradient(var(--text-primary) 0 0) content-box,
+        linear-gradient(var(--text-primary) 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+
 .stat:hover { 
-    opacity: 0.9; 
     transform: translateY(-4px); 
-    box-shadow: var(--shadow-md); 
-    border-color: var(--primary-dim); 
+    box-shadow: 
+        0 8px 32px rgba(var(--bg-primary-rgb), 0.5),
+        0 0 30px rgba(var(--primary-rgb), 0.15);
+    border-color: rgba(var(--primary-rgb), 0.25);
+    background: rgba(var(--primary-rgb), 0.08);
 }
-.stat:active { transform: scale(0.95); }
-.stat:first-child { cursor: default; }
-.stat:first-child:hover { opacity: 1; transform: translateY(-4px); }
+
+.stat:hover::before {
+    opacity: 1;
+}
+
+.stat:active { transform: scale(0.96) translateY(-2px); }
+
+/* Posts stat (first one) is not clickable */
+.stat:first-child { 
+    cursor: default; 
+}
+
+.stat:first-child:hover { 
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(var(--bg-primary-rgb), 0.5);
+    border-color: rgba(var(--text-primary-rgb), 0.08);
+    background: rgba(var(--text-primary-rgb), 0.04);
+}
+
+.stat:first-child:hover::before {
+    opacity: 0;
+}
 
 .statValue {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--text-primary, #fff);
+    font-size: 1.25rem;
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
     letter-spacing: -0.02em;
     line-height: 1.1;
+    text-shadow: 0 0 20px rgba(var(--primary-rgb), 0.3);
 }
 
 .statLabel {
-    font-size: 0.78rem;
-    color: var(--text-muted, #888);
-    font-weight: 400;
-    text-transform: lowercase;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: var(--font-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
 }
 
+/* Royal Lavender glow on hover for clickable stats */
+.stat:not(:first-child):hover .statValue {
+    color: var(--primary-lavender);
+    text-shadow: 0 0 20px rgba(var(--primary-rgb), 0.5);
+}
+
+/* Responsive adjustments */
 @media (max-width: 640px) {
     .stats {
-        gap: 0;
+        gap: var(--space-2);
         width: 100%;
         justify-content: space-around;
     }
-    .statValue { font-size: 1rem; }
-    .statLabel  { font-size: 0.72rem; }
+    
+    .stat {
+        padding: var(--space-2) var(--space-3);
+        min-width: 70px;
+    }
+    
+    .statValue { 
+        font-size: 1.1rem; 
+    }
+    
+    .statLabel { 
+        font-size: 0.68rem;
+        letter-spacing: 0.05em;
+    }
+}
+
+/* Desktop hover state with satin glow */
+@media (min-width: 1024px) {
+    .stat:hover {
+        box-shadow: 
+            0 12px 40px rgba(var(--bg-primary-rgb), 0.5),
+            0 0 40px rgba(var(--primary-rgb), 0.2),
+            inset 0 1px 0 rgba(var(--text-primary-rgb), 0.1);
+    }
 }

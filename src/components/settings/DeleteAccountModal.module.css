@@ -108,7 +108,7 @@
 }
 
 .dangerButton:hover:not(:disabled) {
-    background: #ff3355 !important;
+    background: var(--error) !important;
     box-shadow: 0 0 20px rgba(255, 83, 120, 0.4) !important;
 }
 

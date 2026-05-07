@@ -77,7 +77,7 @@ const loadToxicityModel = async () => {
     // Threshold 0.7 = strict detection (free model, no API calls)
     toxicityModel = await toxicity.load(0.7, TOXICITY_LABELS);
     modelLoadState.toxicity.loaded = true;
-    console.log('[FreeModeration] ✅ Toxicity model loaded (100% free, client-side)');
+
   } catch (err) {
     modelLoadState.toxicity.error = err.message;
     console.warn('[FreeModeration] ⚠️ Toxicity model failed:', err.message);
@@ -105,7 +105,7 @@ const loadNsfwModel = async () => {
     // Load MobileNetV2 model (optimized for speed, runs on GPU if available)
     nsfwModel = await nsfwjs.load('/models/nsfwjs/', { size: 224 });
     modelLoadState.nsfw.loaded = true;
-    console.log('[FreeModeration] ✅ NSFW model loaded (100% free, client-side)');
+
   } catch (err) {
     modelLoadState.nsfw.error = err.message;
     console.warn('[FreeModeration] ⚠️ NSFW model failed:', err.message);
@@ -149,7 +149,7 @@ const loadTextClassifier = async () => {
       { quantized: true }
     );
     modelLoadState.classifier.loaded = true;
-    console.log('[FreeModeration] ✅ Transformers classifier loaded (100% free)');
+
   } catch (err) {
     modelLoadState.classifier.error = err.message;
     console.warn('[FreeModeration] ⚠️ Text classifier failed:', err.message);
@@ -390,7 +390,7 @@ export const useFreeModeration = () => {
     setError(null);
 
     try {
-      console.log('[FreeModeration] 🔍 Analyzing content (ZERO API COST)...');
+
 
       // Parallel analysis
       const [textAnalysis, imageAnalysis, advancedAnalysis] = await Promise.all([
@@ -415,7 +415,7 @@ export const useFreeModeration = () => {
       const result = { ...verdict, dbColumns };
       setLastVerdict(result);
 
-      console.log('[FreeModeration] ✅ Verdict:', verdict.moderationStatus, '| Confidence:', verdict.confidence);
+
 
       return result;
     } catch (err) {

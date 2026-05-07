@@ -89,7 +89,7 @@ class OfflineQueue {
      */
     async handleOnline() {
         this.isOnline = true;
-        console.log('📶 Back online! Syncing queued actions...');
+
         await this.syncQueue();
     }
 
@@ -98,7 +98,7 @@ class OfflineQueue {
      */
     handleOffline() {
         this.isOnline = false;
-        console.log('📴 Offline mode activated');
+
     }
 
     /**
@@ -134,7 +134,7 @@ class OfflineQueue {
         this.saveQueue();
         this.syncInProgress = false;
 
-        console.log(`✅ Synced ${successCount}/${actionsToSync.length} actions`);
+
         return { successCount, failedCount: failedActions.length };
     }
 

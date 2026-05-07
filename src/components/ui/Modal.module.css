@@ -3,7 +3,7 @@
 .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(var(--bg-primary-rgb), 0.8);
     backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
@@ -68,7 +68,7 @@
 }
 
 .closeBtn:hover {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(var(--primary-rgb), 0.1);
     color: var(--text-primary);
 }
 

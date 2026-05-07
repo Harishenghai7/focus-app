@@ -7,10 +7,10 @@
 .gridItem {
     aspect-ratio: 1 / 1;
     border-radius: 12px;
-    background: linear-gradient(90deg, rgba(126, 87, 194, 0.12) 25%, rgba(167, 139, 250, 0.24) 50%, rgba(126, 87, 194, 0.12) 75%);
+    background: linear-gradient(90deg, rgba(var(--primary-rgb), 0.12) 25%, rgba(167, 139, 250, 0.24) 50%, rgba(var(--primary-rgb), 0.12) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.3s linear infinite;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.08);
 }
 
 .profileWrap {
@@ -29,7 +29,7 @@
     width: 88px;
     height: 88px;
     border-radius: 999px;
-    background: linear-gradient(90deg, rgba(126, 87, 194, 0.12) 25%, rgba(167, 139, 250, 0.24) 50%, rgba(126, 87, 194, 0.12) 75%);
+    background: linear-gradient(90deg, rgba(var(--primary-rgb), 0.12) 25%, rgba(167, 139, 250, 0.24) 50%, rgba(var(--primary-rgb), 0.12) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.3s linear infinite;
 }
@@ -45,7 +45,7 @@
 .lineSmall {
     height: 12px;
     border-radius: 999px;
-    background: linear-gradient(90deg, rgba(126, 87, 194, 0.12) 25%, rgba(167, 139, 250, 0.24) 50%, rgba(126, 87, 194, 0.12) 75%);
+    background: linear-gradient(90deg, rgba(var(--primary-rgb), 0.12) 25%, rgba(167, 139, 250, 0.24) 50%, rgba(var(--primary-rgb), 0.12) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.3s linear infinite;
 }

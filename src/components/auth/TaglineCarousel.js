@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react';
 import styles from './TaglineCarousel.module.css';
 
 const taglines = [
-    "Meet the real people, not fake profiles",
-    "We offer features, not distractions",
-    "Your privacy, Your data, Your control",
-    "We value your time",
-    "Connect, Create, Inspire"
+    'Identity-first communities with real trust signals',
+    'Healthy discovery designed for meaningful interaction',
+    'Private by default, premium by experience, human by intent',
+    'Social connection with calmer systems and stronger safety'
 ];
 
 const TaglineCarousel = () => {
@@ -19,8 +18,8 @@ const TaglineCarousel = () => {
             setTimeout(() => {
                 setIndex((prevIndex) => (prevIndex + 1) % taglines.length);
                 setFade(true);
-            }, 500); // Wait for fade out
-        }, 4000); // Change every 4 seconds
+            }, 280);
+        }, 4400);
 
         return () => clearInterval(interval);
     }, []);

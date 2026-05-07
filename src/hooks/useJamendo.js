@@ -21,7 +21,7 @@ export const useJamendo = () => {
                     audioElementRef.current.pause();
                     audioElementRef.current.src = '';
                 } catch (err) {
-                    console.log('Cleanup error:', err);
+
                 }
             }
         };
@@ -48,11 +48,11 @@ export const useJamendo = () => {
                 }
             }
 
-            console.log('Fetching from:', `https://api.jamendo.com/v3.0/tracks/?${queryParams}`);
+
             const response = await fetch(`https://api.jamendo.com/v3.0/tracks/?${queryParams}`);
             const data = await response.json();
 
-            console.log('API Response:', data);
+
 
             if (data.results && Array.isArray(data.results)) {
 
@@ -66,7 +66,7 @@ export const useJamendo = () => {
                             track.audio ||
                             (track.id ? `https://mp3d.jamendo.com/?trackid=${track.id}&format=mp32&from=app-${CLIENT_ID}` : null);
 
-                        console.log(`Track: ${track.name}, Audio URL:`, audioUrl);
+
                         return {
                             ...track,
                             audio: audioUrl
@@ -76,10 +76,10 @@ export const useJamendo = () => {
 
                 // If no tracks with audio, use fallback
                 if (tracksWithAudio.length === 0) {
-                    console.log('No Jamendo tracks with audio');
+
                 }
 
-                console.log(`Loaded ${tracksWithAudio.length} tracks with audio`);
+
                 setTracks(tracksWithAudio);
 
                 if (tracksWithAudio.length === 0) {
@@ -88,13 +88,13 @@ export const useJamendo = () => {
             } else {
                 console.error('Invalid API response format:', data);
                 // Use fallback tracks on API error
-                console.log('Using fallback tracks due to API error');
+
                 setTracks([]);
             }
         } catch (err) {
             console.error('Jamendo API Error:', err);
             // Use local fallback on network error
-            console.log('Network error, using fallback tracks');
+
             setTracks([]);
         } finally {
             setLoading(false);
@@ -111,7 +111,7 @@ export const useJamendo = () => {
                 audio.src = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwfCzuJ0fPSeCgFJHfO8tiJOgkbaLjt55xMEw1Mp+XwtWEcBjiS2fLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwfCzuJ0fPSeCgFJHfO8tiJOgkbaLjt55xMEw1Mp+XwtWEcBjiS2fLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwfCzuJ0fPSeCgFJHfO8tiJOgkbaLjt55xMEw1Mp+XwtWEcBjiS2fLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwfCzuJ0fPSeCgFJHfO8tiJOgkbaLjt55xMEw1Mp+XwtWEcBjiS2fLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwfCzuJ0fPSeCgFJHfO8tiJOgkbaLjt55xMEw1Mp+XwtWEcBjiS2fLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwfCzuJ0fPSeCgFJHfO8tiJOgkbaLjt55xMEw1Mp+XwtWEcBjiS2fLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwfCzuJ0fPSeCgFJHfO8tiJOgkbaLjt55xMEw1Mp+XwtWEcBjiS2fLNeSsFJHfH8N2QQAoUXrTp66hVFA==';
 
                 audio.oncanplaythrough = () => {
-                    console.log('Audio system working correctly');
+
                 };
 
                 audio.onerror = (e) => {
@@ -167,13 +167,13 @@ export const useJamendo = () => {
                 (track.id ? `https://mp3d.jamendo.com/?trackid=${track.id}&format=mp32&from=app-${CLIENT_ID}` : null);
 
             if (!audioUrl) {
-                console.log('No audio URL available for track:', track.name);
+
                 setError('This track does not have a playable preview');
                 setIsPlaying(false);
                 return;
             }
 
-            console.log('Attempting to play audio from:', audioUrl);
+
 
             // Stop any currently playing audio WITHOUT creating new instance
             if (audioElementRef.current) {
@@ -195,7 +195,7 @@ export const useJamendo = () => {
 
             // Set the source
             audioElementRef.current.src = audioUrl;
-            console.log('Loading audio:', audioUrl);
+
 
             // Clear any previous handlers
             audioElementRef.current.onended = null;
@@ -203,7 +203,7 @@ export const useJamendo = () => {
 
             // Set new handlers
             audioElementRef.current.onended = () => {
-                console.log('Audio ended:', track.name);
+
                 setIsPlaying(false);
                 playPromiseRef.current = null;
             };
@@ -238,13 +238,13 @@ export const useJamendo = () => {
             if (playPromise !== undefined) {
                 playPromise
                     .then(() => {
-                        console.log('Playing:', track.name);
+
                         setIsPlaying(true);
                     })
                     .catch(error => {
                         // Auto-play policy or interrupted by pause
                         if (error.name === 'AbortError') {
-                            console.log('Playback aborted (likely due to rapid switching)');
+
                         } else {
                             console.error('Play error:', error.message);
                             setError('Playback failed: ' + error.message);
@@ -281,7 +281,7 @@ export const useJamendo = () => {
                 // Don't set to null - reuse the element
             }
         } catch (err) {
-            console.log('Error in stopPlayback:', err);
+
         }
         setIsPlaying(false);
         setCurrentTrack(null);

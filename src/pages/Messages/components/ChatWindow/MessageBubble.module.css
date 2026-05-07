@@ -34,13 +34,13 @@
     height: 32px;
     border-radius: 50%;
     flex-shrink: 0;
-    background: linear-gradient(135deg, rgba(167, 139, 250, 0.3), rgba(139, 92, 246, 0.3));
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.3), rgba(var(--primary-rgb), 0.3));
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 14px;
     font-weight: 600;
-    color: #a78bfa;
+    color: var(--primary-light);
     border: 2px solid rgba(167, 139, 250, 0.3);
 }
 
@@ -71,7 +71,7 @@
 .replyPreview {
     padding: 8px 12px;
     background: rgba(42, 27, 71, 0.4);
-    border-left: 3px solid #8b5cf6;
+    border-left: 3px solid var(--primary);
     border-radius: 8px 8px 0 0;
     font-size: 13px;
     color: rgba(248, 247, 255, 0.7);
@@ -85,7 +85,7 @@
 
 .replyAuthor {
     font-weight: 600;
-    color: #a78bfa;
+    color: var(--primary-light);
     margin-bottom: 2px;
 }
 
@@ -108,14 +108,14 @@
     background: var(--gradient-brand);
     color: white;
     border-bottom-right-radius: 4px;
-    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
+    box-shadow: 0 4px 16px rgba(var(--primary-rgb), 0.35);
 }
 
 .received .bubble {
     background: var(--glass-surface);
     backdrop-filter: var(--blur-md);
     -webkit-backdrop-filter: var(--blur-md);
-    color: #f8f7ff;
+    color: var(--text-primary);
     border: 1px solid var(--glass-border);
     border-bottom-left-radius: 4px;
 }
@@ -154,7 +154,7 @@
     width: 32px;
     height: 32px;
     border: 3px solid rgba(167, 139, 250, 0.2);
-    border-top-color: #a78bfa;
+    border-top-color: var(--primary-light);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -177,7 +177,7 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(var(--text-primary-rgb), 0.2);
     border: none;
     color: white;
     cursor: pointer;
@@ -188,7 +188,7 @@
 }
 
 .playButton:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(var(--text-primary-rgb), 0.3);
     transform: scale(1.05);
 }
 
@@ -203,7 +203,7 @@
 .waveBar {
     flex: 1;
     height: 100%;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(var(--text-primary-rgb), 0.3);
     border-radius: 2px;
     transition: height 0.1s ease;
 }
@@ -245,7 +245,7 @@
 
 .sharedContent:hover {
     background: rgba(42, 27, 71, 0.6);
-    border-color: #8b5cf6;
+    border-color: var(--primary);
 }
 
 .sharedThumbnail {
@@ -271,14 +271,14 @@
 .sharedType {
     font-size: 11px;
     text-transform: uppercase;
-    color: #a78bfa;
+    color: var(--primary-light);
     font-weight: 600;
 }
 
 .sharedTitle {
     font-size: 14px;
     font-weight: 600;
-    color: #f8f7ff;
+    color: var(--text-primary);
 }
 
 .sharedAuthor {
@@ -325,7 +325,7 @@
 }
 
 .statusIcon.seen {
-    color: #a78bfa;
+    color: var(--primary-light);
     filter: drop-shadow(0 0 4px rgba(167, 139, 250, 0.6));
 }
 
@@ -380,7 +380,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #f8f7ff;
+    color: var(--text-primary);
     font-size: 14px;
     transition: background var(--transition-base);
 }
@@ -390,11 +390,11 @@
 }
 
 .menuItem.danger {
-    color: #ef4444;
+    color: var(--error);
 }
 
 .menuItem.danger:hover {
-    background: rgba(239, 68, 68, 0.1);
+    background: rgba(var(--error-rgb), 0.1);
 }
 
 .menuIcon {

@@ -12,13 +12,15 @@
 }
 
 .badge-primary {
-    background: rgba(124, 58, 237, 0.2);
-    color: var(--neon-lavender);
+    background: var(--primary-dim);
+    color: var(--primary-light);
+    border: 1px solid var(--border-subtle);
 }
 
 .badge-success {
-    background: rgba(76, 175, 80, 0.2);
-    color: #4caf50;
+    background: var(--success-dim);
+    color: var(--success);
+    border: 1px solid rgba(var(--success-rgb), 0.3);
 }
 
 .badge-verified {

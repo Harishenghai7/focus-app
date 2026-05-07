@@ -3,7 +3,7 @@
 .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(var(--bg-primary-rgb), 0.85);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -25,13 +25,13 @@
     width: 100%;
     max-width: 540px;
     max-height: 90vh;
-    background: #1a1a1a;
+    background: var(--bg-secondary);
     border-radius: 12px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     animation: slideUp 0.3s ease;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 8px 32px rgba(var(--bg-primary-rgb), 0.6);
 }
 
 @keyframes slideUp {
@@ -52,14 +52,14 @@
     align-items: center;
     justify-content: space-between;
     padding: 16px 20px;
-    border-bottom: 1px solid #2a2a2a;
-    background: #1a1a1a;
+    border-bottom: 1px solid var(--bg-secondary);
+    background: var(--bg-secondary);
 }
 
 .backBtn {
     background: none;
     border: none;
-    color: #ffffff;
+    color: var(--text-primary);
     font-size: 24px;
     cursor: pointer;
     padding: 4px 8px;
@@ -68,13 +68,13 @@
 }
 
 .backBtn:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(var(--text-primary-rgb), 0.1);
 }
 
 .title {
     font-size: 16px;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-primary);
     margin: 0;
 }
 
@@ -88,8 +88,8 @@
     grid-template-columns: repeat(4, 1fr);
     gap: 0;
     padding: 24px 0;
-    border-bottom: 1px solid #2a2a2a;
-    background: #1a1a1a;
+    border-bottom: 1px solid var(--bg-secondary);
+    background: var(--bg-secondary);
 }
 
 .statItem {
@@ -100,13 +100,13 @@
 .statValue {
     font-size: 22px;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-primary);
     margin-bottom: 4px;
 }
 
 .statLabel {
     font-size: 11px;
-    color: #8e8e8e;
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.8px;
     font-weight: 600;
@@ -115,10 +115,10 @@
 /* Tabs */
 .tabs {
     display: flex;
-    border-bottom: 1px solid #2a2a2a;
+    border-bottom: 1px solid var(--bg-secondary);
     overflow-x: auto;
     scrollbar-width: none;
-    background: #1a1a1a;
+    background: var(--bg-secondary);
 }
 
 .tabs::-webkit-scrollbar {
@@ -132,7 +132,7 @@
     background: none;
     border: none;
     border-bottom: 2px solid transparent;
-    color: #8e8e8e;
+    color: var(--text-muted);
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
@@ -145,12 +145,12 @@
 }
 
 .tab:hover {
-    color: #ffffff;
+    color: var(--text-primary);
 }
 
 .tab.active {
-    color: #ffffff;
-    border-bottom-color: #ffffff;
+    color: var(--text-primary);
+    border-bottom-color: var(--text-primary);
 }
 
 .tabIcon {
@@ -162,12 +162,12 @@
 }
 
 .tabCount {
-    color: #8e8e8e;
+    color: var(--text-muted);
     font-size: 12px;
 }
 
 .tab.active .tabCount {
-    color: #ffffff;
+    color: var(--text-primary);
 }
 
 /* Content */
@@ -183,16 +183,16 @@
 }
 
 .content::-webkit-scrollbar-track {
-    background: #1a1a1a;
+    background: var(--bg-secondary);
 }
 
 .content::-webkit-scrollbar-thumb {
-    background: #3a3a3a;
+    background: var(--bg-elevated);
     border-radius: 4px;
 }
 
 .content::-webkit-scrollbar-thumb:hover {
-    background: #4a4a4a;
+    background: var(--bg-elevated);
 }
 
 .loading,
@@ -222,7 +222,7 @@
 }
 
 .loading p {
-    color: #8e8e8e;
+    color: var(--text-muted);
     font-size: 14px;
 }
 
@@ -235,13 +235,13 @@
 .emptyTitle {
     font-size: 16px;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-primary);
     margin: 0 0 8px 0;
 }
 
 .emptySubtext {
     font-size: 14px;
-    color: #8e8e8e;
+    color: var(--text-muted);
     max-width: 300px;
     line-height: 1.4;
 }
@@ -257,11 +257,11 @@
     gap: 12px;
     padding: 12px 16px;
     transition: background 0.2s;
-    border-bottom: 1px solid #1a1a1a;
+    border-bottom: 1px solid var(--bg-secondary);
 }
 
 .listItem:hover {
-    background: #1a1a1a;
+    background: var(--bg-secondary);
 }
 
 .listItem:last-child {
@@ -290,7 +290,7 @@
 .username {
     font-size: 14px;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-primary);
     display: flex;
     align-items: center;
     gap: 4px;
@@ -303,19 +303,19 @@
 }
 
 .verified {
-    color: #0095f6;
+    color: var(--info);
     font-size: 14px;
 }
 
 .fullName {
     font-size: 13px;
-    color: #8e8e8e;
+    color: var(--text-muted);
     margin-bottom: 4px;
 }
 
 .replyContent {
     font-size: 14px;
-    color: #ffffff;
+    color: var(--text-primary);
     margin: 6px 0 4px 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -327,15 +327,15 @@
 
 .time {
     font-size: 12px;
-    color: #8e8e8e;
+    color: var(--text-muted);
 }
 
 .followBtn {
     padding: 7px 16px;
-    background: #0095f6;
+    background: var(--info);
     border: none;
     border-radius: 8px;
-    color: #ffffff;
+    color: var(--text-primary);
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -344,7 +344,7 @@
 }
 
 .followBtn:hover {
-    background: #1877f2;
+    background: var(--info);
 }
 
 .followBtn:active {

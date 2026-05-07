@@ -10,14 +10,14 @@
 }
 
 .title {
-    color: #8B5CF6;
+    color: var(--primary);
     font-size: 26px;
     font-weight: 700;
     margin-bottom: 8px;
 }
 
 .subtitle {
-    color: #6B7280;
+    color: var(--text-muted);
     font-size: 15px;
 }
 
@@ -29,7 +29,7 @@
 .searchInput {
     width: 100%;
     padding: 12px 40px 12px 16px;
-    border: 2px solid #E5E7EB;
+    border: 2px solid var(--text-secondary);
     border-radius: 12px;
     font-size: 15px;
     transition: all 0.3s;
@@ -37,8 +37,8 @@
 
 .searchInput:focus {
     outline: none;
-    border-color: #8B5CF6;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
 }
 
 .searching {
@@ -63,37 +63,37 @@
 }
 
 .list::-webkit-scrollbar-track {
-    background: #F3F4F6;
+    background: var(--text-primary);
     border-radius: 3px;
 }
 
 .list::-webkit-scrollbar-thumb {
-    background: #C4B5FD;
+    background: var(--primary-light);
     border-radius: 3px;
 }
 
 .list::-webkit-scrollbar-thumb:hover {
-    background: #A78BFA;
+    background: var(--primary-light);
 }
 
 .loading,
 .empty {
     text-align: center;
     padding: 40px 20px;
-    color: #9CA3AF;
+    color: var(--text-muted);
     font-size: 15px;
 }
 
 .followCount {
     text-align: center;
     font-size: 15px;
-    color: #374151;
+    color: var(--text-muted);
     font-weight: 500;
     margin: 10px 0;
 }
 
 .hint {
-    color: #9CA3AF;
+    color: var(--text-muted);
     font-size: 14px;
     font-weight: 400;
 }
@@ -109,10 +109,7 @@
 }
 
 .progressInfo {
-    text-align: center;
-    margin-top: 16px;
-    color: #9CA3AF;
-    font-size: 14px;
+    display: none;
 }
 
 @media (max-width: 768px) {

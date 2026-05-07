@@ -64,8 +64,8 @@
 
 .ghost {
     background: transparent;
-    /* Ghost Button Fix: force #FFFFFF for visibility — H2 Spec */
-    color: #FFFFFF !important;
+    /* Ghost Button Fix: force var(--text-primary) for visibility — H2 Spec */
+    color: var(--text-primary) !important;
     font-weight: 600;
     display: flex;
     justify-content: center;

@@ -103,6 +103,7 @@ export const useStrikeSystem = () => {
       } else if (action === 'quarantine') {
         profileUpdates.account_status = 'QUARANTINED';
         profileUpdates.shadow_banned_until = null;
+        profileUpdates.is_restricted = true;
       }
 
       await supabase
@@ -111,7 +112,7 @@ export const useStrikeSystem = () => {
         .eq('id', userId);
 
       // 5. Return result with action details
-      return {
+      const result = {
         success: true,
         strikeNumber: newStrikeNumber,
         action,
@@ -119,6 +120,15 @@ export const useStrikeSystem = () => {
         isQuarantined: action === 'quarantine',
         isShadowBanned: action === 'shadow_ban',
       };
+
+      if (action === 'quarantine') {
+        toast.error(
+          "Macha, you've reached 3 strikes. Your voice is being silenced for 24 hours to protect the Nation's peace. Reflect and return with Focus.",
+          { autoClose: 6000 }
+        );
+      }
+
+      return result;
     } catch (err) {
       console.error('[StrikeSystem] Error recording strike:', err);
       return { success: false, error: err.message };
@@ -136,13 +146,21 @@ export const useStrikeSystem = () => {
 
     const { data, error } = await supabase
       .from('profiles')
-      .select('account_status, shadow_banned_until, strike_count')
+      .select('account_status, shadow_banned_until, strike_count, is_restricted')
       .eq('id', userId)
       .single();
 
     if (error || !data) return { canPost: true, accountStatus: 'ACTIVE' };
 
     const status = data.account_status || 'ACTIVE';
+
+    if (data.is_restricted) {
+      return {
+        canPost: false,
+        accountStatus: status,
+        reason: 'Your account is restricted due to repeated violations of the Focus Constitution.',
+      };
+    }
 
     if (status === 'QUARANTINED') {
       return {

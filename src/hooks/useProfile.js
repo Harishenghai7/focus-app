@@ -118,7 +118,7 @@ export const useProfile = (username) => {
         onEvent: (payload) => {
             // Check if relevant to this profile
             if (payload.new.following_id === profile?.id || payload.old?.following_id === profile?.id) {
-                console.log('🔔 Follower change detected, refreshing...');
+
                 refetch();
             }
         }

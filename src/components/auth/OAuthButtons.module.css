@@ -1,110 +1,220 @@
 .container {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
     width: 100%;
 }
 
 .oauthButton {
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 0.875rem;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.05);
+    justify-content: flex-start;
+    gap: 0.9rem;
+    padding: 0.95rem 1rem;
+    border-radius: 18px;
+    border: 1px solid rgba(196, 181, 253, 0.12);
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+        rgba(255, 255, 255, 0.02);
     color: white;
     font-size: 0.95rem;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: 
+        transform 220ms cubic-bezier(0.22, 1, 0.36, 1), 
+        border-color 220ms cubic-bezier(0.22, 1, 0.36, 1), 
+        box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1),
+        background 220ms cubic-bezier(0.22, 1, 0.36, 1);
     width: 100%;
+    min-height: 4.2rem;
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+}
+
+/* Animated gradient shimmer on hover */
+.oauthButton::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        135deg,
+        transparent 0%,
+        var(--brand-glow, rgba(139, 92, 246, 0.1)) 50%,
+        transparent 100%
+    );
+    opacity: 0;
+    transition: opacity 300ms ease;
+    pointer-events: none;
+}
+
+.oauthButton:hover::before {
+    opacity: 1;
+}
+
+.oauthButton:last-child {
+    grid-column: 1 / -1;
 }
 
 .oauthButton:hover:not(:disabled) {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-3px);
+    box-shadow: 0 16px 30px rgba(4, 2, 11, 0.35), 
+                0 0 0 1px rgba(196, 181, 253, 0.1),
+                0 0 30px var(--brand-shadow, rgba(139, 92, 246, 0.1));
+    border-color: var(--brand-border, rgba(196, 181, 253, 0.26));
 }
 
 .oauthButton:active:not(:disabled) {
-    transform: translateY(0) scale(0.98);
+    transform: translateY(-1px) scale(0.985);
 }
 
 .oauthButton:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
     filter: grayscale(100%);
 }
 
+/* Loading spinner state */
+.oauthButton.loading {
+    pointer-events: none;
+}
+
+.oauthButton.loading .icon {
+    animation: iconSpin 1s linear infinite;
+}
+
 .icon {
-    margin-right: 0.75rem;
     font-size: 1.2rem;
     display: flex;
     align-items: center;
-    transition: transform 0.3s ease;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: 
+        transform 300ms cubic-bezier(0.22, 1, 0.36, 1), 
+        background 300ms ease,
+        box-shadow 300ms ease;
+    flex-shrink: 0;
+}
+
+.label {
+    flex: 1;
+    text-align: left;
 }
 
 .oauthButton:hover:not(:disabled) .icon {
-    transform: scale(1.1) rotate(5deg);
+    transform: scale(1.06) rotate(-3deg);
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 12px var(--brand-icon-glow, rgba(139, 92, 246, 0.2));
 }
 
-/* Provider specific styles */
+/* ============================================
+   PROVIDER-SPECIFIC BRAND COLORS
+   ============================================ */
+
+/* Google */
 .google {
-    background: white;
-    color: #333;
-    border-color: white;
+    --brand-glow: rgba(234, 88, 12, 0.08);
+    --brand-shadow: rgba(234, 88, 12, 0.12);
+    --brand-border: rgba(234, 88, 12, 0.25);
+    --brand-icon-glow: rgba(234, 88, 12, 0.25);
+}
+
+.google .icon {
+    color: #ea580c;
 }
 
 .google:hover:not(:disabled) {
-    background: #f8f9fa;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+    border-color: rgba(234, 88, 12, 0.2);
 }
 
+/* Microsoft */
 .microsoft {
-    background: #2f2f2f;
-    color: white;
-    border-color: #2f2f2f;
+    --brand-glow: rgba(59, 130, 246, 0.08);
+    --brand-shadow: rgba(59, 130, 246, 0.12);
+    --brand-border: rgba(59, 130, 246, 0.25);
+    --brand-icon-glow: rgba(59, 130, 246, 0.25);
+}
+
+.microsoft .icon {
+    color: #3b82f6;
 }
 
 .microsoft:hover:not(:disabled) {
-    background: #3a3a3a;
-    box-shadow: 0 0 15px rgba(47, 47, 47, 0.5);
+    border-color: rgba(59, 130, 246, 0.2);
 }
 
+/* GitHub */
 .github {
-    background: #24292e;
-    color: white;
-    border-color: #24292e;
+    --brand-glow: rgba(255, 255, 255, 0.06);
+    --brand-shadow: rgba(255, 255, 255, 0.08);
+    --brand-border: rgba(255, 255, 255, 0.18);
+    --brand-icon-glow: rgba(255, 255, 255, 0.15);
+}
+
+.github .icon {
+    color: #f0f0f0;
 }
 
 .github:hover:not(:disabled) {
-    background: #2f363d;
-    box-shadow: 0 0 15px rgba(36, 41, 46, 0.5);
+    border-color: rgba(255, 255, 255, 0.14);
 }
 
+/* Discord */
 .discord {
-    background: #5865F2;
-    color: white;
-    border-color: #5865F2;
+    --brand-glow: rgba(88, 101, 242, 0.1);
+    --brand-shadow: rgba(88, 101, 242, 0.15);
+    --brand-border: rgba(88, 101, 242, 0.3);
+    --brand-icon-glow: rgba(88, 101, 242, 0.3);
+}
+
+.discord .icon {
+    color: #5865F2;
 }
 
 .discord:hover:not(:disabled) {
-    background: #4752c4;
-    box-shadow: 0 0 15px rgba(88, 101, 242, 0.5);
+    border-color: rgba(88, 101, 242, 0.25);
 }
 
+/* Twitter / X */
 .twitter {
-    background: var(--bg-primary);
-    color: white;
-    border-color: black;
+    --brand-glow: rgba(255, 255, 255, 0.05);
+    --brand-shadow: rgba(255, 255, 255, 0.06);
+    --brand-border: rgba(255, 255, 255, 0.16);
+    --brand-icon-glow: rgba(255, 255, 255, 0.12);
+}
+
+.twitter .icon {
+    color: #e2e2e2;
 }
 
 .twitter:hover:not(:disabled) {
-    background: #1a1a1a;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes iconSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 640px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+
+    .oauthButton:last-child {
+        grid-column: auto;
+    }
 }

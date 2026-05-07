@@ -15,11 +15,11 @@ export const usePostSave = () => {
         mutationFn: async ({ postId, isSaved }) => {
             if (!user) throw new Error('Must be logged in to save posts');
 
-            console.log(`${isSaved ? 'Unsaving' : 'Saving'} post:`, postId);
+
 
             const result = await setPostSaveDb(user.id, postId, !isSaved);
 
-            console.log('✅ Save action completed');
+
             return {
                 postId,
                 isSaved: result?.is_saved ?? !isSaved,

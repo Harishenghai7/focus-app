@@ -7,7 +7,7 @@
     border: 1px solid var(--border-default);
     border-radius: var(--radius-md);
     padding: var(--space-3);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(var(--bg-primary-rgb), 0.15);
     z-index: 1000;
     min-width: 200px;
     max-width: 300px;

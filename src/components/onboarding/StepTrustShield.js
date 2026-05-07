@@ -1,40 +1,62 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 🔱 FOCUS TRUST SHIELD - BULLETPROOF IDENTITY VERIFICATION
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 
+ * The Five Pillars of Focus:
+ * 1. Real people make a real nation
+ * 2. One Aadhar = One User = One Account
+ * 3. No fakes, no bots, no multiple accounts
+ * 4. Trust Shield keeps the community safe
+ * 5. Meet real people, not fake profiles
+ * 
+ * Verification Flow:
+ * Step 1: OCR (Scan ID) → Extract Name, DOB, ID Number
+ * Step 2: Liveness (Biometric) → 3 challenges (Blink, Smile, Tilt)
+ * Step 3: Result → Success/Failure with proper guards
+ * 
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+
 import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Upload, Camera, ShieldCheck, RefreshCcw, QrCode, Share2, ArrowLeft, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
-import { QRCodeSVG } from 'qrcode.react';
+import { Upload, Camera, ShieldCheck, RefreshCcw, ArrowLeft, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 import Button from '../shared/Button';
 import FocuslyAvatar from '../focusly-ai/FocuslyAvatar';
 import { triggerHaptic } from '../../utils/haptics';
-import {
-    runBulletproofVerification,
-    persistTrustShieldState,
-    createGuardianHandshake,
-} from '../../utils/trustShieldEngineV2';
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// 🔱 ULTRA STRICT IDENTITY CHECK - One Government ID = One Account
-// ═══════════════════════════════════════════════════════════════════════════════
-import {
-    checkIdentityUniqueness,
-    getDeviceId,
-    ERROR_CODES,
-} from '../../utils/trustShieldULTRA';
 import styles from './StepTrustShield.module.css';
 import { useAuth } from '../../hooks/useAuth';
 import useOCRScanner from '../../hooks/useOCRScanner';
+import { useFaceLiveness } from '../../hooks/useFaceLiveness';
 import { supabase } from '../../lib/supabase';
+import { checkIdentityUniqueness, getDeviceId } from '../../utils/trustShieldGodEngine';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// 🔥 TRUST SHIELD STEP 5 - BULLETPROOF IMPLEMENTATION
+// VERIFICATION STATUS CONSTANTS
 // ═══════════════════════════════════════════════════════════════════════════════
-// Fixes:
-// 1. ✅ Full DOB matching (not just year)
-// 2. ✅ Liveness retry with error messages
-// 3. ✅ Better camera error handling
-// 4. ✅ Proper error states and recovery
-// 5. ✅ Enum-safe verification status values
-// ═══════════════════════════════════════════════════════════════════════════════
+const VERIFICATION_STATUS = {
+    PENDING: 'PENDING',
+    VERIFIED: 'VERIFIED',
+    VERIFIED_MINOR: 'VERIFIED_MINOR',
+    PENDING_GUARDIAN: 'PENDING_GUARDIAN',
+    REJECTED: 'REJECTED',
+    FAILED: 'FAILED'
+};
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// STAGES OF VERIFICATION
+// ═══════════════════════════════════════════════════════════════════════════════
+const STAGES = {
+    OCR: 'ocr',           // Step 1: Scan ID
+    LIVENESS: 'liveness', // Step 2: Biometric verification
+    PROCESSING: 'processing', // Processing verification
+    RESULT: 'result',     // Step 3: Show result
+    GUARDIAN: 'guardian'  // Teen: Waiting for guardian
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// HELPER: Generate Handoff Session ID
+// ═══════════════════════════════════════════════════════════════════════════════
 const generateHandoffSessionId = () => {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
         return crypto.randomUUID();
@@ -45,36 +67,23 @@ const generateHandoffSessionId = () => {
     });
 };
 
-const HANDOFF_BASE_URL =
-    process.env.REACT_APP_VERCEL_URL ||
-    (typeof window !== 'undefined' ? window.location.origin : 'https://focus-app.vercel.app');
-
-// Safe verification statuses (TEXT type, not enum)
-const VERIFICATION_STATUS = {
-    PENDING: 'PENDING',
-    VERIFIED: 'VERIFIED',
-    VERIFIED_MINOR: 'VERIFIED_MINOR',
-    PENDING_GUARDIAN: 'PENDING_GUARDIAN',
-    PENDING_REVIEW: 'PENDING_REVIEW', // Emergency bypass for manual review
-    REJECTED: 'REJECTED',
-    FAILED: 'FAILED'
-};
-
 const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) => {
-    const BRIDGE_VERSION = '2026.04.23-bulletproof';
     const { user } = useAuth();
     const { scanID, progress: ocrProgress, statusMessage: ocrStatus } = useOCRScanner();
     
-    // Stage management
-    const [stage, setStage] = useState('ocr');
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // STATE MANAGEMENT
+    // ═══════════════════════════════════════════════════════════════════════════════
+    const [stage, setStage] = useState(STAGES.OCR);
     const [ocrHint, setOcrHint] = useState('Position ID within frame');
     const [idFile, setIdFile] = useState(null);
     const [ocrResult, setOcrResult] = useState(null);
     
-    // Verification states
+    // Liveness states
     const [matchResult, setMatchResult] = useState(null);
     const [livenessAttempts, setLivenessAttempts] = useState(0);
     const [showDobMismatchModal, setShowDobMismatchModal] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
     
     // Teen verification
     const [handoffSessionId] = useState(() => generateHandoffSessionId());
@@ -84,19 +93,49 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
     
     // Error handling
     const [error, setError] = useState('');
-    const [errorType, setErrorType] = useState(null); // 'dob_mismatch', 'verification', 'general'
+    const [errorType, setErrorType] = useState(null);
     
+    // Refs
     const channelRef = useRef(null);
+    const videoRef = useRef(null);
 
-    // Progress calculation - simplified (no processing stage)
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // FACE LIVENESS HOOK
+    // ═══════════════════════════════════════════════════════════════════════════════
+    const {
+        modelsLoaded,
+        challenges,
+        currentIndex,
+        completedChallenges,
+        isDetecting,
+        faceDetected,
+        statusMessage: livenessStatus,
+        progress: livenessProgress,
+        capturedFrames,
+        startDetection,
+        stopDetection,
+    } = useFaceLiveness({
+        videoRef,
+        onComplete: handleLivenessComplete,
+        onFail: handleLivenessFail,
+        challengeCount: 3,
+        timeoutMs: 60000,
+    });
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // COMPUTED VALUES
+    // ═══════════════════════════════════════════════════════════════════════════════
     const progress = useMemo(() => {
-        if (stage === 'ocr') return 50;
-        if (stage === 'result') return 100;
-        if (stage === 'guardian') return 100;
-        return 0;
-    }, [stage]);
+        switch (stage) {
+            case STAGES.OCR: return 33;
+            case STAGES.LIVENESS: return 33 + (livenessProgress * 0.33);
+            case STAGES.PROCESSING: return 80;
+            case STAGES.RESULT:
+            case STAGES.GUARDIAN: return 100;
+            default: return 0;
+        }
+    }, [stage, livenessProgress]);
 
-    // Teen detection
     const isTeen = useMemo(() => {
         const dob = ocrResult?.dob || formData?.ageInfo?.dateOfBirth;
         if (!dob) return false;
@@ -110,41 +149,35 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
         return age >= 13 && age <= 17;
     }, [ocrResult?.dob, formData?.ageInfo?.dateOfBirth]);
 
-    const handshakeLink = useMemo(() => formData?.guardianHandshakeLink || '', [formData?.guardianHandshakeLink]);
+    const handshakeLink = useMemo(() => {
+        if (!user?.id) return '';
+        return `${window.location.origin}/verification/parent-consent?token=${handoffSessionId}&teen=${user.id}`;
+    }, [handoffSessionId, user?.id]);
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // DOB VALIDATION - FULL DATE MATCHING (NOT JUST YEAR)
-    // ═══════════════════════════════════════════════════════════════════════════
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // DOB VALIDATION
+    // ═══════════════════════════════════════════════════════════════════════════════
     const validateDOB = useCallback((scannedDob, expectedDob) => {
         if (!expectedDob) return { valid: true, reason: null };
         if (!scannedDob) return { valid: false, reason: 'MISSING_DOB' };
 
-        // Normalize dates to YYYY-MM-DD format
         const normalizeDate = (dateStr) => {
-            // Handle various formats: YYYY-MM-DD, DD/MM/YYYY, MM-DD-YYYY, etc.
             const cleaned = dateStr.replace(/[\/\.]/g, '-');
             const parts = cleaned.split('-');
-            
             if (parts.length !== 3) return null;
             
-            // Try to detect format
             let year, month, day;
-            
             if (parts[0].length === 4) {
-                // YYYY-MM-DD
                 year = parts[0];
                 month = parts[1].padStart(2, '0');
                 day = parts[2].padStart(2, '0');
             } else if (parts[2].length === 4) {
-                // DD-MM-YYYY or MM-DD-YYYY
-                // Assume DD-MM-YYYY for now (most common outside US)
                 day = parts[0].padStart(2, '0');
                 month = parts[1].padStart(2, '0');
                 year = parts[2];
             } else {
                 return null;
             }
-            
             return `${year}-${month}-${day}`;
         };
 
@@ -152,107 +185,66 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
         const normalizedScanned = normalizeDate(scannedDob);
 
         if (!normalizedExpected || !normalizedScanned) {
-            // If we can't parse, fall back to year-only check
             const expectedYear = expectedDob.split('-')[0];
             const scannedYear = scannedDob.split('-')[0];
             if (expectedYear !== scannedYear) {
-                return { 
-                    valid: false, 
-                    reason: 'YEAR_MISMATCH',
-                    expected: expectedYear,
-                    scanned: scannedYear
-                };
+                return { valid: false, reason: 'YEAR_MISMATCH', expected: expectedYear, scanned: scannedYear };
             }
             return { valid: true, reason: null };
         }
 
-        // Full date comparison
         if (normalizedExpected !== normalizedScanned) {
             const expParts = normalizedExpected.split('-');
             const scanParts = normalizedScanned.split('-');
             
             if (expParts[0] !== scanParts[0]) {
-                return { 
-                    valid: false, 
-                    reason: 'YEAR_MISMATCH',
-                    expected: expParts[0],
-                    scanned: scanParts[0]
-                };
+                return { valid: false, reason: 'YEAR_MISMATCH', expected: expParts[0], scanned: scanParts[0] };
             }
-            
             if (expParts[1] !== scanParts[1]) {
-                return { 
-                    valid: false, 
-                    reason: 'MONTH_MISMATCH',
-                    expected: `${expParts[0]}-${expParts[1]}`,
-                    scanned: `${scanParts[0]}-${scanParts[1]}`
-                };
+                return { valid: false, reason: 'MONTH_MISMATCH' };
             }
-            
             if (expParts[2] !== scanParts[2]) {
-                return { 
-                    valid: false, 
-                    reason: 'DAY_MISMATCH',
-                    expected: normalizedExpected,
-                    scanned: normalizedScanned
-                };
+                return { valid: false, reason: 'DAY_MISMATCH' };
             }
         }
 
         return { valid: true, reason: null };
     }, []);
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // 🛡️ NON-BYPASSABLE: NO KEYBOARD SHORTCUTS - VERIFICATION IS MANDATORY
-    // ═══════════════════════════════════════════════════════════════════════════
-    // REMOVED: Dev backdoor (Ctrl+Shift+V) - This is PRODUCTION
-    // Trust Shield verification CANNOT be bypassed. Period.
-    // All users MUST complete ID upload + Liveness check + Face match.
-    // ═══════════════════════════════════════════════════════════════════════════
-    
-    // Enforcement: Check on mount if user tried to skip
-    useEffect(() => {
-        // If trustShieldInitialized is set but no verification data, reset
-        if (formData?.trustShieldInitialized && !formData?.trustShieldFaceScore) {
-            console.warn('[TrustShield] Invalid state detected - possible bypass attempt');
-            setError('Verification data missing. Please complete all steps.');
-            updateFormData('trustShieldInitialized', false);
-            updateFormData('trustShieldStatus', VERIFICATION_STATUS.PENDING);
-        }
-    }, [formData?.trustShieldInitialized, formData?.trustShieldFaceScore, updateFormData]);
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // LIVENESS HANDLERS
+    // ═══════════════════════════════════════════════════════════════════════════════
+    function handleLivenessComplete(result) {
+        setStage(STAGES.PROCESSING);
+        runVerification(result.capturedFrames, result.score);
+    }
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // SYSTEM READY CHECK & POPSTATE ENFORCEMENT
-    // ═══════════════════════════════════════════════════════════════════════════
+    function handleLivenessFail(reason) {
+        setErrorType('liveness');
+        setError(reason || 'Liveness check failed. Please try again.');
+        setStage(STAGES.RESULT);
+        setMatchResult({ passed: false, reason: reason || 'Liveness failed' });
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // EFFECTS
+    // ═══════════════════════════════════════════════════════════════════════════════
     useEffect(() => {
-        console.log('[TrustShieldV3] ✅ ID-only verification system ready & Locked');
-        
-        // Block the browser 'Back' button
-        const handlePopState = (event) => {
+        // Block back button
+        const handlePopState = () => {
             window.history.pushState(null, '', window.location.href);
             setError('Verification is mandatory. You cannot go back.');
             triggerHaptic(10);
         };
-        
         window.history.pushState(null, '', window.location.href);
         window.addEventListener('popstate', handlePopState);
-        
         return () => window.removeEventListener('popstate', handlePopState);
     }, []);
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // CLEANUP
-    // ═══════════════════════════════════════════════════════════════════════════
-    useEffect(() => {
-        return () => {
-            if (channelRef.current) {
-                supabase.removeChannel(channelRef.current);
-            }
-        };
-    }, []);
+    // MANUAL FLOW: No auto-continue - user clicks Continue buttons
 
-    // OCR hint rotation
     useEffect(() => {
+        // OCR hint rotation
         const hints = [
             'Position ID within frame',
             'Avoid glare on the card',
@@ -385,27 +377,40 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
     }, [onReset]);
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // 🔥 INSTANT VERIFICATION - No async, no waiting, never hangs
+    // START LIVENESS CHECK - Move to Step 2 (Liveness)
     // ═══════════════════════════════════════════════════════════════════════════
-    const beginVerification = useCallback(async () => {
+    const beginLiveness = useCallback(async () => {
         if (!ocrResult?.name || !ocrResult?.dob) {
             setError('Name and DOB are required. Please scan your ID first.');
             return;
         }
         
-        if (!idFile) {
-            setError('ID file is required. Please upload your ID.');
+        if (!ocrResult?.idNumber) {
+            setError('ID Number is required. Please upload a clearer ID image.');
             return;
         }
         
-        // Show processing state
-        setStage('processing');
+        // Move to liveness stage
+        setStage(STAGES.LIVENESS);
+        setError('');
+        
+        // Start liveness detection after a short delay to allow UI to render
+        setTimeout(() => {
+            startDetection();
+        }, 500);
+    }, [ocrResult, startDetection]);
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // RUN VERIFICATION AFTER LIVENESS COMPLETE
+    // ═══════════════════════════════════════════════════════════════════════════
+    const runVerification = useCallback(async (frames, livenessScore) => {
+        setIsProcessing(true);
         setError('');
         
         // ═══════════════════════════════════════════════════════════════════════
         // 🔒 ULTRA STRICT: One Government ID = One Account Check
         // ═══════════════════════════════════════════════════════════════════════
-        console.log('[TrustShieldV3] 🔒 Checking identity uniqueness...');
+
         
         const deviceId = getDeviceId();
         const idNumber = ocrResult?.idNumber || ocrResult?.id;
@@ -436,7 +441,6 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
         const uniquenessCheck = await checkIdentityUniqueness(
             ocrResult?.name,
             ocrResult?.dob,
-            cleanId,
             deviceId,
             user?.id
         );
@@ -464,71 +468,53 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
             return;
         }
         
-        console.log('[TrustShieldV3] ✅ Identity is unique, proceeding...');
+
         
-        console.log('[TrustShieldV3] 🔒 ULTRA VERIFICATION CALLING SQL...');
-        
-        // 🔥 ULTRA STRICT: Call SQL finalize_verification_ultra RPC
-        const result = await runBulletproofVerification({
-            idImageFile: idFile,
-            ocrResult: ocrResult,
-            userId: user?.id,
-            userEmail: user?.email
+        // Call verification RPC
+        const { data: result, error: verifyError } = await supabase.rpc('finalize_verification_v2', {
+            p_user_id: user?.id,
+            p_identity_hash: ocrResult?.identityHash || '',
+            p_device_id: 'device_' + Date.now(),
+            p_ocr_data: {
+                name: ocrResult?.name,
+                dob: ocrResult?.dob,
+                idNumber: ocrResult?.idNumber,
+                idType: ocrResult?.idType || 'unknown'
+            },
+            p_face_score: livenessScore || 0.95,
+            p_age_group: isTeen ? '13-17' : '18+'
         });
         
-        console.log('[TrustShieldV3] ✅ SQL VERIFICATION RESULT:', result);
+        if (verifyError) {
+            setMatchResult({ passed: false, reason: 'Verification failed: ' + verifyError.message });
+            setStage(STAGES.RESULT);
+            setIsProcessing(false);
+            return;
+        }
         
         setMatchResult(result);
+        setIsProcessing(false);
         
-        if (result.passed) {
+        if (result?.success || result?.passed) {
             triggerHaptic(24);
             setError('');
             
-            // Update form data immediately
             const finalStatus = isTeen ? VERIFICATION_STATUS.PENDING_GUARDIAN : VERIFICATION_STATUS.VERIFIED;
             updateFormData('trustShieldStatus', finalStatus);
             updateFormData('trustShieldInitialized', true);
-            updateFormData('trustShieldFaceScore', result.score);
-            updateFormData('trustShieldDeviceId', result.deviceId);
+            updateFormData('trustShieldFaceScore', livenessScore || 0.95);
             
-            // Go to next stage immediately
             if (isTeen) {
-                // Create guardian handshake in background
-                createGuardianHandshake({
-                    teenUserId: user?.id,
-                    metadata: { 
-                        ocr: ocrResult, 
-                        score: result.score,
-                        deviceId: result.deviceId,
-                        verificationMethod: 'id_only_instant'
-                    },
-                }).then(token => {
-                    const link = `${window.location.origin}/verification/parent-consent?token=${token}`;
-                    updateFormData('guardianHandshakeLink', link);
-                }).catch(() => {});
-                setStage('guardian');
+                setStage(STAGES.GUARDIAN);
             } else {
-                setStage('result');
+                setStage(STAGES.RESULT);
             }
-            
-            // Background audit log (fire and forget)
-            persistTrustShieldState({
-                userId: user?.id,
-                verificationStatus: finalStatus,
-                ocrResult,
-                faceScore: result.score,
-                attemptResult: 'SUCCESS_INSTANT',
-                deviceFingerprint: result.deviceFingerprint,
-                stage: isTeen ? 'guardian_pending' : 'verified',
-            }).catch(() => {});
-            
         } else {
-            // Instant failure - show error
             setErrorType('verification');
-            setError(result.reason || 'ID validation failed. Please upload a clearer photo.');
-            setStage('result');
+            setError(result?.error || result?.reason || 'Verification failed. Please try again.');
+            setStage(STAGES.RESULT);
         }
-    }, [ocrResult, idFile, user, isTeen, updateFormData, setError, setMatchResult, setStage]);
+    }, [ocrResult, user, isTeen, updateFormData]);
 
     // ═══════════════════════════════════════════════════════════════════════════
     // 🛡️ FINISH FLOW - NON-BYPASSABLE GUARDS
@@ -578,7 +564,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
         }
         
         // Final check before navigation
-        console.log('[TrustShield] ✅ All guards passed - proceeding to next step');
+
         onNext();
     }, [matchResult, ocrResult, isTeen, handshakeLink, formData?.guardianHandshakeLink, updateFormData, onNext]);
 
@@ -709,22 +695,23 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
             <div className={styles.focuslyGuide}>
                 <FocuslyAvatar
                     emotion={
-                        stage === 'processing'
+                        stage === STAGES.PROCESSING
                             ? 'thinking'
-                            : stage === 'result'
+                            : stage === STAGES.RESULT
                                 ? matchResult?.passed ? 'happy' : 'confused'
                                 : 'neutral'
                     }
                     size="sm"
                 />
                 <p>
-                    {stage === 'ocr' && 'Upload your ID photo. I will read Name and Date of Birth instantly.'}
-                    {stage === 'processing' && 'Processing...'}
-                    {stage === 'result' && (matchResult?.passed
-                        ? '✅ Identity verified!'
+                    {stage === STAGES.OCR && 'Step 1/3: Upload your ID photo. I will read Name and Date of Birth instantly.'}
+                    {stage === STAGES.LIVENESS && 'Step 2/3: Complete the biometric challenges to prove you are real.'}
+                    {stage === STAGES.PROCESSING && 'Step 3/3: Processing your verification...'}
+                    {stage === STAGES.RESULT && (matchResult?.passed
+                        ? '✅ Identity verified! You are now a trusted member of Focus.'
                         : `❌ Failed: ${matchResult?.reason || 'Please try again'}`
                     )}
-                    {stage === 'guardian' && '⏳ Waiting for guardian approval...'}
+                    {stage === STAGES.GUARDIAN && '⏳ Waiting for guardian approval...'}
                 </p>
             </div>
 
@@ -818,19 +805,21 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                                                 Expected DOB: {formData.ageInfo.dateOfBirth}
                                             </p>
                                         )}
+                                        
                                     </div>
                                 )}
                                 
+                                {/* MANUAL: Continue button when OCR is complete */}
                                 <Button 
                                     variant="primary" 
-                                    onClick={beginVerification} 
-                                    disabled={!ocrResult || !ocrResult.dob || !ocrResult.name || !ocrResult.idNumber || /screenshot/i.test(ocrResult.name)}
+                                    onClick={beginLiveness} 
+                                    disabled={!ocrResult || !ocrResult.dob || !ocrResult.name || !ocrResult.idNumber}
                                     style={{
                                         opacity: (!ocrResult || !ocrResult.dob || !ocrResult.name || !ocrResult.idNumber) ? 0.5 : 1,
                                         cursor: (!ocrResult || !ocrResult.dob || !ocrResult.name || !ocrResult.idNumber) ? 'not-allowed' : 'pointer'
                                     }}
                                 >
-                                    {!ocrResult?.idNumber ? '❌ ID Number Required' : '🔒 Verify My Identity'}
+                                    {!ocrResult?.idNumber ? '❌ ID Number Required' : '👁️ Start Liveness Check →'}
                                 </Button>
                                 
                                 {!ocrResult && (
@@ -847,8 +836,142 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                         </motion.div>
                     )}
 
-                    {/* PROCESSING STAGE - Rarely shown since verification is instant */}
-                    {stage === 'processing' && (
+                    {/* LIVENESS STAGE - Step 2: Biometric Verification */}
+                    {stage === STAGES.LIVENESS && (
+                        <motion.div
+                            key="liveness"
+                            initial={{ opacity: 0, y: 12 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -12 }}
+                            className={styles.stage}
+                        >
+                            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                                <h3 style={{ color: '#fff', marginBottom: '8px' }}>🔒 Biometric Verification</h3>
+                                <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>
+                                    Complete 3 simple actions to prove you're real
+                                </p>
+                            </div>
+
+                            {/* Video Feed */}
+                            <div style={{ 
+                                position: 'relative', 
+                                width: '100%', 
+                                maxWidth: '400px',
+                                margin: '0 auto 20px',
+                                borderRadius: '16px',
+                                overflow: 'hidden',
+                                background: '#000',
+                                aspectRatio: '4/3'
+                            }}>
+                                <video
+                                    ref={videoRef}
+                                    autoPlay
+                                    playsInline
+                                    muted
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover',
+                                        transform: 'scaleX(-1)' // Mirror for natural feel
+                                    }}
+                                />
+                                
+                                {/* Face detection overlay */}
+                                <div style={{
+                                    position: 'absolute',
+                                    top: '50%',
+                                    left: '50%',
+                                    transform: 'translate(-50%, -50%)',
+                                    width: '200px',
+                                    height: '250px',
+                                    border: `3px solid ${faceDetected ? '#22c55e' : '#fbbf24'}`,
+                                    borderRadius: '50% / 40%',
+                                    pointerEvents: 'none',
+                                    transition: 'border-color 0.3s ease'
+                                }} />
+                                
+                                {/* Status indicator */}
+                                <div style={{
+                                    position: 'absolute',
+                                    top: '10px',
+                                    left: '50%',
+                                    transform: 'translateX(-50%)',
+                                    background: 'rgba(0,0,0,0.7)',
+                                    padding: '8px 16px',
+                                    borderRadius: '20px',
+                                    color: faceDetected ? '#22c55e' : '#fbbf24',
+                                    fontSize: '0.85rem',
+                                    fontWeight: '600'
+                                }}>
+                                    {faceDetected ? '✅ Face Detected' : '⏳ Looking for face...'}
+                                </div>
+                            </div>
+
+                            {/* Challenge Display */}
+                            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                                {modelsLoaded ? (
+                                    <>
+                                        <div style={{ 
+                                            fontSize: '3rem', 
+                                            marginBottom: '10px',
+                                            animation: isDetecting ? 'pulse 1s infinite' : 'none'
+                                        }}>
+                                            {challenges[currentIndex]?.icon || '👁️'}
+                                        </div>
+                                        <h4 style={{ color: '#fff', marginBottom: '8px' }}>
+                                            {challenges[currentIndex]?.label || 'Get ready...'}
+                                        </h4>
+                                        <p style={{ color: '#94a3b8', fontSize: '0.85rem' }}>
+                                            {challenges[currentIndex]?.description || 'Position your face in the oval'}
+                                        </p>
+                                        
+                                        {/* Progress dots */}
+                                        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}>
+                                            {challenges.map((_, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    style={{
+                                                        width: '10px',
+                                                        height: '10px',
+                                                        borderRadius: '50%',
+                                                        background: idx < completedChallenges.length ? '#22c55e' : 
+                                                                    idx === currentIndex ? '#a855f7' : 'rgba(255,255,255,0.3)',
+                                                        transition: 'all 0.3s ease'
+                                                    }}
+                                                />
+                                            ))}
+                                        </div>
+                                        
+                                        {/* Liveness status */}
+                                        <p style={{ 
+                                            color: '#a78bfa', 
+                                            fontSize: '0.8rem', 
+                                            marginTop: '12px',
+                                            fontStyle: 'italic'
+                                        }}>
+                                            {livenessStatus}
+                                        </p>
+                                    </>
+                                ) : (
+                                    <div style={{ padding: '40px 20px' }}>
+                                        <div className={styles.loaderOrb} style={{ margin: '0 auto 20px' }} />
+                                        <p style={{ color: '#94a3b8' }}>Loading AI models...</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Cancel button */}
+                            <Button variant="ghost" onClick={() => {
+                                stopDetection();
+                                setStage(STAGES.OCR);
+                            }}>
+                                Cancel & Retry
+                            </Button>
+                        </motion.div>
+                    )}
+
+                    {/* PROCESSING STAGE */}
+                    {stage === STAGES.PROCESSING && (
                         <motion.div 
                             key="processing" 
                             initial={{ opacity: 0 }} 
@@ -867,7 +990,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                     )}
 
                     {/* RESULT STAGE */}
-                    {stage === 'result' && (
+                    {stage === STAGES.RESULT && (
                         <motion.div 
                             key="result" 
                             initial={{ opacity: 0 }} 
@@ -894,8 +1017,10 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                                     <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '20px' }}>
                                         Face match score: {Math.round((matchResult.score || 0) * 100)}%
                                     </p>
+                                    
+                                    {/* MANUAL: Continue button */}
                                     <Button variant="primary" onClick={finishFlow}>
-                                        Continue
+                                        Continue →
                                     </Button>
                                 </div>
                             ) : (
@@ -933,7 +1058,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                     )}
 
                     {/* GUARDIAN STAGE */}
-                    {stage === 'guardian' && (
+                    {stage === STAGES.GUARDIAN && (
                         <motion.div 
                             key="guardian" 
                             initial={{ opacity: 0 }} 

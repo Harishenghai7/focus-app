@@ -4,7 +4,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.95);
+    background: rgba(var(--bg-primary-rgb), 0.95);
     backdrop-filter: blur(10px);
     display: flex;
     align-items: center;
@@ -26,7 +26,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 20px 24px;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+    background: linear-gradient(180deg, rgba(var(--bg-primary-rgb), 0.8) 0%, transparent 100%);
     position: absolute;
     top: 0;
     left: 0;
@@ -48,7 +48,7 @@
 
 .filename {
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(var(--text-primary-rgb), 0.7);
 }
 
 .actions {
@@ -60,7 +60,7 @@
     width: 40px;
     height: 40px;
     border: none;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(var(--text-primary-rgb), 0.1);
     backdrop-filter: blur(10px);
     border-radius: 50%;
     color: white;
@@ -72,7 +72,7 @@
 }
 
 .actionButton:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(var(--text-primary-rgb), 0.2);
     transform: scale(1.05);
 }
 
@@ -115,7 +115,7 @@
 
 .audioContainer svg,
 .fileContainer svg {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(var(--text-primary-rgb), 0.6);
 }
 
 .audio {
@@ -134,7 +134,7 @@
 .downloadButton {
     padding: 12px 24px;
     border: none;
-    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--text-muted) 100%);
     color: white;
     border-radius: 12px;
     font-size: 14px;
@@ -145,7 +145,7 @@
 
 .downloadButton:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 8px 20px rgba(var(--primary-rgb), 0.4);
 }
 
 .navButton {
@@ -155,7 +155,7 @@
     width: 48px;
     height: 48px;
     border: none;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(var(--text-primary-rgb), 0.1);
     backdrop-filter: blur(10px);
     border-radius: 50%;
     color: white;
@@ -168,7 +168,7 @@
 }
 
 .navButton:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(var(--text-primary-rgb), 0.2);
     transform: translateY(-50%) scale(1.1);
 }
 
@@ -184,7 +184,7 @@
     display: flex;
     gap: 8px;
     padding: 16px 24px;
-    background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+    background: linear-gradient(0deg, rgba(var(--bg-primary-rgb), 0.8) 0%, transparent 100%);
     position: absolute;
     bottom: 0;
     left: 0;
@@ -198,7 +198,7 @@
 }
 
 .thumbnails::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(var(--text-primary-rgb), 0.3);
     border-radius: 2px;
 }
 
@@ -210,18 +210,18 @@
     border-radius: 8px;
     overflow: hidden;
     cursor: pointer;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(var(--text-primary-rgb), 0.1);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     padding: 0;
 }
 
 .thumbnail:hover {
-    border-color: rgba(255, 255, 255, 0.5);
+    border-color: rgba(var(--text-primary-rgb), 0.5);
 }
 
 .thumbnail.active {
-    border-color: #8b5cf6;
-    box-shadow: 0 0 12px rgba(139, 92, 246, 0.6);
+    border-color: var(--primary);
+    box-shadow: 0 0 12px rgba(var(--primary-rgb), 0.6);
 }
 
 .thumbnail img {

@@ -58,7 +58,7 @@
     border-color: var(--primary-dim);
     color: var(--text-primary);
     transform: translateX(4px);
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.1);
 }
 
 .navItem:focus-visible {
@@ -69,8 +69,8 @@
 
 .navItem.active {
     background: var(--gradient-brand);
-    color: #fff;
-    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+    color: var(--text-primary);
+    box-shadow: 0 4px 16px rgba(var(--primary-rgb), 0.4);
     transform: scale(1.02);
 }
 

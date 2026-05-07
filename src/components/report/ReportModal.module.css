@@ -4,24 +4,26 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
+    background: rgba(var(--bg-primary-rgb), 0.55);
+    backdrop-filter: blur(18px);
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
     z-index: 10000;
-    padding: 20px;
+    padding: 16px;
 }
 
 .modalContent {
-    background: linear-gradient(135deg, #1A0B2E 0%, #2D1B4E 100%);
-    border-radius: 20px;
-    max-width: 500px;
+    background: rgba(var(--primary-rgb), 0.05);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border-radius: 20px 20px 16px 16px;
+    max-width: 560px;
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(185, 148, 246, 0.3);
-    border: 1px solid rgba(157, 127, 234, 0.2);
+    box-shadow: 0 22px 70px rgba(var(--primary-rgb), 0.22);
+    border: 1px solid rgba(var(--primary-rgb), 0.22);
     animation: slideUp 0.3s ease-out;
 }
 
@@ -39,7 +41,7 @@
 
 .modalHeader {
     padding: 24px;
-    border-bottom: 1px solid rgba(157, 127, 234, 0.2);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.18);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -48,14 +50,14 @@
 .modalTitle {
     font-size: 24px;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-primary);
     margin: 0;
 }
 
 .closeButton {
     background: none;
     border: none;
-    color: #999;
+    color: var(--text-muted);
     font-size: 28px;
     cursor: pointer;
     padding: 0;
@@ -69,8 +71,8 @@
 }
 
 .closeButton:hover {
-    background: rgba(157, 127, 234, 0.1);
-    color: #B794F6;
+    background: rgba(var(--primary-rgb), 0.12);
+    color: var(--primary-light);
 }
 
 .modalBody {
@@ -85,7 +87,7 @@
 }
 
 .categoryCard {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(var(--text-primary-rgb), 0.04);
     border: 2px solid transparent;
     border-radius: 12px;
     padding: 16px;
@@ -95,15 +97,15 @@
 }
 
 .categoryCard:hover {
-    background: rgba(185, 148, 246, 0.1);
-    border-color: rgba(157, 127, 234, 0.3);
+    background: rgba(var(--primary-rgb), 0.09);
+    border-color: rgba(var(--primary-rgb), 0.28);
     transform: translateY(-2px);
 }
 
 .categoryCard.selected {
-    background: rgba(185, 148, 246, 0.2);
-    border-color: #B794F6;
-    box-shadow: 0 0 20px rgba(185, 148, 246, 0.3);
+    background: rgba(var(--primary-rgb), 0.18);
+    border-color: rgba(185, 148, 246, 0.9);
+    box-shadow: 0 0 22px rgba(var(--primary-rgb), 0.32);
 }
 
 .categoryIcon {
@@ -114,13 +116,13 @@
 .categoryLabel {
     font-size: 14px;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-primary);
     margin: 0;
 }
 
 .categoryDescription {
     font-size: 12px;
-    color: #999;
+    color: var(--text-muted);
     margin: 4px 0 0 0;
 }
 
@@ -132,17 +134,17 @@
     display: block;
     font-size: 14px;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-primary);
     margin-bottom: 8px;
 }
 
 .textarea {
     width: 100%;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(157, 127, 234, 0.2);
+    background: rgba(var(--text-primary-rgb), 0.04);
+    border: 1px solid rgba(var(--primary-rgb), 0.22);
     border-radius: 12px;
     padding: 12px;
-    color: #ffffff;
+    color: var(--text-primary);
     font-size: 14px;
     font-family: inherit;
     resize: vertical;
@@ -152,18 +154,18 @@
 
 .textarea:focus {
     outline: none;
-    border-color: #B794F6;
-    box-shadow: 0 0 0 3px rgba(185, 148, 246, 0.1);
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.14);
 }
 
 .textarea::placeholder {
-    color: #666;
+    color: var(--glass-bg-solid);
 }
 
 .charCount {
     text-align: right;
     font-size: 12px;
-    color: #999;
+    color: var(--text-muted);
     margin-top: 4px;
 }
 
@@ -175,11 +177,11 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(var(--text-primary-rgb), 0.05);
     border: 1px dashed rgba(157, 127, 234, 0.3);
     border-radius: 8px;
     padding: 12px 20px;
-    color: #B794F6;
+    color: var(--primary-light);
     font-size: 14px;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -187,12 +189,12 @@
 
 .uploadButton:hover {
     background: rgba(185, 148, 246, 0.1);
-    border-color: #B794F6;
+    border-color: var(--primary-light);
 }
 
 .modalFooter {
     padding: 24px;
-    border-top: 1px solid rgba(157, 127, 234, 0.2);
+    border-top: 1px solid rgba(var(--primary-rgb), 0.18);
     display: flex;
     gap: 12px;
     justify-content: flex-end;
@@ -209,21 +211,21 @@
 }
 
 .buttonSecondary {
-    background: rgba(255, 255, 255, 0.05);
-    color: #ffffff;
+    background: rgba(var(--text-primary-rgb), 0.05);
+    color: var(--text-primary);
 }
 
 .buttonSecondary:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(var(--text-primary-rgb), 0.1);
 }
 
 .buttonPrimary {
-    background: linear-gradient(135deg, #B794F6 0%, #9D7FEA 100%);
-    color: #ffffff;
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-light) 100%);
+    color: var(--text-primary);
 }
 
 .buttonPrimary:hover {
-    background: linear-gradient(135deg, #C5A4F7 0%, #AE8FEB 100%);
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-light) 100%);
     box-shadow: 0 8px 20px rgba(185, 148, 246, 0.4);
     transform: translateY(-2px);
 }
@@ -260,13 +262,13 @@
 .successTitle {
     font-size: 24px;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-primary);
     margin-bottom: 8px;
 }
 
 .successText {
     font-size: 14px;
-    color: #999;
+    color: var(--text-muted);
     margin-bottom: 24px;
 }
 

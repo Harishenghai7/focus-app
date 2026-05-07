@@ -25,7 +25,7 @@
     flex-direction: column;
     justify-content: flex-end;
     padding: var(--space-4);
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent 40%);
+    background: linear-gradient(to top, rgba(var(--bg-primary-rgb), 0.8), transparent 40%);
 }
 
 .sidebar {

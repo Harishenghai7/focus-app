@@ -26,8 +26,8 @@
     align-items: center;
     gap: var(--space-2);
     padding: var(--space-2) var(--space-4);
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(var(--text-primary-rgb), 0.05);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.1);
     border-radius: var(--radius-full);
     color: var(--text-secondary);
     font-size: var(--font-sm);
@@ -39,7 +39,7 @@
 }
 
 .tab:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(var(--text-primary-rgb), 0.08);
     border-color: rgba(155, 135, 245, 0.3);
     transform: translateY(-1px);
 }

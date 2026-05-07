@@ -6,7 +6,7 @@ import { formatNumber } from '../../utils/formatNumber';
 const CommentButton = ({ count, onClick }) => {
     const handleClick = (e) => {
         e.stopPropagation();
-        console.log('Comment button clicked!', { count });
+
         if (onClick) {
             onClick(e);
         }

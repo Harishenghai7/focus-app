@@ -16,7 +16,7 @@
     right: 0;
     background: var(--glass-bg-solid, rgba(23, 13, 48, 0.95));
     backdrop-filter: var(--glass-blur, blur(25px));
-    border-top: 1px solid var(--glass-border, rgba(255,255,255,0.12));
+    border-top: 1px solid var(--glass-border, rgba(var(--text-primary-rgb), 0.12));
     border-radius: var(--radius-2xl, 24px) var(--radius-2xl, 24px) 0 0;
     padding: var(--space-4, 16px) var(--space-4, 16px) calc(var(--space-4, 16px) + env(safe-area-inset-bottom));
     z-index: calc(var(--z-modal, 1200) + 1);
@@ -27,7 +27,7 @@
 .handle {
     width: 40px;
     height: 4px;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(var(--text-primary-rgb), 0.2);
     border-radius: 4px;
     margin: 0 auto var(--space-4, 16px);
 }
@@ -49,7 +49,7 @@
     padding: var(--space-4, 16px);
     background: transparent;
     border: none;
-    color: var(--text-primary, #ffffff);
+    color: var(--text-primary, var(--text-primary));
     font-size: var(--font-base, 16px);
     font-weight: 500;
     cursor: pointer;
@@ -58,15 +58,15 @@
 }
 
 .optionBtn:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(var(--text-primary-rgb), 0.05);
 }
 
 .optionBtn.danger {
-    color: var(--error, #ef4444);
+    color: var(--error, var(--error));
 }
 
 .optionBtn.danger:hover {
-    background: rgba(239, 68, 68, 0.1);
+    background: rgba(var(--error-rgb), 0.1);
 }
 
 /* Desktop sizing adjustments */

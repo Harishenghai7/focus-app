@@ -1,17 +1,18 @@
 import React from 'react';
 import useOAuth from '../../hooks/useOAuth';
 import styles from './OAuthButtons.module.css';
-import { FaGoogle, FaMicrosoft, FaGithub, FaDiscord, FaTwitter } from 'react-icons/fa';
+import { FaDiscord, FaGithub, FaGoogle, FaMicrosoft, FaTwitter } from 'react-icons/fa';
 
-const OAuthButtons = () => {
+const OAuthButtons = ({ mode = 'login' }) => {
     const { handleOAuthLogin, loading } = useOAuth();
+    const labelPrefix = mode === 'signup' ? 'Create with' : 'Continue with';
 
     const providers = [
-        { name: 'google', icon: <FaGoogle />, label: 'Continue with Google', className: styles.google },
-        { name: 'azure', icon: <FaMicrosoft />, label: 'Continue with Microsoft', className: styles.microsoft },
-        { name: 'github', icon: <FaGithub />, label: 'Continue with GitHub', className: styles.github },
-        { name: 'discord', icon: <FaDiscord />, label: 'Continue with Discord', className: styles.discord },
-        { name: 'twitter', icon: <FaTwitter />, label: 'Continue with Twitter', className: styles.twitter },
+        { name: 'google', icon: <FaGoogle />, label: `${labelPrefix} Google`, className: styles.google },
+        { name: 'azure', icon: <FaMicrosoft />, label: `${labelPrefix} Microsoft`, className: styles.microsoft },
+        { name: 'github', icon: <FaGithub />, label: `${labelPrefix} GitHub`, className: styles.github },
+        { name: 'discord', icon: <FaDiscord />, label: `${labelPrefix} Discord`, className: styles.discord },
+        { name: 'twitter', icon: <FaTwitter />, label: `${labelPrefix} Twitter`, className: styles.twitter }
     ];
 
     return (

@@ -96,7 +96,7 @@ export const useNotifications = (userId, filter = 'all', pageSize = 20) => {
     const fetchInitialNotifications = useCallback(async () => {
         if (!userId) return [];
 
-        console.log('🔔 Fetching notifications via REST API...');
+
 
         try {
             const notifs = await fetchNotifications(userId, {
@@ -105,7 +105,7 @@ export const useNotifications = (userId, filter = 'all', pageSize = 20) => {
                 unreadOnly: filter === 'unread'
             });
 
-            console.log(`✅ Fetched ${notifs.length} notifications`);
+
             return notifs;
         } catch (error) {
             console.error('❌ Error fetching notifications:', error);
@@ -122,7 +122,7 @@ export const useNotifications = (userId, filter = 'all', pageSize = 20) => {
         enabled: !!userId,
         retries: 3,
         onSuccess: (data) => {
-            console.log('✅ Notifications loaded:', data?.length);
+
             const normalized = (data || []).map(normalizeNotification);
             setNotifications(groupNotifications(normalized));
             setPage(0);
@@ -141,7 +141,7 @@ export const useNotifications = (userId, filter = 'all', pageSize = 20) => {
 
         try {
             const nextPage = page + 1;
-            console.log('🔔 Loading more notifications, page:', nextPage);
+
 
             const newNotifs = await fetchNotifications(userId, {
                 limit: pageSize,
@@ -153,7 +153,7 @@ export const useNotifications = (userId, filter = 'all', pageSize = 20) => {
             setNotifications(prev => groupNotifications([...prev, ...normalized]));
             setPage(nextPage);
             setHasMore(newNotifs.length === pageSize);
-            console.log(`✅ Loaded ${newNotifs.length} more notifications`);
+
         } catch (error) {
             console.error('❌ Error loading more notifications:', error);
         } finally {
@@ -202,7 +202,7 @@ export const useNotifications = (userId, filter = 'all', pageSize = 20) => {
         enabled: !!userId,
         filter: `user_id=eq.${userId}`,
         onEvent: (payload) => {
-            console.log('🔔 New notification received');
+
             const newNotif = normalizeNotification(payload.new);
 
             setNotifications(prev => groupNotifications([newNotif, ...prev]));

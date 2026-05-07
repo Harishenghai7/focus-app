@@ -11,7 +11,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import * as faceapi from 'face-api.js';
 
-// ── Challenge Pool (3 distinct actions) ─────────────────────────────────
+// ── Challenge Pool (5 distinct actions - 3 random selected per session) ─────────────────────────────────
 const CHALLENGE_POOL = [
   {
     id: 'blink',
@@ -28,20 +28,33 @@ const CHALLENGE_POOL = [
   {
     id: 'tilt',
     label: 'Tilt your head left',
-    icon: '🧀',
+    icon: '↩️',
     description: 'Gently tilt your head to your left side',
+  },
+  {
+    id: 'lookLeft',
+    label: 'Look left',
+    icon: '👈',
+    description: 'Turn your head to look left',
+  },
+  {
+    id: 'lookRight',
+    label: 'Look right',
+    icon: '👉',
+    description: 'Turn your head to look right',
   },
 ];
 
 // ── Thresholds ────────────────────────────────────────────────────────────────
+// 🔱 BULLETPROOF: Aligned with TrustShieldVerification.jsx for consistency
 const THRESHOLDS = {
-  smile: 0.35,          // lower smile threshold to accommodate subtle indoor lighting
-  blink: 0.25,          // eye aspect ratio (lower = more closed)
-  tilt: 12,             // roll angle in degrees (head tilt)
+  smile: 0.6,           // expressions.happy > 0.6 (aligned with main verification)
+  blink: 0.22,          // EAR < 0.22 (aligned with main verification)
+  tilt: 0.12,           // |yaw| > 0.12 (normalized -1 to 1)
   lookLeft: 12,         // head yaw degrees (positive = left)
   lookRight: -12,       // head yaw degrees (negative = right)
   nod: 15,              // head pitch degrees
-  detectionMinScore: 0.5,
+  detectionMinScore: 0.4, // Aligned with main verification
   // Anti-spoofing: if descriptor cosine distance < this value across
   // SPOOF_FRAME_THRESHOLD consecutive frames, flag as photo injection
   spoofDistanceMin: 0.015,
@@ -144,8 +157,25 @@ export const useFaceLiveness = ({
 
   // ── Detection Loop ──────────────────────────────────────────────────────────
   const runDetectionLoop = useCallback(() => {
-    const detect = async () => {
-      if (!videoRef?.current || videoRef.current.paused) {
+    let lastStatusMsg = '';
+    let lastStatusTime = 0;
+    let frameCount = 0;
+    let lastDetectionTime = 0;
+    let consecutiveErrors = 0;
+    
+    // 🔱 BULLETPROOF: Stricter debouncing - 1500ms max frequency to prevent spam
+    const setStatusDebounced = (msg, force = false) => {
+      const now = Date.now();
+      // Only update if: forced, message changed AND enough time passed
+      if (force || (msg !== lastStatusMsg && now - lastStatusTime > 1500)) {
+        setStatusMessage(msg);
+        lastStatusMsg = msg;
+        lastStatusTime = now;
+      }
+    };
+    
+    const detect = async (timestamp) => {
+      if (!videoRef?.current || videoRef.current.paused || videoRef.current.ended) {
         detectionLoopRef.current = requestAnimationFrame(detect);
         return;
       }
@@ -153,10 +183,18 @@ export const useFaceLiveness = ({
         detectionLoopRef.current = requestAnimationFrame(detect);
         return;
       }
+      
+      // Throttle to ~4fps (250ms between detections) for stability
+      if (timestamp - lastDetectionTime < 250) {
+        detectionLoopRef.current = requestAnimationFrame(detect);
+        return;
+      }
+      lastDetectionTime = timestamp;
+      frameCount++;
 
       try {
         const detections = await faceapi
-          .detectSingleFace(videoRef.current, new faceapi.TinyFaceDetectorOptions({ inputSize: 512, scoreThreshold: THRESHOLDS.detectionMinScore }))
+          .detectSingleFace(videoRef.current, new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.4 }))
           .withFaceLandmarks()
           .withFaceExpressions()
           .withFaceDescriptor();
@@ -233,7 +271,7 @@ export const useFaceLiveness = ({
             const inCenterY = faceCenterY > (vHeight * 0.35) && faceCenterY < (vHeight * 0.65);
             
             if (!inCenterX || !inCenterY) {
-              setStatusMessage('⚠️ Please align your face in the center.');
+              setStatusDebounced('⚠️ Please align your face in the center.');
               detectionLoopRef.current = requestAnimationFrame(detect);
               return;
             }
@@ -259,75 +297,88 @@ export const useFaceLiveness = ({
         const avgPitch = poseHistoryRef.current.reduce((sum, p) => sum + p.pitch, 0) / poseHistoryRef.current.length;
         const smoothedPose = { yaw: avgYaw, pitch: avgPitch };
 
-        // Check current challenge using the stable ref index
+        // Check current challenge
         const stableIndex = currentIndexRef.current;
         const currentChallenge = challenges[stableIndex];
-        if (currentChallenge) {
-          const expectedMessage = `${currentChallenge.icon} ${currentChallenge.label}`;
-          setStatusMessage((prev) => prev !== expectedMessage ? expectedMessage : prev);
-          
-          const passed = evaluateChallenge(currentChallenge.id, expressions, smoothedPose, landmarks);
-          
-          // Visual Guidance Logic
-          let partial = false;
-          if (currentChallenge.id === 'lookLeft' && smoothedPose.yaw > 5 && smoothedPose.yaw < THRESHOLDS.lookLeft) partial = true;
-          if (currentChallenge.id === 'lookRight' && smoothedPose.yaw < -5 && smoothedPose.yaw > THRESHOLDS.lookRight) partial = true;
-          setIsPartiallyTurned(prev => prev !== partial ? partial : prev);
+        
+        if (!currentChallenge || stableIndex >= 3) {
+          detectionLoopRef.current = requestAnimationFrame(detect);
+          return;
+        }
 
-          if (passed) {
-            if (!challengeHoldRef.current) {
-              // Start hold timer — user must maintain expression for 0.5s
-              challengeHoldRef.current = setTimeout(() => {
-                challengeHoldRef.current = null;
-                // Mark challenge complete
-                setCompletedChallenges(prev => {
-                  const updated = [...prev, currentChallenge.id];
-                  return updated;
-                });
-                
-                setStatusMessage('✅ ' + currentChallenge.label + ' Complete!');
-                if (navigator?.vibrate) navigator.vibrate(200); // Gentle vibration for success
-                pauseRef.current = true; // Pause detection loop logic
-                
-                setTimeout(() => {
-                  const nextIndex = stableIndex + 1;
-                  setCurrentIndex(nextIndex);
-                  currentIndexRef.current = nextIndex;
-                  setProgress(Math.round((nextIndex / challenges.length) * 100));
-                  setLivenessScore(prev => prev + (100 / challenges.length));
+        const expectedMessage = `${currentChallenge.icon} ${currentChallenge.label}`;
+        setStatusDebounced(expectedMessage);
+        
+        const passed = evaluateChallenge(currentChallenge.id, expressions, smoothedPose, landmarks);
+        
+        // Visual Guidance Logic
+        let partial = false;
+        if (currentChallenge.id === 'lookLeft' && smoothedPose.yaw > 5 && smoothedPose.yaw < THRESHOLDS.lookLeft) partial = true;
+        if (currentChallenge.id === 'lookRight' && smoothedPose.yaw < -5 && smoothedPose.yaw > THRESHOLDS.lookRight) partial = true;
+        setIsPartiallyTurned(prev => prev !== partial ? partial : prev);
 
-                  if (nextIndex >= challenges.length) {
-                    // All challenges passed!
-                    stopDetection();
-                    setStatusMessage('✅ Liveness verified. Excellent!');
-                    if (navigator?.vibrate) navigator.vibrate([400, 100, 400]); // Long vibration for final win
-
-                    // Wait 1.5 seconds so user feels the win before moving to success page
-                    setTimeout(() => {
-                      onComplete?.({
-                        score: 100,
-                        capturedFrames,
-                        completedChallenges: [...completedChallenges, currentChallenge.id],
-                      });
-                    }, 1500);
-                  } else {
-                    pauseRef.current = false; // resume
-                    const nextChallenge = challenges[nextIndex];
-                    setStatusMessage(`${nextChallenge.icon} ${nextChallenge.label}`);
-                  }
-                }, 1000);
-              }, 500);
-            }
-          } else {
-            // Expression not matching — cancel hold timer
-            if (challengeHoldRef.current) {
-              clearTimeout(challengeHoldRef.current);
+        if (passed) {
+          if (!challengeHoldRef.current) {
+            // Start hold timer — user must maintain expression for 0.4s
+            challengeHoldRef.current = setTimeout(() => {
               challengeHoldRef.current = null;
-            }
+              // Mark challenge complete
+              const nextIndex = stableIndex + 1;
+              setCompletedChallenges(prev => {
+                const updated = [...prev, currentChallenge.id];
+                return updated;
+              });
+              
+              setStatusDebounced('✅ Challenge ' + (stableIndex + 1) + ' Complete!', true);
+              if (navigator?.vibrate) navigator.vibrate(150);
+              pauseRef.current = true;
+              
+              setTimeout(() => {
+                setCurrentIndex(nextIndex);
+                currentIndexRef.current = nextIndex;
+                setProgress(Math.round((nextIndex / challenges.length) * 100));
+                setLivenessScore(prev => prev + (100 / challenges.length));
+
+                if (nextIndex >= challenges.length) {
+                  stopDetection();
+                  setStatusDebounced('✅ All challenges complete!', true);
+                  if (navigator?.vibrate) navigator.vibrate([200, 100, 200]);
+                  
+                  setTimeout(() => {
+                    onComplete?.({
+                      score: 100,
+                      capturedFrames,
+                      completedChallenges: [...completedChallenges, currentChallenge.id],
+                    });
+                  }, 800);
+                } else {
+                  pauseRef.current = false;
+                  const nextChallenge = challenges[nextIndex];
+                  setStatusDebounced(`Challenge ${nextIndex + 1}/3 — ${nextChallenge.icon} ${nextChallenge.label}`, true);
+                }
+              }, 600);
+            }, 400);
+          }
+        } else {
+          // Expression not matching — cancel hold timer
+          if (challengeHoldRef.current) {
+            clearTimeout(challengeHoldRef.current);
+            challengeHoldRef.current = null;
           }
         }
       } catch (err) {
-        // Silently ignore per-frame errors
+        // Track consecutive errors and pause if too many
+        consecutiveErrors++;
+        if (consecutiveErrors > 10) {
+          console.error('[useFaceLiveness] Too many consecutive errors, pausing detection');
+          setStatusDebounced('⚠️ Detection paused. Please ensure good lighting and face visibility.', true);
+          pauseRef.current = true;
+          // Auto-resume after 3 seconds
+          setTimeout(() => {
+            pauseRef.current = false;
+            consecutiveErrors = 0;
+          }, 3000);
+        }
       }
 
       detectionLoopRef.current = requestAnimationFrame(detect);
@@ -363,9 +414,11 @@ export const useFaceLiveness = ({
         };
         const leftEAR = calcEAR(36);
         const rightEAR = calcEAR(42);
+        const avgEAR = (leftEAR + rightEAR) / 2;
         
-        // Either eye drops below 0.22 instantaneously
-        if (leftEAR < 0.22 || rightEAR < 0.22) {
+        // 🔱 BULLETPROOF: Both eyes must blink (or average) below threshold
+        // This prevents false positives from winking or partial blinks
+        if (avgEAR < THRESHOLDS.blink) {
           return true;
         }
         
@@ -381,7 +434,17 @@ export const useFaceLiveness = ({
         const faceW = Math.abs(pts[16].x - pts[0].x) || 1;
         const rollDeg = ((rightEarY - leftEarY) / faceW) * 90;
         // Positive rollDeg means left ear is higher = head tilted to the right (user's perspective left)
-        return rollDeg > THRESHOLDS.tilt;
+        return Math.abs(rollDeg) > THRESHOLDS.tilt;
+      }
+
+      case 'lookLeft': {
+        // Yaw positive = looking left
+        return headPose.yaw > THRESHOLDS.lookLeft;
+      }
+
+      case 'lookRight': {
+        // Yaw negative = looking right
+        return headPose.yaw < THRESHOLDS.lookRight;
       }
 
       default:

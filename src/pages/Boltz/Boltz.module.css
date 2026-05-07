@@ -9,7 +9,7 @@
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background: var(--bg-primary, #1a0f2e);
+    background: var(--bg-primary, var(--bg-elevated));
     background-image: var(--gradient-mesh);
     gap: var(--space-4);
 }
@@ -37,7 +37,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: #0a0415;
+    background: var(--bg-primary);
     overflow: hidden;
     z-index: 1;
 }
@@ -111,7 +111,7 @@
 .actionBtn:hover {
     background: var(--glass-surface-hover);
     transform: scale(1.08) translateY(-2px);
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.4);
     border-color: var(--primary-dim);
 }
 
@@ -127,7 +127,7 @@
 }
 
 .actionBtn.liked {
-    color: #ff3040;
+    color: var(--error);
     border-color: rgba(255, 48, 64, 0.4);
     box-shadow: 0 0 16px rgba(255, 48, 64, 0.3);
 }

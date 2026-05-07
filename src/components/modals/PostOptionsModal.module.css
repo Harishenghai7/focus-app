@@ -5,19 +5,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(var(--bg-primary-rgb), 0.5);
     backdrop-filter: blur(4px);
 }
 
 .editModal {
     width: 100%;
     max-width: 28rem;
-    background-color: #111827;
+    background-color: var(--bg-primary);
     /* gray-900 */
     border-radius: 0.75rem;
     padding: 1.5rem;
     margin: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.1);
 }
 
 .editTitle {
@@ -30,7 +30,7 @@
 .editTextarea {
     width: 100%;
     height: 8rem;
-    background-color: #1f2937;
+    background-color: var(--bg-secondary);
     /* gray-800 */
     color: white;
     border-radius: 0.5rem;
@@ -43,7 +43,7 @@
 }
 
 .editTextarea:focus {
-    border-color: #9333ea;
+    border-color: var(--primary);
     /* purple-600 */
     box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.2);
 }
@@ -56,7 +56,7 @@
 
 .cancelBtn {
     padding: 0.5rem 1rem;
-    color: #9ca3af;
+    color: var(--text-muted);
     /* gray-400 */
     background: none;
     border: none;
@@ -70,7 +70,7 @@
 
 .saveBtn {
     padding: 0.5rem 1rem;
-    background-color: #9333ea;
+    background-color: var(--primary);
     /* purple-600 */
     color: white;
     border: none;
@@ -80,7 +80,7 @@
 }
 
 .saveBtn:hover {
-    background-color: #7e22ce;
+    background-color: var(--primary);
     /* purple-700 */
 }
 

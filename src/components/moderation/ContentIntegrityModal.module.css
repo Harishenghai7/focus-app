@@ -10,7 +10,7 @@
 .backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(var(--bg-primary-rgb), 0.6);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     display: flex;
@@ -34,17 +34,17 @@
     padding: 32px;
     
     /* 20px glass blur effect */
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(var(--text-primary-rgb), 0.1);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     
     /* Satin border - 1px with gradient */
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.2);
     
     /* Shadow for depth */
     box-shadow: 
-        0 25px 50px -12px rgba(0, 0, 0, 0.5),
-        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+        0 25px 50px -12px rgba(var(--bg-primary-rgb), 0.5),
+        0 0 0 1px rgba(var(--text-primary-rgb), 0.1) inset;
     
     /* Smooth transitions */
     transition: all 0.3s ease;
@@ -56,9 +56,9 @@
     inset: 0;
     background: linear-gradient(
         135deg,
-        rgba(255, 255, 255, 0.1) 0%,
-        rgba(255, 255, 255, 0.05) 50%,
-        rgba(255, 255, 255, 0.02) 100%
+        rgba(var(--text-primary-rgb), 0.1) 0%,
+        rgba(var(--text-primary-rgb), 0.05) 50%,
+        rgba(var(--text-primary-rgb), 0.02) 100%
     );
     pointer-events: none;
     z-index: -1;
@@ -72,16 +72,16 @@
     padding: 1px;
     background: linear-gradient(
         135deg,
-        rgba(255, 255, 255, 0.3) 0%,
-        rgba(255, 255, 255, 0.1) 50%,
-        rgba(255, 255, 255, 0.2) 100%
+        rgba(var(--text-primary-rgb), 0.3) 0%,
+        rgba(var(--text-primary-rgb), 0.1) 50%,
+        rgba(var(--text-primary-rgb), 0.2) 100%
     );
     -webkit-mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
+        linear-gradient(var(--text-primary) 0 0) content-box, 
+        linear-gradient(var(--text-primary) 0 0);
     mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
+        linear-gradient(var(--text-primary) 0 0) content-box, 
+        linear-gradient(var(--text-primary) 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
@@ -97,8 +97,8 @@
 }
 
 .colorRed .iconContainer {
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(252, 165, 165, 0.2));
-    box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
+    background: linear-gradient(135deg, rgba(var(--error-rgb), 0.3), rgba(252, 165, 165, 0.2));
+    box-shadow: 0 0 30px rgba(var(--error-rgb), 0.4);
 }
 
 .colorOrange .iconContainer {
@@ -140,7 +140,7 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.3);
 }
 
 .statusIcon {
@@ -172,8 +172,8 @@
 }
 
 @keyframes pulseRed {
-    0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
-    50% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.8); }
+    0%, 100% { box-shadow: 0 0 20px rgba(var(--error-rgb), 0.4); }
+    50% { box-shadow: 0 0 40px rgba(var(--error-rgb), 0.8); }
 }
 
 @keyframes pulseGreen {
@@ -206,7 +206,7 @@
 
 .subtitle {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(var(--text-primary-rgb), 0.7);
     margin: 0;
 }
 
@@ -215,8 +215,8 @@
     height: 32px;
     border-radius: 8px;
     border: none;
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.7);
+    background: rgba(var(--text-primary-rgb), 0.1);
+    color: rgba(var(--text-primary-rgb), 0.7);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -226,7 +226,7 @@
 }
 
 .closeButton:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(var(--text-primary-rgb), 0.2);
     color: white;
 }
 
@@ -240,7 +240,7 @@
 
 .progressBar {
     height: 6px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(var(--text-primary-rgb), 0.1);
     border-radius: 3px;
     overflow: hidden;
     margin-bottom: 12px;
@@ -248,7 +248,7 @@
 
 .progressFill {
     height: 100%;
-    background: linear-gradient(90deg, #3B82F6, #8B5CF6, #EC4899);
+    background: linear-gradient(90deg, var(--text-muted), var(--primary), var(--error));
     border-radius: 3px;
     transition: width 0.3s ease;
 }
@@ -262,7 +262,7 @@
 
 .progressText {
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(var(--text-primary-rgb), 0.8);
 }
 
 .progressPercent {
@@ -283,7 +283,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+    background: linear-gradient(135deg, var(--text-muted), var(--primary));
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -304,32 +304,32 @@
     border-radius: 20px;
     font-size: 13px;
     font-weight: 600;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.2);
 }
 
 .badgeBlue {
     background: rgba(59, 130, 246, 0.2);
-    color: #93C5FD;
+    color: var(--text-muted);
 }
 
 .badgeRed {
-    background: rgba(239, 68, 68, 0.2);
-    color: #FCA5A5;
+    background: rgba(var(--error-rgb), 0.2);
+    color: var(--error);
 }
 
 .badgeOrange {
     background: rgba(249, 115, 22, 0.2);
-    color: #FDBA74;
+    color: var(--warning);
 }
 
 .badgeYellow {
     background: rgba(234, 179, 8, 0.2);
-    color: #FDE047;
+    color: var(--warning);
 }
 
 .badgeGreen {
     background: rgba(34, 197, 94, 0.2);
-    color: #86EFAC;
+    color: var(--success);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -346,10 +346,10 @@
     justify-content: space-between;
     align-items: center;
     padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(var(--text-primary-rgb), 0.05);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.1);
     border-radius: 12px;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(var(--text-primary-rgb), 0.9);
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
@@ -357,7 +357,7 @@
 }
 
 .toggleDetails:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(var(--text-primary-rgb), 0.1);
 }
 
 .violationsList {
@@ -374,13 +374,13 @@
     gap: 12px;
     padding: 12px 16px;
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.1);
+    background: rgba(var(--bg-primary-rgb), 0.2);
 }
 
 .severityhigh {
-    background: rgba(239, 68, 68, 0.15);
-    border-color: rgba(239, 68, 68, 0.3);
+    background: rgba(var(--error-rgb), 0.15);
+    border-color: rgba(var(--error-rgb), 0.3);
 }
 
 .severitymedium {
@@ -396,7 +396,7 @@
 .violationIcon {
     width: 20px;
     height: 20px;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(var(--text-primary-rgb), 0.8);
     flex-shrink: 0;
 }
 
@@ -416,7 +416,7 @@
 
 .violationScore {
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(var(--text-primary-rgb), 0.6);
     margin-top: 2px;
 }
 
@@ -438,7 +438,7 @@
     gap: 8px;
     font-size: 13px;
     font-weight: 600;
-    color: #FDE047;
+    color: var(--warning);
     margin-bottom: 8px;
 }
 
@@ -446,7 +446,7 @@
     margin: 0;
     padding-left: 20px;
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(var(--text-primary-rgb), 0.7);
 }
 
 .warningItem {
@@ -475,15 +475,15 @@
 }
 
 .standardsMessage {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.2);
-    color: #FCA5A5;
+    background: rgba(var(--error-rgb), 0.1);
+    border: 1px solid rgba(var(--error-rgb), 0.2);
+    color: var(--error);
 }
 
 .successMessage {
     background: rgba(34, 197, 94, 0.1);
     border: 1px solid rgba(34, 197, 94, 0.2);
-    color: #86EFAC;
+    color: var(--success);
 }
 
 .standardsMessage svg,
@@ -525,72 +525,72 @@
 }
 
 .buttonBlue {
-    background: linear-gradient(135deg, #3B82F6, #2563EB);
+    background: linear-gradient(135deg, var(--text-muted), var(--text-muted));
     color: white;
     border-color: rgba(59, 130, 246, 0.5);
 }
 
 .buttonBlue:hover:not(:disabled) {
-    background: linear-gradient(135deg, #2563EB, #1D4ED8);
+    background: linear-gradient(135deg, var(--text-muted), var(--glass-bg-solid));
     transform: translateY(-1px);
     box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
 }
 
 .buttonRed {
-    background: linear-gradient(135deg, #EF4444, #DC2626);
+    background: linear-gradient(135deg, var(--error), var(--error));
     color: white;
-    border-color: rgba(239, 68, 68, 0.5);
+    border-color: rgba(var(--error-rgb), 0.5);
 }
 
 .buttonRed:hover:not(:disabled) {
-    background: linear-gradient(135deg, #DC2626, #B91C1C);
+    background: linear-gradient(135deg, var(--error), var(--error));
     transform: translateY(-1px);
-    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+    box-shadow: 0 8px 25px rgba(var(--error-rgb), 0.4);
 }
 
 .buttonGreen {
-    background: linear-gradient(135deg, #22C55E, #16A34A);
+    background: linear-gradient(135deg, var(--success), var(--success));
     color: white;
     border-color: rgba(34, 197, 94, 0.5);
 }
 
 .buttonGreen:hover:not(:disabled) {
-    background: linear-gradient(135deg, #16A34A, #15803D);
+    background: linear-gradient(135deg, var(--success), var(--bg-secondary));
     transform: translateY(-1px);
     box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
 }
 
 .buttonOrange {
-    background: linear-gradient(135deg, #F97316, #EA580C);
+    background: linear-gradient(135deg, var(--warning), var(--warning));
     color: white;
     border-color: rgba(249, 115, 22, 0.5);
 }
 
 .buttonOrange:hover:not(:disabled) {
-    background: linear-gradient(135deg, #EA580C, #C2410C);
+    background: linear-gradient(135deg, var(--warning), var(--error));
     transform: translateY(-1px);
     box-shadow: 0 8px 25px rgba(249, 115, 22, 0.4);
 }
 
 .secondary {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(var(--text-primary-rgb), 0.1);
     color: white;
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(var(--text-primary-rgb), 0.2);
 }
 
 .secondary:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(var(--text-primary-rgb), 0.15);
+    border-color: rgba(var(--text-primary-rgb), 0.3);
 }
 
 .ghost {
     background: transparent;
-    color: rgba(255, 255, 255, 0.7);
-    border-color: rgba(255, 255, 255, 0.1);
+    color: rgba(var(--text-primary-rgb), 0.7);
+    border-color: rgba(var(--text-primary-rgb), 0.1);
 }
 
 .ghost:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(var(--text-primary-rgb), 0.05);
     color: white;
 }
 
@@ -604,7 +604,7 @@
     align-items: center;
     margin-top: 24px;
     padding-top: 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(var(--text-primary-rgb), 0.1);
 }
 
 .safetyBadge {
@@ -612,12 +612,12 @@
     align-items: center;
     gap: 6px;
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(var(--text-primary-rgb), 0.5);
 }
 
 .safetyHash {
     font-size: 10px;
-    color: rgba(255, 255, 255, 0.3);
+    color: rgba(var(--text-primary-rgb), 0.3);
     font-family: monospace;
 }
 

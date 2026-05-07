@@ -22,7 +22,7 @@
 
 .pageSubtitle {
     font-size: 16px;
-    color: #999;
+    color: var(--text-muted);
     margin: 0;
 }
 
@@ -39,7 +39,7 @@
     -webkit-backdrop-filter: var(--blur-sm);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-full);
-    color: #ffffff;
+    color: var(--text-primary);
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -49,7 +49,7 @@
 .filterSelect:hover {
     background: var(--glass-surface-hover);
     border-color: var(--primary-dim);
-    box-shadow: 0 0 12px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 0 12px rgba(var(--primary-rgb), 0.2);
 }
 
 .filterSelect:focus {
@@ -76,8 +76,8 @@
 
 .reportCard:hover {
     transform: translateY(-3px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
-    border-color: rgba(139, 92, 246, 0.3);
+    box-shadow: 0 12px 32px rgba(var(--bg-primary-rgb), 0.4);
+    border-color: rgba(var(--primary-rgb), 0.3);
 }
 
 @keyframes cardIn {
@@ -100,7 +100,7 @@
 
 .reportId {
     font-family: monospace;
-    color: #B794F6;
+    color: var(--primary-light);
     font-size: 13px;
 }
 
@@ -111,33 +111,33 @@
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 10px rgba(var(--bg-primary-rgb), 0.2);
 }
 
 .priorityBadge.urgent {
-    background: rgba(239, 68, 68, 0.15);
-    border: 1px solid rgba(239, 68, 68, 0.4);
-    color: #ef4444;
-    text-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
-    box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
+    background: rgba(var(--error-rgb), 0.15);
+    border: 1px solid rgba(var(--error-rgb), 0.4);
+    color: var(--error);
+    text-shadow: 0 0 8px rgba(var(--error-rgb), 0.5);
+    box-shadow: 0 0 12px rgba(var(--error-rgb), 0.2);
     animation: urgentPulse 2s infinite;
 }
 
 @keyframes urgentPulse {
-    0%, 100% { box-shadow: 0 0 12px rgba(239, 68, 68, 0.2); }
-    50% { box-shadow: 0 0 24px rgba(239, 68, 68, 0.4); }
+    0%, 100% { box-shadow: 0 0 12px rgba(var(--error-rgb), 0.2); }
+    50% { box-shadow: 0 0 24px rgba(var(--error-rgb), 0.4); }
 }
 
 .priorityBadge.high {
-    background: rgba(245, 158, 11, 0.15);
-    border: 1px solid rgba(245, 158, 11, 0.4);
-    color: #f59e0b;
+    background: rgba(var(--warning-rgb), 0.15);
+    border: 1px solid rgba(var(--warning-rgb), 0.4);
+    color: var(--warning);
 }
 
 .priorityBadge.medium {
-    background: rgba(16, 185, 129, 0.15);
-    border: 1px solid rgba(16, 185, 129, 0.4);
-    color: #10b981;
+    background: rgba(var(--success-rgb), 0.15);
+    border: 1px solid rgba(var(--success-rgb), 0.4);
+    color: var(--glass-bg-solid);
 }
 
 .priorityBadge.low {
@@ -153,13 +153,13 @@
     border-radius: 12px;
     font-size: 11px;
     font-weight: 600;
-    color: #B794F6;
+    color: var(--primary-light);
     text-transform: capitalize;
 }
 
 .reportDate {
     font-size: 12px;
-    color: #666;
+    color: var(--glass-bg-solid);
 }
 
 .reportBody {
@@ -169,23 +169,23 @@
 .reporterInfo,
 .reportedInfo {
     font-size: 14px;
-    color: #ffffff;
+    color: var(--text-primary);
     margin-bottom: 8px;
 }
 
 .trustScore {
     margin-left: 8px;
     font-size: 12px;
-    color: #999;
+    color: var(--text-muted);
 }
 
 .description {
     font-size: 14px;
-    color: #999;
+    color: var(--text-muted);
     line-height: 1.6;
     margin-top: 12px;
     padding: 12px;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(var(--bg-primary-rgb), 0.2);
     border-radius: 8px;
 }
 
@@ -209,7 +209,7 @@
 
 .actionButton:hover:not(:disabled) {
     transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 16px rgba(var(--bg-primary-rgb), 0.3);
 }
 
 .actionButton:disabled {
@@ -219,7 +219,7 @@
 
 .dismissButton {
     background: rgba(158, 158, 158, 0.2);
-    color: #9E9E9E;
+    color: var(--text-muted);
 }
 
 .dismissButton:hover:not(:disabled) {
@@ -228,7 +228,7 @@
 
 .warnButton {
     background: rgba(255, 193, 7, 0.2);
-    color: #FFC107;
+    color: var(--warning);
 }
 
 .warnButton:hover:not(:disabled) {
@@ -237,7 +237,7 @@
 
 .removeButton {
     background: rgba(255, 140, 0, 0.2);
-    color: #FF8C00;
+    color: var(--warning);
 }
 
 .removeButton:hover:not(:disabled) {
@@ -246,7 +246,7 @@
 
 .suspendButton {
     background: rgba(255, 68, 68, 0.2);
-    color: #FF4444;
+    color: var(--error);
 }
 
 .suspendButton:hover:not(:disabled) {
@@ -257,13 +257,13 @@
 .emptyState {
     text-align: center;
     padding: 60px 20px;
-    color: #999;
+    color: var(--text-muted);
 }
 
 .accessDenied {
     text-align: center;
     padding: 100px 20px;
-    color: #ffffff;
+    color: var(--text-primary);
 }
 
 @media (max-width: 768px) {

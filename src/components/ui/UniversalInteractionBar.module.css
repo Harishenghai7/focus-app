@@ -3,10 +3,10 @@
     align-items: center;
     justify-content: space-between;
     padding: var(--space-2, 8px) var(--space-4, 16px);
-    background: var(--glass-bg, rgba(126, 87, 194, 0.07));
+    background: var(--glass-bg, rgba(var(--primary-rgb), 0.07));
     backdrop-filter: var(--blur-sm, blur(10px));
     -webkit-backdrop-filter: var(--blur-sm, blur(10px));
-    border-top: 1px solid var(--glass-border, rgba(255, 255, 255, 0.07));
+    border-top: 1px solid var(--glass-border, rgba(var(--text-primary-rgb), 0.07));
     gap: var(--space-2, 8px);
 }
 
@@ -24,7 +24,7 @@
     background: transparent;
     border: none;
     cursor: pointer;
-    color: var(--text-secondary, #e2d9f3);
+    color: var(--text-secondary, var(--text-secondary));
     border-radius: var(--radius-md, 12px);
     transition: background var(--transition-fast, 0.15s ease), color var(--transition-fast, 0.15s ease);
     -webkit-tap-highlight-color: transparent;
@@ -32,7 +32,7 @@
 }
 
 .btn:hover {
-    background: var(--glass-surface-hover, rgba(255, 255, 255, 0.06));
+    background: var(--glass-surface-hover, rgba(var(--text-primary-rgb), 0.06));
 }
 
 .iconWrap {
@@ -45,7 +45,7 @@
 .count {
     font-size: var(--font-xs, 12px);
     font-weight: var(--font-semibold, 600);
-    color: var(--text-tertiary, #b8a8d4);
+    color: var(--text-tertiary, var(--text-muted));
     min-width: 16px;
     letter-spacing: -0.01em;
     transition: color var(--transition-fast, 0.15s ease);
@@ -54,16 +54,16 @@
 /* ── Active States ──────────────────────────────── */
 
 .liked {
-    color: #ff3040;
+    color: var(--error);
 }
 
 .liked .count,
 .countActive {
-    color: #ff3040;
+    color: var(--error);
 }
 
 .saved {
-    color: var(--primary-light, #a78bfa);
+    color: var(--primary-light, var(--primary-light));
 }
 
 /* ── Haptic keyframe ─────────────────────────────── */

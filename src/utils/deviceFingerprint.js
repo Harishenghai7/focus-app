@@ -82,7 +82,7 @@ export const generateAdvancedFingerprint = async () => {
 
     // If fingerprinting fails, generate a simple fallback ID
     if (!basicFingerprint) {
-        console.log('[Fingerprint] Using fallback device ID');
+
         const fallbackData = {
             userAgent: navigator.userAgent,
             language: navigator.language,

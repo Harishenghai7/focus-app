@@ -1,10 +1,10 @@
 .card {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(var(--text-primary-rgb), 0.05);
     border-radius: 16px;
     padding: 16px;
     margin: 16px 0;
     position: relative;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.1);
     backdrop-filter: blur(10px);
 }
 
@@ -24,7 +24,7 @@
 }
 
 .dismiss:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(var(--text-primary-rgb), 0.1);
 }
 
 .content {

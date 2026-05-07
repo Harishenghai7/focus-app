@@ -70,7 +70,7 @@ export const useMessages = (conversationId, currentUserId) => {
                 table: 'messages',
                 filter: `conversation_id=eq.${conversationId}`
             }, async (payload) => {
-                console.log('📨 New message:', payload.new);
+
 
                 // Fetch full message with relations
                 const fullMessage = await fetchMessages(conversationId, { limit: 1 });
@@ -89,7 +89,7 @@ export const useMessages = (conversationId, currentUserId) => {
                 table: 'messages',
                 filter: `conversation_id=eq.${conversationId}`
             }, (payload) => {
-                console.log('📝 Message updated:', payload.new);
+
                 setMessages(prev => prev.map(m =>
                     m.id === payload.new.id ? { ...m, ...payload.new } : m
                 ));
@@ -100,7 +100,7 @@ export const useMessages = (conversationId, currentUserId) => {
                 table: 'messages',
                 filter: `conversation_id=eq.${conversationId}`
             }, (payload) => {
-                console.log('🗑️ Message deleted:', payload.old);
+
                 setMessages(prev => prev.filter(m => m.id !== payload.old.id));
             })
             .subscribe();

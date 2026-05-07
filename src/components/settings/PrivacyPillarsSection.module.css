@@ -1,0 +1,442 @@
+/* ==========================================================
+   Province 2: Privacy & Pillars Styles
+   ========================================================== */
+
+/* Teen Section */
+.teenSection {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.ageBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: rgba(var(--primary-rgb), 0.1);
+    border-radius: 12px;
+    color: var(--royal-lavender-light, var(--primary));
+    font-size: 0.95rem;
+    font-weight: 600;
+    width: fit-content;
+}
+
+.coppaBadge {
+    padding: 4px 10px;
+    background: rgba(76, 175, 80, 0.2);
+    color: var(--glass-bg-solid);
+    border-radius: 8px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Guardian Section */
+.guardianSection {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.sectionSubheader {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary, var(--text-muted));
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.guardianList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.guardianCard {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: rgba(var(--text-primary-rgb), 0.02);
+    border-radius: 12px;
+    border: 1px solid rgba(var(--text-primary-rgb), 0.05);
+}
+
+.guardianAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(var(--primary-rgb), 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: var(--text-primary, var(--text-primary));
+    font-weight: 600;
+}
+
+.guardianAvatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.guardianInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.guardianName {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-primary, var(--text-primary));
+    margin: 0;
+}
+
+.unlinkButton {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(244, 67, 54, 0.1);
+    color: var(--error);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 200ms ease;
+}
+
+.unlinkButton:hover {
+    background: rgba(244, 67, 54, 0.2);
+    transform: scale(1.05);
+}
+
+.emptyState {
+    text-align: center;
+    padding: 32px 20px;
+    color: var(--text-muted, var(--text-muted));
+}
+
+.emptyState svg {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+    opacity: 0.5;
+}
+
+.emptyState p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Safety Toggles */
+.safetyToggles {
+    display: flex;
+    flex-direction: column;
+}
+
+.panicButton {
+    padding: 10px 18px;
+    background: rgba(244, 67, 54, 0.15);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    color: var(--error);
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 200ms ease;
+}
+
+.panicButton:hover {
+    background: rgba(244, 67, 54, 0.25);
+    transform: translateY(-1px);
+}
+
+/* Guardian View */
+.guardianView {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.guardianIntro {
+    font-size: 1rem;
+    color: var(--text-secondary, var(--text-muted));
+    margin: 0;
+}
+
+.linkedTeensList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.teenCard {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    background: rgba(var(--text-primary-rgb), 0.02);
+    border-radius: 14px;
+    border: 1px solid rgba(var(--text-primary-rgb), 0.05);
+}
+
+.teenAvatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(var(--primary-rgb), 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: var(--text-primary, var(--text-primary));
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.teenAvatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.teenInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.teenName {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary, var(--text-primary));
+    margin: 0 0 4px;
+}
+
+.teenAge {
+    font-size: 0.8rem;
+    color: var(--text-muted, var(--text-muted));
+    margin: 0;
+}
+
+.manageButton {
+    padding: 10px 18px;
+    background: rgba(var(--primary-rgb), 0.15);
+    border: 1px solid rgba(var(--primary-rgb), 0.3);
+    color: var(--royal-lavender-light, var(--primary));
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 200ms ease;
+}
+
+.manageButton:hover {
+    background: rgba(var(--primary-rgb), 0.25);
+}
+
+/* Enroll Section */
+.enrollSection {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.enrollText {
+    font-size: 0.95rem;
+    color: var(--text-muted, var(--text-muted));
+    margin: 0 0 20px;
+    line-height: 1.6;
+}
+
+/* Content Filter */
+.filterSlider {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.filterOption {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 20px 16px;
+    background: rgba(var(--text-primary-rgb), 0.02);
+    border: 2px solid transparent;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 300ms ease;
+}
+
+.filterOption:hover {
+    background: rgba(var(--text-primary-rgb), 0.04);
+    transform: translateY(-2px);
+}
+
+.filterOption.active {
+    background: rgba(var(--primary-rgb), 0.1);
+    border-color: var(--royal-lavender, var(--primary));
+    box-shadow: 0 4px 20px rgba(var(--primary-rgb), 0.15);
+}
+
+.filterIcon {
+    font-size: 2rem;
+}
+
+.filterLabel {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary, var(--text-primary));
+}
+
+.filterOption.active .filterLabel {
+    color: var(--royal-lavender-light, var(--primary));
+}
+
+.filterDescription {
+    font-size: 0.75rem;
+    color: var(--text-muted, var(--text-muted));
+    text-align: center;
+}
+
+.filterOption.active .filterDescription {
+    color: var(--text-secondary, var(--text-muted));
+}
+
+.filterInfo {
+    padding: 16px;
+    background: rgba(var(--text-primary-rgb), 0.02);
+    border-radius: 12px;
+    border-left: 3px solid var(--royal-lavender, var(--primary));
+}
+
+.filterInfo p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary, var(--text-muted));
+    line-height: 1.5;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(var(--bg-primary-rgb), 0.8);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modalContent {
+    background: rgba(20, 20, 30, 0.95);
+    border: 1px solid rgba(var(--primary-rgb), 0.3);
+    border-radius: 24px;
+    padding: 40px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.modalContent h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary, var(--text-primary));
+    margin: 0;
+}
+
+.modalContent > p {
+    font-size: 0.95rem;
+    color: var(--text-muted, var(--text-muted));
+    margin: 0;
+}
+
+.codeDisplay {
+    padding: 24px;
+    background: rgba(var(--primary-rgb), 0.1);
+    border: 2px dashed rgba(var(--primary-rgb), 0.3);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 200ms ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.codeDisplay:hover {
+    background: rgba(var(--primary-rgb), 0.15);
+    border-color: rgba(var(--primary-rgb), 0.5);
+}
+
+.code {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--royal-lavender-light, var(--primary));
+    letter-spacing: 4px;
+    font-family: 'Courier New', monospace;
+}
+
+.copyHint {
+    font-size: 0.75rem;
+    color: var(--text-muted, var(--text-muted));
+}
+
+.codeExpiry {
+    font-size: 0.8rem;
+    color: var(--text-muted, var(--text-muted));
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .filterSlider {
+        flex-direction: column;
+    }
+
+    .filterOption {
+        flex-direction: row;
+        text-align: left;
+        padding: 16px;
+    }
+
+    .filterIcon {
+        font-size: 1.5rem;
+    }
+
+    .teenCard,
+    .guardianCard {
+        flex-wrap: wrap;
+    }
+
+    .manageButton,
+    .unlinkButton {
+        width: 100%;
+        margin-top: 8px;
+    }
+
+    .unlinkButton {
+        width: 100%;
+        height: 44px;
+        border-radius: 10px;
+    }
+
+    .code {
+        font-size: 1.5rem;
+        letter-spacing: 2px;
+    }
+
+    .modalContent {
+        padding: 28px 24px;
+    }
+}

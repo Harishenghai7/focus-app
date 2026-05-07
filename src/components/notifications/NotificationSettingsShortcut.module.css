@@ -5,8 +5,8 @@
     justify-content: center;
     width: 40px;
     height: 40px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(var(--text-primary-rgb), 0.05);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.1);
     border-radius: var(--radius-lg);
     color: var(--text-secondary);
     cursor: pointer;
@@ -15,7 +15,7 @@
 }
 
 .button:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(var(--text-primary-rgb), 0.08);
     border-color: rgba(167, 139, 250, 0.3);
     color: var(--primary-lavender);
     transform: rotate(90deg);
@@ -32,7 +32,7 @@
     bottom: -35px;
     right: 0;
     padding: 0.5rem 0.75rem;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(var(--bg-primary-rgb), 0.9);
     color: white;
     font-size: 0.75rem;
     border-radius: 6px;

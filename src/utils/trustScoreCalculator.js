@@ -15,12 +15,13 @@
 export const TRUST_SCORE_WEIGHTS = {
     BASE: 20,
     EMAIL_VERIFIED: 20,
-    OAUTH_LINKED: 15, // Per provider, capped? Or just for having at least one? Prompt says "OAuth Linked (15)", implies binary or capped. Let's assume binary for "has linked oauth" or maybe additive. Prompt says "Google (+15), Microsoft (+15)..." in section 6. But section 2 says "OAuth Linked (15)". Let's stick to section 2 for the summary calculation, but maybe allow bonus for multiple.
+    OAUTH_LINKED: 15,
     BIOMETRIC: 10,
     PROFILE_COMPLETE: 10,
-    ACCOUNT_AGE: 10, // > 30 days?
-    POSITIVE_INTERACTIONS: 10, // > 100 interactions?
-    NO_REPORTS: 5
+    ACCOUNT_AGE: 10,
+    POSITIVE_INTERACTIONS: 10,
+    NO_REPORTS: 5,
+    TRUST_SHIELD: 200 // 🏛️ SOVEREIGN FIX: Trust Shield liveness verification bonus
 };
 
 export const TRUST_TIERS = {
@@ -46,13 +47,20 @@ export const calculateTrustScore = (user, metrics = {}) => {
         profile: 0,
         age: 0,
         interactions: 0,
-        reports: 0
+        reports: 0,
+        trustShield: 0
     };
 
     // Email Verification
     if (user.email_confirmed_at || user.emailVerified) {
         score += TRUST_SCORE_WEIGHTS.EMAIL_VERIFIED;
         breakdown.email = TRUST_SCORE_WEIGHTS.EMAIL_VERIFIED;
+    }
+
+    // 🏛️ SOVEREIGN FIX: Trust Shield Liveness Verification (+200 points)
+    if (user.trust_shield_status === 'VERIFIED' || user.verification_status === 'VERIFIED') {
+        score += TRUST_SCORE_WEIGHTS.TRUST_SHIELD;
+        breakdown.trustShield = TRUST_SCORE_WEIGHTS.TRUST_SHIELD;
     }
 
     // OAuth Linking (Check if any provider is linked)

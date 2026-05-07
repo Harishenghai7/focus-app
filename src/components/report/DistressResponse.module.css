@@ -4,7 +4,7 @@
   position: fixed;
   inset: 0;
   z-index: 10001;
-  background: rgba(0, 0, 0, 0.92);
+  background: rgba(var(--bg-primary-rgb), 0.92);
   backdrop-filter: blur(20px);
   display: flex;
   align-items: center;
@@ -17,7 +17,7 @@
 .overlayVisible { opacity: 1; }
 
 .modal {
-  background: linear-gradient(160deg, #0f1022 0%, #13142e 100%);
+  background: linear-gradient(160deg, var(--bg-primary) 0%, var(--bg-primary) 100%);
   border: 1px solid rgba(124, 107, 254, 0.3);
   border-radius: 28px;
   padding: 36px 28px;
@@ -28,7 +28,7 @@
   align-items: center;
   gap: 18px;
   position: relative;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.8),
+  box-shadow: 0 24px 80px rgba(var(--bg-primary-rgb), 0.8),
               0 0 60px rgba(124, 107, 254, 0.1);
   transform: scale(0.9) translateY(30px);
   transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -40,9 +40,9 @@
   position: absolute;
   top: 16px;
   right: 18px;
-  background: rgba(255,255,255,0.06);
+  background: rgba(var(--text-primary-rgb), 0.06);
   border: none;
-  color: #64748b;
+  color: var(--glass-bg-solid);
   font-size: 1.3rem;
   width: 30px;
   height: 30px;
@@ -54,7 +54,7 @@
   transition: all 0.2s;
 }
 
-.closeBtn:hover { background: rgba(255,255,255,0.12); color: #94a3b8; }
+.closeBtn:hover { background: rgba(var(--text-primary-rgb), 0.12); color: var(--text-muted); }
 
 .lionWrap {
   position: relative;
@@ -90,7 +90,7 @@
 .title {
   font-size: 1.6rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #c4b5fd, #818cf8, #38bdf8);
+  background: linear-gradient(135deg, var(--primary-light), var(--text-muted), var(--text-muted));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -100,7 +100,7 @@
 
 .message {
   font-size: 0.92rem;
-  color: #94a3b8;
+  color: var(--text-muted);
   text-align: center;
   line-height: 1.65;
   max-width: 380px;
@@ -109,15 +109,15 @@
 /* ── Helplines ────────────────────────────────────────────── */
 .helplinesSection {
   width: 100%;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(var(--text-primary-rgb), 0.03);
+  border: 1px solid rgba(var(--text-primary-rgb), 0.08);
   border-radius: 16px;
   padding: 16px;
 }
 
 .helplineTitle {
   font-size: 0.82rem;
-  color: #7c6bfe;
+  color: var(--primary-light);
   font-weight: 600;
   margin-bottom: 12px;
 }
@@ -133,7 +133,7 @@
   gap: 10px;
   align-items: flex-start;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(var(--text-primary-rgb), 0.05);
 }
 
 .helpline:last-child { border-bottom: none; padding-bottom: 0; }
@@ -146,25 +146,25 @@
   gap: 2px;
 }
 
-.helplineInfo strong { font-size: 0.88rem; color: #e2e8f0; }
+.helplineInfo strong { font-size: 0.88rem; color: var(--text-primary); }
 
 .helplineNumber {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #7c6bfe;
+  color: var(--primary-light);
   text-decoration: none;
   transition: color 0.2s;
 }
 
-.helplineNumber:hover { color: #a78bfa; }
+.helplineNumber:hover { color: var(--primary-light); }
 
-.helplineInfo small { font-size: 0.72rem; color: #475569; }
+.helplineInfo small { font-size: 0.72rem; color: var(--glass-bg-solid); }
 
 /* ── Breathing Exercise ───────────────────────────────────── */
 .breathBtn {
   background: rgba(124, 107, 254, 0.08);
   border: 1px solid rgba(124, 107, 254, 0.25);
-  color: #a78bfa;
+  color: var(--primary-light);
   padding: 11px 20px;
   border-radius: 12px;
   cursor: pointer;
@@ -196,17 +196,17 @@
 .breathLabel {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #e2e8f0;
+  color: var(--text-primary);
 }
 
 .breathCount {
   font-size: 0.65rem;
-  color: #64748b;
+  color: var(--glass-bg-solid);
 }
 
 .breathingInstruction {
   font-size: 0.75rem;
-  color: #475569;
+  color: var(--glass-bg-solid);
 }
 
 /* ── Actions ──────────────────────────────────────────────── */
@@ -221,7 +221,7 @@
 .primaryBtn {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #7c6bfe, #a78bfa);
+  background: linear-gradient(135deg, var(--primary-light), var(--primary-light));
   border: none;
   border-radius: 14px;
   color: white;
@@ -238,7 +238,7 @@
 
 .disclaimer {
   font-size: 0.78rem;
-  color: #475569;
+  color: var(--glass-bg-solid);
   text-align: center;
   line-height: 1.5;
 }

@@ -20,7 +20,7 @@
 .overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    background: linear-gradient(to top, rgba(var(--bg-primary-rgb), 0.8), transparent);
     display: flex;
     flex-direction: column;
     justify-content: flex-end;

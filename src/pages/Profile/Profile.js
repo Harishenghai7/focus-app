@@ -17,6 +17,8 @@ import { useProfileTabs } from '../../hooks/useProfileTabs';
 import { useProfileGrid } from '../../hooks/useProfileGrid';
 import { useHighlights } from '../../hooks/useHighlights';
 import { useAuth } from '../../hooks/useAuth';
+import getTrustShieldState from '../../utils/trustShieldPolicy';
+import useGuardianLinks from '../../hooks/useGuardianLinks';
 import { triggerHaptic } from '../../utils/haptics';
 import styles from './Profile.module.css';
 
@@ -24,12 +26,14 @@ const Profile = () => {
     const { username } = useParams();
     const navigate = useNavigate();
     const { user: currentUser, profile: authProfile, loading: authLoading } = useAuth();
+    const trust = useMemo(() => getTrustShieldState(authProfile), [authProfile]);
+    const { links: guardianLinks, loading: guardianLinksLoading } = useGuardianLinks(currentUser?.id);
 
     // Determine the profile to load
     const profileUsername = username || currentUser?.id;
 
     // Fetch profile data - always call hooks
-    const { profile, loading: profileLoading, error, currentUserRelation, updateFollowStatus } = useProfile(profileUsername);
+    const { profile, loading: profileLoading, error, currentUserRelation, updateFollowStatus, refresh: refreshProfile } = useProfile(profileUsername);
 
     const isOwnProfile = useMemo(() => {
         if (!currentUser) return false;
@@ -95,17 +99,29 @@ const Profile = () => {
         }
     };
 
-    // Empty state messages
+    // Empty state messages — Focusly AI personality
     const getEmptyMessage = () => {
         switch (activeTab) {
             case 'posts':
-                return isOwnProfile ? 'Share your first post' : 'No posts yet';
+                return isOwnProfile 
+                    ? 'Macha, your mirror is empty! Go to the Forge and create your first vision.' 
+                    : 'No posts yet';
             case 'boltz':
-                return isOwnProfile ? 'Create your first Boltz' : 'No Boltz yet';
+                return isOwnProfile 
+                    ? 'Time to create some magic! Record your first Boltz and share your story.' 
+                    : 'No Boltz yet';
+            case 'flash':
+                return isOwnProfile 
+                    ? 'Your highlights await! Create Flash stories to preserve your best moments.' 
+                    : 'No Flash highlights yet';
             case 'saved':
-                return 'No saved posts yet';
+                return isOwnProfile 
+                    ? 'Your collection is waiting. Save posts that inspire you.' 
+                    : 'No saved posts yet';
             case 'tagged':
-                return isOwnProfile ? "You haven't been tagged yet" : 'No tagged posts';
+                return isOwnProfile 
+                    ? "You haven't been tagged yet. Share your profile to get noticed!" 
+                    : 'No tagged posts';
             default:
                 return 'Nothing here yet';
         }
@@ -190,6 +206,7 @@ const Profile = () => {
                     onFollowStatusChange={updateFollowStatus}
                     onFollowersClick={() => setShowFollowersModal(true)}
                     onFollowingClick={() => setShowFollowingModal(true)}
+                    onProfileUpdate={refreshProfile}
                 />
 
                 {!highlightsLoading && (
@@ -199,6 +216,21 @@ const Profile = () => {
                         onHighlightClick={handleHighlightClick}
                         onAddClick={handleAddHighlight}
                     />
+                )}
+
+                {isOwnProfile && trust?.status === 'VERIFIED' && !guardianLinksLoading && guardianLinks.length > 0 && (
+                    <div
+                        className={styles.guardianHubCard}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => navigate('/guardian-hub')}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') navigate('/guardian-hub');
+                        }}
+                    >
+                        <div className={styles.guardianHubTitle}>Guardian Hub</div>
+                        <div className={styles.guardianHubSub}>Royal Lavender Command Center</div>
+                    </div>
                 )}
 
                 <ProfileTabs

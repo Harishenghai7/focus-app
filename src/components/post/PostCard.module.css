@@ -1,18 +1,21 @@
 /* ==========================================================
-   PostCard — Focus App v2.0 | Glassmorphism 2.0
+   PostCard — Focus App v3.0 | H2 Universal Theme
+   Glassmorphism 3.0 | Sovereign Edition
    ========================================================== */
 
 /* ── Glass Card ───────────────────────────────────────────── */
 .card {
-    background: var(--glass-bg, rgba(42, 26, 66, 0.72));
-    backdrop-filter: var(--glass-blur-md, blur(16px));
-    -webkit-backdrop-filter: var(--glass-blur-md, blur(16px));
-    border-radius: var(--radius-xl, 20px);
-    border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.10));
+    background: rgba(var(--text-primary-rgb), 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(var(--text-primary-rgb), 0.05);
     overflow: hidden;
-    transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.15s ease;
-    margin-bottom: 14px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    margin-bottom: 20px;
+    box-shadow: 
+        0 4px 24px rgba(var(--bg-primary-rgb), 0.25),
+        inset 0 1px 0 rgba(var(--text-primary-rgb), 0.05);
     position: relative;
 }
 
@@ -23,17 +26,21 @@
     border-radius: inherit;
     background: linear-gradient(
         135deg,
-        rgba(126, 87, 194, 0.04) 0%,
-        transparent 60%
+        rgba(var(--primary-rgb), 0.06) 0%,
+        transparent 50%,
+        rgba(236, 72, 153, 0.03) 100%
     );
     pointer-events: none;
     z-index: 0;
 }
 
 .card:hover {
-    border-color: var(--glass-border-hover, rgba(126, 87, 194, 0.5));
-    box-shadow: var(--glass-glow, 0 0 24px rgba(126, 87, 194, 0.22), 0 8px 32px rgba(0,0,0,0.4));
-    transform: translateY(-1px);
+    border-color: rgba(var(--primary-rgb), 0.3);
+    box-shadow: 
+        0 8px 32px rgba(var(--primary-rgb), 0.15),
+        0 4px 24px rgba(var(--bg-primary-rgb), 0.3),
+        inset 0 1px 0 rgba(var(--text-primary-rgb), 0.08);
+    transform: translateY(-2px);
 }
 
 /* Ensure children stack above the pseudo gradient */
@@ -72,31 +79,31 @@
 .username {
     font-weight: 700;
     font-size: 0.9rem;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary, var(--text-primary));
     transition: color 0.15s;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 160px;
 }
-.userInfo:hover .username { color: var(--royal-purple, #7E57C2); }
+.userInfo:hover .username { color: var(--royal-purple, var(--primary)); }
 
 .verified {
-    color: #7E57C2;
+    color: var(--primary);
     flex-shrink: 0;
-    filter: drop-shadow(0 0 4px rgba(126, 87, 194, 0.7));
+    filter: drop-shadow(0 0 4px rgba(var(--primary-rgb), 0.7));
 }
 
 .timestamp {
     font-size: 0.72rem;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
     margin-top: 2px;
 }
 
 .moreBtn {
     background: none;
     border: none;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
     cursor: pointer;
     padding: 6px;
     border-radius: var(--radius-sm, 8px);
@@ -106,15 +113,15 @@
     flex-shrink: 0;
 }
 .moreBtn:hover {
-    color: var(--text-primary, #fff);
-    background: rgba(255,255,255,0.07);
+    color: var(--text-primary, var(--text-primary));
+    background: rgba(var(--text-primary-rgb), 0.07);
 }
 
 /* ── Caption ───────────────────────────────────────────────── */
 .caption {
     padding: 0 16px 12px;
     font-size: 0.9rem;
-    color: var(--text-secondary, #e9d5ff);
+    color: var(--text-secondary, var(--primary-light));
     line-height: 1.6;
     white-space: pre-wrap;
     word-break: break-word;
@@ -122,7 +129,7 @@
 
 /* @mention highlight */
 .caption :global(.mention) {
-    color: var(--neon-lavender, #c4b5fd);
+    color: var(--neon-lavender, var(--primary-light));
     font-weight: 600;
     cursor: pointer;
 }
@@ -130,7 +137,7 @@
 
 /* #hashtag highlight */
 .caption :global(.hashtag) {
-    color: var(--electric-violet, #a78bfa);
+    color: var(--electric-violet, var(--primary-light));
     cursor: pointer;
 }
 
@@ -140,7 +147,7 @@
     width: 100%;
     overflow: hidden;
     cursor: pointer;
-    background: #0d0018;
+    background: var(--bg-primary);
     max-height: 540px;
 }
 
@@ -162,7 +169,7 @@
     transform: translate(-50%, -50%) scale(0);
     opacity: 0;
     pointer-events: none;
-    color: #fff;
+    color: var(--text-primary);
     filter: drop-shadow(0 0 20px rgba(255, 48, 64, 0.9));
     transition: none;
     z-index: 10;
@@ -208,7 +215,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 8px 12px 14px;
-    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    border-top: 1px solid rgba(var(--text-primary-rgb), 0.04);
 }
 
 .actionsLeft {
@@ -223,7 +230,7 @@
     gap: 5px;
     background: none;
     border: none;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
     cursor: pointer;
     padding: 8px 10px;
     border-radius: var(--radius-sm, 8px);
@@ -235,8 +242,8 @@
     -webkit-tap-highlight-color: transparent;
 }
 .actionBtn:hover {
-    color: var(--text-primary, #fff);
-    background: rgba(255,255,255,0.06);
+    color: var(--text-primary, var(--text-primary));
+    background: rgba(var(--text-primary-rgb), 0.06);
 }
 .actionBtn:active { transform: scale(0.92); }
 
@@ -249,18 +256,18 @@
 
 .count {
     font-size: 0.82rem;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
     transition: color 0.2s;
     min-width: 14px;
     font-variant-numeric: tabular-nums;
 }
 
 /* ── Like state ─────────────────────────────────────────────── */
-.liked { color: #ff3040 !important; }
-.countLiked { color: #ff3040 !important; }
+.liked { color: var(--error) !important; }
+.countLiked { color: var(--error) !important; }
 
 /* ── Save state ─────────────────────────────────────────────── */
-.saved { color: var(--royal-purple, #7E57C2) !important; }
+.saved { color: var(--royal-purple, var(--primary)) !important; }
 
 /* ── Heart pop animation ────────────────────────────────────── */
 @keyframes heartPop {
@@ -287,8 +294,8 @@
     align-items: center;
     gap: 4px;
     font-size: 0.72rem;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
     padding: 0 16px 8px;
     cursor: pointer;
 }
-.locationTag:hover { color: var(--neon-lavender, #c4b5fd); }
+.locationTag:hover { color: var(--neon-lavender, var(--primary-light)); }

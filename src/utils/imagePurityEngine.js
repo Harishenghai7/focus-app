@@ -54,7 +54,7 @@ export const loadOpenCV = () => {
       // OpenCV.js calls onRuntimeInitialized when fully ready
       if (window.cv && window.cv.Mat) {
         clearTimeout(timeout);
-        console.log('[OpenCV] ✅ Loaded successfully');
+
         resolve(true);
         return;
       }
@@ -63,7 +63,7 @@ export const loadOpenCV = () => {
       const handler = () => {
         clearTimeout(timeout);
         if (prior) prior();
-        console.log('[OpenCV] ✅ WASM Runtime initialized');
+
         resolve(true);
       };
       if (window.cv) {
@@ -74,7 +74,7 @@ export const loadOpenCV = () => {
           if (window.cv && window.cv.Mat) {
             clearInterval(poll);
             clearTimeout(timeout);
-            console.log('[OpenCV] ✅ Polled successfully');
+
             resolve(true);
           }
         }, 200);

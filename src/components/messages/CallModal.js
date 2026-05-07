@@ -79,7 +79,7 @@ const CallModal = ({ type = 'audio', user, onClose, onAnswer, onDecline, isIncom
             peerConnectionRef.current.onicecandidate = (event) => {
                 if (event.candidate) {
                     // Send ICE candidate to remote peer via signaling server
-                    console.log('ICE candidate:', event.candidate);
+
                 }
             };
 
@@ -88,7 +88,7 @@ const CallModal = ({ type = 'audio', user, onClose, onAnswer, onDecline, isIncom
             await peerConnectionRef.current.setLocalDescription(offer);
 
             // Send offer to remote peer via signaling server
-            console.log('Offer created:', offer);
+
 
             // Simulate connection for demo
             setTimeout(() => {

@@ -105,7 +105,8 @@ const statusGlowVariants = {
 // ═══════════════════════════════════════════════════════════════════════════════
 // COMPONENT: Sovereign Status Indicator
 // ═══════════════════════════════════════════════════════════════════════════════
-const SovereignStatusGlow = ({ status, message }) => {
+// 🏛️ SOVEREIGN FIX: Using function declaration to avoid TDZ issues
+function SovereignStatusGlow({ status, message }) {
   const getStatusConfig = () => {
     switch (status) {
       case VERIFICATION_STATES.VERIFIED:
@@ -140,12 +141,13 @@ const SovereignStatusGlow = ({ status, message }) => {
       <span className={styles.statusLabel}>{message || config.label}</span>
     </motion.div>
   );
-};
+}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // COMPONENT: DNA Extraction Visualizer
 // ═══════════════════════════════════════════════════════════════════════════════
-const DnaExtractionVisualizer = ({ progress, phase }) => {
+// 🏛️ SOVEREIGN FIX: Using function declaration to avoid TDZ issues
+function DnaExtractionVisualizer({ progress, phase }) {
   const phases = [
     { label: 'Purifying Image', icon: '🔬' },
     { label: 'Extracting DNA', icon: '🧬' },
@@ -205,12 +207,13 @@ const DnaExtractionVisualizer = ({ progress, phase }) => {
       </div>
     </div>
   );
-};
+}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // COMPONENT: Focusly AI Intervention (Duplicate Identity)
 // ═══════════════════════════════════════════════════════════════════════════════
-const FocuslyIntervention = ({ onRetry, onContactSupport }) => {
+// 🏛️ SOVEREIGN FIX: Using function declaration to avoid TDZ issues
+function FocuslyIntervention({ onRetry, onContactSupport }) {
   const focusly = useFocusly();
 
   useEffect(() => {
@@ -240,18 +243,19 @@ const FocuslyIntervention = ({ onRetry, onContactSupport }) => {
       </div>
     </motion.div>
   );
-};
+}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // MAIN COMPONENT: Sovereign Identity Vault
 // ═══════════════════════════════════════════════════════════════════════════════
-const SovereignIdentityVault = ({ 
+// 🏛️ SOVEREIGN FIX: Using function declaration to avoid TDZ issues
+function SovereignIdentityVault({ 
   onVerify, 
   onError, 
   userId, 
   supabase,
   children 
-}) => {
+}) {
   const [state, setState] = useState(VERIFICATION_STATES.IDLE);
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState(0);
@@ -273,7 +277,7 @@ const SovereignIdentityVault = ({
         return prev;
       }
       
-      console.log(`[SovereignVault] State transition: ${prev} → ${newState}`);
+
       return newState;
     });
     
@@ -607,7 +611,7 @@ const SovereignIdentityVault = ({
       />
     </div>
   );
-};
+}
 
 export default SovereignIdentityVault;
 export { VERIFICATION_STATES };

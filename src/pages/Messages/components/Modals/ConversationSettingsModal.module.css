@@ -8,7 +8,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(var(--bg-primary-rgb), 0.8);
     backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
@@ -41,7 +41,7 @@
 .header h2 {
     font-size: 24px;
     font-weight: 700;
-    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin: 0;
@@ -90,14 +90,14 @@
 }
 
 .settingIcon {
-    color: #a78bfa;
+    color: var(--primary-light);
     flex-shrink: 0;
 }
 
 .settingInfo h3 {
     font-size: 16px;
     font-weight: 600;
-    color: #f8f7ff;
+    color: var(--text-primary);
     margin: 0 0 4px 0;
 }
 
@@ -148,8 +148,8 @@
 }
 
 input:checked+.slider {
-    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
-    border-color: #8b5cf6;
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
+    border-color: var(--primary);
 }
 
 input:checked+.slider:before {
@@ -174,7 +174,7 @@ input:disabled+.slider {
     background: rgba(42, 27, 71, 0.4);
     border: 1px solid rgba(167, 139, 250, 0.15);
     border-radius: 12px;
-    color: #f8f7ff;
+    color: var(--text-primary);
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
@@ -187,17 +187,17 @@ input:disabled+.slider {
 
 .actionButton:hover {
     background: rgba(42, 27, 71, 0.6);
-    border-color: #8b5cf6;
+    border-color: var(--primary);
 }
 
 .actionButton.danger {
-    color: #ef4444;
-    border-color: rgba(239, 68, 68, 0.3);
+    color: var(--error);
+    border-color: rgba(var(--error-rgb), 0.3);
 }
 
 .actionButton.danger:hover {
-    background: rgba(239, 68, 68, 0.1);
-    border-color: #ef4444;
+    background: rgba(var(--error-rgb), 0.1);
+    border-color: var(--error);
 }
 
 .loading {

@@ -114,7 +114,7 @@ export const useTypingIndicator = (conversationId, groupId, currentUserId) => {
             })
             .subscribe(async (status) => {
                 if (status === 'SUBSCRIBED') {
-                    console.log('✅ Typing indicator channel subscribed');
+
                 }
             });
 

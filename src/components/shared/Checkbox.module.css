@@ -6,7 +6,7 @@
     cursor: pointer;
     font-size: 0.9rem;
     user-select: none;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(var(--text-primary-rgb), 0.8);
 }
 
 .input {
@@ -23,19 +23,19 @@
     left: 0;
     height: 20px;
     width: 20px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(var(--text-primary-rgb), 0.1);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.2);
     border-radius: 6px;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .container:hover .input~.checkmark {
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(var(--text-primary-rgb), 0.15);
 }
 
 .input:checked~.checkmark {
-    background-color: #a855f7;
-    border-color: #a855f7;
+    background-color: var(--primary);
+    border-color: var(--primary);
 }
 
 .checkmark:after {

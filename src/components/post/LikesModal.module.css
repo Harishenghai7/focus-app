@@ -3,7 +3,7 @@
 .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(var(--bg-primary-rgb), 0.8);
     backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
@@ -15,7 +15,7 @@
 .modal {
     background: rgba(26, 26, 26, 0.95);
     backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(139, 92, 246, 0.2);
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
     border-radius: 16px;
     width: 90%;
     max-width: 400px;
@@ -30,7 +30,7 @@
     align-items: center;
     justify-content: space-between;
     padding: var(--space-4);
-    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.2);
 }
 
 .header h3 {
@@ -52,7 +52,7 @@
 }
 
 .closeBtn:hover {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(var(--primary-rgb), 0.1);
 }
 
 .likesList {
@@ -78,7 +78,7 @@
 }
 
 .likeItem:hover {
-    background: rgba(139, 92, 246, 0.05);
+    background: rgba(var(--primary-rgb), 0.05);
 }
 
 .avatar {
@@ -102,13 +102,13 @@
 }
 
 .verified {
-    color: #9b87f5;
+    color: var(--primary);
     font-size: 14px;
 }
 
 .followBtn {
-    background: linear-gradient(135deg, #9b87f5, #7c3aed);
-    color: #ffffff;
+    background: linear-gradient(135deg, var(--primary), var(--primary));
+    color: var(--text-primary);
     border: none;
     border-radius: 8px;
     padding: 6px 16px;

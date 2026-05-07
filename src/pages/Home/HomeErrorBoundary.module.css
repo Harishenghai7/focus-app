@@ -3,15 +3,15 @@
     margin: var(--space-10, 2.5rem) auto;
     padding: var(--space-6, 1.5rem);
     text-align: center;
-    background: var(--glass-surface, rgba(255, 255, 255, 0.06));
-    border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+    background: var(--glass-surface, rgba(var(--text-primary-rgb), 0.06));
+    border: 1px solid var(--glass-border, rgba(var(--text-primary-rgb), 0.1));
     border-radius: var(--radius-lg, 12px);
     backdrop-filter: blur(12px);
 }
 
 .title {
     font-size: var(--font-xl, 1.25rem);
-    color: var(--text-primary, #f8f7ff);
+    color: var(--text-primary, var(--text-primary));
     margin: 0 0 var(--space-3, 0.75rem);
 }
 
@@ -24,11 +24,11 @@
 .pre {
     text-align: left;
     font-size: 11px;
-    color: var(--error, #f87171);
+    color: var(--error, var(--error));
     overflow: auto;
     max-height: 120px;
     margin-bottom: var(--space-4, 1rem);
     padding: var(--space-2, 0.5rem);
-    background: rgba(0, 0, 0, 0.25);
+    background: rgba(var(--bg-primary-rgb), 0.25);
     border-radius: var(--radius-sm, 6px);
 }

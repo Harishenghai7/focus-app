@@ -1,79 +1,114 @@
-/* BoltzActionsSidebar - Fixed Visibility and Clickability */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   BoltzActionsSidebar — GOD-LEVEL | H2 Royal Lavender
+   Interactive Glass Orbs with Sovereign Pulse Effects
+   ═══════════════════════════════════════════════════════════════════════════════ */
 
 .container {
     position: absolute;
-    right: 12px;
-    bottom: 20px;
+    right: 16px;
+    bottom: 120px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
+    gap: var(--space-5);
     z-index: 100;
     pointer-events: auto;
 }
 
+/* ── GOD-LEVEL: Interactive Glass Orb ─────────────────────────────────────────── */
 .actionBtn {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
-    background: transparent;
-    border: none;
+    gap: var(--space-1);
+    background: var(--glass-surface, rgba(var(--bg-primary-rgb), 0.3));
+    backdrop-filter: var(--blur-lg, blur(20px));
+    -webkit-backdrop-filter: var(--blur-lg, blur(20px));
+    border: 1px solid var(--glass-border, rgba(var(--text-primary-rgb), 0.1));
+    border-radius: var(--radius-2xl, 16px);
+    padding: var(--space-3);
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 0;
+    color: white;
+    font-size: var(--font-xs, 12px);
+    font-weight: var(--font-semibold, 600);
+    transition: transform var(--transition-bounce, 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)),
+                box-shadow var(--transition-base, 0.2s ease),
+                background var(--transition-base, 0.2s ease);
+    min-width: 56px;
+    box-shadow: var(--shadow-sm, 0 2px 8px rgba(var(--bg-primary-rgb), 0.3));
     pointer-events: auto;
 }
 
+/* ── SOVEREIGN PULSE: Hover Lavender Glow ────────────────────────────────────── */
+.actionBtn:hover {
+    background: var(--glass-surface-hover, rgba(var(--primary-rgb), 0.2));
+    transform: scale(1.08) translateY(-2px);
+    box-shadow: 0 0 24px rgba(var(--primary-rgb), 0.5),
+                0 0 48px rgba(var(--primary-rgb), 0.3),
+                inset 0 1px 0 rgba(var(--text-primary-rgb), 0.2);
+    border-color: var(--primary-dim, rgba(167, 139, 250, 0.5));
+}
+
+/* ── HAPTIC FEEDBACK: Active State ────────────────────────────────────────────── */
 .actionBtn:active {
-    transform: scale(0.85);
+    transform: scale(0.94);
+    box-shadow: 0 0 12px rgba(var(--primary-rgb), 0.3);
 }
 
 .iconWrapper {
-    width: 48px;
-    height: 48px;
+    width: 26px;
+    height: 26px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: transparent;
-    border-radius: 50%;
-    color: #ffffff;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8));
+    color: var(--text-primary);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 2px 8px rgba(var(--bg-primary-rgb), 0.8));
     pointer-events: auto;
 }
 
 .actionBtn:hover .iconWrapper {
-    transform: scale(1.15);
+    transform: scale(1.12);
+    filter: drop-shadow(0 0 12px rgba(var(--primary-rgb), 0.8));
 }
 
 .count {
     font-size: 12px;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-primary);
     text-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.9),
-        0 1px 4px rgba(0, 0, 0, 1);
+        0 2px 8px rgba(var(--bg-primary-rgb), 0.9),
+        0 1px 4px rgba(var(--bg-primary-rgb), 1);
     letter-spacing: 0.02em;
     min-width: 24px;
     text-align: center;
+    transition: all 0.2s ease;
 }
 
-/* Music disc at bottom */
+.actionBtn:hover .count {
+    color: var(--text-primary);
+    text-shadow: 0 0 16px rgba(var(--primary-rgb), 0.6);
+}
+
+/* ── MUSIC DISC: Glass Orb Variant ───────────────────────────────────────────── */
 .musicButton {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     overflow: hidden;
-    border: 2px solid #ffffff;
+    border: 2px solid rgba(var(--text-primary-rgb), 0.8);
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
-    margin-top: 4px;
+    box-shadow: 0 4px 16px rgba(var(--bg-primary-rgb), 0.5),
+                0 0 0 1px rgba(var(--primary-rgb), 0.3);
+    margin-top: var(--space-2);
 }
 
 .musicButton:hover {
-    transform: scale(1.1);
+    transform: scale(1.12);
+    box-shadow: 0 0 24px rgba(var(--primary-rgb), 0.5),
+                0 4px 16px rgba(var(--bg-primary-rgb), 0.5);
+    border-color: rgba(196, 181, 253, 0.9);
 }
 
 .musicButton:active {
@@ -104,17 +139,30 @@
     }
 }
 
-/* Mobile */
+/* ── DESKTOP: Centered Layout ───────────────────────────────────────────────── */
+@media (min-width: 1024px) {
+    .container {
+        right: calc(50% - 220px);
+        bottom: 140px;
+    }
+}
+
+/* ── MOBILE: Optimized Touch Targets ──────────────────────────────────────────── */
 @media (max-width: 768px) {
     .container {
-        right: 10px;
+        right: 12px;
         bottom: 80px;
-        gap: 14px;
+        gap: var(--space-4);
+    }
+
+    .actionBtn {
+        min-width: 48px;
+        padding: var(--space-2);
     }
 
     .iconWrapper {
-        width: 44px;
-        height: 44px;
+        width: 24px;
+        height: 24px;
     }
 
     .count {
@@ -122,7 +170,7 @@
     }
 
     .musicButton {
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
     }
 }

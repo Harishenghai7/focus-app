@@ -2,7 +2,19 @@
     display: flex;
     min-height: 100vh;
     width: 100%;
-    background: var(--bg-primary);
+    position: relative;
+    background:
+        radial-gradient(circle at top left, rgba(196, 181, 253, 0.08), transparent 24%),
+        radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.07), transparent 24%),
+        linear-gradient(180deg, #05020d 0%, #0f0a1e 42%, #120b24 100%);
+}
+
+/* Full-screen particle layer */
+.particleLayer {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
 }
 
 .formPanel {
@@ -10,34 +22,75 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
-    background: linear-gradient(135deg, rgba(126, 87, 194, 0.2), rgba(69, 39, 160, 0.2));
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border-left: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: -10px 0 50px rgba(0, 0, 0, 0.5), inset 0 0 100px rgba(139, 92, 246, 0.1);
+    padding: clamp(1.25rem, 4vw, 3rem);
+    background:
+        linear-gradient(180deg, rgba(7, 4, 16, 0.88), rgba(18, 10, 34, 0.82)),
+        rgba(10, 6, 20, 0.75);
+    backdrop-filter: blur(26px);
+    -webkit-backdrop-filter: blur(26px);
+    border-left: 1px solid rgba(var(--text-primary-rgb), 0.08);
+    box-shadow: -24px 0 60px rgba(2, 1, 8, 0.42), inset 0 0 120px rgba(var(--primary-rgb), 0.08);
     position: relative;
     overflow-y: auto;
+    z-index: 1;
+}
+
+.formPanel::before {
+    content: '';
+    position: absolute;
+    inset: 1.25rem;
+    border-radius: 32px;
+    border: 1px solid rgba(196, 181, 253, 0.08);
+    pointer-events: none;
+}
+
+/* Soft ambient glow behind form area */
+.formPanelGlow {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 70%);
+    filter: blur(60px);
+    pointer-events: none;
+    z-index: 0;
+    animation: formGlowPulse 5s ease-in-out infinite;
 }
 
 .formContent {
     width: 100%;
-    max-width: 480px;
+    max-width: 560px;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    animation: slideUp 0.5s ease-out;
+    animation: authContentEnter 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+    position: relative;
+    z-index: 1;
 }
 
-@keyframes slideUp {
+@keyframes authContentEnter {
     from {
-        transform: translateY(20px);
+        transform: translateY(24px);
         opacity: 0;
+        filter: blur(6px);
     }
-
     to {
         transform: translateY(0);
         opacity: 1;
+        filter: blur(0);
+    }
+}
+
+@keyframes formGlowPulse {
+    0%, 100% {
+        opacity: 0.4;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: translate(-50%, -50%) scale(1.1);
     }
 }
 
@@ -47,6 +100,17 @@
     }
 
     .formPanel {
-        padding: 1.5rem;
+        padding: 1rem;
+        min-height: 100vh;
+    }
+
+    .formPanel::before {
+        inset: 0.8rem;
+        border-radius: 24px;
+    }
+
+    .formPanelGlow {
+        width: 250px;
+        height: 250px;
     }
 }

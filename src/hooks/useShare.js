@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 export const useShare = () => {
     const shareToFlash = useCallback(async (boltzId) => {
         // Logic to share to Flash/Story
-        console.log('Share to Flash:', boltzId);
+
     }, []);
 
     const copyLink = useCallback(async (boltzId) => {

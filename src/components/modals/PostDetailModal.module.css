@@ -22,7 +22,7 @@
     height: 85vh;
     position: relative;
     border: 1px solid var(--glass-border);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(139, 92, 246, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(var(--bg-primary-rgb), 0.5), 0 0 40px rgba(var(--primary-rgb), 0.1);
     animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -35,7 +35,7 @@
     position: absolute;
     top: 15px;
     right: 15px;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(var(--bg-primary-rgb), 0.5);
     border: none;
     color: white;
     width: 36px;
@@ -50,7 +50,7 @@
 }
 
 .closeButton:hover {
-    background: rgba(139, 92, 246, 0.5);
+    background: rgba(var(--primary-rgb), 0.5);
     transform: scale(1.1);
 }
 
@@ -84,7 +84,7 @@
 
 .header {
     padding: 16px;
-    border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.1);
 }
 
 .userInfo {
@@ -100,12 +100,12 @@
 
 .username {
     font-weight: 700;
-    color: #fff;
+    color: var(--text-primary);
     font-size: 15px;
 }
 
 .verified {
-    color: #8b5cf6;
+    color: var(--primary);
     font-size: 12px;
     margin-left: 4px;
 }
@@ -125,7 +125,7 @@
 }
 
 .comments::-webkit-scrollbar-thumb {
-    background: rgba(139, 92, 246, 0.2);
+    background: rgba(var(--primary-rgb), 0.2);
     border-radius: 10px;
 }
 
@@ -139,7 +139,7 @@
 }
 
 .captionText {
-    color: #fff;
+    color: var(--text-primary);
     font-size: 14px;
     line-height: 1.5;
     margin: 0;
@@ -155,7 +155,7 @@
 }
 
 .commentText {
-    color: #fff;
+    color: var(--text-primary);
     font-size: 14px;
     line-height: 1.4;
     margin: 0;
@@ -163,14 +163,14 @@
 
 .timestamp {
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(var(--text-primary-rgb), 0.4);
     margin-top: 4px;
     display: block;
 }
 
 .emptyComments {
     text-align: center;
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(var(--text-primary-rgb), 0.4);
     font-size: 14px;
     margin-top: 40px;
 }
@@ -188,7 +188,7 @@
 
 .likesCount {
     font-weight: 700;
-    color: #fff;
+    color: var(--text-primary);
     font-size: 14px;
 }
 
@@ -197,7 +197,7 @@
     align-items: center;
     gap: 12px;
     padding-top: 12px;
-    border-top: 1px solid rgba(139, 92, 246, 0.05);
+    border-top: 1px solid rgba(var(--primary-rgb), 0.05);
 }
 
 .commentInput {
@@ -206,7 +206,7 @@
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-full);
     padding: 12px 20px;
-    color: #fff;
+    color: var(--text-primary);
     font-size: 14px;
     outline: none;
     transition: all var(--transition-base);
@@ -221,7 +221,7 @@
 .sendButton {
     background: none;
     border: none;
-    color: #8b5cf6;
+    color: var(--primary);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -232,7 +232,7 @@
 
 .sendButton:hover:not(:disabled) {
     transform: scale(1.1);
-    color: #a855f7;
+    color: var(--primary);
 }
 
 .sendButton:disabled {

@@ -11,7 +11,7 @@ import { supabaseUrl, supabaseAnonKey } from './supabase';
  */
 export const findExistingConversation = async (userId1, userId2) => {
     try {
-        console.log('🔍 Looking for existing conversation between:', userId1, userId2);
+
 
         // Get conversations where user1 is a participant
         const user1ConvsUrl = `${supabaseUrl}/rest/v1/conversation_participants?select=conversation_id&user_id=eq.${userId1}`;
@@ -28,7 +28,7 @@ export const findExistingConversation = async (userId1, userId2) => {
         const convIds = user1Convs.map(c => c.conversation_id);
 
         if (convIds.length === 0) {
-            console.log('📭 No existing conversations');
+
             return { conversationId: null, error: null };
         }
 
@@ -45,13 +45,13 @@ export const findExistingConversation = async (userId1, userId2) => {
             if (response2.ok) {
                 const result = await response2.json();
                 if (result.length > 0) {
-                    console.log('✅ Found existing conversation:', convId);
+
                     return { conversationId: convId, error: null };
                 }
             }
         }
 
-        console.log('📭 No shared conversation found');
+
         return { conversationId: null, error: null };
 
     } catch (error) {

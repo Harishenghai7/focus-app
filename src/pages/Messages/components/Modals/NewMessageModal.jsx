@@ -31,12 +31,12 @@ const NewMessageModal = ({ onClose, currentUserId }) => {
 
     const fetchSuggestedUsers = async () => {
         try {
-            console.log('👥 Fetching suggested users...');
-            console.log('👥 Current user ID:', currentUserId);
+
+
 
             // Set timeout to stop loading after 3 seconds
             const timeoutId = setTimeout(() => {
-                console.log('⏱️ Suggested users fetch timeout');
+
                 setLoading(false);
             }, 3000);
 
@@ -48,13 +48,13 @@ const NewMessageModal = ({ onClose, currentUserId }) => {
 
             clearTimeout(timeoutId);
 
-            console.log('👥 Suggested users response:', { data, error, count: data?.length });
+
 
             if (error) {
                 console.error('❌ Error fetching suggested users:', error);
                 setSuggestedUsers([]);
             } else {
-                console.log(`✅ Loaded ${data?.length || 0} suggested users`);
+
                 setSuggestedUsers(data || []);
             }
         } catch (err) {
@@ -67,8 +67,8 @@ const NewMessageModal = ({ onClose, currentUserId }) => {
 
     const searchUsers = async (query) => {
         try {
-            console.log('🔍 Searching for users with query:', query);
-            console.log('🔍 Current user ID:', currentUserId);
+
+
 
             const searchPattern = `%${query}%`;
             const { data, error } = await supabase
@@ -78,14 +78,14 @@ const NewMessageModal = ({ onClose, currentUserId }) => {
                 .or(`username.ilike.${searchPattern},full_name.ilike.${searchPattern}`)
                 .limit(20);
 
-            console.log('🔍 Search results:', { data, error });
+
 
             if (error) {
                 console.error('❌ Search error:', error);
                 throw error;
             }
 
-            console.log(`✅ Found ${data?.length || 0} users`);
+
             setUsers(data || []);
         } catch (err) {
             console.error('❌ Error searching users:', err);
@@ -108,15 +108,15 @@ const NewMessageModal = ({ onClose, currentUserId }) => {
         if (selectedUsers.length === 0) return;
 
         try {
-            console.log('💬 Starting chat with users:', selectedUsers);
+
 
             // For single user, get or create conversation
             if (selectedUsers.length === 1) {
                 const otherUserId = selectedUsers[0].id;
                 const otherUsername = selectedUsers[0].username;
 
-                console.log('💬 Creating/getting conversation with:', { otherUserId, otherUsername });
-                console.log('💬 Current user ID:', currentUserId);
+
+
 
                 // Call RPC function to get or create conversation
                 const { data: conversationId, error: convError } = await supabase
@@ -125,7 +125,7 @@ const NewMessageModal = ({ onClose, currentUserId }) => {
                         user2_id: otherUserId
                     });
 
-                console.log('💬 RPC response:', { conversationId, convError });
+
 
                 if (convError) {
                     console.error('❌ Error from RPC:', convError);
@@ -136,8 +136,8 @@ const NewMessageModal = ({ onClose, currentUserId }) => {
                     throw new Error('No conversation ID returned from RPC');
                 }
 
-                console.log('✅ Got conversation ID:', conversationId);
-                console.log('🔀 Navigating to:', `/messages/${conversationId}`);
+
+
 
                 // Close modal first
                 onClose();
@@ -147,7 +147,7 @@ const NewMessageModal = ({ onClose, currentUserId }) => {
 
             } else {
                 // For multiple users, create group chat (implement later)
-                console.log('👥 Group chat requested with:', selectedUsers.length, 'users');
+
                 alert('Group chats coming soon!');
             }
         } catch (err) {

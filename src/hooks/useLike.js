@@ -58,7 +58,7 @@ export const useLike = () => {
                 });
             }
 
-            console.log(`✅ [LIKE] ${contentType} ${contentId} success`);
+
             return { data: rpcResult, error: null };
         } catch (error) {
             console.error('❌ [LIKE] Error:', error);

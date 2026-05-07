@@ -7,7 +7,7 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: var(--bg-primary, #1a0f2e);
+    background: var(--bg-primary, var(--bg-elevated));
 }
 
 /* ── Search Header ─────────────────────────────────────────── */
@@ -16,52 +16,111 @@
     position: sticky;
     top: 0;
     z-index: 20;
-    background: var(--bg-primary, #1a0f2e);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: rgba(26, 15, 46, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(var(--text-primary-rgb), 0.06);
+}
+
+.searchWrapper {
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+/* ── Controls Bar (Tabs + Verified Toggle) ─────────────────── */
+.controlsBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    position: sticky;
+    top: 58px;
+    z-index: 10;
+    background: rgba(26, 15, 46, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(var(--text-primary-rgb), 0.06);
 }
 
 /* ── Tab Bar ───────────────────────────────────────────────── */
 .tabBar {
     display: flex;
-    gap: 4px;
-    padding: 12px 16px 0;
+    gap: 6px;
     overflow-x: auto;
     scrollbar-width: none;
-    position: sticky;
-    top: 58px;
-    z-index: 10;
-    background: var(--bg-primary, #1a0f2e);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    flex: 1;
 }
 .tabBar::-webkit-scrollbar { display: none; }
 
 .tab {
     flex-shrink: 0;
-    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
     border: none;
     border-radius: var(--radius-full, 999px);
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-muted, #a78bfa);
-    font-size: 0.85rem;
+    background: rgba(var(--text-primary-rgb), 0.05);
+    color: var(--text-muted, var(--primary-light));
+    font-size: 0.8rem;
     font-weight: 500;
     font-family: inherit;
     cursor: pointer;
-    transition: background 0.15s, color 0.15s, transform 0.1s;
+    transition: all 0.2s ease;
     white-space: nowrap;
-    margin-bottom: 10px;
 }
 
 .tab:hover {
-    background: rgba(126, 87, 194, 0.15);
-    color: var(--text-primary, #fff);
+    background: rgba(var(--primary-rgb), 0.2);
+    color: var(--text-primary, var(--text-primary));
+    transform: translateY(-1px);
 }
 
 .tabActive {
-    background: var(--gradient-brand, linear-gradient(135deg, #7E57C2, #4527A0)) !important;
-    color: #fff !important;
-    font-weight: 700;
-    box-shadow: 0 2px 12px rgba(126, 87, 194, 0.4);
+    background: linear-gradient(135deg, var(--primary), var(--primary)) !important;
+    color: var(--text-primary) !important;
+    font-weight: 600;
+    box-shadow: 
+        0 2px 12px rgba(var(--primary-rgb), 0.4),
+        0 0 20px rgba(156, 39, 176, 0.2);
+}
+
+/* ── Verified Only Toggle ───────────────────────────────────── */
+.verifiedToggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: 1px solid rgba(var(--primary-rgb), 0.3);
+    border-radius: var(--radius-full, 999px);
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--text-muted, var(--primary-light));
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.verifiedToggle:hover {
+    background: rgba(var(--primary-rgb), 0.2);
+    border-color: rgba(var(--primary-rgb), 0.5);
+}
+
+.verifiedToggleActive {
+    background: linear-gradient(135deg, var(--primary), var(--primary)) !important;
+    color: var(--text-primary) !important;
+    border-color: transparent !important;
+    box-shadow: 
+        0 2px 12px rgba(var(--primary-rgb), 0.4),
+        0 0 20px rgba(156, 39, 176, 0.3);
+}
+
+.verifiedToggleActive svg {
+    color: var(--text-primary);
 }
 
 /* ── Tab Content ───────────────────────────────────────────── */
@@ -80,7 +139,7 @@
 }
 
 .loadingText {
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
     font-size: 0.87rem;
 }
 
@@ -91,12 +150,12 @@
     align-items: center;
     gap: 10px;
     padding: 60px 20px;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
     font-size: 0.9rem;
     text-align: center;
 }
 .emptyIcon { font-size: 2.5rem; }
-.emptyText { color: var(--text-muted, #a78bfa); font-size: 0.85rem; }
+.emptyText { color: var(--text-muted, var(--primary-light)); font-size: 0.85rem; }
 
 /* ============================================================
    POSTS TAB — Masonry Grid
@@ -129,33 +188,89 @@
     display: block;
     object-fit: cover;
     transition: transform 0.3s ease;
-    background: var(--bg-tertiary, #2d1f42);
+    background: var(--bg-tertiary, var(--bg-secondary));
     min-height: 120px;
 }
 
 .thumbOverlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
+    background: linear-gradient(
+        to top, 
+        rgba(26, 15, 46, 0.95) 0%, 
+        rgba(26, 15, 46, 0.6) 40%,
+        transparent 70%
+    );
     opacity: 0;
-    transition: opacity 0.2s;
+    transition: all 0.3s ease;
     display: flex;
     align-items: flex-end;
-    padding: 8px;
+    padding: 12px;
+}
+
+.masonryItem:hover .thumbOverlay {
+    opacity: 1;
+}
+
+.overlayContent {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.overlayMeta {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
 }
 
 .thumbUser {
-    font-size: 0.72rem;
-    color: rgba(255,255,255,0.9);
+    font-size: 0.75rem;
+    color: rgba(var(--text-primary-rgb), 0.95);
     font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.trustShieldIcon {
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+/* ── Engagement Overlay ─────────────────────────────────────── */
+.engagementOverlay {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.masonryItem:hover .engagementOverlay {
+    opacity: 1;
+}
+
+.engagementOverlay span {
+    font-size: 0.7rem;
+    color: rgba(var(--text-primary-rgb), 0.9);
+    background: rgba(var(--bg-primary-rgb), 0.5);
+    padding: 3px 8px;
+    border-radius: 99px;
+    backdrop-filter: blur(8px);
 }
 
 .boltzBadge {
     position: absolute;
     top: 6px;
     right: 6px;
-    background: rgba(0,0,0,0.6);
-    color: #a78bfa;
+    background: rgba(var(--bg-primary-rgb), 0.6);
+    color: var(--primary-light);
     font-size: 0.65rem;
     font-weight: 700;
     padding: 2px 6px;
@@ -169,11 +284,65 @@
     align-items: center;
     justify-content: center;
     font-size: 2rem;
-    color: rgba(255,255,255,0.85);
+    color: rgba(var(--text-primary-rgb), 0.85);
     opacity: 0;
     transition: opacity 0.2s;
 }
 .masonryItem:hover .playOverlay { opacity: 1; }
+
+/* Boltz thumbnail container (ensures fallback video has a box to render in) */
+.boltzThumb {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 9/16;
+    overflow: hidden;
+    background: var(--bg-tertiary, var(--bg-secondary));
+}
+
+/* When inside boltzThumb, thumbMedia should NOT be absolute so it fills the box */
+.boltzThumb .thumbMedia {
+    position: static;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Placeholder for when no thumbnail/video is available */
+.thumbPlaceholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    background: var(--bg-tertiary, var(--bg-secondary));
+}
+
+/* ── Load More Button ──────────────────────────────────────── */
+.loadMoreBtn {
+    display: block;
+    width: calc(100% - 32px);
+    max-width: 400px;
+    margin: 24px auto;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.2), rgba(156, 39, 176, 0.2));
+    border: 1px solid rgba(var(--primary-rgb), 0.4);
+    border-radius: var(--radius-full, 999px);
+    color: var(--text-primary, var(--text-primary));
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(12px);
+}
+
+.loadMoreBtn:hover {
+    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.3), rgba(156, 39, 176, 0.3));
+    border-color: rgba(var(--primary-rgb), 0.6);
+    box-shadow: 0 4px 20px rgba(var(--primary-rgb), 0.3);
+}
 
 /* ============================================================
    BOLTZ TAB — 2-column video grid
@@ -192,39 +361,62 @@
     aspect-ratio: 9/16;
     overflow: hidden;
     cursor: pointer;
-    background: #000;
+    background: var(--bg-primary);
+}
+
+.boltzGridThumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: var(--bg-tertiary, var(--bg-secondary));
 }
 
 .boltzGridVideo {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    transition: opacity 0.2s;
 }
 .boltzGridItem:hover .boltzGridVideo { transform: scale(1.04); }
 
 .boltzGridOverlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
+    background: linear-gradient(to top, rgba(26,15,46,0.9) 0%, transparent 60%);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    color: rgba(255,255,255,0.85);
+    color: rgba(var(--text-primary-rgb), 0.85);
     font-size: 1.8rem;
     opacity: 0;
     transition: opacity 0.2s;
+    z-index: 3;
+    pointer-events: none;
 }
 .boltzGridItem:hover .boltzGridOverlay { opacity: 1; }
+
+.boltzTrustShield {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: var(--primary);
+    filter: drop-shadow(0 2px 4px rgba(var(--bg-primary-rgb), 0.3));
+}
 
 .boltzGridUser {
     font-size: 0.72rem;
     position: absolute;
     bottom: 8px;
     left: 8px;
-    color: rgba(255,255,255,0.9);
+    color: rgba(var(--text-primary-rgb), 0.9);
     font-weight: 600;
 }
 
@@ -248,7 +440,7 @@
     transition: background 0.15s;
     background: var(--glass-bg, rgba(42,26,66,0.72));
     backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border, rgba(255,255,255,0.08));
+    border: 1px solid var(--glass-border, rgba(var(--text-primary-rgb), 0.08));
 }
 .userRow:hover { background: var(--glass-bg-hover, rgba(52,32,80,0.85)); }
 
@@ -263,34 +455,44 @@
 .userDisplayName {
     font-size: 0.9rem;
     font-weight: 700;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary, var(--text-primary));
     display: flex;
     align-items: center;
     gap: 4px;
 }
 
-.verifiedBadge {
-    color: #7E57C2;
-    font-size: 0.75rem;
-    font-weight: 700;
+.verifiedBadgeIcon {
+    color: var(--primary);
+    margin-left: 4px;
+}
+
+.trustTierBadge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 8px;
+    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.2), rgba(156, 39, 176, 0.2));
+    border: 1px solid rgba(var(--primary-rgb), 0.3);
+    border-radius: 99px;
+    font-size: 0.65rem;
+    color: var(--primary-light);
 }
 
 .userHandle {
     font-size: 0.78rem;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
 }
 
 .userFollowers {
     font-size: 0.72rem;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
 }
 
 .followBtn {
     padding: 7px 18px;
-    background: var(--gradient-brand, linear-gradient(135deg, #7E57C2, #4527A0));
+    background: var(--gradient-brand, linear-gradient(135deg, var(--primary), var(--primary-hover)));
     border: none;
     border-radius: var(--radius-full, 999px);
-    color: #fff;
+    color: var(--text-primary);
     font-size: 0.83rem;
     font-weight: 700;
     font-family: inherit;
@@ -306,11 +508,33 @@
    ============================================================ */
 .trendingSection { padding: 16px; }
 
+.trendingHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
 .trendingTitle {
-    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
     font-weight: 700;
-    color: var(--text-primary, #fff);
-    margin: 0 0 14px;
+    color: var(--text-primary, var(--text-primary));
+    margin: 0;
+}
+
+.trendingTitle svg {
+    color: var(--warning);
+}
+
+.trendingSubtitle {
+    font-size: 0.75rem;
+    color: var(--text-muted, var(--primary-light));
+    background: rgba(var(--text-primary-rgb), 0.05);
+    padding: 4px 10px;
+    border-radius: 99px;
 }
 
 .hashtagGrid {
@@ -322,27 +546,66 @@
 .hashtagChip {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 12px;
     padding: 12px 16px;
     background: var(--glass-bg, rgba(42,26,66,0.72));
-    border: 1px solid var(--glass-border, rgba(255,255,255,0.08));
+    border: 1px solid var(--glass-border, rgba(var(--text-primary-rgb), 0.08));
     border-radius: var(--radius-md, 12px);
     cursor: pointer;
-    transition: background 0.15s, border-color 0.15s;
+    transition: all 0.2s ease;
     backdrop-filter: blur(12px);
 }
 .hashtagChip:hover {
-    border-color: rgba(126,87,194,0.4);
+    border-color: rgba(var(--primary-rgb), 0.5);
     background: var(--glass-bg-hover, rgba(52,32,80,0.85));
+    transform: translateX(4px);
+}
+
+.hashtagRank {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: rgba(var(--text-primary-rgb), 0.4);
+    min-width: 32px;
+}
+
+.hashtagInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .hashtagName {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 700;
-    color: var(--neon-lavender, #c4b5fd);
+    color: var(--neon-lavender, var(--primary-light));
 }
 
-.hashtagCount {
-    font-size: 0.75rem;
-    color: var(--text-muted, #a78bfa);
+.hashtagMeta {
+    font-size: 0.7rem;
+    color: var(--text-muted, var(--primary-light));
+}
+
+.hashtagEngagement {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--warning);
+    background: rgba(249, 115, 22, 0.1);
+    padding: 4px 10px;
+    border-radius: 99px;
+}
+
+/* Empty State Enhancements */
+.emptyTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary, var(--text-primary));
+    margin: 12px 0 4px;
+}
+
+.emptySubtext {
+    font-size: 0.8rem;
+    color: var(--text-muted, var(--primary-light));
+    text-align: center;
+    max-width: 280px;
 }

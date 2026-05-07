@@ -18,7 +18,7 @@ export const fetchComments = async (targetId, targetType = 'post', options = {})
     try {
         const { parentId = null, limit = 50, offset = 0 } = options;
 
-        console.log(`💬 Fetching comments for ${targetType}:`, targetId);
+
 
         const table = targetType === 'post' ? 'post_comments' : 'comments';
         const userJoin =
@@ -53,7 +53,7 @@ export const fetchComments = async (targetId, targetType = 'post', options = {})
         }
 
         const data = await response.json();
-        console.log('✅ Comments fetched:', data.length);
+
         return { data, error: null };
 
     } catch (error) {
@@ -67,7 +67,7 @@ export const fetchComments = async (targetId, targetType = 'post', options = {})
  */
 export const postComment = async (commentData) => {
     try {
-        console.log('💬 Posting comment:', commentData);
+
 
         const url = `${supabaseUrl}/rest/v1/comments`;
 
@@ -83,7 +83,7 @@ export const postComment = async (commentData) => {
         }
 
         const data = await response.json();
-        console.log('✅ Comment posted:', data);
+
         return { data: data[0], error: null };
 
     } catch (error) {
@@ -97,7 +97,7 @@ export const postComment = async (commentData) => {
  */
 export const deleteComment = async (commentId) => {
     try {
-        console.log('🗑️ Deleting comment:', commentId);
+
 
         const url = `${supabaseUrl}/rest/v1/comments?id=eq.${commentId}`;
 
@@ -111,7 +111,7 @@ export const deleteComment = async (commentId) => {
             throw new Error(`HTTP ${response.status}`);
         }
 
-        console.log('✅ Comment deleted');
+
         return { error: null };
 
     } catch (error) {
@@ -125,7 +125,7 @@ export const deleteComment = async (commentId) => {
  */
 export const updateComment = async (commentId, content) => {
     try {
-        console.log('✏️ Updating comment:', commentId);
+
 
         const url = `${supabaseUrl}/rest/v1/comments?id=eq.${commentId}`;
 
@@ -143,7 +143,7 @@ export const updateComment = async (commentId, content) => {
         }
 
         const data = await response.json();
-        console.log('✅ Comment updated');
+
         return { data: data[0], error: null };
 
     } catch (error) {
@@ -157,7 +157,7 @@ export const updateComment = async (commentId, content) => {
  */
 export const likeComment = async (commentId, userId) => {
     try {
-        console.log('❤️ Liking comment:', commentId);
+
 
         const url = `${supabaseUrl}/rest/v1/comment_likes`;
 
@@ -171,7 +171,7 @@ export const likeComment = async (commentId, userId) => {
             throw new Error(`HTTP ${response.status}`);
         }
 
-        console.log('✅ Comment liked');
+
         return { error: null };
 
     } catch (error) {
@@ -185,7 +185,7 @@ export const likeComment = async (commentId, userId) => {
  */
 export const unlikeComment = async (commentId, userId) => {
     try {
-        console.log('💔 Unliking comment:', commentId);
+
 
         const url = `${supabaseUrl}/rest/v1/comment_likes?comment_id=eq.${commentId}&user_id=eq.${userId}`;
 
@@ -198,7 +198,7 @@ export const unlikeComment = async (commentId, userId) => {
             throw new Error(`HTTP ${response.status}`);
         }
 
-        console.log('✅ Comment unliked');
+
         return { error: null };
 
     } catch (error) {
@@ -233,7 +233,7 @@ export const checkCommentLike = async (commentId, userId) => {
  */
 export const togglePinComment = async (commentId, isPinned) => {
     try {
-        console.log(`📌 ${isPinned ? 'Pinning' : 'Unpinning'} comment:`, commentId);
+
 
         const url = `${supabaseUrl}/rest/v1/comments?id=eq.${commentId}`;
 
@@ -247,7 +247,7 @@ export const togglePinComment = async (commentId, isPinned) => {
             throw new Error(`HTTP ${response.status}`);
         }
 
-        console.log('✅ Comment pin toggled');
+
         return { error: null };
 
     } catch (error) {

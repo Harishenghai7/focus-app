@@ -33,10 +33,10 @@ const ActionSheet = ({ isOpen, onClose, options, mode = 'auto' }) => {
     }, [isOpen, onClose]);
 
     const defaultOptions = [
-        { id: 'copy', label: 'Copy Link', icon: Link, onClick: () => console.log('Copied') },
-        { id: 'hide', label: 'Hide Content', icon: EyeOff, onClick: () => console.log('Hidden') },
-        { id: 'mute', label: 'Mute User', icon: BellOff, onClick: () => console.log('Muted') },
-        { id: 'report', label: 'Report', icon: Flag, onClick: () => console.log('Reported'), danger: true },
+        { id: 'copy', label: 'Copy Link', icon: Link, onClick: () => {} },
+        { id: 'hide', label: 'Hide Content', icon: EyeOff, onClick: () => {} },
+        { id: 'mute', label: 'Mute User', icon: BellOff, onClick: () => {} },
+        { id: 'report', label: 'Report', icon: Flag, onClick: () => {}, danger: true },
     ];
 
     const displayOptions = options || defaultOptions;

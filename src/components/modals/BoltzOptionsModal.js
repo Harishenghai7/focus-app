@@ -118,9 +118,6 @@ const BoltzOptionsModal = ({ boltzId, boltzData, isOwn, onClose }) => {
     const handleSaveEdit = async () => {
         setIsSaving(true);
         try {
-            console.log('Saving Boltz caption:', editCaption);
-            console.log('Boltz ID:', boltzId);
-
             // Update without .select() to avoid RLS timeout issues
             const updatePromise = supabase
                 .from('boltz')
@@ -133,12 +130,7 @@ const BoltzOptionsModal = ({ boltzId, boltzData, isOwn, onClose }) => {
 
             const { error } = await Promise.race([updatePromise, timeoutPromise]);
 
-            console.log('Update error:', error);
-
             if (error) throw error;
-
-            // Update succeeded, now verify it worked
-            console.log('Update succeeded, verifying...');
             const { data: verifyData } = await supabase
                 .from('boltz')
                 .select('caption')

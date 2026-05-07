@@ -12,13 +12,13 @@ export const usePublish = () => {
     const [error, setError] = useState(null);
 
     const publish = async (mediaFiles, details, music, createMode = 'post') => {
-        console.log('🚀 PUBLISH START', { mediaFiles, details, music, createMode });
+
         setLoading(true);
         setError(null);
 
         try {
             if (!user) throw new Error('You must be logged in to publish.');
-            console.log('✅ User authenticated:', user.id);
+
 
             const moderationResult = await runPreUploadSafetyCheck({
                 userId: user.id,
@@ -33,40 +33,40 @@ export const usePublish = () => {
             const uploadedMedia = [];
 
             // 1. Upload Media using REST API (bypassing SDK)
-            console.log('📤 Starting media upload via REST API...');
+
             for (const item of mediaFiles) {
-                let fileToUpload = item.file;
+                let fileToUpload = item?.file;
+
+                if (!fileToUpload) {
+                    console.warn('⚠️ Skipping item with no file:', item);
+                    continue;
+                }
 
                 // Compress images before upload
-                if (item.type === 'image') {
+                if (item?.type === 'image') {
                     try {
-                        console.log('🗜️ Compressing image...');
+
                         const imageCompression = (await import('browser-image-compression')).default;
 
                         const options = {
                             maxSizeMB: 2,
                             maxWidthOrHeight: 1920,
-                            useWebWorker: true,
-                            fileType: 'image/jpeg'
                         };
 
                         fileToUpload = await imageCompression(item.file, options);
-                        console.log('✅ Image compressed:', {
-                            originalSize: (item.file.size / 1024 / 1024).toFixed(2) + 'MB',
-                            compressedSize: (fileToUpload.size / 1024 / 1024).toFixed(2) + 'MB'
-                        });
+
                     } catch (compressionError) {
-                        console.warn('⚠️ Image compression failed, using original:', compressionError);
+                        console.warn(' Image compression failed, using original:', compressionError);
                         fileToUpload = item.file;
                     }
                 }
 
-                const fileExt = fileToUpload.name.split('.').pop();
+                const fileExt = fileToUpload?.name?.split('.')?.pop() || 'jpg';
                 const fileName = `${Math.random()}.${fileExt}`;
                 const filePath = `${user.id}/${fileName}`;
-                const bucket = 'posts';
+                const bucket = createMode === 'boltz' ? 'boltz' : 'posts';
 
-                console.log('📁 Uploading to bucket:', bucket, 'path:', filePath);
+
 
                 try {
                     // Get fresh JWT token with timeout to prevent hanging
@@ -92,7 +92,7 @@ export const usePublish = () => {
 
                     // Fallback to anon key if session failed
                     if (!userToken) {
-                        console.log('🔑 Using anon key for upload');
+
                         userToken = supabaseAnonKey;
                     }
 
@@ -103,7 +103,7 @@ export const usePublish = () => {
                     // Upload using REST API directly
                     const uploadUrl = `${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/${bucket}/${filePath}`;
 
-                    console.log('🌐 Uploading to:', uploadUrl);
+
 
                     const uploadResponse = await fetch(uploadUrl, {
                         method: 'POST',
@@ -114,7 +114,7 @@ export const usePublish = () => {
                         body: fileToUpload
                     });
 
-                    console.log('📡 Response status:', uploadResponse.status);
+
 
                     if (!uploadResponse.ok) {
                         const errorText = await uploadResponse.text();
@@ -123,16 +123,16 @@ export const usePublish = () => {
                     }
 
                     const uploadData = await uploadResponse.json();
-                    console.log('✅ Upload successful:', uploadData);
+
 
                     // Construct public URL
                     const publicUrl = `${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/public/${bucket}/${filePath}`;
-                    console.log('✅ Public URL:', publicUrl);
+
 
                     uploadedMedia.push({
                         url: publicUrl,
-                        type: item.type,
-                        edits: item.edits
+                        type: item?.type || 'image',
+                        edits: item?.edits || {}
                     });
                 } catch (uploadError) {
                     console.error('❌ Upload error:', uploadError);
@@ -140,6 +140,10 @@ export const usePublish = () => {
                 }
             }
 
+            // Validate that we have uploaded media
+            if (uploadedMedia.length === 0) {
+                throw new Error('No media files were uploaded successfully');
+            }
 
             const uploadDataUrlToStorage = async (dataUrl, folder = 'thumbs') => {
                 if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) return null;
@@ -148,7 +152,8 @@ export const usePublish = () => {
                 const ext = mime.split('/')[1] || 'jpg';
                 const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
                 const filePath = `${user.id}/${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-                const uploadUrl = `${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/posts/${filePath}`;
+                const thumbBucket = createMode === 'boltz' ? 'thumbnails' : 'posts';
+                const uploadUrl = `${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/${thumbBucket}/${filePath}`;
                 const { data: { session } } = await supabase.auth.getSession();
                 const token = session?.access_token || supabaseAnonKey;
                 const response = await fetch(uploadUrl, {
@@ -161,11 +166,11 @@ export const usePublish = () => {
                     body: bytes,
                 });
                 if (!response.ok) return null;
-                return `${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/public/posts/${filePath}`;
+                return `${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/public/${thumbBucket}/${filePath}`;
             };
 
             // 2. Insert Record using REST API (bypassing SDK)
-            console.log('💾 Inserting post record via REST API...');
+
 
             // Get fresh session token with timeout
             let userToken = null;
@@ -190,7 +195,7 @@ export const usePublish = () => {
 
             // Fallback to anon key if session failed
             if (!userToken) {
-                console.log('🔑 Using anon key for insert');
+
                 userToken = supabaseAnonKey;
             }
 
@@ -226,7 +231,7 @@ export const usePublish = () => {
                     imageUrls,
                 });
                 if (verdict?.dbColumns) moderationDb = verdict.dbColumns;
-                console.log('🛡️ Moderation verdict:', verdict?.moderationStatus, verdict?.toxicityType);
+
 
                 // Pillar 3 — Teen auto-restriction until guardian consent is active
                 try {
@@ -247,7 +252,7 @@ export const usePublish = () => {
                                 'Teen account — content is pending guardian consent.',
                             moderator_type: 'auto',
                         };
-                        console.log('🛡️ Teen lock applied — content restricted until guardian handshake.');
+
                     }
                 } catch (profErr) {
                     console.warn('[publish] profile lookup for teen lock failed:', profErr);
@@ -264,11 +269,14 @@ export const usePublish = () => {
 
             let postData = {
                 user_id: user.id,
-                caption: details.caption,
-                location: details.location,
-                media_url: uploadedMedia[0].url,
-                thumbnail_url: uploadedMedia[0].type === 'video' ? uploadedMedia[0].url : null,
-                type: uploadedMedia[0].type === 'video' ? 'video' : 'image',
+                caption: details?.caption || '',
+                location: details?.location || null,
+                media_url: uploadedMedia[0]?.url,
+                thumbnail_url: uploadedMedia[0]?.type === 'video' ? uploadedMedia[0]?.url : null,
+                type: uploadedMedia[0]?.type === 'video' ? 'video' : 'image',
+                music_url: music?.audio || music?.audiodownload || null,
+                music_name: music?.name || null,
+                music_artist: music?.artist_name || null,
                 ...moderationDb,
             };
 
@@ -282,27 +290,32 @@ export const usePublish = () => {
                 tableName = 'boltz';
                 postData = {
                     user_id: user.id,
-                    description: details.caption,
-                    video_url: uploadedMedia[0].url,
+                    description: details?.caption || '',
+                    video_url: uploadedMedia[0]?.url,
                     thumbnail_url: uploadedThumb,
                     poster_url: uploadedThumb,
-                    music_url: music?.audio || null,
-                    duration: uploadedMedia[0].duration || null,
+                    music_url: music?.audio || music?.audiodownload || null,
+                    music_name: music?.name || null,
+                    music_artist: music?.artist_name || null,
+                    duration: uploadedMedia[0]?.duration || null,
                     ...moderationDb,
                 };
             } else if (createMode === 'flash') {
                 tableName = 'stories';
                 postData = {
                     user_id: user.id,
-                    media_url: uploadedMedia[0].url,
-                    media_type: uploadedMedia[0].type === 'video' ? 'video' : 'image',
+                    media_url: uploadedMedia[0]?.url,
+                    media_type: uploadedMedia[0]?.type === 'video' ? 'video' : 'image',
                     duration: 15,
+                    music_url: music?.audio || music?.audiodownload || null,
+                    music_name: music?.name || null,
+                    music_artist: music?.artist_name || null,
                     ...moderationDb,
                 };
             }
 
             const insertUrl = `${process.env.REACT_APP_SUPABASE_URL}/rest/v1/${tableName}?select=*`;
-            console.log('🌐 Inserting to:', insertUrl);
+
 
             const insertResponse = await fetch(insertUrl, {
                 method: 'POST',
@@ -315,7 +328,7 @@ export const usePublish = () => {
                 body: JSON.stringify(postData)
             });
 
-            console.log('📡 Insert response status:', insertResponse.status);
+
 
             if (!insertResponse.ok) {
                 const errorText = await insertResponse.text();
@@ -325,10 +338,10 @@ export const usePublish = () => {
 
             const insertedData = await insertResponse.json();
             const resultData = Array.isArray(insertedData) ? insertedData[0] : insertedData;
-            console.log('✅ Post created:', resultData);
+
 
             // Success!
-            console.log('🎉 PUBLISH SUCCESS!');
+
             const { focusToast } = require('../utils/focusToast');
             const kind = createMode === 'boltz' ? 'Boltz' : (createMode === 'flash' ? 'Flash' : 'Post');
             if (moderationDb.moderation_status === 'restricted') {
@@ -352,7 +365,7 @@ export const usePublish = () => {
             focusToast.error(err.message || 'Failed to publish.');
             return false;
         } finally {
-            console.log('🏁 PUBLISH END');
+
             setLoading(false);
         }
     };

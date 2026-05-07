@@ -15,11 +15,11 @@ export const usePostLike = () => {
         mutationFn: async ({ postId, isLiked }) => {
             if (!user) throw new Error('Must be logged in to like posts');
 
-            console.log(`${isLiked ? 'Unliking' : 'Liking'} post:`, postId);
+
 
             const result = await setPostLikeDb(user.id, postId, !isLiked);
 
-            console.log('✅ Like action completed');
+
             return {
                 postId,
                 isLiked: result?.is_liked ?? !isLiked,

@@ -6,7 +6,7 @@ import { formatNumber } from '../../utils/formatNumber';
 const LikeButton = ({ isLiked, count, onClick }) => {
     const handleClick = (e) => {
         e.stopPropagation();
-        console.log('Like button clicked!', { isLiked, count });
+
         if (onClick) {
             onClick(e);
         }

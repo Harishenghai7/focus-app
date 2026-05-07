@@ -58,12 +58,12 @@
     position: absolute;
     top: var(--space-4);
     right: var(--space-4);
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(var(--bg-primary-rgb), 0.5);
     color: white;
     border-radius: 50%;
     padding: var(--space-2);
 }
 
 .removeBtn:hover {
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(var(--bg-primary-rgb), 0.7);
 }

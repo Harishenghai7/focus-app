@@ -19,12 +19,12 @@
 .quickReactions {
     display: flex;
     gap: 2px;
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(var(--text-primary-rgb), 0.95);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(var(--primary-rgb), 0.1);
     border-radius: 20px;
     padding: 4px;
-    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.15);
+    box-shadow: 0 4px 20px rgba(var(--primary-rgb), 0.15);
 }
 
 .quickReaction {
@@ -42,23 +42,23 @@
 }
 
 .quickReaction:hover {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(var(--primary-rgb), 0.1);
     transform: scale(1.15);
 }
 
 .quickReaction svg {
-    color: #8b5cf6;
+    color: var(--primary);
 }
 
 .actionButtons {
     display: flex;
     gap: 2px;
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(var(--text-primary-rgb), 0.95);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(var(--primary-rgb), 0.1);
     border-radius: 20px;
     padding: 4px;
-    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.15);
+    box-shadow: 0 4px 20px rgba(var(--primary-rgb), 0.15);
 }
 
 .actionBtn {
@@ -71,12 +71,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #8b5cf6;
+    color: var(--primary);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .actionBtn:hover {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(var(--primary-rgb), 0.1);
     transform: scale(1.1);
 }
 
@@ -92,13 +92,13 @@
     position: absolute;
     top: 40px;
     right: 0;
-    background: rgba(255, 255, 255, 0.98);
+    background: rgba(var(--text-primary-rgb), 0.98);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(139, 92, 246, 0.15);
+    border: 1px solid rgba(var(--primary-rgb), 0.15);
     border-radius: 12px;
     padding: 6px;
     min-width: 160px;
-    box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 8px 32px rgba(var(--primary-rgb), 0.2);
     animation: slideDown 0.2s ease;
     z-index: 100;
 }
@@ -114,14 +114,14 @@
     border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
-    color: #1f2937;
+    color: var(--bg-secondary);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     text-align: left;
 }
 
 .menuItem:hover {
-    background: rgba(139, 92, 246, 0.1);
-    color: #8b5cf6;
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
 }
 
 .menuItem svg {
@@ -130,12 +130,12 @@
 }
 
 .menuItem.danger {
-    color: #ef4444;
+    color: var(--error);
 }
 
 .menuItem.danger:hover {
-    background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
+    background: rgba(var(--error-rgb), 0.1);
+    color: var(--error);
 }
 
 @keyframes slideDown {

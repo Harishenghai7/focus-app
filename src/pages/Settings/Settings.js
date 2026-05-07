@@ -1,57 +1,155 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
+import { 
+    FaShieldAlt, 
+    FaUserLock, 
+    FaPalette, 
+    FaBell, 
+    FaRobot, 
+    FaHeadset,
+    FaChevronRight,
+    FaSignOutAlt
+} from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
 import MainLayout from '../../components/layout/MainLayout';
-import SettingsSidebar from '../../components/settings/SettingsSidebar';
-import AccountSection from '../../components/settings/AccountSection';
-import ProfileSection from '../../components/settings/ProfileSection';
-import AppearanceSection from '../../components/settings/AppearanceSection';
-import PrivacySection from '../../components/settings/PrivacySection';
-import NotificationSection from '../../components/settings/NotificationSection';
-import SupportSection from '../../components/settings/SupportSection';
-import AboutSection from '../../components/settings/AboutSection';
-import LogOutButton from '../../components/settings/LogoutButton';
-import SessionManager from '../../components/settings/SessionManager';
 import LoadingSpinner from '../../components/shared/LoadingSpinner';
+import AccountSecuritySection from '../../components/settings/AccountSecuritySection';
+import PrivacyPillarsSection from '../../components/settings/PrivacyPillarsSection';
+import PersonalizationSection from '../../components/settings/PersonalizationSection';
+import FocuslyAISection from '../../components/settings/FocuslyAISection';
+import SovereignSupportSection from '../../components/settings/SovereignSupportSection';
 import { useSettings } from '../../hooks/useSettings';
-import { useSections } from '../../hooks/useSections';
+import { useSettingsUpdate } from '../../hooks/useSettingsUpdate';
 import useMediaQuery from '../../hooks/useMediaQuery';
+import { useAuth } from '../../hooks/useAuth';
+import sovereignStyles from '../../components/settings/SovereignSettings.module.css';
 import styles from './Settings.module.css';
 
-const SECTIONS = [
-    { id: 'account',       label: 'Account',            icon: '👤' },
-    { id: 'profile',       label: 'Profile',             icon: '📝' },
-    { id: 'appearance',    label: 'Appearance',          icon: '🎨' },
-    { id: 'privacy',       label: 'Privacy & Security',  icon: '🔒' },
-    { id: 'notifications', label: 'Notifications',       icon: '🔔' },
-    { id: 'sessions',      label: 'Sessions & Sign Out', icon: '🔐' },
-    { id: 'focusid',       label: 'FocusID & Trust',     icon: '💜' },
-    { id: 'support',       label: 'Support',             icon: '❓' },
-    { id: 'about',         label: 'About',               icon: 'ℹ️' },
-];
+/**
+ * SOVEREIGN CONTROL CENTER — Settings Architecture
+ * 
+ * Five Provinces of Control:
+ * 1. Account & Security — Trust Shield, Biometrics, Sessions
+ * 2. Privacy & Pillars — Teen Care, Content Filter, Blocked Users
+ * 3. Personalization — H2 Theme, Notifications, Display
+ * 4. Focusly AI — Mascot emotions, Voice/Text preferences
+ * 5. Sovereign Support — Tickets, Legal, About h2 innovative
+ */
 
+const PROVINCES = [
+    { 
+        id: 'account', 
+        label: 'Account & Security', 
+        icon: <FaShieldAlt />,
+        description: 'Trust Shield, Biometrics, Sessions',
+        iconEmoji: '🛡️'
+    },
+    { 
+        id: 'privacy', 
+        label: 'Privacy & Pillars', 
+        icon: <FaUserLock />,
+        description: 'Teen Care, Content Filter, Blocked Users',
+        iconEmoji: '🔒'
+    },
+    { 
+        id: 'personalization', 
+        label: 'Personalization', 
+        icon: <FaPalette />,
+        description: 'H2 Theme, Notifications, Display',
+        iconEmoji: '🎨'
+    },
+    { 
+        id: 'focusly', 
+        label: 'Focusly AI', 
+        icon: <FaRobot />,
+        description: 'Mascot settings, Voice & Chat preferences',
+        iconEmoji: '🤖'
+    },
+    { 
+        id: 'support', 
+        label: 'Sovereign Support', 
+        icon: <FaHeadset />,
+        description: 'Tickets, Legal, About h2 innovative',
+        iconEmoji: '🎧'
+    },
+];
 
 const Settings = () => {
     const location = useLocation();
-    const { settings, loading, error, updateSetting, saving } = useSettings();
-    const { toggleSection, isSectionExpanded } = useSections(SECTIONS.map(s => s.id));
-    const [activeSection, setActiveSection] = useState(location.state?.section || 'account');
+    const { user } = useAuth();
+    const { settings, loading, error, updateSetting } = useSettings();
+    const { isSaving } = useSettingsUpdate();
+    const [activeProvince, setActiveProvince] = useState(location.state?.section || 'account');
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const isMobile = useMediaQuery('(max-width: 1024px)');
 
+    // Handle province change
+    const handleProvinceChange = useCallback((provinceId) => {
+        setActiveProvince(provinceId);
+        setSidebarOpen(false);
+        
+        // Update URL without navigation
+        window.history.replaceState(
+            { section: provinceId }, 
+            '', 
+            `/settings${provinceId !== 'account' ? `?section=${provinceId}` : ''}`
+        );
+    }, []);
+
+    // Sync with location state
     useEffect(() => {
-        if (location.state?.section) {
-            setActiveSection(location.state.section);
+        if (location.state?.section && location.state.section !== activeProvince) {
+            setActiveProvince(location.state.section);
         }
-    }, [location.state]);
+    }, [location.state, activeProvince]);
 
-    const handleSectionChange = (sectionId) => {
-        setActiveSection(sectionId);
+    // Get active province data
+    const activeProvinceData = PROVINCES.find(p => p.id === activeProvince);
 
-        // Scroll to section on mobile
-        if (isMobile) {
-            const element = document.getElementById(sectionId);
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
+    // Handle setting update with toast
+    const handleUpdateSetting = useCallback((key, value) => {
+        updateSetting(key, value);
+    }, [updateSetting]);
+
+    // Render active province content
+    const renderProvinceContent = () => {
+        switch (activeProvince) {
+            case 'account':
+                return (
+                    <AccountSecuritySection 
+                        settings={settings}
+                        onUpdateSetting={handleUpdateSetting}
+                    />
+                );
+            case 'privacy':
+                return (
+                    <PrivacyPillarsSection 
+                        settings={settings}
+                        onUpdateSetting={handleUpdateSetting}
+                    />
+                );
+            case 'personalization':
+                return (
+                    <PersonalizationSection 
+                        settings={settings}
+                        onUpdateSetting={handleUpdateSetting}
+                    />
+                );
+            case 'focusly':
+                return (
+                    <FocuslyAISection />
+                );
+            case 'support':
+                return (
+                    <SovereignSupportSection />
+                );
+            default:
+                return (
+                    <AccountSecuritySection 
+                        settings={settings}
+                        onUpdateSetting={handleUpdateSetting}
+                    />
+                );
         }
     };
 
@@ -60,145 +158,147 @@ const Settings = () => {
             <MainLayout>
                 <div className={styles.loadingContainer}>
                     <LoadingSpinner />
-                    <p className={styles.loadingText}>Loading settings...</p>
+                    <p className={styles.loadingText}>Loading Sovereign Control Center...</p>
                 </div>
             </MainLayout>
         );
     }
 
+    // Even if there's an error, useSettings now returns default settings
+    // so we can still show the settings page. Log the error for debugging.
     if (error) {
-        return (
-            <MainLayout>
-                <div className={styles.errorContainer}>
-                    <span className={styles.errorIcon}>⚠️</span>
-                    <h2 className={styles.errorTitle}>Failed to load settings</h2>
-                    <p className={styles.errorMessage}>{error?.message || String(error)}</p>
-                </div>
-            </MainLayout>
-        );
+        console.warn('Settings error (using defaults):', error);
     }
 
     return (
         <MainLayout>
-            <div className={styles.settingsPage}>
-                {/* Desktop Sidebar */}
-                {!isMobile && (
-                    <SettingsSidebar
-                        activeSection={activeSection}
-                        onSectionChange={handleSectionChange}
-                        sections={SECTIONS}
+            <div className={sovereignStyles.sovereignContainer}>
+                {/* Mobile Header with Menu Toggle */}
+                {isMobile && (
+                    <div className={styles.mobileHeader}>
+                        <button 
+                            className={styles.menuButton}
+                            onClick={() => setSidebarOpen(!sidebarOpen)}
+                        >
+                            <span className={styles.provinceEmoji}>{activeProvinceData?.iconEmoji}</span>
+                            <span className={styles.provinceName}>{activeProvinceData?.label}</span>
+                        </button>
+                        {isSaving && (
+                            <span className={sovereignStyles.savingIndicator}>Saving...</span>
+                        )}
+                    </div>
+                )}
+
+                {/* Sidebar - Master View */}
+                <aside className={`${sovereignStyles.sidebar} ${sidebarOpen ? sovereignStyles.open : ''}`}>
+                    <div className={sovereignStyles.sidebarHeader}>
+                        <h1 className={sovereignStyles.sidebarTitle}>Sovereign Control</h1>
+                        <p className={sovereignStyles.sidebarSubtitle}>Manage your Focus experience</p>
+                    </div>
+
+                    <nav className={sovereignStyles.provinceList}>
+                        {PROVINCES.map((province) => (
+                            <button
+                                key={province.id}
+                                className={`${sovereignStyles.provinceButton} ${
+                                    activeProvince === province.id ? sovereignStyles.active : ''
+                                }`}
+                                onClick={() => handleProvinceChange(province.id)}
+                            >
+                                <span className={sovereignStyles.provinceIcon}>
+                                    {province.iconEmoji}
+                                </span>
+                                <span className={sovereignStyles.provinceLabel}>{province.label}</span>
+                                <FaChevronRight className={sovereignStyles.provinceChevron} />
+                            </button>
+                        ))}
+                    </nav>
+
+                    {/* Logout Button in Sidebar */}
+                    <div className={styles.sidebarFooter}>
+                        <button 
+                            className={styles.logoutButton}
+                            onClick={() => {
+                                // Handle logout
+                                window.location.href = '/auth';
+                            }}
+                        >
+                            <FaSignOutAlt />
+                            <span>Sign Out</span>
+                        </button>
+                    </div>
+                </aside>
+
+                {/* Overlay for mobile sidebar */}
+                {isMobile && sidebarOpen && (
+                    <div 
+                        className={styles.sidebarOverlay}
+                        onClick={() => setSidebarOpen(false)}
                     />
                 )}
 
-                {/* Main Content */}
-                <div className={styles.settingsContent}>
-                    <div className={styles.header}>
-                        <h1 className={styles.title}>Settings</h1>
-                        <p className={styles.subtitle}>Manage your account and preferences</p>
-                    </div>
-
-                    <div className={styles.sections}>
-                        {activeSection === 'account' && (
-                            <AccountSection
-                                isExpanded={true}
-                                onToggle={toggleSection}
-                                settings={settings}
-                            />
-                        )}
-
-                        {activeSection === 'profile' && (
-                            <ProfileSection
-                                isExpanded={true}
-                                onToggle={toggleSection}
-                            />
-                        )}
-
-                        {activeSection === 'appearance' && (
-                            <AppearanceSection
-                                isExpanded={true}
-                                onToggle={toggleSection}
-                                settings={settings}
-                                onUpdateSetting={updateSetting}
-                                saving={saving}
-                            />
-                        )}
-
-                        {activeSection === 'privacy' && (
-                            <PrivacySection
-                                isExpanded={true}
-                                onToggle={toggleSection}
-                                settings={settings}
-                                onUpdateSetting={updateSetting}
-                                saving={saving}
-                            />
-                        )}
-
-                        {activeSection === 'notifications' && (
-                            <NotificationSection
-                                isExpanded={true}
-                                onToggle={toggleSection}
-                                settings={settings}
-                                onUpdateSetting={updateSetting}
-                                saving={saving}
-                            />
-                        )}
-
-                        {activeSection === 'sessions' && (
-                            <div id="sessions" style={{ padding: '4px 0' }}>
-                                <h2 style={{ color: 'var(--text-primary)', fontSize: '1.1rem', marginBottom: 16, fontWeight: 700 }}>
-                                    🔐 Sessions &amp; Sign Out
+                {/* Content Area - Detail View */}
+                <main className={sovereignStyles.contentArea}>
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={activeProvince}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ duration: 0.3, ease: 'easeInOut' }}
+                        >
+                            {/* Province Header */}
+                            <header className={sovereignStyles.contentHeader}>
+                                <h2 className={sovereignStyles.contentTitle}>
+                                    <span className={styles.headerIcon}>{activeProvinceData?.icon}</span>
+                                    {activeProvinceData?.label}
                                 </h2>
-                                <SessionManager />
-                            </div>
-                        )}
-
-                        {activeSection === 'focusid' && (
-                            <div id="focusid" style={{ padding: '4px 0' }}>
-                                <h2 style={{ color: 'var(--text-primary)', fontSize: '1.1rem', marginBottom: 8, fontWeight: 700 }}>
-                                    💜 FocusID &amp; Trust Score
-                                </h2>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: 16, lineHeight: 1.55 }}>
-                                    "Meet the real people; not the fake profiles"<br />
-                                    Build your authenticity score without a government ID.
+                                <p className={sovereignStyles.contentDescription}>
+                                    {activeProvinceData?.description}
                                 </p>
-                                <a
-                                    href="/verification/focus-id"
-                                    style={{
-                                        display: 'block',
-                                        padding: '14px 16px',
-                                        background: 'linear-gradient(135deg, #7E57C2, #4527A0)',
-                                        borderRadius: '14px',
-                                        color: '#fff',
-                                        fontWeight: 700,
-                                        textDecoration: 'none',
-                                        textAlign: 'center',
-                                        fontSize: '0.95rem',
-                                        boxShadow: '0 4px 20px rgba(126,87,194,0.4)',
-                                    }}
-                                >
-                                    View my FocusID Score →
-                                </a>
+                                {isSaving && !isMobile && (
+                                    <span className={sovereignStyles.savingIndicator}>Saving...</span>
+                                )}
+                            </header>
+
+                            {/* Province Content */}
+                            <div className={styles.provinceContent}>
+                                {renderProvinceContent()}
                             </div>
-                        )}
+                        </motion.div>
+                    </AnimatePresence>
+                </main>
 
-                        {activeSection === 'support' && (
-
-                            <SupportSection
-                                isExpanded={true}
-                                onToggle={toggleSection}
-                            />
-                        )}
-
-                        {activeSection === 'about' && (
-                            <AboutSection
-                                isExpanded={true}
-                                onToggle={toggleSection}
-                            />
-                        )}
-                    </div>
-
-                    <LogOutButton />
-                </div>
+                {/* Mobile Bottom Navigation */}
+                {isMobile && (
+                    <nav className={sovereignStyles.mobileNav}>
+                        <div className={sovereignStyles.mobileNavItems}>
+                            {PROVINCES.slice(0, 4).map((province) => (
+                                <button
+                                    key={province.id}
+                                    className={`${sovereignStyles.mobileNavItem} ${
+                                        activeProvince === province.id ? sovereignStyles.active : ''
+                                    }`}
+                                    onClick={() => handleProvinceChange(province.id)}
+                                >
+                                    <span className={sovereignStyles.mobileNavIcon}>
+                                        {province.iconEmoji}
+                                    </span>
+                                    <span>{province.label.split(' ')[0]}</span>
+                                </button>
+                            ))}
+                            <button
+                                className={`${sovereignStyles.mobileNavItem} ${
+                                    activeProvince === 'support' ? sovereignStyles.active : ''
+                                }`}
+                                onClick={() => handleProvinceChange('support')}
+                            >
+                                <span className={sovereignStyles.mobileNavIcon}>🎧</span>
+                                <span>Support</span>
+                            </button>
+                        </div>
+                    </nav>
+                )}
             </div>
         </MainLayout>
     );

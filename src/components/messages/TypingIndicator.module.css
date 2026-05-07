@@ -17,8 +17,8 @@
 }
 
 .bubble {
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(168, 85, 247, 0.1));
-    border: 1px solid rgba(139, 92, 246, 0.2);
+    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.1), rgba(168, 85, 247, 0.1));
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
     border-radius: 18px;
     padding: 10px 16px;
     display: inline-flex;
@@ -36,7 +36,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #8b5cf6, #a855f7);
+    background: linear-gradient(135deg, var(--primary), var(--primary));
     animation: bounce 1.4s infinite ease-in-out;
 }
 
@@ -54,7 +54,7 @@
 
 .text {
     font-size: 12px;
-    color: rgba(139, 92, 246, 0.8);
+    color: rgba(var(--primary-rgb), 0.8);
     font-weight: 500;
     font-style: italic;
 }
@@ -89,8 +89,8 @@
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
     .bubble {
-        background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(168, 85, 247, 0.15));
-        border-color: rgba(139, 92, 246, 0.3);
+        background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.15), rgba(168, 85, 247, 0.15));
+        border-color: rgba(var(--primary-rgb), 0.3);
     }
 
     .text {

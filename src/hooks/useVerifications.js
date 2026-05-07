@@ -110,8 +110,12 @@ export const useVerifications = () => {
                     }
                     break;
 
+                case 'trust-shield':
+                    // Trust Shield is handled via navigation to the verification page
+                    return { success: true, message: 'Trust Shield verification started' };
+
                 default:
-                    break;
+                    return { error: 'Unknown verification step' };
             }
         } catch (error) {
             console.error('Verification error:', error);

@@ -33,7 +33,7 @@
 }
 
 .read {
-    color: #8b5cf6;
+    color: var(--primary);
     /* Lavender blue - read */
     animation: tickRead 0.3s ease;
 }
@@ -81,6 +81,6 @@
     }
 
     .read {
-        color: #a855f7;
+        color: var(--primary);
     }
 }

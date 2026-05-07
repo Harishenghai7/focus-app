@@ -4,7 +4,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(var(--bg-primary-rgb), 0.5);
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
@@ -17,13 +17,13 @@
     width: 90%;
     max-width: 600px;
     height: 80vh;
-    background: rgba(255, 255, 255, 0.98);
+    background: rgba(var(--text-primary-rgb), 0.98);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(139, 92, 246, 0.2);
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
     border-radius: 20px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 20px 60px rgba(139, 92, 246, 0.3);
+    box-shadow: 0 20px 60px rgba(var(--primary-rgb), 0.3);
     animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -32,7 +32,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 20px 24px;
-    border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.1);
 }
 
 .headerLeft {
@@ -42,14 +42,14 @@
 }
 
 .headerLeft svg {
-    color: #8b5cf6;
+    color: var(--primary);
 }
 
 .header h2 {
     margin: 0;
     font-size: 20px;
     font-weight: 700;
-    color: #1f2937;
+    color: var(--bg-secondary);
 }
 
 .closeButton {
@@ -58,7 +58,7 @@
     border: none;
     background: transparent;
     border-radius: 50%;
-    color: #9ca3af;
+    color: var(--text-muted);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -67,8 +67,8 @@
 }
 
 .closeButton:hover {
-    background: rgba(139, 92, 246, 0.1);
-    color: #8b5cf6;
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
 }
 
 .content {
@@ -82,7 +82,7 @@
 }
 
 .content::-webkit-scrollbar-thumb {
-    background: rgba(139, 92, 246, 0.2);
+    background: rgba(var(--primary-rgb), 0.2);
     border-radius: 3px;
 }
 
@@ -94,33 +94,33 @@
     justify-content: center;
     height: 100%;
     gap: 16px;
-    color: #9ca3af;
+    color: var(--text-muted);
 }
 
 .spinner {
     width: 40px;
     height: 40px;
-    border: 3px solid rgba(139, 92, 246, 0.1);
-    border-top-color: #8b5cf6;
+    border: 3px solid rgba(var(--primary-rgb), 0.1);
+    border-top-color: var(--primary);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
 
 .empty svg {
-    color: rgba(139, 92, 246, 0.3);
+    color: rgba(var(--primary-rgb), 0.3);
 }
 
 .empty h3 {
     margin: 0;
     font-size: 18px;
     font-weight: 600;
-    color: #6b7280;
+    color: var(--text-muted);
 }
 
 .empty p {
     margin: 0;
     font-size: 14px;
-    color: #9ca3af;
+    color: var(--text-muted);
 }
 
 .messagesList {
@@ -139,7 +139,7 @@
     text-align: center;
     font-size: 12px;
     font-weight: 600;
-    color: #9ca3af;
+    color: var(--text-muted);
     padding: 8px 0;
 }
 
@@ -148,15 +148,15 @@
     flex-direction: column;
     gap: 8px;
     padding: 12px;
-    background: rgba(139, 92, 246, 0.03);
-    border: 1px solid rgba(139, 92, 246, 0.1);
+    background: rgba(var(--primary-rgb), 0.03);
+    border: 1px solid rgba(var(--primary-rgb), 0.1);
     border-radius: 12px;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .pinnedItem:hover {
-    background: rgba(139, 92, 246, 0.05);
-    border-color: rgba(139, 92, 246, 0.2);
+    background: rgba(var(--primary-rgb), 0.05);
+    border-color: rgba(var(--primary-rgb), 0.2);
 }
 
 .messageWrapper {
@@ -167,7 +167,7 @@
     display: flex;
     gap: 8px;
     padding-top: 8px;
-    border-top: 1px solid rgba(139, 92, 246, 0.1);
+    border-top: 1px solid rgba(var(--primary-rgb), 0.1);
 }
 
 .actionButton,
@@ -187,21 +187,21 @@
 }
 
 .actionButton {
-    background: rgba(139, 92, 246, 0.1);
-    color: #8b5cf6;
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
 }
 
 .actionButton:hover {
-    background: rgba(139, 92, 246, 0.15);
+    background: rgba(var(--primary-rgb), 0.15);
 }
 
 .unpinButton {
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
+    background: rgba(var(--error-rgb), 0.1);
+    color: var(--error);
 }
 
 .unpinButton:hover {
-    background: rgba(239, 68, 68, 0.15);
+    background: rgba(var(--error-rgb), 0.15);
 }
 
 @keyframes fadeIn {

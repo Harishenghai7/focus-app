@@ -58,7 +58,7 @@ export const useConversations = (currentUserId) => {
                     filter: `participants.cs.{${currentUserId}}`
                 },
                 (payload) => {
-                    console.log('Conversation change:', payload);
+
                     fetchConversations();
                 }
             )

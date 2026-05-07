@@ -35,7 +35,7 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: radial-gradient(circle, #fff 0%, #ebd6ff 40%, transparent 70%);
+    background: radial-gradient(circle, var(--text-primary) 0%, var(--text-primary) 40%, transparent 70%);
     opacity: 0;
     z-index: 3;
     pointer-events: none;

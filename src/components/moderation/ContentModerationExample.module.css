@@ -1,0 +1,49 @@
+.container {
+  padding: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.preview {
+  margin: 12px 0;
+}
+
+.preview img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+.scanningStatus {
+  margin-top: 12px;
+}
+
+.progressBar {
+  height: 8px;
+  background: rgba(var(--text-primary-rgb), 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: rgba(170, 140, 255, 0.85);
+}
+
+.error {
+  margin-top: 12px;
+  color: var(--error);
+}
+
+.debug {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(var(--text-primary-rgb), 0.04);
+  border-radius: 12px;
+  overflow: auto;
+}

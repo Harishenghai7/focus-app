@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-secondary) 100%);
   position: relative;
   overflow: hidden;
 }
@@ -33,10 +33,10 @@
 }
 
 .errorCard {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(var(--text-primary-rgb), 0.05);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--text-primary-rgb), 0.1);
   border-radius: 24px;
   padding: 3rem;
   max-width: 500px;
@@ -45,8 +45,8 @@
   position: relative;
   z-index: 1;
   box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.05);
+    0 25px 50px -12px rgba(var(--bg-primary-rgb), 0.5),
+    0 0 0 1px rgba(var(--text-primary-rgb), 0.05);
 }
 
 .errorIcon {
@@ -64,9 +64,9 @@
 .errorTitle {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-primary);
   margin-bottom: 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--text-muted) 0%, var(--primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -74,7 +74,7 @@
 
 .errorDescription {
   font-size: 1rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(var(--text-primary-rgb), 0.7);
   line-height: 1.6;
   margin-bottom: 2rem;
 }
@@ -82,14 +82,14 @@
 .errorDetails {
   margin: 1.5rem 0;
   padding: 1rem;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(var(--bg-primary-rgb), 0.3);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--text-primary-rgb), 0.1);
   text-align: left;
 }
 
 .errorDetails summary {
-  color: #fbbf24;
+  color: var(--warning);
   cursor: pointer;
   font-weight: 600;
   font-size: 0.9rem;
@@ -98,8 +98,8 @@
 .errorStack {
   font-family: 'Monaco', 'Menlo', monospace;
   font-size: 0.75rem;
-  color: #ef4444;
-  background: rgba(0, 0, 0, 0.5);
+  color: var(--error);
+  background: rgba(var(--bg-primary-rgb), 0.5);
   padding: 1rem;
   border-radius: 8px;
   overflow-x: auto;
@@ -116,7 +116,7 @@
 }
 
 .primaryButton {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--text-muted) 0%, var(--primary) 100%);
   color: white;
   border: none;
   padding: 1rem 2rem;
@@ -139,8 +139,8 @@
 
 .secondaryButton {
   background: transparent;
-  color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(var(--text-primary-rgb), 0.8);
+  border: 1px solid rgba(var(--text-primary-rgb), 0.2);
   padding: 1rem 2rem;
   border-radius: 12px;
   font-size: 1rem;
@@ -150,18 +150,18 @@
 }
 
 .secondaryButton:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(var(--text-primary-rgb), 0.1);
+  border-color: rgba(var(--text-primary-rgb), 0.3);
 }
 
 .errorFooter {
   font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(var(--text-primary-rgb), 0.5);
   margin-top: 1.5rem;
 }
 
 .errorFooter a {
-  color: #667eea;
+  color: var(--text-muted);
   text-decoration: none;
   font-weight: 500;
 }

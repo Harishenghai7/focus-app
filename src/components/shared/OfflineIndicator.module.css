@@ -16,12 +16,12 @@
 }
 
 .offline {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    background: linear-gradient(135deg, var(--error) 0%, var(--error) 100%);
     color: white;
 }
 
 .online {
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    background: linear-gradient(135deg, var(--success) 0%, var(--success) 100%);
     color: white;
     animation: slideDown 0.3s ease-out, fadeOut 0.5s ease-in 2.5s forwards;
 }

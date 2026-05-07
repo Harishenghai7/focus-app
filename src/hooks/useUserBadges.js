@@ -39,7 +39,7 @@ export const useUserBadges = (userId = null) => {
 
         // Subscribe to real-time updates
         const subscription = subscribeToUserBadges(targetUserId, (payload) => {
-            console.log('Badge update:', payload);
+
             loadBadges(); // Reload badges on any change
         });
 

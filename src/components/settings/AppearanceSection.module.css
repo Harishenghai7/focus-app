@@ -47,15 +47,15 @@
 }
 
 .themePreviewBox.light {
-    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
 }
 
 .themePreviewBox.dark {
-    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-secondary) 100%);
 }
 
 .themePreviewBox.auto {
-    background: linear-gradient(135deg, #f5f5f5 0%, #0a0a0a 100%);
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--bg-secondary) 100%);
 }
 
 .previewContent {

@@ -17,28 +17,28 @@
     padding: 16px;
     position: sticky;
     top: 0;
-    background: var(--bg-primary, #1a0f2e);
+    background: var(--bg-primary, var(--bg-elevated));
     backdrop-filter: blur(16px);
     z-index: 10;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(var(--text-primary-rgb), 0.06);
 }
 
 .backBtn {
     background: none;
     border: none;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
     font-size: 0.87rem;
     cursor: pointer;
     font-family: inherit;
     padding: 4px;
     transition: color 0.15s;
 }
-.backBtn:hover { color: var(--text-primary, #fff); }
+.backBtn:hover { color: var(--text-primary, var(--text-primary)); }
 
 .pageTitle {
     font-size: 1rem;
     font-weight: 800;
-    background: var(--gradient-brand, linear-gradient(135deg, #7E57C2, #4527A0));
+    background: var(--gradient-brand, linear-gradient(135deg, var(--primary), var(--primary-hover)));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -63,7 +63,7 @@
 .heroTagline {
     font-size: 1.1rem;
     font-weight: 700;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary, var(--text-primary));
     margin: 0;
     line-height: 1.4;
     font-style: italic;
@@ -71,7 +71,7 @@
 
 .heroSub {
     font-size: 0.85rem;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
     line-height: 1.6;
     margin: 0;
     max-width: 400px;
@@ -84,7 +84,7 @@
     align-items: center;
     gap: 16px;
     padding: 80px 20px;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
     font-size: 0.87rem;
 }
 
@@ -92,8 +92,8 @@
     width: 64px;
     height: 64px;
     border-radius: 50%;
-    border: 3px solid rgba(126, 87, 194, 0.3);
-    border-top-color: #7E57C2;
+    border: 3px solid rgba(var(--primary-rgb), 0.3);
+    border-top-color: var(--primary);
     animation: spin 0.9s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -112,17 +112,17 @@
     flex-shrink: 0;
     padding: 6px 12px;
     border-radius: 99px;
-    border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.12);
+    background: rgba(var(--text-primary-rgb), 0.04);
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
     white-space: nowrap;
 }
 
 .tierActive {
-    background: rgba(126, 87, 194, 0.15);
-    box-shadow: 0 0 12px rgba(126, 87, 194, 0.3);
+    background: rgba(var(--primary-rgb), 0.15);
+    box-shadow: 0 0 12px rgba(var(--primary-rgb), 0.3);
     font-weight: 800;
 }
 
@@ -139,13 +139,13 @@
 .sectionTitle {
     font-size: 0.95rem;
     font-weight: 700;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary, var(--text-primary));
     margin: 0 0 6px;
 }
 
 .sectionDesc {
     font-size: 0.8rem;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
     margin: 0 0 14px;
     line-height: 1.55;
 }
@@ -153,7 +153,7 @@
 /* ── Progress bar ───────────────────────────────────────────── */
 .progressSection {
     background: var(--glass-bg, rgba(42,26,66,0.72));
-    border: 1px solid var(--glass-border, rgba(255,255,255,0.08));
+    border: 1px solid var(--glass-border, rgba(var(--text-primary-rgb), 0.08));
     border-radius: var(--radius-lg, 16px);
     padding: 16px;
     backdrop-filter: blur(12px);
@@ -169,19 +169,19 @@
 .progressCurrent {
     font-size: 0.95rem;
     font-weight: 700;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary, var(--text-primary));
 }
 
 .progressScore {
     font-size: 0.8rem;
     font-weight: 600;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
     font-variant-numeric: tabular-nums;
 }
 
 .progressBar {
     height: 8px;
-    background: rgba(255,255,255,0.08);
+    background: rgba(var(--text-primary-rgb), 0.08);
     border-radius: 99px;
     overflow: hidden;
 }
@@ -196,7 +196,7 @@
 .progressHint {
     margin: 8px 0 0;
     font-size: 0.78rem;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
 }
 
 /* ── Signal list ─────────────────────────────────────────────── */
@@ -212,7 +212,7 @@
     justify-content: space-between;
     padding: 12px 14px;
     background: var(--glass-bg, rgba(42,26,66,0.72));
-    border: 1px solid var(--glass-border, rgba(255,255,255,0.08));
+    border: 1px solid var(--glass-border, rgba(var(--text-primary-rgb), 0.08));
     border-radius: var(--radius-md, 12px);
     gap: 10px;
     transition: border-color 0.15s;
@@ -220,8 +220,8 @@
 }
 
 .earned {
-    border-color: rgba(16, 185, 129, 0.3);
-    background: rgba(16, 185, 129, 0.06);
+    border-color: rgba(var(--success-rgb), 0.3);
+    background: rgba(var(--success-rgb), 0.06);
 }
 
 .signalLeft {
@@ -235,7 +235,7 @@
 
 .signalLabel {
     font-size: 0.85rem;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary, var(--text-primary));
     margin: 0 0 4px;
     line-height: 1.4;
 }
@@ -243,7 +243,7 @@
 .signalAction {
     background: none;
     border: none;
-    color: var(--royal-purple, #7E57C2);
+    color: var(--royal-purple, var(--primary));
     font-size: 0.75rem;
     font-weight: 600;
     cursor: pointer;
@@ -252,47 +252,47 @@
     text-decoration: underline;
     transition: color 0.15s;
 }
-.signalAction:hover { color: var(--neon-lavender, #c4b5fd); }
+.signalAction:hover { color: var(--neon-lavender, var(--primary-light)); }
 
 .signalPoints {
     font-size: 0.78rem;
     font-weight: 700;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
     white-space: nowrap;
     flex-shrink: 0;
 }
-.earned .signalPoints { color: #10B981; }
+.earned .signalPoints { color: var(--glass-bg-solid); }
 
 /* ── Info card ──────────────────────────────────────────────── */
 .infoCard {
     margin: 0 16px;
     padding: 16px;
-    background: rgba(126, 87, 194, 0.08);
-    border: 1px solid rgba(126, 87, 194, 0.25);
+    background: rgba(var(--primary-rgb), 0.08);
+    border: 1px solid rgba(var(--primary-rgb), 0.25);
     border-radius: var(--radius-lg, 16px);
-    border-left: 3px solid #7E57C2;
+    border-left: 3px solid var(--primary);
 }
 
 .infoTitle {
     font-size: 0.9rem;
     font-weight: 700;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary, var(--text-primary));
     margin: 0 0 8px;
 }
 
 .infoText {
     font-size: 0.82rem;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
     line-height: 1.6;
     margin: 0;
 }
-.infoText strong { color: var(--neon-lavender, #c4b5fd); }
+.infoText strong { color: var(--neon-lavender, var(--primary-light)); }
 
 /* ── Phone modal ─────────────────────────────────────────────── */
 .phoneModal {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.6);
+    background: rgba(var(--bg-primary-rgb), 0.6);
     display: flex;
     align-items: flex-end;
     justify-content: center;
@@ -303,8 +303,8 @@
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 .phoneCard {
-    background: var(--bg-tertiary, #2d1f42);
-    border: 1px solid rgba(126, 87, 194, 0.3);
+    background: var(--bg-tertiary, var(--bg-secondary));
+    border: 1px solid rgba(var(--primary-rgb), 0.3);
     border-radius: var(--radius-xl, 20px) var(--radius-xl, 20px) var(--radius-lg, 16px) var(--radius-lg, 16px);
     padding: 24px 20px;
     width: 100%;
@@ -316,16 +316,16 @@
 }
 @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-.phoneCard h3 { margin: 0; font-size: 1.1rem; color: var(--text-primary, #fff); }
-.phoneCard p { margin: 0; font-size: 0.85rem; color: var(--text-secondary, #e9d5ff); line-height: 1.5; }
-.phoneNote { color: var(--text-muted, #a78bfa) !important; font-size: 0.8rem !important; }
+.phoneCard h3 { margin: 0; font-size: 1.1rem; color: var(--text-primary, var(--text-primary)); }
+.phoneCard p { margin: 0; font-size: 0.85rem; color: var(--text-secondary, var(--primary-light)); line-height: 1.5; }
+.phoneNote { color: var(--text-muted, var(--primary-light)) !important; font-size: 0.8rem !important; }
 
 .phoneCta {
     padding: 12px;
-    background: var(--gradient-brand, linear-gradient(135deg, #7E57C2, #4527A0));
+    background: var(--gradient-brand, linear-gradient(135deg, var(--primary), var(--primary-hover)));
     border: none;
     border-radius: var(--radius-md, 12px);
-    color: #fff;
+    color: var(--text-primary);
     font-size: 0.9rem;
     font-weight: 700;
     font-family: inherit;
@@ -338,7 +338,7 @@
 .phoneCancel {
     background: none;
     border: none;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
     font-size: 0.85rem;
     cursor: pointer;
     font-family: inherit;

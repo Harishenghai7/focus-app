@@ -18,14 +18,14 @@ const AddMusic = ({ selectedMusic, onSelect, onNext, onBack }) => {
             </div>
 
             <div className={styles.content}>
-                {selectedMusic ? (
+                {selectedMusic && (selectedMusic.name || selectedMusic.artist_name) ? (
                     <div className={styles.selectedTrack}>
                         <div className={styles.trackIcon}>
                             <Music size={32} color="white" />
                         </div>
                         <div className={styles.trackInfo}>
-                            <h3>{selectedMusic.name}</h3>
-                            <p>{selectedMusic.artist_name}</p>
+                            <h3>{selectedMusic.name || 'Unknown Track'}</h3>
+                            <p>{selectedMusic.artist_name || 'Unknown Artist'}</p>
                         </div>
                         <button className={styles.removeBtn} onClick={() => onSelect(null)}>
                             <X size={20} />

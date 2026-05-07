@@ -1,7 +1,7 @@
 .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(var(--bg-primary-rgb), 0.9);
     backdrop-filter: blur(8px);
     z-index: var(--z-modal);
     display: flex;
@@ -30,7 +30,7 @@
     color: white;
     cursor: pointer;
     z-index: 20;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+    filter: drop-shadow(0 2px 4px rgba(var(--bg-primary-rgb), 0.5));
 }
 
 .videoContainer {
@@ -81,7 +81,7 @@
 .actionButton span {
     font-size: var(--font-xs);
     font-weight: var(--font-bold);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 2px 4px rgba(var(--bg-primary-rgb), 0.5);
 }
 
 .bottomInfo {
@@ -90,7 +90,7 @@
     left: 0;
     right: 0;
     padding: var(--space-4);
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    background: linear-gradient(to top, rgba(var(--bg-primary-rgb), 0.8), transparent);
     pointer-events: auto;
 }
 
@@ -110,12 +110,12 @@
     font-weight: var(--font-bold);
     color: white;
     margin-bottom: var(--space-1);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 2px 4px rgba(var(--bg-primary-rgb), 0.5);
 }
 
 .caption {
     color: white;
     font-size: var(--font-sm);
     line-height: var(--leading-snug);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 2px 4px rgba(var(--bg-primary-rgb), 0.5);
 }

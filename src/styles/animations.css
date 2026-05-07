@@ -1,0 +1,617 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   FOCUS — CINEMATIC ANIMATION SYSTEM
+   The complete animation infrastructure for god-level UI/UX
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ============================================
+   ENTRANCE ANIMATIONS
+   ============================================ */
+
+@keyframes focusFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes focusFadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes focusFadeInDown {
+  from { opacity: 0; transform: translateY(-24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes focusFadeInLeft {
+  from { opacity: 0; transform: translateX(-24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes focusFadeInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes focusSlideInUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes focusSlideInDown {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes focusSlideInLeft {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes focusSlideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes focusScaleIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes focusScaleInBounce {
+  0% { opacity: 0; transform: scale(0.3); }
+  50% { opacity: 1; transform: scale(1.05); }
+  70% { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+
+@keyframes focusPopIn {
+  0% { opacity: 0; transform: scale(0.7); }
+  60% { transform: scale(1.08); }
+  80% { transform: scale(0.97); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes focusBlurIn {
+  from { opacity: 0; filter: blur(12px); }
+  to { opacity: 1; filter: blur(0); }
+}
+
+@keyframes focusRevealUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(40px); 
+    filter: blur(8px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+    filter: blur(0); 
+  }
+}
+
+@keyframes focusExpandIn {
+  from { 
+    opacity: 0; 
+    transform: scaleY(0); 
+    transform-origin: top; 
+  }
+  to { 
+    opacity: 1; 
+    transform: scaleY(1); 
+    transform-origin: top; 
+  }
+}
+
+@keyframes focusDropIn {
+  0% { opacity: 0; transform: translateY(-60px) scale(0.9); }
+  60% { opacity: 1; transform: translateY(8px) scale(1.02); }
+  80% { transform: translateY(-4px) scale(0.99); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* ============================================
+   EXIT ANIMATIONS
+   ============================================ */
+
+@keyframes focusFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes focusFadeOutUp {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-24px); }
+}
+
+@keyframes focusFadeOutDown {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(24px); }
+}
+
+@keyframes focusScaleOut {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.85); }
+}
+
+@keyframes focusPopOut {
+  0% { opacity: 1; transform: scale(1); }
+  30% { transform: scale(1.05); }
+  100% { opacity: 0; transform: scale(0.7); }
+}
+
+/* ============================================
+   MICRO-INTERACTION ANIMATIONS
+   ============================================ */
+
+@keyframes focusHeartBurst {
+  0% { transform: scale(1); }
+  15% { transform: scale(1.35); }
+  30% { transform: scale(0.9); }
+  45% { transform: scale(1.15); }
+  60% { transform: scale(0.97); }
+  75% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes focusLikeParticle {
+  0% { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--px, 0), var(--py, -40px)) scale(0); }
+}
+
+@keyframes focusSaveBookmark {
+  0% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+  60% { transform: translateY(2px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes focusRipple {
+  0% { transform: scale(0); opacity: 0.5; }
+  100% { transform: scale(4); opacity: 0; }
+}
+
+@keyframes focusBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes focusShake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+@keyframes focusWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
+
+@keyframes focusTap {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.93); }
+  100% { transform: scale(1); }
+}
+
+@keyframes focusSuccessCheck {
+  0% { stroke-dashoffset: 24; }
+  100% { stroke-dashoffset: 0; }
+}
+
+@keyframes focusSwing {
+  20% { transform: rotate3d(0, 0, 1, 12deg); }
+  40% { transform: rotate3d(0, 0, 1, -8deg); }
+  60% { transform: rotate3d(0, 0, 1, 4deg); }
+  80% { transform: rotate3d(0, 0, 1, -3deg); }
+  100% { transform: rotate3d(0, 0, 1, 0deg); }
+}
+
+/* ============================================
+   LOADING & PROGRESS ANIMATIONS
+   ============================================ */
+
+@keyframes focusSpinSmooth {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes focusPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.97); }
+}
+
+@keyframes focusPulseGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.6), 0 0 60px rgba(139, 92, 246, 0.2); }
+}
+
+@keyframes focusPulseSoft {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes focusBreathGlow {
+  0%, 100% { 
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.15);
+    border-color: rgba(139, 92, 246, 0.2); 
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.35), 0 0 60px rgba(139, 92, 246, 0.1);
+    border-color: rgba(139, 92, 246, 0.45); 
+  }
+}
+
+@keyframes focusProgressBar {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+@keyframes focusProgressIndeterminate {
+  0% { left: -40%; width: 40%; }
+  50% { left: 20%; width: 60%; }
+  100% { left: 100%; width: 40%; }
+}
+
+@keyframes focusDotBounce1 {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes focusDotBounce2 {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes focusDotBounce3 {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes focusSkeletonWave {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ============================================
+   AMBIENT & BACKGROUND ANIMATIONS
+   ============================================ */
+
+@keyframes focusFloatUpDown {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes focusFloatLeftRight {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(8px); }
+}
+
+@keyframes focusFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-8px) rotate(1deg); }
+  66% { transform: translateY(4px) rotate(-1deg); }
+}
+
+@keyframes focusOrbit {
+  from { transform: rotate(0deg) translateX(var(--orbit-radius, 60px)) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(var(--orbit-radius, 60px)) rotate(-360deg); }
+}
+
+@keyframes focusParticleDrift {
+  0% { transform: translate(0, 0) scale(1); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translate(var(--drift-x, 100px), var(--drift-y, -200px)) scale(0); opacity: 0; }
+}
+
+@keyframes focusAuroraShift {
+  0%, 100% { 
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg);
+  }
+  50% { 
+    background-position: 100% 50%;
+    filter: hue-rotate(20deg);
+  }
+}
+
+@keyframes focusMeshGradient {
+  0%, 100% { 
+    background-position: 0% 0%;
+  }
+  25% { 
+    background-position: 100% 0%;
+  }
+  50% { 
+    background-position: 100% 100%;
+  }
+  75% { 
+    background-position: 0% 100%;
+  }
+}
+
+@keyframes focusGlowPulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+@keyframes focusStarTwinkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes focusGradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ============================================
+   NOTIFICATION & ALERT ANIMATIONS
+   ============================================ */
+
+@keyframes focusNotifSlideIn {
+  from { 
+    transform: translateX(100%) scale(0.9); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translateX(0) scale(1); 
+    opacity: 1; 
+  }
+}
+
+@keyframes focusNotifSlideOut {
+  from { 
+    transform: translateX(0) scale(1); 
+    opacity: 1; 
+  }
+  to { 
+    transform: translateX(100%) scale(0.9); 
+    opacity: 0; 
+  }
+}
+
+@keyframes focusAlertPulse {
+  0%, 100% { transform: scale(1); }
+  10% { transform: scale(1.06); }
+  20% { transform: scale(1); }
+  30% { transform: scale(1.04); }
+  40% { transform: scale(1); }
+}
+
+@keyframes focusBadgePop {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.3); }
+  80% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+@keyframes focusCountUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes focusCountDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ============================================
+   STORY / FLASH ANIMATIONS
+   ============================================ */
+
+@keyframes focusStoryRingRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes focusStoryProgress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+/* ============================================
+   PAGE TRANSITION PRESETS
+   ============================================ */
+
+@keyframes focusPageEnter {
+  from { 
+    opacity: 0; 
+    transform: translateY(16px) scale(0.98); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
+}
+
+@keyframes focusPageExit {
+  from { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
+  to { 
+    opacity: 0; 
+    transform: translateY(-8px) scale(0.99); 
+  }
+}
+
+@keyframes focusModalEnter {
+  from { 
+    opacity: 0; 
+    transform: scale(0.92) translateY(20px);
+    filter: blur(4px);
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes focusDrawerSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes focusOverlayFadeIn {
+  from { backdrop-filter: blur(0); background: transparent; }
+  to { backdrop-filter: blur(8px); background: rgba(0, 0, 0, 0.65); }
+}
+
+/* ============================================
+   TYPING / TEXT ANIMATIONS
+   ============================================ */
+
+@keyframes focusBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes focusTypewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes focusTextReveal {
+  from { 
+    clip-path: inset(0 100% 0 0);
+  }
+  to { 
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes focusGradientText {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ============================================
+   UTILITY CLASSES — ANIMATION PRESETS
+   ============================================ */
+
+/* Entrance */
+.anim-fade-in { animation: focusFadeIn 0.3s ease-out both; }
+.anim-fade-in-up { animation: focusFadeInUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-fade-in-down { animation: focusFadeInDown 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-fade-in-left { animation: focusFadeInLeft 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-fade-in-right { animation: focusFadeInRight 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-scale-in { animation: focusScaleIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-pop-in { animation: focusPopIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-blur-in { animation: focusBlurIn 0.5s ease-out both; }
+.anim-reveal-up { animation: focusRevealUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-drop-in { animation: focusDropIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Exit */
+.anim-fade-out { animation: focusFadeOut 0.25s ease-in both; }
+.anim-fade-out-up { animation: focusFadeOutUp 0.3s ease-in both; }
+.anim-scale-out { animation: focusScaleOut 0.25s ease-in both; }
+.anim-pop-out { animation: focusPopOut 0.3s ease-in both; }
+
+/* Continuous */
+.anim-pulse { animation: focusPulse 2s ease-in-out infinite; }
+.anim-pulse-glow { animation: focusPulseGlow 2.5s ease-in-out infinite; }
+.anim-breath-glow { animation: focusBreathGlow 3s ease-in-out infinite; }
+.anim-float { animation: focusFloat 6s ease-in-out infinite; }
+.anim-float-up-down { animation: focusFloatUpDown 3s ease-in-out infinite; }
+.anim-bounce { animation: focusBounce 1.5s ease-in-out infinite; }
+.anim-spin { animation: focusSpinSmooth 1s linear infinite; }
+.anim-wiggle { animation: focusWiggle 0.8s ease-in-out; }
+.anim-gradient-flow { animation: focusGradientFlow 4s ease infinite; }
+
+/* Delays for staggered animations */
+.anim-delay-1 { animation-delay: 0.05s; }
+.anim-delay-2 { animation-delay: 0.1s; }
+.anim-delay-3 { animation-delay: 0.15s; }
+.anim-delay-4 { animation-delay: 0.2s; }
+.anim-delay-5 { animation-delay: 0.25s; }
+.anim-delay-6 { animation-delay: 0.3s; }
+.anim-delay-7 { animation-delay: 0.35s; }
+.anim-delay-8 { animation-delay: 0.4s; }
+.anim-delay-9 { animation-delay: 0.45s; }
+.anim-delay-10 { animation-delay: 0.5s; }
+.anim-delay-long-1 { animation-delay: 0.6s; }
+.anim-delay-long-2 { animation-delay: 0.8s; }
+.anim-delay-long-3 { animation-delay: 1s; }
+.anim-delay-long-4 { animation-delay: 1.2s; }
+
+/* Durations */
+.anim-fast { animation-duration: 0.2s; }
+.anim-normal { animation-duration: 0.4s; }
+.anim-slow { animation-duration: 0.6s; }
+.anim-slower { animation-duration: 1s; }
+.anim-cinematic { animation-duration: 1.2s; }
+
+/* Fill modes */
+.anim-fill-both { animation-fill-mode: both; }
+.anim-fill-forwards { animation-fill-mode: forwards; }
+
+/* GPU acceleration hint */
+.gpu-accelerated {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Smooth transitions for interactive elements */
+.hover-lift {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), 
+              box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-3px);
+}
+
+.hover-lift:active {
+  transform: translateY(-1px);
+}
+
+.hover-glow {
+  transition: box-shadow 0.3s ease;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 24px rgba(139, 92, 246, 0.3), 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.hover-scale {
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-scale:active {
+  transform: scale(0.97);
+}
+
+/* Tap feedback for mobile */
+.tap-feedback {
+  transition: transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tap-feedback:active {
+  transform: scale(0.95);
+}
+
+/* ============================================
+   REDUCED MOTION — Accessibility First
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  [class*="anim-"],
+  .hover-lift,
+  .hover-glow,
+  .hover-scale,
+  .tap-feedback,
+  .gpu-accelerated {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}

@@ -21,8 +21,8 @@
 }
 
 .card.selected {
-    background: linear-gradient(90deg, rgba(139, 92, 246, 0.25), rgba(139, 92, 246, 0.1));
-    border-left: 3px solid #8b5cf6;
+    background: linear-gradient(90deg, rgba(var(--primary-rgb), 0.25), rgba(var(--primary-rgb), 0.1));
+    border-left: 3px solid var(--primary);
 }
 
 /* Avatar */
@@ -45,8 +45,8 @@
     right: 2px;
     width: 14px;
     height: 14px;
-    background: #10b981;
-    border: 2px solid #1a0f2e;
+    background: var(--glass-bg-solid);
+    border: 2px solid var(--bg-elevated);
     border-radius: 50%;
 }
 
@@ -76,7 +76,7 @@
 .name {
     font-size: 16px;
     font-weight: 600;
-    color: #f8f7ff;
+    color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -109,7 +109,7 @@
 }
 
 .unreadBadge {
-    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
     color: white;
     font-size: 12px;
     font-weight: 700;
@@ -124,5 +124,5 @@
     position: absolute;
     top: 8px;
     right: 8px;
-    color: #8b5cf6;
+    color: var(--primary);
 }

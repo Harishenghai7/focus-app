@@ -218,7 +218,7 @@ const FocuslyWidget = () => {
      */
     const handleSettingsClick = useCallback(() => {
         // TODO: Implement settings modal
-        console.log('Settings clicked');
+
     }, []);
 
     return (

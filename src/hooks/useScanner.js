@@ -63,6 +63,7 @@ const useScanner = () => {
   const loopRef   = useRef(null);
   const workerRef = useRef(null);
   const isScanningRef = useRef(false);
+  const runOCRRef = useRef(null); // Ref to hold runOCR for circular dependency fix
 
   // ── Init Tesseract Worker ─────────────────────────────────────────────────
   useEffect(() => {
@@ -81,32 +82,25 @@ const useScanner = () => {
     };
   }, []);
 
-  // ── Start Camera ──────────────────────────────────────────────────────────
-  const startCamera = useCallback(async () => {
-    setPhase('requesting');
-    setStatusMessage('Requesting camera access...');
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
-        audio: false,
-      });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-      }
-      setPhase('streaming');
-      setStatusMessage('Hold your ID card steady inside the frame...');
-      startAnalysisLoop();
-    } catch (err) {
-      setPhase('error');
-      setStatusMessage('Camera permission denied. Please allow camera access and refresh.');
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // ── Analysis Loop: sharpness + luminance every 500ms ─────────────────────
+  // ── Analysis Loop: sharpness + luminance every 800ms ─────────────────────
   const startAnalysisLoop = useCallback(() => {
     if (loopRef.current) clearInterval(loopRef.current);
+    
+    // Track last status to prevent duplicate updates - STRONGER debouncing
+    let lastStatus = '';
+    let lastStatusTime = 0;
+    let stableFrameCount = 0;
+    
+    const updateStatus = (msg, force = false) => {
+      const now = Date.now();
+      // 🔱 BULLETPROOF: 2000ms debounce, must be different message
+      if (force || (msg !== lastStatus && now - lastStatusTime > 2000)) {
+        setStatusMessage(msg);
+        lastStatus = msg;
+        lastStatusTime = now;
+      }
+    };
+    
     loopRef.current = setInterval(async () => {
       if (!videoRef.current || !canvasRef.current || isScanningRef.current) return;
       const video = videoRef.current;
@@ -119,32 +113,130 @@ const useScanner = () => {
       const lum = measureLuminance(canvas);
       const sharpness = measureSharpness(canvas);
 
-      const isLowLight = lum < 60;
-      const isSharp = sharpness > 80;
+      // 🔱 RELAXED THRESHOLDS: More forgiving for real-world conditions
+      const isLowLight = lum < 45;
+      const isSharp = sharpness > 45;
+      const isAcceptable = sharpness > 25;
 
-      setLightWarning(isLowLight);
-      setSharpnessOk(isSharp);
+      // Batch state updates to prevent re-render spam
+      const newLightWarning = isLowLight;
+      const newSharpnessOk = isSharp;
+      
+      // Only update state if values changed
+      setLightWarning(prev => prev !== newLightWarning ? newLightWarning : prev);
+      setSharpnessOk(prev => prev !== newSharpnessOk ? newSharpnessOk : prev);
 
-      if (isLowLight) {
-        setStatusMessage('⚡ Low Light Detected — move closer to a light source');
-        return;
-      }
-
-      if (isSharp) {
-        setStatusMessage('✅ Optimal quality — scanning...');
-        // Auto-trigger OCR once good frame is detected
+      // Smart status messages - only when quality changes
+      if (isSharp && !isScanningRef.current) {
         isScanningRef.current = true;
         clearInterval(loopRef.current);
-        await runOCR(canvas);
+        updateStatus('✅ Good quality — capturing...', true);
+        // Call runOCR through ref to avoid circular dependency
+        runOCRRef.current?.(canvas);
+      } else if (isLowLight) {
+        updateStatus('⚡ Low light detected — add more lighting or move to brighter area');
+      } else if (isAcceptable) {
+        // Only show this message after several stable frames
+        stableFrameCount++;
+        if (stableFrameCount > 3) {
+          updateStatus('📷 Hold ID steady — waiting for sharp focus...');
+        }
       } else {
-        setStatusMessage('📋 Align ID clearly — avoid glare and motion blur');
+        stableFrameCount = 0;
+        updateStatus('📋 Position ID in frame — avoid glare and shadows');
       }
-    }, 600);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, 800);
+  }, []);
+
+  // ── Start Camera ──────────────────────────────────────────────────────────
+  // 🔱 FIXED: Now defined AFTER startAnalysisLoop to avoid TDZ error
+  const startCamera = useCallback(async () => {
+    // Prevent starting if already streaming or scanning
+    if (phase === 'streaming' || phase === 'scanning' || phase === 'requesting') {
+
+      return;
+    }
+
+    // Stop any existing stream first
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(t => t.stop());
+      streamRef.current = null;
+    }
+    if (loopRef.current) {
+      clearInterval(loopRef.current);
+      loopRef.current = null;
+    }
+    isScanningRef.current = false;
+
+    setPhase('requesting');
+    setStatusMessage('Requesting camera access...');
+    setError(null);
+    setOcrResult(null);
+    setCapturedFrame(null);
+    setProgress(0);
+    
+    const cameraConfigs = [
+      // Try back camera first (best for ID scanning)
+      { video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false },
+      // Try front camera
+      { video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false },
+      // Fallback to any camera
+      { video: { width: { ideal: 640 }, height: { ideal: 480 } }, audio: false },
+      // Final fallback - any video
+      { video: true, audio: false },
+    ];
+    
+    let lastError = null;
+    
+    for (let i = 0; i < cameraConfigs.length; i++) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia(cameraConfigs[i]);
+        streamRef.current = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.playsInline = true;
+          videoRef.current.muted = true;
+          videoRef.current.setAttribute('playsinline', 'true');
+          videoRef.current.setAttribute('webkit-playsinline', 'true');
+          await videoRef.current.play();
+        }
+        setPhase('streaming');
+        setStatusMessage('Position your ID in the frame...');
+        // Small delay before starting analysis to let video stabilize
+        setTimeout(() => startAnalysisLoop(), 500);
+        return;
+      } catch (err) {
+        lastError = err;
+        console.warn(`[TrustShield] Camera attempt ${i + 1} failed:`, err.message);
+      }
+    }
+    
+    // All attempts failed
+    console.error('[TrustShield] All camera attempts failed:', lastError);
+    setPhase('error');
+    
+    if (lastError?.name === 'NotAllowedError' || lastError?.name === 'PermissionDeniedError') {
+      setStatusMessage('Camera permission denied. Please allow camera access and refresh.');
+    } else if (lastError?.name === 'NotFoundError' || lastError?.name === 'DevicesNotFoundError') {
+      setStatusMessage('No camera found. Please use the file upload option below.');
+    } else {
+      setStatusMessage('Camera error. Please use the file upload option.');
+    }
+  }, [startAnalysisLoop, phase]);
 
   // ── OCR Run ───────────────────────────────────────────────────────────────
   const runOCR = useCallback(async (canvas) => {
-    if (!workerRef.current) return;
+    // Prevent duplicate OCR runs
+    if (isScanningRef.current) {
+
+      return;
+    }
+    if (!workerRef.current) {
+      setStatusMessage('OCR worker not ready. Please wait a moment and try again.');
+      return;
+    }
+    
+    isScanningRef.current = true;
     setPhase('scanning');
     setStatusMessage('🔍 Reading ID — please hold still...');
 
@@ -186,7 +278,12 @@ const useScanner = () => {
         setStatusMessage('⚠️ Confidence too low — repositioning...');
         setPhase('streaming');
         isScanningRef.current = false;
-        startAnalysisLoop();
+        // 🔱 MEMORY FIX: Properly restart analysis loop
+        setTimeout(() => {
+          if (phase === 'streaming' && !loopRef.current) {
+            startAnalysisLoop();
+          }
+        }, 500);
         return;
       }
 
@@ -353,22 +450,157 @@ const useScanner = () => {
         ? `✅ ID scanned — ${Math.round(confidence)}% confidence`
         : '⚠️ Partial read — please retake'
       );
+      isScanningRef.current = false;
       stopCamera();
     } catch (err) {
+      console.error('[useScanner] OCR error:', err);
       isScanningRef.current = false;
       setPhase('error');
       setStatusMessage('OCR failed. Please retry.');
     }
-  }, [startAnalysisLoop]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Store runOCR in ref for circular dependency resolution
+  useEffect(() => {
+    runOCRRef.current = runOCR;
+  }, [runOCR]);
 
   // ── Stop Camera ───────────────────────────────────────────────────────────
   const stopCamera = useCallback(() => {
-    if (loopRef.current) clearInterval(loopRef.current);
+    // 🔱 MEMORY FIX: Properly clear interval and reset ref
+    if (loopRef.current) {
+      clearInterval(loopRef.current);
+      loopRef.current = null;
+    }
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(t => t.stop());
       streamRef.current = null;
     }
     if (videoRef.current) videoRef.current.srcObject = null;
+    isScanningRef.current = false;
+  }, []);
+
+  // ── Process Uploaded File ───────────────────────────────────────────────
+  const processFile = useCallback(async (file) => {
+    // Prevent duplicate processing
+    if (isScanningRef.current) {
+
+      return { ok: false, reason: 'Processing in progress' };
+    }
+    
+    if (!file) {
+      setStatusMessage('No file selected');
+      return { ok: false, reason: 'No file' };
+    }
+    
+    if (!workerRef.current) {
+      setStatusMessage('OCR worker not ready. Please wait a moment and try again.');
+      return { ok: false, reason: 'Worker not ready' };
+    }
+    
+    isScanningRef.current = true;
+    setPhase('scanning');
+    setStatusMessage('Processing uploaded ID...');
+    setProgress(0);
+    setError(null);
+    
+    try {
+      // Validate file
+      if (file.size === 0) throw new Error('Empty file');
+      if (file.size > 10 * 1024 * 1024) throw new Error('File too large (max 10MB)');
+      
+      // Convert file to image
+      const imgUrl = URL.createObjectURL(file);
+      const img = new Image();
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = imgUrl;
+      });
+      
+      // Draw to canvas
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth || 1280;
+      canvas.height = img.naturalHeight || 720;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      
+      // Revoke object URL to free memory
+      URL.revokeObjectURL(imgUrl);
+      
+      // Run OCR
+      const { data } = await workerRef.current.recognize(canvas);
+      
+      setOcrResult({
+        text: data.text,
+        confidence: data.confidence,
+      });
+      
+      setCapturedFrame(canvas.toDataURL('image/jpeg', 0.9));
+      setPhase('captured');
+      setStatusMessage('ID processed successfully');
+      setProgress(100);
+      isScanningRef.current = false;
+      
+      return { 
+        ok: true, 
+        text: data.text, 
+        confidence: data.confidence,
+        canvas 
+      };
+    } catch (err) {
+      console.error('[useScanner] File processing error:', err);
+      setPhase('error');
+      setStatusMessage('Failed to process file: ' + (err.message || 'Unknown error'));
+      isScanningRef.current = false;
+      return { ok: false, reason: err.message || 'Processing failed' };
+    }
+  }, []);
+
+  // ── Manual Capture ────────────────────────────────────────────────────────
+  // 🏛️ SOVEREIGN FIX: Allow users to force capture when auto-capture doesn't work
+  const captureManually = useCallback(async () => {
+    if (!videoRef.current || !canvasRef.current) {
+      setStatusMessage('Camera not ready. Please wait...');
+      return;
+    }
+    
+    if (isScanningRef.current) {
+
+      return;
+    }
+    
+    try {
+      isScanningRef.current = true;
+      
+      // Clear the analysis loop
+      if (loopRef.current) {
+        clearInterval(loopRef.current);
+        loopRef.current = null;
+      }
+      
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      
+      // Ensure video is playing
+      if (video.paused || video.ended) {
+        await video.play();
+      }
+      
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      setStatusMessage('🔍 Manual capture — processing...');
+      
+      // Use ref to avoid circular dependency
+      await runOCRRef.current?.(canvas);
+    } catch (err) {
+      console.error('[useScanner] Manual capture error:', err);
+      isScanningRef.current = false;
+      setStatusMessage('Capture failed. Please try again.');
+    }
   }, []);
 
   // ── Retry ─────────────────────────────────────────────────────────────────
@@ -379,11 +611,19 @@ const useScanner = () => {
     setProgress(0);
     setLightWarning(false);
     setSharpnessOk(false);
-    startCamera();
-  }, [startCamera]);
+    setError(null);
+    stopCamera();
+    setTimeout(() => startCamera(), 300);
+  }, [startCamera, stopCamera]);
 
   // ── Cleanup ───────────────────────────────────────────────────────────────
   useEffect(() => () => { stopCamera(); }, [stopCamera]);
+
+  // ── Set Error ────────────────────────────────────────────────────────────
+  const setError = useCallback((msg) => {
+    setStatusMessage(msg);
+    if (msg) setPhase('error');
+  }, []);
 
   return {
     phase,
@@ -391,6 +631,7 @@ const useScanner = () => {
     progress,
     ocrResult,
     capturedFrame,
+    capturedFile: null, // Will be set when file is uploaded
     lightWarning,
     sharpnessOk,
     videoRef,
@@ -399,6 +640,9 @@ const useScanner = () => {
     stopCamera,
     retry,
     runOCR,
+    processFile,
+    captureManually,
+    setError,
   };
 };
 

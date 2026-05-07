@@ -3,7 +3,7 @@
 .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(var(--bg-primary-rgb), 0.7);
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
@@ -14,19 +14,19 @@
 
 .modal {
     background: linear-gradient(135deg, rgba(30, 20, 50, 0.98), rgba(42, 27, 71, 0.98));
-    border: 1px solid rgba(139, 92, 246, 0.3);
+    border: 1px solid rgba(var(--primary-rgb), 0.3);
     border-radius: 20px;
     width: 90%;
     max-width: 450px;
     overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 20px 60px rgba(var(--bg-primary-rgb), 0.5);
     animation: slideUp 0.3s ease;
 }
 
 .header {
     padding: 32px 24px 24px;
     text-align: center;
-    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.2);
 }
 
 .icon {
@@ -42,7 +42,7 @@
 
 .subtitle {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(var(--text-primary-rgb), 0.6);
     margin: 0;
     line-height: 1.5;
 }
@@ -58,7 +58,7 @@
     gap: 16px;
     padding: 16px;
     background: rgba(42, 27, 71, 0.6);
-    border: 1px solid rgba(139, 92, 246, 0.3);
+    border: 1px solid rgba(var(--primary-rgb), 0.3);
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -72,9 +72,9 @@
 
 .option:hover:not(:disabled) {
     background: rgba(42, 27, 71, 0.8);
-    border-color: rgba(139, 92, 246, 0.5);
+    border-color: rgba(var(--primary-rgb), 0.5);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.2);
 }
 
 .option:disabled {
@@ -83,12 +83,12 @@
 }
 
 .option.danger {
-    border-color: rgba(239, 68, 68, 0.3);
+    border-color: rgba(var(--error-rgb), 0.3);
 }
 
 .option.danger:hover:not(:disabled) {
-    border-color: rgba(239, 68, 68, 0.5);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+    border-color: rgba(var(--error-rgb), 0.5);
+    box-shadow: 0 4px 12px rgba(var(--error-rgb), 0.2);
 }
 
 .optionIcon {
@@ -96,16 +96,16 @@
     width: 40px;
     height: 40px;
     border-radius: 10px;
-    background: rgba(139, 92, 246, 0.2);
+    background: rgba(var(--primary-rgb), 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #a78bfa;
+    color: var(--primary-light);
 }
 
 .option.danger .optionIcon {
-    background: rgba(239, 68, 68, 0.2);
-    color: #ef4444;
+    background: rgba(var(--error-rgb), 0.2);
+    color: var(--error);
 }
 
 .optionContent {
@@ -121,7 +121,7 @@
 
 .optionDescription {
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(var(--text-primary-rgb), 0.6);
     line-height: 1.4;
 }
 

@@ -21,13 +21,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(var(--bg-primary-rgb), 0.3);
     cursor: pointer;
     transition: opacity 0.2s;
 }
 
 .playOverlay:hover {
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(var(--bg-primary-rgb), 0.4);
 }
 
 .playButton {
@@ -39,7 +39,7 @@
     align-items: center;
     justify-content: center;
     font-size: 24px;
-    color: #ffffff;
+    color: var(--text-primary);
     transition: all 0.2s;
 }
 
@@ -54,14 +54,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(var(--bg-primary-rgb), 0.5);
 }
 
 .spinner {
     width: 40px;
     height: 40px;
-    border: 3px solid rgba(139, 92, 246, 0.2);
-    border-top-color: #9b87f5;
+    border: 3px solid rgba(var(--primary-rgb), 0.2);
+    border-top-color: var(--primary);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -77,7 +77,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+    background: linear-gradient(to top, rgba(var(--bg-primary-rgb), 0.7), transparent);
     padding: var(--space-3);
     opacity: 0;
     transition: opacity 0.2s;
@@ -90,7 +90,7 @@
 .progressBar {
     width: 100%;
     height: 4px;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(var(--text-primary-rgb), 0.3);
     border-radius: 2px;
     cursor: pointer;
     margin-bottom: var(--space-2);
@@ -98,7 +98,7 @@
 
 .progressFill {
     height: 100%;
-    background: #9b87f5;
+    background: var(--primary);
     border-radius: 2px;
     transition: width 0.1s linear;
 }
@@ -113,7 +113,7 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(var(--bg-primary-rgb), 0.5);
     border: none;
     font-size: 16px;
     cursor: pointer;
@@ -124,6 +124,6 @@
 }
 
 .muteBtn:hover {
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(var(--bg-primary-rgb), 0.7);
     transform: scale(1.1);
 }

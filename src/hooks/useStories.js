@@ -22,7 +22,7 @@ export const useStories = (followedUserIds) => {
             }, 5000);
 
             try {
-                console.log('📸 Fetching Flash stories via REST API...');
+
                 if (!cancelled) setLoading(true);
 
                 let storiesData = await fetchStories();
@@ -38,7 +38,7 @@ export const useStories = (followedUserIds) => {
                     );
                 }
 
-                console.log('✅ Stories fetched:', storiesData.length);
+
 
                 const groupedStories = storiesData.reduce((acc, story) => {
                     const userId = story.user_id;

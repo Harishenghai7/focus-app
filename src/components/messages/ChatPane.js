@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ChatHeader from './ChatHeader';
 import MessageList from './MessageList';
 import MessageInputBar from './MessageInputBar';
@@ -46,7 +47,7 @@ const ChatPane = ({
     onBack,
     className = ''
 }) => {
-    console.log('ChatPane mounted', { conversationId, otherUserId, currentUserId });
+
 
     const [replyTo, setReplyTo] = useState(null);
     const [mediaPreview, setMediaPreview] = useState(null);
@@ -103,40 +104,59 @@ const ChatPane = ({
     useEffect(() => {
         if (!conversationId) return; // Guard clause
 
-        console.log('🔍 Checking for pending call in localStorage...');
+
         const pendingCallData = localStorage.getItem('pendingCall');
 
         if (pendingCallData) {
             try {
                 const callData = JSON.parse(pendingCallData);
-                console.log('📞 Found pending call:', callData);
-                console.log(`🔍 Comparing IDs: Call(${callData.conversation_id}) vs Current(${conversationId})`);
+
+
 
                 // Check if this call is for this conversation
                 if (callData.conversation_id === conversationId) {
-                    console.log('✅ Pending call matches this conversation!');
+
 
                     // Clear from localStorage
                     localStorage.removeItem('pendingCall');
 
                     // Answer the call
-                    console.log('📞 Auto-answering call:', callData.id, 'Type:', callData.call_type);
+
                     answerCall(callData.id, callData.call_type);
                 } else {
-                    console.log('⚠️ Pending call is for different conversation');
+
                 }
             } catch (err) {
                 console.error('❌ Error parsing pending call:', err);
                 localStorage.removeItem('pendingCall');
             }
         } else {
-            console.log('ℹ️ No pending call found');
+
         }
     }, [conversationId, answerCall]);
 
+    // Auto-redial from Calls page (?dial=audio|video)
+    const location = useLocation();
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (!conversationId || !otherUserId) return;
+        const params = new URLSearchParams(location.search);
+        const dial = params.get('dial');
+        if (dial !== 'audio' && dial !== 'video') return;
+
+        // Strip query params so a refresh doesn't redial.
+        navigate(location.pathname, { replace: true });
+
+        initiateCall(otherUserId, dial)
+            .then(call => {
+                if (call) focusToast.success(dial === 'video' ? 'Video calling…' : 'Calling…');
+                else focusToast.error('Failed to initiate call');
+            });
+    }, [conversationId, otherUserId, location.search, location.pathname, navigate, initiateCall]);
+
     // Use passed otherUserData as fallback if useChatThread doesn't return data
     const otherUser = fetchedOtherUser || otherUserData;
-    console.log('👤 Using otherUser:', { fetchedOtherUser, otherUserData, final: otherUser });
+
 
     // Early return AFTER all hooks
     if (!conversationId) {
@@ -146,21 +166,16 @@ const ChatPane = ({
 
     // Combine real messages with optimistic messages
     const allMessages = [...messages, ...optimisticMessages];
-    console.log('💬 Messages to display:', {
-        realCount: messages.length,
-        optimisticCount: optimisticMessages.length,
-        totalCount: allMessages.length
-    });
 
     const handleSend = async (contentOrData, options = {}) => {
-        console.log('🚀 handleSend called with:', { contentOrData, options, conversationId });
+
 
         let content = contentOrData;
         let finalOptions = { ...options };
 
         // Handle object from EnhancedMessageInput (which passes { content, replyToId, ... })
         if (typeof contentOrData === 'object' && contentOrData !== null && !options.messageType) {
-            console.log('📦 Detected object payload from EnhancedMessageInput');
+
             content = contentOrData.content;
             finalOptions = {
                 ...finalOptions,
@@ -175,12 +190,12 @@ const ChatPane = ({
                 conversationId,
                 replyTo: finalOptions.replyTo || options.replyTo?.id
             });
-            console.log('✅ handleSend completed successfully:', result);
+
             setReplyTo(null);
 
             // Force refetch messages to update UI immediately
             if (refetch) {
-                console.log('🔄 Refetching messages...');
+
                 await refetch();
                 // Clear optimistic messages after refetch to prevent duplicates
                 clearOptimisticMessages();
@@ -195,12 +210,12 @@ const ChatPane = ({
     };
 
     const handleReply = (message) => {
-        console.log('↩️ handleReply called in ChatPane:', message);
+
         setReplyTo(message);
     };
 
     const handleReact = async (message, emoji) => {
-        console.log('🎭 handleReact called in ChatPane:', { message, emoji });
+
         try {
             // Get existing reactions or initialize empty array
             const existingReactions = message.reactions || [];
@@ -238,22 +253,22 @@ const ChatPane = ({
 
     // v2.0 ADVANCED HANDLERS - Restored
     const handleDelete = (message) => {
-        console.log('🗑️ handleDelete called in ChatPane:', message);
+
         setDeletingMessage(message);
     };
 
     const handleDeleteConfirm = async (forEveryone) => {
-        console.log('🗑️ handleDeleteConfirm called:', { deletingMessage, forEveryone });
+
         if (!deletingMessage) return;
         try {
             if (forEveryone) {
-                console.log('🗑️ Deleting for everyone:', deletingMessage.id);
+
                 await deleteForEveryone(deletingMessage.id);
             } else {
-                console.log('🗑️ Deleting for me:', deletingMessage.id);
+
                 await deleteForMe(deletingMessage.id, currentUserId);
             }
-            console.log('✅ Delete successful');
+
             setDeletingMessage(null);
             refetch?.();
         } catch (error) {
@@ -591,7 +606,7 @@ const ChatPane = ({
                     onLocationClick={() => setShowLocationPicker(true)}
                     onVideoNoteClick={() => setShowVideoRecorder(true)}
                     onEventClick={() => setShowEventCreator(true)}
-                    onStickerClick={() => console.log('Sticker clicked')}
+                    onStickerClick={() => {}}
                     onGifClick={() => setShowGifPicker(true)}
                     isGroup={false}
                 />

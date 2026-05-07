@@ -35,7 +35,7 @@ export const useUpdateSetting = () => {
 
             if (error) throw error;
 
-            console.log(`✅ Setting updated: ${key} = ${value}`);
+
             // Dispatch event to trigger re-fetch in useSettings
             window.dispatchEvent(new CustomEvent('settings-updated'));
             return { success: true };

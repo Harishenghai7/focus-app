@@ -33,7 +33,7 @@
 /* Sent Messages */
 .own .messageBubble {
     background: var(--lavender-gradient);
-    color: #ffffff;
+    color: var(--text-primary);
     border-radius: 16px 16px 4px 16px;
     box-shadow: var(--shadow-md);
     font-weight: 500;
@@ -51,7 +51,7 @@
     border: 1px solid var(--border-subtle);
     color: var(--text-primary);
     border-radius: 16px 16px 16px 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 8px rgba(var(--bg-primary-rgb), 0.3);
 }
 
 .other .messageBubble:hover {
@@ -83,7 +83,7 @@
 }
 
 .own .timestamp {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(var(--text-primary-rgb), 0.7);
 }
 
 .edited {
@@ -95,7 +95,7 @@
 .menuButton {
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(var(--text-primary-rgb), 0.5);
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
@@ -116,12 +116,12 @@
 }
 
 .menuButton:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.9);
+    background: rgba(var(--text-primary-rgb), 0.1);
+    color: rgba(var(--text-primary-rgb), 0.9);
 }
 
 .own .menuButton {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(var(--text-primary-rgb), 0.7);
 }
 
 .other .menuButton {
@@ -162,7 +162,7 @@
     gap: var(--space-2);
     margin-bottom: var(--space-2);
     padding: var(--space-2);
-    background: rgba(0, 0, 0, 0.15);
+    background: rgba(var(--bg-primary-rgb), 0.15);
     border-radius: var(--radius-md);
     border-left: 3px solid currentColor;
 }
@@ -197,7 +197,7 @@
     padding: 12px 16px;
     font-size: 14px;
     font-style: italic;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(var(--text-primary-rgb), 0.5);
     opacity: 0.7;
 }
 
@@ -213,10 +213,10 @@
     gap: 4px;
     font-size: 12px;
     font-style: italic;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(var(--text-primary-rgb), 0.6);
     margin-bottom: 8px;
     padding-bottom: 8px;
-    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.2);
 }
 
 .forwardedLabel svg {
@@ -227,13 +227,13 @@
 /* Message Status */
 .sending {
     font-size: var(--font-xs);
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(var(--text-primary-rgb), 0.5);
     font-style: italic;
 }
 
 .failed {
     font-size: var(--font-xs);
-    color: #ef4444;
+    color: var(--error);
     font-weight: 500;
     cursor: pointer;
 }

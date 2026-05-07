@@ -12,7 +12,7 @@ export const sendPushNotification = async (userId, alert) => {
     try {
         // TODO: Integrate with push notification service
         // For now, just log
-        console.log('Push notification sent:', { userId, alert });
+
 
         return { success: true, method: 'push' };
     } catch (error) {
@@ -54,7 +54,7 @@ export const sendSMSNotification = async (phoneNumber, alert) => {
     try {
         // TODO: Integrate with SMS service (Twilio, etc.)
         // For now, just log
-        console.log('SMS notification sent:', { phoneNumber, alert });
+
 
         return { success: true, method: 'sms' };
     } catch (error) {

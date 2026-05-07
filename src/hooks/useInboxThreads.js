@@ -188,7 +188,7 @@ export const useInboxThreads = (userId) => {
 
         return () => {
             if (channel) {
-                console.log('🔌 Unsubscribing from inbox realtime channel.');
+
                 supabase.removeChannel(channel);
             }
         };

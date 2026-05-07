@@ -44,7 +44,7 @@
 .name {
     font-size: 18px;
     font-weight: 600;
-    color: #f8f7ff;
+    color: var(--text-primary);
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -81,6 +81,6 @@
 
 .actionButton:hover {
     background: rgba(42, 27, 71, 0.9);
-    border-color: #8b5cf6;
-    color: #a78bfa;
+    border-color: var(--primary);
+    color: var(--primary-light);
 }

@@ -52,7 +52,7 @@ export const syncOAuthAvatar = async (userId) => {
                 .update({ avatar_url: user.user_metadata.avatar_url })
                 .eq('id', userId);
 
-            console.log('✅ OAuth avatar synced to profile');
+
         }
     } catch (error) {
         console.error('Avatar sync error:', error);

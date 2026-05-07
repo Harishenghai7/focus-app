@@ -56,14 +56,14 @@
 .title {
     font-size: 16px;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-primary);
     letter-spacing: 0.02em;
 }
 
 .closeBtn {
     background: transparent;
     border: none;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(var(--text-primary-rgb), 0.7);
     cursor: pointer;
     padding: 4px;
     display: flex;
@@ -74,8 +74,8 @@
 }
 
 .closeBtn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
+    background: rgba(var(--text-primary-rgb), 0.1);
+    color: var(--text-primary);
 }
 
 .closeBtn:active {
@@ -93,7 +93,7 @@
 .tab {
     background: transparent;
     border: none;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(var(--text-primary-rgb), 0.6);
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -102,7 +102,7 @@
 }
 
 .tab.active {
-    color: #ffffff;
+    color: var(--text-primary);
     border-bottom: 2px solid;
     border-image: var(--gradient-brand) 1;
 }
@@ -147,13 +147,13 @@
 .emptyTitle {
     font-size: 16px;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-primary);
     margin-bottom: 4px;
 }
 
 .emptyText {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(var(--text-primary-rgb), 0.6);
 }
 
 .inputContainer {
@@ -173,14 +173,14 @@
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-full);
     padding: 10px 16px;
-    color: #ffffff;
+    color: var(--text-primary);
     font-size: 14px;
     outline: none;
     transition: all var(--transition-base);
 }
 
 .input::placeholder {
-    color: rgba(255, 255, 255, 0.35);
+    color: rgba(var(--text-primary-rgb), 0.35);
 }
 
 .input:focus {
@@ -192,7 +192,7 @@
 .postBtn {
     background: transparent;
     border: none;
-    color: #a78bfa;
+    color: var(--primary-light);
     font-size: 14px;
     font-weight: 700;
     cursor: pointer;

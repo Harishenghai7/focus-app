@@ -13,6 +13,33 @@ const DeviceList = ({ userId }) => {
         }
     }, [userId]);
 
+    // 🏛️ SOVEREIGN FIX: Real-time subscription to refresh when devices are added/updated
+    useEffect(() => {
+        if (!userId) return;
+
+        const channel = supabase
+            .channel('device_list_updates')
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'user_devices',
+                filter: `user_id=eq.${userId}`
+            }, () => {
+                fetchDevices();
+            })
+            .subscribe();
+
+        // Also refresh after a short delay to catch any recently-logged devices
+        const delayRefresh = setTimeout(() => {
+            fetchDevices();
+        }, 2000);
+
+        return () => {
+            channel.unsubscribe();
+            clearTimeout(delayRefresh);
+        };
+    }, [userId]);
+
     const fetchDevices = async () => {
         try {
             const { data, error } = await supabase

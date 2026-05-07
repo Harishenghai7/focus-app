@@ -1,88 +1,308 @@
-.container {
+/* ═══════════════════════════════════════════════════════════════════════════
+   SOVEREIGN DETAILS STEP - H2 Royal Lavender Theme
+   With Trending Tag Suggestions
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.sovereignDetails {
     height: 100%;
     display: flex;
     flex-direction: column;
     padding: 24px;
     gap: 18px;
+    overflow-y: auto;
 }
 
 .header h2 {
     margin: 0;
     color: var(--text-primary);
-    font-size: 1.25rem;
+    font-size: 22px;
+    font-weight: 700;
 }
 
 .header p {
     margin: 6px 0 0;
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: 14px;
 }
 
 .formCard {
     flex: 1;
-    background: rgba(126, 87, 194, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(var(--text-primary-rgb), 0.03);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.12);
     backdrop-filter: blur(25px);
-    border-radius: 16px;
-    padding: 18px;
-    display: grid;
-    gap: 14px;
+    -webkit-backdrop-filter: blur(25px);
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .field {
-    display: grid;
-    gap: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.field > span {
-    color: var(--text-secondary);
+.fieldLabel {
+    color: var(--text-muted);
     display: inline-flex;
     align-items: center;
     gap: 8px;
     font-weight: 600;
+    font-size: 14px;
 }
 
-.field textarea,
-.field input {
+.charCount,
+.tagCount {
+    margin-left: auto;
+    color: var(--glass-bg-solid);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.sovereignInput {
     width: 100%;
-    border: 1px solid var(--glass-border);
-    background: var(--glass-surface);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.15);
+    background: rgba(15, 23, 42, 0.6);
     color: var(--text-primary);
-    border-radius: 12px;
-    padding: 12px 14px;
+    border-radius: 14px;
+    padding: 14px 18px;
     outline: none;
-    transition: border-color var(--transition-premium-fast), box-shadow var(--transition-premium-fast);
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    font-size: 15px;
 }
 
-.field textarea:focus,
-.field input:focus {
+.sovereignInput::placeholder {
+    color: var(--glass-bg-solid);
+}
+
+.sovereignInput:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary-dim);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.15), 0 0 20px rgba(var(--primary-rgb), 0.1);
 }
 
-.field small {
-    color: var(--text-faint);
-    font-size: 0.78rem;
+.inputHint {
+    color: var(--glass-bg-solid);
+    font-size: 12px;
+    margin-top: 4px;
 }
 
-.tagsPreview {
+/* ═══════════════════════════════════════════════════════════════════════════
+   PURITY GATE - The Sovereign Guard
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.purityIndicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.purityBlocked {
+    background: rgba(var(--error-rgb), 0.1);
+    border: 1px solid rgba(var(--error-rgb), 0.4);
+    color: var(--error);
+}
+
+.purityWarning {
+    background: rgba(var(--warning-rgb), 0.1);
+    border: 1px solid rgba(var(--warning-rgb), 0.4);
+    color: var(--warning);
+}
+
+.purityClean {
+    background: rgba(var(--success-rgb), 0.08);
+    border: 1px solid rgba(var(--success-rgb), 0.3);
+    color: var(--glass-bg-solid);
+}
+
+.purityText {
+    color: inherit;
+}
+
+.purityScore {
+    margin-left: auto;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.violationCount {
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(var(--error-rgb), 0.2);
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.spinIcon {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.inputToxic {
+    animation: toxicPulse 2s ease-in-out infinite;
+}
+
+.inputWarning {
+    animation: warningPulse 2s ease-in-out infinite;
+}
+
+@keyframes toxicPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(var(--error-rgb), 0.3); }
+    50% { box-shadow: 0 0 30px rgba(var(--error-rgb), 0.5); }
+}
+
+@keyframes warningPulse {
+    0%, 100% { box-shadow: 0 0 15px rgba(var(--warning-rgb), 0.25); }
+    50% { box-shadow: 0 0 25px rgba(var(--warning-rgb), 0.4); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TAG INPUT & SUGGESTIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.tagInputWrapper {
+    position: relative;
+}
+
+.suggestionsPanel {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: rgba(var(--bg-secondary-rgb), 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(var(--primary-rgb), 0.3);
+    border-radius: 14px;
+    padding: 16px;
+    z-index: 100;
+    box-shadow: 0 24px 64px rgba(var(--bg-primary-rgb), 0.6);
+}
+
+.suggestionsHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary-light);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
+
+.suggestionsList {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
 }
 
-.tagsPreview span {
-    padding: 6px 10px;
-    border-radius: 999px;
-    font-size: 0.78rem;
-    color: #e9d5ff;
-    border: 1px solid rgba(167, 139, 250, 0.45);
-    background: rgba(124, 58, 237, 0.16);
+.suggestionChip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: rgba(var(--primary-rgb), 0.1);
+    border: 1px solid rgba(var(--primary-rgb), 0.3);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.suggestionChip:hover:not(:disabled) {
+    background: rgba(var(--primary-rgb), 0.2);
+    border-color: rgba(var(--primary-rgb), 0.5);
+    transform: translateY(-1px);
+}
+
+.suggestionChip:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.suggestionTag {
+    color: var(--primary-light);
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.suggestionCount {
+    color: var(--glass-bg-solid);
+    font-size: 11px;
+}
+
+/* Selected Tags Display */
+.selectedTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 8px;
+}
+
+.selectedTag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    color: var(--primary-light);
+    border: 1px solid rgba(var(--primary-rgb), 0.4);
+    background: rgba(var(--primary-rgb), 0.1);
+    font-weight: 500;
+}
+
+.removeTag {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    background: rgba(var(--primary-rgb), 0.2);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--primary-light);
+    transition: all 0.2s ease;
+}
+
+.removeTag:hover {
+    background: rgba(var(--error-rgb), 0.2);
+    color: var(--error);
 }
 
 .footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding-top: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sovereignDetails {
+        padding: 16px;
+    }
+
+    .formCard {
+        padding: 18px;
+        gap: 16px;
+    }
+
+    .suggestionsPanel {
+        padding: 12px;
+    }
 }
 

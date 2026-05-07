@@ -5,11 +5,11 @@ export const useProfileTabs = (isOwnProfile = false) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const tabFromUrl = searchParams.get('tab') || 'posts';
 
-    // Validate tab - 'saved' only available on own profile
+    // Validate tab - 'saved' and 'flash' only available on own profile
     const getValidTab = useCallback((tab) => {
         const validTabs = isOwnProfile
-            ? ['posts', 'boltz', 'saved', 'tagged']
-            : ['posts', 'boltz', 'tagged'];
+            ? ['posts', 'boltz', 'flash', 'saved', 'tagged']
+            : ['posts', 'boltz', 'flash', 'tagged'];
 
         return validTabs.includes(tab) ? tab : 'posts';
     }, [isOwnProfile]);
@@ -34,7 +34,7 @@ export const useProfileTabs = (isOwnProfile = false) => {
         activeTab,
         changeTab,
         availableTabs: isOwnProfile
-            ? ['posts', 'boltz', 'saved', 'tagged']
-            : ['posts', 'boltz', 'tagged']
+            ? ['posts', 'boltz', 'flash', 'saved', 'tagged']
+            : ['posts', 'boltz', 'flash', 'tagged']
     };
 };

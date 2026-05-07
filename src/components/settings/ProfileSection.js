@@ -56,7 +56,7 @@ const ProfileSection = ({ isExpanded, onToggle }) => {
 
         // Prevent double-submit
         if (loading) {
-            console.log('⚠️ Already saving, ignoring duplicate submit');
+
             return;
         }
 
@@ -65,7 +65,7 @@ const ProfileSection = ({ isExpanded, onToggle }) => {
             try {
                 const isValid = await contentFilterRef.current.validate(`${formData.full_name} ${formData.bio}`);
                 if (!isValid) {
-                    console.log('❌ Content validation failed');
+
                     return;
                 }
             } catch (err) {
@@ -75,7 +75,7 @@ const ProfileSection = ({ isExpanded, onToggle }) => {
         }
 
         setLoading(true);
-        console.log('💾 Saving profile...', formData);
+
 
         // OPTIMISTIC UPDATE: Update localStorage and UI immediately
         const updatedProfile = {
@@ -87,7 +87,7 @@ const ProfileSection = ({ isExpanded, onToggle }) => {
         localStorage.setItem(`profile_${user.id}`, JSON.stringify(updatedProfile));
 
         // Dispatch event IMMEDIATELY to update all components
-        console.log('📢 Broadcasting profile update event (optimistic)...');
+
         window.dispatchEvent(new CustomEvent('profile-updated', {
             detail: updatedProfile
         }));
@@ -97,7 +97,7 @@ const ProfileSection = ({ isExpanded, onToggle }) => {
         setLoading(false);
 
         // Sync to database in background (non-blocking)
-        console.log('🔄 Syncing to database in background...');
+
         supabase
             .from('profiles')
             .upsert({
@@ -114,7 +114,7 @@ const ProfileSection = ({ isExpanded, onToggle }) => {
                     // Don't show error to user since local update succeeded
                     // Just log it for debugging
                 } else {
-                    console.log('✅ Background sync complete:', data);
+
                     // Update localStorage with server response
                     if (data) {
                         localStorage.setItem(`profile_${user.id}`, JSON.stringify(data));
@@ -131,12 +131,12 @@ const ProfileSection = ({ isExpanded, onToggle }) => {
         if (event.target) event.target.value = '';
         if (!file) return;
 
-        console.log('📸 Upload started:', file.name);
+
         setUploading(true);
 
         try {
             const filePath = `${user.id}/${Date.now()}.${file.name.split('.').pop()}`;
-            console.log('📤 Uploading to:', filePath);
+
 
             const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file, { upsert: true });
             if (uploadError) {
@@ -145,7 +145,7 @@ const ProfileSection = ({ isExpanded, onToggle }) => {
             }
 
             const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
-            console.log('✅ Upload complete:', data.publicUrl);
+
 
             const newData = { ...formData, avatar_url: data.publicUrl };
             setFormData(newData);
@@ -158,7 +158,7 @@ const ProfileSection = ({ isExpanded, onToggle }) => {
             console.error('❌ Upload failed:', error);
             toast.error(error.message || 'Upload failed');
         } finally {
-            console.log('🔄 Resetting upload state');
+
             setUploading(false);
         }
     };

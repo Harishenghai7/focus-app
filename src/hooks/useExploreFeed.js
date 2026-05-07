@@ -12,7 +12,7 @@ export const useExploreFeed = (activeTab, searchQuery) => {
 
     // 1. Initial Fetch with Robust Query
     const fetchInitialData = useCallback(async () => {
-        console.log('🔍 Fetching explore data:', { activeTab, searchQuery });
+
         const from = 0;
         const to = ITEMS_PER_PAGE - 1;
 
@@ -53,7 +53,7 @@ export const useExploreFeed = (activeTab, searchQuery) => {
         enabled: true,
         retries: 3,
         onSuccess: (result) => {
-            console.log('✅ Explore data loaded:', result?.length);
+
             setData(result || []);
             setPage(0);
             setHasMore((result || []).length === ITEMS_PER_PAGE);
@@ -69,7 +69,7 @@ export const useExploreFeed = (activeTab, searchQuery) => {
             const nextPage = page + 1;
             const from = nextPage * ITEMS_PER_PAGE;
             const to = from + ITEMS_PER_PAGE - 1;
-            console.log('🔍 Loading more explore page:', nextPage);
+
 
             let attempts = 0;
             let success = false;

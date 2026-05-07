@@ -47,18 +47,18 @@ const ShareModal = ({ item, post: propPost, onClose, type = 'post' }) => {
     useEffect(() => {
         const fetchUsers = async () => {
             if (!showMessageSelector || !user) {
-                console.log('⏭️ Skip fetch:', { showMessageSelector, hasUser: !!user });
+
                 return;
             }
 
             try {
                 setLoading(true);
-                console.log('🔍 START: Fetching users...', { searchQuery, userId: user.id });
 
-                console.log('📡 Using direct REST API...');
+
+
                 const { data, error } = await fetchUsersDirectly(user.id, searchQuery);
 
-                console.log('📬 Query response:', { hasData: !!data, hasError: !!error, dataLength: data?.length, data });
+
 
                 if (error) {
                     console.error('❌ Query error:', error);
@@ -68,7 +68,7 @@ const ShareModal = ({ item, post: propPost, onClose, type = 'post' }) => {
                     return;
                 }
 
-                console.log('✅ SUCCESS: Got users:', data?.length || 0, data);
+
                 setUsers(data || []);
 
             } catch (error) {
@@ -77,7 +77,7 @@ const ShareModal = ({ item, post: propPost, onClose, type = 'post' }) => {
                 setUsers([]);
             } finally {
                 setLoading(false);
-                console.log('🏁 DONE: Fetch complete');
+
             }
         };
 
@@ -95,7 +95,7 @@ const ShareModal = ({ item, post: propPost, onClose, type = 'post' }) => {
                 return;
             }
 
-            console.log('📖 START: Sharing to Flash...', { postId: post.id, post });
+
 
             // Get media path - check ALL possible sources
             const mediaPath = post.media_url ||           // Standard posts
@@ -106,7 +106,7 @@ const ShareModal = ({ item, post: propPost, onClose, type = 'post' }) => {
                 post.thumbnail_url ||        // Fallback to thumbnail
                 (post.media && post.media.length > 0 ? post.media[0] : null);
 
-            console.log('🎬 Media path found:', mediaPath);
+
 
             if (!mediaPath) {
                 console.error('❌ No media found in post:', post);
@@ -120,7 +120,7 @@ const ShareModal = ({ item, post: propPost, onClose, type = 'post' }) => {
                 post.media_types?.[0] ||
                 'image';
 
-            console.log('📝 Inserting flash via direct REST API...');
+
 
             const { data: flashData, error } = await insertFlashDirectly(
                 user.id,
@@ -128,7 +128,7 @@ const ShareModal = ({ item, post: propPost, onClose, type = 'post' }) => {
                 mediaType
             );
 
-            console.log('📬 Response:', { flashData, error });
+
 
             if (error) {
                 console.error('❌ Flash creation error:', error);
@@ -136,11 +136,11 @@ const ShareModal = ({ item, post: propPost, onClose, type = 'post' }) => {
                 throw error;
             }
 
-            console.log('✅ Flash created:', flashData);
+
 
             await trackShare('flash');
 
-            console.log('✅ SUCCESS: Shared to Flash!');
+
             toast.success('Shared to your Flash!', {
                 autoClose: 2000,
                 icon: '⚡'
@@ -161,7 +161,7 @@ const ShareModal = ({ item, post: propPost, onClose, type = 'post' }) => {
         }
 
         try {
-            console.log('📤 Sending messages to:', selectedUsers);
+
 
             for (const userId of selectedUsers) {
                 // Create a new conversation
@@ -173,10 +173,10 @@ const ShareModal = ({ item, post: propPost, onClose, type = 'post' }) => {
                 }
 
                 const conversationId = newConv.id;
-                console.log('✅ Conversation created:', conversationId);
+
 
                 // Add participants to conversation_participants table
-                console.log('👥 Adding participants to conversation...');
+
                 try {
                     const participantsUrl = `${supabaseUrl}/rest/v1/conversation_participants`;
 
@@ -198,7 +198,7 @@ const ShareModal = ({ item, post: propPost, onClose, type = 'post' }) => {
                         const errorText = await participantsResponse.text();
                         console.error('❌ Failed to add participants:', errorText);
                     } else {
-                        console.log('✅ Participants added successfully');
+
                     }
                 } catch (partError) {
                     console.error('❌ Participants error:', partError);
@@ -216,7 +216,7 @@ const ShareModal = ({ item, post: propPost, onClose, type = 'post' }) => {
                     throw msgError;
                 }
 
-                console.log('✅ Message sent to:', userId);
+
             }
 
             await trackShare('message');

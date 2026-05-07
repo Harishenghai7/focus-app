@@ -1,7 +1,11 @@
+/* ==========================================================
+   ProfileBio — Sovereign Mirror Satin Typography
+   ========================================================== */
+
 .bioSection {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
+    gap: var(--space-3);
 }
 
 .fullName {
@@ -9,8 +13,10 @@
     font-weight: var(--font-semibold);
     color: var(--text-primary);
     margin: 0;
+    letter-spacing: -0.01em;
 }
 
+/* Satin Typography for Bio */
 .bio {
     font-size: var(--font-sm);
     color: var(--text-secondary);
@@ -18,47 +24,103 @@
     white-space: pre-wrap;
     word-wrap: break-word;
     margin: 0;
+    font-weight: var(--font-normal);
+    letter-spacing: 0.01em;
+    text-shadow: 0 1px 1px rgba(var(--bg-primary-rgb), 0.1);
 }
 
+/* Enhanced links with Royal Lavender accents */
 .bio .link {
     color: var(--primary-lavender);
     text-decoration: none;
     font-weight: var(--font-medium);
-    transition: color 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+    padding: 0 2px;
+    border-radius: 3px;
+}
+
+.bio .link::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--primary-lavender), transparent);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
 }
 
 .bio .link:hover {
-    color: var(--primary-lavender-light);
-    text-decoration: underline;
+    color: var(--primary-light);
+    background: rgba(var(--primary-rgb), 0.1);
 }
 
-.website,
-.location {
-    display: flex;
+.bio .link:hover::after {
+    transform: scaleX(1);
+}
+
+.bio .link:active {
+    transform: scale(0.98);
+}
+
+/* Website Link with Satin Glow */
+.website {
+    display: inline-flex;
     align-items: center;
     gap: var(--space-2);
     font-size: var(--font-sm);
     color: var(--text-secondary);
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-md);
+    background: rgba(var(--text-primary-rgb), 0.02);
+    border: 1px solid transparent;
+    max-width: fit-content;
 }
 
 .website:hover {
     color: var(--primary-lavender);
+    background: rgba(var(--primary-rgb), 0.08);
+    border-color: rgba(var(--primary-rgb), 0.2);
+    box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.1);
 }
 
-.website span,
+.website span {
+    color: inherit;
+    font-weight: var(--font-medium);
+}
+
+/* Location with subtle styling */
+.location {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--font-sm);
+    color: var(--text-muted);
+    padding: var(--space-1) 0;
+}
+
 .location span {
     color: inherit;
+    font-weight: var(--font-normal);
 }
 
+/* Mobile Centering */
 @media (max-width: 768px) {
     .bioSection {
         text-align: center;
+        align-items: center;
     }
 
     .website,
     .location {
         justify-content: center;
+    }
+    
+    .bio {
+        max-width: 100%;
     }
 }

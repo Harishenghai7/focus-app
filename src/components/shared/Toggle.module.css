@@ -71,7 +71,7 @@
     background: var(--text-primary);
     border-radius: 50%;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 4px rgba(var(--bg-primary-rgb), 0.2);
 }
 
 .toggle.checked .toggleThumb {

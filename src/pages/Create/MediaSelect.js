@@ -10,22 +10,25 @@ const MediaSelect = ({ mode, onNext, onBack }) => {
 
     const handleSelect = (files) => {
         // Process files to add IDs and preview URLs
-        const newFiles = Array.from(files).map(file => ({
-            file,
-            preview: URL.createObjectURL(file),
-            id: Math.random().toString(36).substr(2, 9),
-            type: file.type.startsWith('video') ? 'video' : 'image',
-            edits: {
-                filter: 'none',
-                brightness: 100,
-                contrast: 100,
-                saturation: 100,
-                rotation: 0,
-                crop: { x: 0, y: 0 },
-                zoom: 1,
-                trim: [0, 0]
-            }
-        }));
+        const newFiles = Array.from(files).map(file => {
+            if (!file) return null;
+            return {
+                file,
+                preview: URL.createObjectURL(file),
+                id: Math.random().toString(36).substr(2, 9),
+                type: file?.type?.startsWith('video') ? 'video' : 'image',
+                edits: {
+                    filter: 'none',
+                    brightness: 100,
+                    contrast: 100,
+                    saturation: 100,
+                    rotation: 0,
+                    crop: { x: 0, y: 0 },
+                    zoom: 1,
+                    trim: [0, 0]
+                }
+            };
+        }).filter(f => f != null);
 
         setSelectedFiles(prev => [...prev, ...newFiles]);
     };

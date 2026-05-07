@@ -8,7 +8,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(var(--bg-primary-rgb), 0.8);
     backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
@@ -63,7 +63,7 @@
 .header h2 {
     font-size: 24px;
     font-weight: 700;
-    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin: 0;
@@ -85,7 +85,7 @@
 
 .closeButton:hover {
     background: rgba(42, 27, 71, 0.9);
-    color: #f8f7ff;
+    color: var(--text-primary);
 }
 
 .previewArea {
@@ -116,7 +116,7 @@
 
 .selectButton {
     padding: 12px 32px;
-    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
     border: none;
     border-radius: 24px;
     color: white;
@@ -167,7 +167,7 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(var(--bg-primary-rgb), 0.7);
     border: none;
     color: white;
     cursor: pointer;
@@ -178,14 +178,14 @@
 }
 
 .removeButton:hover {
-    background: rgba(239, 68, 68, 0.9);
+    background: rgba(var(--error-rgb), 0.9);
 }
 
 .fileSize {
     position: absolute;
     bottom: 8px;
     left: 8px;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(var(--bg-primary-rgb), 0.7);
     padding: 4px 8px;
     border-radius: 8px;
     font-size: 11px;
@@ -208,9 +208,9 @@
 }
 
 .addMoreButton:hover {
-    border-color: #8b5cf6;
+    border-color: var(--primary);
     background: rgba(42, 27, 71, 0.6);
-    color: #a78bfa;
+    color: var(--primary-light);
 }
 
 .addMoreButton span {
@@ -229,7 +229,7 @@
     background: rgba(42, 27, 71, 0.6);
     border: 1px solid rgba(167, 139, 250, 0.25);
     border-radius: 12px;
-    color: #f8f7ff;
+    color: var(--text-primary);
     font-size: 15px;
     transition: all 0.3s ease;
 }
@@ -240,8 +240,8 @@
 
 .captionInput:focus {
     outline: none;
-    border-color: #8b5cf6;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.15);
 }
 
 .progressBar {
@@ -252,7 +252,7 @@
 
 .progressFill {
     height: 100%;
-    background: linear-gradient(90deg, #a78bfa, #8b5cf6);
+    background: linear-gradient(90deg, var(--primary-light), var(--primary));
     transition: width 0.3s ease;
 }
 
@@ -278,7 +278,7 @@
 
 .cancelButton:hover:not(:disabled) {
     background: rgba(42, 27, 71, 0.9);
-    border-color: #8b5cf6;
+    border-color: var(--primary);
 }
 
 .cancelButton:disabled {
@@ -288,7 +288,7 @@
 
 .sendButton {
     padding: 12px 32px;
-    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
     border: none;
     border-radius: 12px;
     color: white;

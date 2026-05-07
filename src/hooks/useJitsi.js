@@ -10,7 +10,7 @@ export const useJitsi = () => {
 
     // Start a Jitsi call
     const startJitsiCall = useCallback((roomName, displayName, audioOnly = true) => {
-        console.log('🎥 Starting Jitsi call...', { roomName, displayName, audioOnly });
+
 
         // Jitsi configuration
         const domain = 'meet.jit.si'; // Free public Jitsi server
@@ -56,26 +56,26 @@ export const useJitsi = () => {
         script.src = 'https://meet.jit.si/external_api.js';
         script.async = true;
         script.onload = () => {
-            console.log('✅ Jitsi API loaded');
+
 
             // Initialize Jitsi
             const api = new window.JitsiMeetExternalAPI(domain, options);
 
             // Event listeners
             api.addEventListener('videoConferenceJoined', () => {
-                console.log('✅ Joined Jitsi call');
+
                 setIsInCall(true);
             });
 
             api.addEventListener('videoConferenceLeft', () => {
-                console.log('📴 Left Jitsi call');
+
                 setIsInCall(false);
                 api.dispose();
                 setJitsiApi(null);
             });
 
             api.addEventListener('readyToClose', () => {
-                console.log('🚪 Jitsi ready to close');
+
                 api.dispose();
                 setJitsiApi(null);
                 setIsInCall(false);
@@ -89,7 +89,7 @@ export const useJitsi = () => {
 
     // End the call
     const endJitsiCall = useCallback(() => {
-        console.log('📴 Ending Jitsi call...');
+
 
         if (jitsiApi) {
             jitsiApi.executeCommand('hangup');

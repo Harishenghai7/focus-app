@@ -5,16 +5,16 @@
     align-items: center;
     gap: 4px;
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(var(--text-primary-rgb), 0.6);
     margin-top: 2px;
 }
 
 .label {
-    color: #a78bfa;
+    color: var(--primary-light);
     font-weight: 600;
 }
 
 .text {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(var(--text-primary-rgb), 0.7);
     font-style: italic;
 }

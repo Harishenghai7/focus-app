@@ -17,7 +17,7 @@ const FollowersModal = ({ isOpen, onClose, userId, isOwnProfile }) => {
     const { toggleFollow } = useFollow();
     const [actionLoading, setActionLoading] = useState({});
 
-    console.log('[FollowersModal] followers:', followers, 'loading:', loading, 'searchQuery:', searchQuery);
+
 
     const handleFollowToggle = async (follower) => {
         setActionLoading(prev => ({ ...prev, [follower.id]: true }));

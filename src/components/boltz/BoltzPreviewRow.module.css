@@ -14,13 +14,13 @@
 .title {
     font-size: var(--font-sm, 0.875rem);
     font-weight: var(--font-semibold, 600);
-    color: var(--text-primary, #f8f7ff);
+    color: var(--text-primary, var(--text-primary));
     letter-spacing: 0.02em;
 }
 
 .seeAll {
     font-size: var(--font-xs, 0.75rem);
-    color: var(--neon-lavender, #c4b5fd);
+    color: var(--neon-lavender, var(--primary-light));
     text-decoration: none;
     font-weight: var(--font-medium, 500);
 }
@@ -57,8 +57,8 @@
     overflow: hidden;
     position: relative;
     scroll-snap-align: start;
-    background: var(--glass-surface, rgba(255, 255, 255, 0.06));
-    border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.08));
+    background: var(--glass-surface, rgba(var(--text-primary-rgb), 0.06));
+    border: 1px solid var(--glass-border, rgba(var(--text-primary-rgb), 0.08));
     text-decoration: none;
     color: inherit;
     aspect-ratio: 9 / 16;
@@ -67,7 +67,7 @@
 
 .tile:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 8px 24px rgba(var(--bg-primary-rgb), 0.35);
 }
 
 .thumb {
@@ -90,10 +90,10 @@
     align-items: center;
     justify-content: center;
     font-size: 0.75rem;
-    color: #ddd6fe;
+    color: var(--text-primary);
     background: rgba(124, 58, 237, 0.12);
     backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.12);
     text-align: center;
     padding: var(--space-2, 0.5rem);
 }
@@ -104,10 +104,10 @@
     right: 0;
     bottom: 0;
     padding: var(--space-2, 0.5rem);
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+    background: linear-gradient(transparent, rgba(var(--bg-primary-rgb), 0.85));
     font-size: 0.65rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -120,9 +120,9 @@
     border-radius: var(--radius-lg, 12px);
     background: linear-gradient(
         90deg,
-        rgba(255, 255, 255, 0.06) 0%,
-        rgba(255, 255, 255, 0.12) 50%,
-        rgba(255, 255, 255, 0.06) 100%
+        rgba(var(--text-primary-rgb), 0.06) 0%,
+        rgba(var(--text-primary-rgb), 0.12) 50%,
+        rgba(var(--text-primary-rgb), 0.06) 100%
     );
     background-size: 200% 100%;
     animation: shimmer 1.2s ease-in-out infinite;

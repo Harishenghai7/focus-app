@@ -10,14 +10,14 @@
 }
 
 .title {
-    color: #8B5CF6;
+    color: var(--primary);
     font-size: 26px;
     font-weight: 700;
     margin-bottom: 8px;
 }
 
 .subtitle {
-    color: #6B7280;
+    color: var(--text-muted);
     font-size: 15px;
 }
 
@@ -31,13 +31,13 @@
 .selectionCount {
     text-align: center;
     font-size: 15px;
-    color: #374151;
+    color: var(--text-muted);
     font-weight: 500;
     margin: 10px 0;
 }
 
 .hint {
-    color: #9CA3AF;
+    color: var(--text-muted);
     font-size: 14px;
     font-weight: 400;
 }
@@ -53,10 +53,7 @@
 }
 
 .progressInfo {
-    text-align: center;
-    margin-top: 16px;
-    color: #9CA3AF;
-    font-size: 14px;
+    display: none;
 }
 
 @media (max-width: 768px) {

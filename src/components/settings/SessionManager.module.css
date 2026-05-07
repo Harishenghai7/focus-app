@@ -36,12 +36,12 @@
 .identityName {
     font-size: 1rem;
     font-weight: 700;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary, var(--text-primary));
 }
 
 .identityHandle {
     font-size: 0.83rem;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
 }
 
 .oauthBadge {
@@ -50,7 +50,7 @@
     gap: 4px;
     font-size: 0.72rem;
     font-weight: 600;
-    color: #22c55e;
+    color: var(--success);
     background: rgba(34, 197, 94, 0.1);
     border: 1px solid rgba(34, 197, 94, 0.2);
     border-radius: var(--radius-full, 999px);
@@ -68,7 +68,7 @@
 .sectionLabel {
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
     text-transform: uppercase;
     letter-spacing: 0.08em;
     margin: 0;
@@ -91,7 +91,7 @@
     transform: translateX(4px);
     border-color: var(--primary-dim);
     background: var(--glass-surface-hover);
-    box-shadow: -4px 4px 16px rgba(139, 92, 246, 0.08);
+    box-shadow: -4px 4px 16px rgba(var(--primary-rgb), 0.08);
 }
 
 .sessionIcon { font-size: 20px; flex-shrink: 0; }
@@ -106,16 +106,16 @@
 .sessionProvider {
     font-size: 0.87rem;
     font-weight: 600;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary, var(--text-primary));
     text-transform: capitalize;
 }
 
-.sessionDate { font-size: 0.75rem; color: var(--text-muted, #a78bfa); }
+.sessionDate { font-size: 0.75rem; color: var(--text-muted, var(--primary-light)); }
 
 .sessionActive {
     font-size: 0.72rem;
     font-weight: 600;
-    color: #22c55e;
+    color: var(--success);
     background: rgba(34, 197, 94, 0.12);
     padding: 2px 8px;
     border-radius: var(--radius-full, 999px);
@@ -144,7 +144,7 @@
     background: var(--glass-surface-hover);
     border-color: var(--primary-dim); 
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.15);
 }
 
 .signOutAllBtn {
@@ -152,10 +152,10 @@
     align-items: center;
     gap: 10px;
     padding: 14px 20px;
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.2);
+    background: rgba(var(--error-rgb), 0.1);
+    border: 1px solid rgba(var(--error-rgb), 0.2);
     border-radius: var(--radius-full);
-    color: #ef4444;
+    color: var(--error);
     font-size: var(--font-base);
     font-weight: 700;
     cursor: pointer;
@@ -165,17 +165,17 @@
     backdrop-filter: var(--blur-md);
 }
 .signOutAllBtn:hover:not(:disabled) { 
-    background: rgba(239, 68, 68, 0.15); 
-    border-color: rgba(239, 68, 68, 0.4); 
+    background: rgba(var(--error-rgb), 0.15); 
+    border-color: rgba(var(--error-rgb), 0.4); 
     transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
+    box-shadow: 0 4px 16px rgba(var(--error-rgb), 0.2);
 }
 .signOutAllBtn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
 .signOutAllBtn.confirmState {
-    background: rgba(239, 68, 68, 0.2);
-    border-color: rgba(239, 68, 68, 0.6);
-    color: #fca5a5;
+    background: rgba(var(--error-rgb), 0.2);
+    border-color: rgba(var(--error-rgb), 0.6);
+    color: var(--error);
     font-size: 0.82rem;
     animation: shakePulse 0.4s ease;
 }
@@ -189,7 +189,7 @@
 .cancelBtn {
     background: none;
     border: none;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
     font-size: 0.83rem;
     cursor: pointer;
     font-family: inherit;
@@ -197,15 +197,15 @@
     text-decoration: underline;
     align-self: center;
 }
-.cancelBtn:hover { color: var(--text-secondary, #e9d5ff); }
+.cancelBtn:hover { color: var(--text-secondary, var(--primary-light)); }
 
 .securityNote {
     font-size: 0.75rem;
-    color: var(--text-muted, #a78bfa);
+    color: var(--text-muted, var(--primary-light));
     margin: 0;
     padding: 12px;
-    background: rgba(139, 92, 246, 0.06);
+    background: rgba(var(--primary-rgb), 0.06);
     border-radius: var(--radius-sm, 8px);
-    border-left: 2px solid var(--royal-purple, #8b5cf6);
+    border-left: 2px solid var(--royal-purple, var(--primary));
     line-height: 1.5;
 }

@@ -91,7 +91,7 @@ export const useRealtimeMessages = (conversationId, currentUserId) => {
                     filter: `conversation_id=eq.${conversationId}`
                 },
                 async (payload) => {
-                    console.log('📨 New message received:', payload.new);
+
 
                     // Fetch full message with relations
                     const { data } = await supabase
@@ -133,7 +133,7 @@ export const useRealtimeMessages = (conversationId, currentUserId) => {
                     filter: `conversation_id=eq.${conversationId}`
                 },
                 (payload) => {
-                    console.log('📝 Message updated:', payload.new);
+
                     setMessages(prev => prev.map(msg =>
                         msg.id === payload.new.id ? { ...msg, ...payload.new } : msg
                     ));
@@ -148,7 +148,7 @@ export const useRealtimeMessages = (conversationId, currentUserId) => {
                     filter: `conversation_id=eq.${conversationId}`
                 },
                 (payload) => {
-                    console.log('🗑️ Message deleted:', payload.old);
+
                     setMessages(prev => prev.filter(msg => msg.id !== payload.old.id));
                 }
             )

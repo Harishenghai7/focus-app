@@ -33,12 +33,10 @@
 }
 
 .btn-primary:hover:not(:disabled) {
-    transform: scale(1.02);
     box-shadow: var(--glow-purple);
 }
 
 .btn-primary:active:not(:disabled) {
-    transform: scale(0.98);
 }
 
 /* SECONDARY VARIANT */
@@ -49,12 +47,11 @@
 }
 
 .btn-secondary:hover:not(:disabled) {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(var(--primary-rgb), 0.1);
     border-color: var(--border-strong);
 }
 
 .btn-secondary:active:not(:disabled) {
-    transform: scale(0.98);
 }
 
 /* OUTLINE VARIANT */
@@ -65,7 +62,7 @@
 }
 
 .btn-outline:hover:not(:disabled) {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(var(--primary-rgb), 0.1);
     border-color: var(--royal-purple);
 }
 
@@ -76,19 +73,19 @@
 }
 
 .btn-ghost:hover:not(:disabled) {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(var(--primary-rgb), 0.1);
     color: var(--royal-purple);
 }
 
 /* DANGER VARIANT */
 .btn-danger {
-    background: #ef4444;
+    background: var(--error);
     color: var(--text-primary);
 }
 
 .btn-danger:hover:not(:disabled) {
-    background: #dc2626;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    background: var(--error);
+    box-shadow: 0 4px 12px rgba(var(--error-rgb), 0.4);
 }
 
 /* ICON BUTTON */
@@ -102,12 +99,10 @@
 }
 
 .btn-icon:hover:not(:disabled) {
-    background: rgba(139, 92, 246, 0.1);
-    transform: scale(1.1);
+    background: rgba(var(--primary-rgb), 0.1);
 }
 
 .btn-icon:active:not(:disabled) {
-    transform: scale(0.95);
 }
 
 /* SIZES */
@@ -143,7 +138,7 @@
 .loader {
     width: 16px;
     height: 16px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(var(--text-primary-rgb), 0.3);
     border-radius: var(--radius-full);
     border-top-color: var(--text-primary);
     animation: spin 1s ease-in-out infinite;

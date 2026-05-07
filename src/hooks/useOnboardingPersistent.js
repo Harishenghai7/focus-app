@@ -85,7 +85,7 @@ const useOnboardingPersistent = () => {
                         if (dbStep >= 1 && dbStep <= TOTAL_STEPS) {
                             setCurrentStep(dbStep);
                             localStorage.setItem(VERIFICATION_STEP_KEY, dbStep.toString());
-                            console.log('[Onboarding] 🔒 LOCKED to verification_step:', dbStep, '(from Supabase)');
+
                             setIsRestored(true);
                             hasLoadedRef.current = true;
                             return; // Exit early - database wins
@@ -102,7 +102,7 @@ const useOnboardingPersistent = () => {
                     const vStep = parseInt(savedVerificationStep, 10);
                     if (vStep >= 1 && vStep <= TOTAL_STEPS) {
                         setCurrentStep(vStep);
-                        console.log('[Onboarding] 🔒 LOCKED to verification_step:', vStep, '(from localStorage)');
+
                     }
                 } else if (savedState && savedTimestamp) {
                     const timestamp = parseInt(savedTimestamp, 10);
@@ -120,7 +120,7 @@ const useOnboardingPersistent = () => {
                                 avatarFile: null,
                             }));
                         }
-                        console.log('[Onboarding] Restored from localStorage at step', parsed.currentStep);
+
                     } else {
                         localStorage.removeItem(STORAGE_KEY);
                         localStorage.removeItem(TIMESTAMP_KEY);
@@ -180,7 +180,7 @@ const useOnboardingPersistent = () => {
             if (error) {
                 console.warn('[Onboarding] Failed to sync verification_step:', error);
             } else {
-                console.log('[Onboarding] 🔒 verification_step synced to Supabase:', currentStep);
+
             }
         }).catch(() => {});
     }, [currentStep, user?.id, formData.trustShieldStatus]);
@@ -224,7 +224,7 @@ const useOnboardingPersistent = () => {
                 return;
             }
             
-            console.log('[Onboarding] ✅ Trust Shield verification confirmed - proceeding to Step 6');
+
         }
         
         if (currentStep < TOTAL_STEPS) {
@@ -248,7 +248,7 @@ const useOnboardingPersistent = () => {
         setFormData({ ...DEFAULT_FORM_DATA });
         localStorage.removeItem(STORAGE_KEY);
         localStorage.removeItem(TIMESTAMP_KEY);
-        console.log('[Onboarding] Reset to step 1');
+
     }, []);
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -283,7 +283,7 @@ const useOnboardingPersistent = () => {
                     // If database shows higher step than local, use database
                     if (dbStep > currentStep) {
                         setCurrentStep(dbStep);
-                        console.log('[Onboarding] 🔒 LOCKED to database step:', dbStep);
+
                         return;
                     }
                     // If trying to go below database step, block
@@ -333,7 +333,7 @@ const useOnboardingPersistent = () => {
             return;
         }
         
-        console.log('[Onboarding] 🛡️ All Trust Shield guards passed - proceeding with account creation');
+
         
         setIsSubmitting(true);
         setError(null);
@@ -412,7 +412,7 @@ const useOnboardingPersistent = () => {
                         await Promise.race([savePromise, timeoutPromise]);
                         
                         // Success - break out of retry loop
-                        console.log(`[Onboarding] Save succeeded on attempt ${i + 1}`);
+
                         return true;
                         
                     } catch (err) {
@@ -507,7 +507,7 @@ const useOnboardingPersistent = () => {
             localStorage.removeItem(STORAGE_KEY);
             localStorage.removeItem(TIMESTAMP_KEY);
 
-            console.log('[Onboarding] Complete! Navigating to home...');
+
             setIsSubmitting(false);
             
             // Use replace to prevent going back to onboarding
@@ -518,7 +518,7 @@ const useOnboardingPersistent = () => {
             
             // If we haven't exceeded max attempts, retry
             if (attempt < maxAttempts) {
-                console.log(`[Onboarding] Retrying... attempt ${attempt + 1}/${maxAttempts}`);
+
                 setError(`Save failed. Retrying... (${attempt}/${maxAttempts})`);
                 
                 setTimeout(() => {

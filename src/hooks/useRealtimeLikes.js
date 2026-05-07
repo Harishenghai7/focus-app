@@ -25,7 +25,7 @@ export const useRealtimeLikes = (postId) => {
                     filter: `post_id=eq.${postId}`,
                 },
                 (payload) => {
-                    console.log('Real-time like update:', payload);
+
 
                     // Invalidate posts query to refetch
                     queryClient.invalidateQueries({ queryKey: ['posts'] });

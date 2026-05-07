@@ -34,13 +34,13 @@ const MessageActions = ({
     useClickOutside(emojiRef, () => setShowEmojiPicker(false));
 
     const handleReact = (emoji) => {
-        console.log('🎭 handleReact called:', emoji, message);
+
         onReact(message, emoji);
         setShowEmojiPicker(false);
     };
 
     const handleCopy = () => {
-        console.log('📋 handleCopy called:', message.content);
+
         if (message.content) {
             navigator.clipboard.writeText(message.content);
             setShowMenu(false);
@@ -48,7 +48,7 @@ const MessageActions = ({
     };
 
     const handleDelete = () => {
-        console.log('🗑️ handleDelete called:', message);
+
         onDelete(message);
         setShowMenu(false);
     };
@@ -88,7 +88,7 @@ const MessageActions = ({
                 <button
                     className={styles.actionBtn}
                     onClick={() => {
-                        console.log('↩️ Reply button clicked:', message);
+
                         onReply(message);
                     }}
                     title="Reply"

@@ -21,7 +21,7 @@ const FOCUSLY_SYSTEM_PROMPT = `You are Focusly, an energetic and friendly AI com
  */
 export const generateResponse = async (userMessage, conversationHistory = [], context = {}) => {
     try {
-        console.log('🤖 Sending request to Gemini Proxy...');
+
 
         const response = await fetch(`${PROXY_URL}/api/chat/simple`, {
             method: 'POST',
@@ -40,7 +40,7 @@ export const generateResponse = async (userMessage, conversationHistory = [], co
         }
 
         const data = await response.json();
-        console.log('✅ Received response from Gemini');
+
         return data.response || getSmartFallback(userMessage);
 
     } catch (error) {
@@ -61,7 +61,7 @@ export const generateResponse = async (userMessage, conversationHistory = [], co
  */
 export const generateStreamingResponse = async (userMessage, conversationHistory = [], context = {}, onChunk) => {
     try {
-        console.log('🤖 Sending streaming request to Gemini Proxy...');
+
 
         const response = await fetch(`${PROXY_URL}/api/chat`, {
             method: 'POST',
@@ -96,7 +96,7 @@ export const generateStreamingResponse = async (userMessage, conversationHistory
                     const data = line.slice(6);
 
                     if (data === '[DONE]') {
-                        console.log('✅ Streaming response complete');
+
                         return fullText.trim();
                     }
 

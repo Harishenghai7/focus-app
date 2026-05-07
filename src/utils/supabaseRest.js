@@ -23,7 +23,7 @@ export const getAuthToken = async () => {
                     // Check if token is still valid
                     const expiresAt = new Date(session.expires_at * 1000);
                     if (expiresAt > new Date()) {
-                        console.log('✅ Using cached access token');
+
                         return session.access_token;
                     }
                 }
@@ -40,7 +40,7 @@ export const getAuthToken = async () => {
             return SUPABASE_ANON_KEY;
         }
 
-        console.log('✅ Using fresh access token');
+
         return session.access_token;
     } catch (err) {
         console.warn('⚠️ Auth error, using anon key:', err.message);
@@ -146,7 +146,12 @@ export const fetchStories = async (options = {}) => {
     const buildBase = () => {
         let q = supabase
             .from('flash')
-            .select('*, profiles(*)')
+            .select(`
+                *,
+                profiles:user_id (
+                    id, username, full_name, avatar_url, is_verified, trust_tier
+                )
+            `)
             .gte('created_at', twentyFourHoursAgo)
             .order('created_at', { ascending: false });
         if (userId) q = q.eq('user_id', userId);
@@ -169,7 +174,14 @@ export const fetchStories = async (options = {}) => {
         const prof = Array.isArray(raw) ? raw[0] : raw;
         return {
             ...item,
-            user: prof || null,
+            user: prof ? {
+                id: prof.id,
+                username: prof.username,
+                full_name: prof.full_name,
+                avatar_url: prof.avatar_url,
+                is_verified: prof.is_verified,
+                trust_tier: prof.trust_tier,
+            } : null,
         };
     });
 };
@@ -376,7 +388,7 @@ export const unsavePost = async (postId, userId) => {
  * Save a boltz
  */
 export const saveBoltz = async (boltzId, userId) => {
-    const endpoint = `/saved_boltz`;
+    const endpoint = `/boltz_saves`;
     return supabaseFetch(endpoint, {
         method: 'POST',
         body: JSON.stringify({
@@ -391,7 +403,7 @@ export const saveBoltz = async (boltzId, userId) => {
  * Unsave a boltz
  */
 export const unsaveBoltz = async (boltzId, userId) => {
-    const endpoint = `/saved_boltz?boltz_id=eq.${boltzId}&user_id=eq.${userId}`;
+    const endpoint = `/boltz_saves?boltz_id=eq.${boltzId}&user_id=eq.${userId}`;
     return supabaseFetch(endpoint, {
         method: 'DELETE'
     });

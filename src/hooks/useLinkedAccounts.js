@@ -30,7 +30,7 @@ export const useLinkedAccounts = () => {
                 table: 'linked_accounts',
                 filter: `user_id=eq.${user.id}`
             }, (payload) => {
-                console.log('🔗 Linked accounts updated:', payload);
+
                 fetchLinkedAccounts();
             })
             .subscribe();
@@ -43,7 +43,7 @@ export const useLinkedAccounts = () => {
     const fetchLinkedAccounts = async () => {
         try {
             setLoading(true);
-            console.log('🔗 Fetching linked accounts...');
+
 
             const { data, error: fetchError } = await supabase
                 .from('linked_accounts')
@@ -53,7 +53,7 @@ export const useLinkedAccounts = () => {
 
             if (fetchError) throw fetchError;
 
-            console.log('✅ Linked accounts fetched:', data?.length || 0);
+
             setLinkedAccounts(data || []);
             setError(null);
         } catch (err) {
@@ -75,7 +75,7 @@ export const useLinkedAccounts = () => {
 
             if (error) throw error;
 
-            console.log('✅ Account unlinked successfully');
+
             setLinkedAccounts(prev => prev.filter(a => a.provider !== provider));
             return { success: true };
         } catch (err) {

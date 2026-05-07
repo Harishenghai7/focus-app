@@ -1,0 +1,334 @@
+/* ==========================================================
+   Province 3: Personalization Styles
+   ========================================================== */
+
+/* Theme Grid */
+.themeGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.themeCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 16px;
+    background: rgba(var(--text-primary-rgb), 0.02);
+    border: 2px solid transparent;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 300ms ease;
+}
+
+.themeCard:hover {
+    background: rgba(var(--text-primary-rgb), 0.04);
+    transform: translateY(-2px);
+}
+
+.themeCard.active {
+    border-color: var(--royal-lavender, var(--primary));
+    background: rgba(var(--primary-rgb), 0.08);
+    box-shadow: 0 4px 20px rgba(var(--primary-rgb), 0.15);
+}
+
+.themePreview {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    box-shadow: 0 4px 12px rgba(var(--bg-primary-rgb), 0.2);
+    transition: transform 300ms ease;
+}
+
+.themeCard:hover .themePreview {
+    transform: scale(1.05);
+}
+
+.themePreview svg {
+    filter: drop-shadow(0 2px 4px rgba(var(--bg-primary-rgb), 0.3));
+}
+
+.themeLabel {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary, var(--text-muted));
+    transition: color 300ms ease;
+}
+
+.themeCard.active .themeLabel {
+    color: var(--royal-lavender-light, var(--primary));
+}
+
+/* Theme Features */
+.themeFeatures {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid rgba(var(--text-primary-rgb), 0.05);
+    padding-top: 20px;
+}
+
+/* Font Size Grid */
+.fontSizeGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.fontSizeCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 12px;
+    background: rgba(var(--text-primary-rgb), 0.02);
+    border: 2px solid transparent;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 300ms ease;
+}
+
+.fontSizeCard:hover {
+    background: rgba(var(--text-primary-rgb), 0.04);
+}
+
+.fontSizeCard.active {
+    border-color: var(--royal-lavender, var(--primary));
+    background: rgba(var(--primary-rgb), 0.08);
+}
+
+.fontSizeSample {
+    font-weight: 700;
+    color: var(--text-primary, var(--text-primary));
+    transition: color 300ms ease;
+}
+
+.fontSizeCard.active .fontSizeSample {
+    color: var(--royal-lavender-light, var(--primary));
+}
+
+.fontSizeLabel {
+    font-size: 0.75rem;
+    color: var(--text-muted, var(--text-muted));
+    transition: color 300ms ease;
+}
+
+.fontSizeCard.active .fontSizeLabel {
+    color: var(--text-secondary, var(--text-muted));
+}
+
+/* Notification Groups */
+.notificationGroups {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.notificationGroup {
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(var(--text-primary-rgb), 0.05);
+}
+
+.notificationGroup:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.groupTitle {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary, var(--text-muted));
+    margin: 0 0 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Notification Type Grid */
+.notificationGrid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+}
+
+.notificationTypeCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 8px;
+    background: rgba(var(--text-primary-rgb), 0.02);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.05);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 300ms ease;
+    position: relative;
+}
+
+.notificationTypeCard:hover {
+    background: rgba(var(--text-primary-rgb), 0.04);
+    transform: translateY(-2px);
+}
+
+.notificationTypeCard.active {
+    background: rgba(var(--primary-rgb), 0.1);
+    border-color: rgba(var(--primary-rgb), 0.3);
+}
+
+.typeIcon {
+    font-size: 1.5rem;
+    transition: transform 300ms ease;
+}
+
+.notificationTypeCard:hover .typeIcon {
+    transform: scale(1.1);
+}
+
+.typeLabel {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary, var(--text-muted));
+}
+
+.notificationTypeCard.active .typeLabel {
+    color: var(--royal-lavender-light, var(--primary));
+}
+
+/* Small toggle for notification cards */
+.notificationTypeCard :global(.toggleSwitch.small) {
+    width: 36px;
+    height: 20px;
+}
+
+.notificationTypeCard :global(.toggleSwitch.small) :global(.toggleKnob) {
+    width: 14px;
+    height: 14px;
+}
+
+.notificationTypeCard :global(.toggleSwitch.small.active) :global(.toggleKnob) {
+    transform: translateX(16px);
+}
+
+/* Quiet Hours */
+.quietHoursHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.quietHoursHeader .groupTitle {
+    margin: 0;
+}
+
+.quietHoursSettings {
+    overflow: hidden;
+}
+
+.timeInputGroup {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: rgba(var(--text-primary-rgb), 0.02);
+    border-radius: 12px;
+}
+
+.timeInput {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.timeInput label {
+    font-size: 0.75rem;
+    color: var(--text-muted, var(--text-muted));
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.timeInput input[type="time"] {
+    padding: 12px 16px;
+    background: rgba(var(--text-primary-rgb), 0.05);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.1);
+    border-radius: 10px;
+    color: var(--text-primary, var(--text-primary));
+    font-size: 1rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 200ms ease;
+}
+
+.timeInput input[type="time"]:focus {
+    outline: none;
+    border-color: var(--royal-lavender, var(--primary));
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+}
+
+.timeSeparator {
+    font-size: 0.9rem;
+    color: var(--text-muted, var(--text-muted));
+    padding-top: 20px;
+}
+
+/* Sound Section */
+.soundSection {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(var(--text-primary-rgb), 0.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .themeGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .fontSizeGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .notificationGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .timeInputGroup {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .timeSeparator {
+        padding-top: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .themeGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .themeCard {
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 16px;
+    }
+
+    .themePreview {
+        width: 48px;
+        height: 48px;
+    }
+
+    .notificationGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .notificationTypeCard {
+        padding: 12px 8px;
+    }
+}

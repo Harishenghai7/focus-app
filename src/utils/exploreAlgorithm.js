@@ -38,7 +38,7 @@ export const calculateExploreScore = (post, user) => {
  */
 export const getRecommendedPosts = async (userId, category = 'all', page = 0, pageSize = 20) => {
     try {
-        console.log(`🔍 [EXPLORE] Fetching: category=${category}, page=${page}, pageSize=${pageSize}`);
+
 
         // Handle different categories
         if (category === 'people') {
@@ -65,7 +65,7 @@ export const getRecommendedPosts = async (userId, category = 'all', page = 0, pa
 
         // Fallback: Direct query if RPC fails
         if (error || !data) {
-            console.log('📊 [EXPLORE] Using fallback direct query...');
+
 
             let query = supabase
                 .from('posts')
@@ -108,9 +108,9 @@ export const getRecommendedPosts = async (userId, category = 'all', page = 0, pa
                 throw fallbackResult.error;
             }
 
-            console.log('✅ [EXPLORE] Fallback query successful!');
+
             data = fallbackResult.data;
-            console.log('📊 [EXPLORE] Fallback data count:', data?.length || 0);
+
 
             // Transform fallback data
             data = data.map(post => ({
@@ -132,7 +132,7 @@ export const getRecommendedPosts = async (userId, category = 'all', page = 0, pa
             }));
         }
 
-        console.log(`📊 [EXPLORE] Raw data received:`, data?.length || 0, 'posts');
+
 
         if (!data || data.length === 0) {
             console.warn('⚠️ [EXPLORE] No posts returned from database');
@@ -165,7 +165,7 @@ export const getRecommendedPosts = async (userId, category = 'all', page = 0, pa
             views_count: 100
         }));
 
-        console.log(`✅ [EXPLORE] Transformed posts:`, transformedPosts.length);
+
 
         // Apply pagination
         const startIndex = page * pageSize;
@@ -180,13 +180,13 @@ export const getRecommendedPosts = async (userId, category = 'all', page = 0, pa
         // Sort by score for trending, otherwise chronological
         if (category === 'trending') {
             scoredPosts.sort((a, b) => b.score - a.score);
-            console.log(`📈 [EXPLORE] Sorted by trending score`);
+
         } else {
             scoredPosts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-            console.log(`📊 [EXPLORE] Sorted chronologically`);
+
         }
 
-        console.log(`✅ [EXPLORE] Final posts to display:`, scoredPosts.length);
+
         return scoredPosts;
     } catch (error) {
         console.error('❌ [EXPLORE] Error fetching explore posts:', error);
@@ -199,7 +199,7 @@ export const getRecommendedPosts = async (userId, category = 'all', page = 0, pa
  */
 const fetchPeople = async (currentUserId, page = 0, pageSize = 20) => {
     try {
-        console.log('👥 [EXPLORE] Fetching people...');
+
 
         const { data, error } = await supabase
             .from('profiles')
@@ -210,7 +210,7 @@ const fetchPeople = async (currentUserId, page = 0, pageSize = 20) => {
 
         if (error) throw error;
 
-        console.log(`✅ [EXPLORE] Fetched ${data?.length || 0} people`);
+
         return data || [];
     } catch (error) {
         console.error('❌ [EXPLORE] Error fetching people:', error);
@@ -223,7 +223,7 @@ const fetchPeople = async (currentUserId, page = 0, pageSize = 20) => {
  */
 const fetchTags = async (page = 0, pageSize = 20) => {
     try {
-        console.log('#️⃣ [EXPLORE] Fetching tags...');
+
 
         // TODO: Implement real hashtag tracking
         // For now, return empty array

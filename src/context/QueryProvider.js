@@ -12,7 +12,7 @@ if (process.env.NODE_ENV === 'development') {
     try {
         ReactQueryDevtools = require('@tanstack/react-query-devtools').ReactQueryDevtools;
     } catch (e) {
-        console.log('React Query Devtools not installed');
+
     }
 }
 

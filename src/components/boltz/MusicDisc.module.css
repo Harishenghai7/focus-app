@@ -2,7 +2,7 @@
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(var(--bg-primary-rgb), 0.5);
     backdrop-filter: blur(10px);
     display: flex;
     align-items: center;

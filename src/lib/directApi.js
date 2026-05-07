@@ -6,7 +6,7 @@ import { supabaseUrl, supabaseAnonKey } from './supabase';
 // Fetch users using direct REST API
 export const fetchUsersDirectly = async (userId, searchQuery = '') => {
     try {
-        console.log('🌐 Using direct REST API...');
+
 
         let url = `${supabaseUrl}/rest/v1/profiles?select=id,username,full_name,avatar_url,verified&id=neq.${userId}&limit=20`;
 
@@ -14,7 +14,7 @@ export const fetchUsersDirectly = async (userId, searchQuery = '') => {
             url += `&or=(username.ilike.*${searchQuery}*,full_name.ilike.*${searchQuery}*)`;
         }
 
-        console.log('📡 Fetching:', url);
+
 
         const response = await fetch(url, {
             headers: {
@@ -25,14 +25,14 @@ export const fetchUsersDirectly = async (userId, searchQuery = '') => {
             }
         });
 
-        console.log('📬 Response status:', response.status);
+
 
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
         const data = await response.json();
-        console.log('✅ Got data:', data);
+
 
         return { data, error: null };
     } catch (error) {
@@ -44,7 +44,7 @@ export const fetchUsersDirectly = async (userId, searchQuery = '') => {
 // Insert flash using direct REST API
 export const insertFlashDirectly = async (userId, mediaPath, mediaType) => {
     try {
-        console.log('🌐 Using direct REST API for flash...');
+
 
         const url = `${supabaseUrl}/rest/v1/flash`;
 
@@ -56,7 +56,7 @@ export const insertFlashDirectly = async (userId, mediaPath, mediaType) => {
             expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
         };
 
-        console.log('📝 Inserting:', insertData);
+
 
         const response = await fetch(url, {
             method: 'POST',
@@ -69,7 +69,7 @@ export const insertFlashDirectly = async (userId, mediaPath, mediaType) => {
             body: JSON.stringify(insertData)
         });
 
-        console.log('📬 Response status:', response.status);
+
 
         if (!response.ok) {
             const errorText = await response.text();
@@ -77,7 +77,7 @@ export const insertFlashDirectly = async (userId, mediaPath, mediaType) => {
         }
 
         const data = await response.json();
-        console.log('✅ Flash created:', data);
+
 
         return { data, error: null };
     } catch (error) {
@@ -89,7 +89,7 @@ export const insertFlashDirectly = async (userId, mediaPath, mediaType) => {
 // Send message using direct REST API
 export const sendMessageDirectly = async (conversationId, senderId, text) => {
     try {
-        console.log('💬 Sending message via REST API...');
+
 
         const url = `${supabaseUrl}/rest/v1/messages`;
 
@@ -100,7 +100,7 @@ export const sendMessageDirectly = async (conversationId, senderId, text) => {
             message_type: 'text'
         };
 
-        console.log('📝 Message data:', messageData);
+
 
         const response = await fetch(url, {
             method: 'POST',
@@ -113,7 +113,7 @@ export const sendMessageDirectly = async (conversationId, senderId, text) => {
             body: JSON.stringify(messageData)
         });
 
-        console.log('📬 Response status:', response.status);
+
 
         if (!response.ok) {
             const errorText = await response.text();
@@ -121,7 +121,7 @@ export const sendMessageDirectly = async (conversationId, senderId, text) => {
         }
 
         const data = await response.json();
-        console.log('✅ Message sent:', data);
+
 
         return { data, error: null };
     } catch (error) {
@@ -133,7 +133,7 @@ export const sendMessageDirectly = async (conversationId, senderId, text) => {
 // Create conversation using direct REST API
 export const createConversationDirectly = async () => {
     try {
-        console.log('💬 Creating conversation via REST API...');
+
 
         const url = `${supabaseUrl}/rest/v1/conversations`;
 
@@ -148,7 +148,7 @@ export const createConversationDirectly = async () => {
             body: JSON.stringify({})
         });
 
-        console.log('📬 Response status:', response.status);
+
 
         if (!response.ok) {
             const errorText = await response.text();
@@ -156,7 +156,7 @@ export const createConversationDirectly = async () => {
         }
 
         const data = await response.json();
-        console.log('✅ Conversation created:', data);
+
 
         return { data: data[0], error: null };
     } catch (error) {

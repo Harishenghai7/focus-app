@@ -1,22 +1,35 @@
-/* Feed Component - Design System Compliant */
+/* Feed Component - H2 Universal Theme | God-Level Edition */
 
 .feed {
-    max-width: 600px;
+    max-width: 680px;
     margin: 0 auto;
-    padding: var(--space-4) 0;
+    padding: 24px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .loadTrigger {
-    min-height: 100px;
+    min-height: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
+/* Error State */
 .error {
     text-align: center;
     padding: var(--space-8);
     color: var(--error);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.errorIcon {
+    font-size: 2.5rem;
+    animation: focusFloat 3s ease-in-out infinite;
 }
 
 .errorMessage {
@@ -25,107 +38,151 @@
     margin-top: var(--space-2);
 }
 
+/* Empty State */
 .empty {
     text-align: center;
-    padding: var(--space-8);
+    padding: var(--space-8) var(--space-4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    animation: focusFadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.emptyIcon {
+    font-size: 3rem;
+    animation: focusPulse 2s ease-in-out infinite;
 }
 
 .empty h3 {
     font-size: var(--font-xl);
     font-weight: var(--font-bold);
     color: var(--text-primary);
-    margin-bottom: var(--space-2);
+    margin-bottom: var(--space-1);
+    background: var(--gradient-royal);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .empty p {
     color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 320px;
 }
 
+/* End of Feed */
 .endOfFeed {
     text-align: center;
     padding: var(--space-6);
     color: var(--text-muted);
     font-size: var(--font-sm);
+    animation: focusFadeIn 0.4s ease both;
 }
 
-/* Skeleton Loader */
+/* ═══════════════════════════════════════════════════════════════════════
+   SKELETON LOADER — Satin Blur Placeholder System
+   ═══════════════════════════════════════════════════════════════════════ */
 .skeleton {
-    background: #1a1a1a;
-    border: 1px solid rgba(139, 92, 246, 0.2);
-    border-radius: 12px;
-    margin-bottom: var(--space-4);
+    background: rgba(var(--text-primary-rgb), 0.02);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.05);
+    border-radius: 24px;
+    margin-bottom: 20px;
     overflow: hidden;
-    animation: pulse 1.5s ease-in-out infinite;
+    box-shadow: 0 4px 24px rgba(var(--bg-primary-rgb), 0.2);
+    animation: skeletonFadeIn 0.4s ease both;
 }
+
+.skeleton:nth-child(1) { animation-delay: 0s; }
+.skeleton:nth-child(2) { animation-delay: 0.1s; }
+.skeleton:nth-child(3) { animation-delay: 0.2s; }
 
 .skeletonHeader {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
-    padding: var(--space-4);
+    gap: 12px;
+    padding: 16px;
 }
 
 .skeletonAvatar {
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: linear-gradient(90deg, rgba(139, 92, 246, 0.1) 25%, rgba(139, 92, 246, 0.2) 50%, rgba(139, 92, 246, 0.1) 75%);
+    background: linear-gradient(
+        90deg, 
+        rgba(var(--primary-rgb), 0.08) 25%, 
+        rgba(var(--primary-rgb), 0.18) 50%, 
+        rgba(var(--primary-rgb), 0.08) 75%
+    );
     background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
+    animation: skeletonShimmer 1.6s ease-in-out infinite;
+    flex-shrink: 0;
 }
 
 .skeletonText {
     flex: 1;
     height: 16px;
-    border-radius: 4px;
-    background: linear-gradient(90deg, rgba(139, 92, 246, 0.1) 25%, rgba(139, 92, 246, 0.2) 50%, rgba(139, 92, 246, 0.1) 75%);
+    border-radius: 8px;
+    background: linear-gradient(
+        90deg, 
+        rgba(var(--primary-rgb), 0.06) 25%, 
+        rgba(var(--primary-rgb), 0.14) 50%, 
+        rgba(var(--primary-rgb), 0.06) 75%
+    );
     background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
+    animation: skeletonShimmer 1.6s ease-in-out infinite;
+    animation-delay: 0.1s;
+    max-width: 200px;
 }
 
 .skeletonMedia {
     width: 100%;
     height: 400px;
-    background: linear-gradient(90deg, rgba(139, 92, 246, 0.1) 25%, rgba(139, 92, 246, 0.2) 50%, rgba(139, 92, 246, 0.1) 75%);
+    background: linear-gradient(
+        90deg,
+        rgba(var(--primary-rgb), 0.04) 25%,
+        rgba(var(--primary-rgb), 0.12) 50%,
+        rgba(var(--primary-rgb), 0.04) 75%
+    );
     background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
+    animation: skeletonShimmer 1.6s ease-in-out infinite;
+    animation-delay: 0.15s;
 }
 
 .skeletonActions {
     display: flex;
-    gap: var(--space-4);
-    padding: var(--space-4);
+    gap: 20px;
+    padding: 16px;
 }
 
 .skeletonIcon {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
-    background: linear-gradient(90deg, rgba(139, 92, 246, 0.1) 25%, rgba(139, 92, 246, 0.2) 50%, rgba(139, 92, 246, 0.1) 75%);
+    background: linear-gradient(
+        90deg, 
+        rgba(var(--primary-rgb), 0.06) 25%, 
+        rgba(var(--primary-rgb), 0.14) 50%, 
+        rgba(var(--primary-rgb), 0.06) 75%
+    );
     background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
+    animation: skeletonShimmer 1.6s ease-in-out infinite;
 }
 
-@keyframes shimmer {
-    0% {
-        background-position: 200% 0;
-    }
+.skeletonIcon:nth-child(1) { animation-delay: 0.2s; }
+.skeletonIcon:nth-child(2) { animation-delay: 0.25s; }
+.skeletonIcon:nth-child(3) { animation-delay: 0.3s; }
 
-    100% {
-        background-position: -200% 0;
-    }
+@keyframes skeletonShimmer {
+    0% { background-position: 200% center; }
+    100% { background-position: -200% center; }
 }
 
-@keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.8;
-    }
+@keyframes skeletonFadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Loading Spinner */
@@ -137,23 +194,45 @@
 }
 
 .spinnerRing {
-    width: 40px;
-    height: 40px;
-    border: 3px solid rgba(139, 92, 246, 0.2);
-    border-top-color: #9b87f5;
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(var(--primary-rgb), 0.15);
+    border-top-color: var(--primary);
     border-radius: 50%;
-    animation: spin 1s linear infinite;
+    animation: spinnerRotate 0.8s linear infinite;
 }
 
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
+@keyframes spinnerRotate {
+    to { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+    .feed {
+        padding: 12px 0;
+        gap: 16px;
+    }
+
+    .skeleton {
+        border-radius: 20px;
+        margin-bottom: 16px;
+    }
+
+    .skeletonMedia {
+        height: 320px;
     }
 }
 
-/* Responsive */
-@media (max-width: 640px) {
+@media (min-width: 1024px) {
     .feed {
-        padding: 0;
+        max-width: 600px;
+    }
+}
+
+@media (min-width: 1440px) {
+    .feed {
+        max-width: 680px;
     }
 }

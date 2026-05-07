@@ -29,12 +29,16 @@ export const useTrending = () => {
             if (postsErr) throw postsErr;
             setTrendingPosts(posts || []);
 
-            // ── Trending Hashtags: try RPC first, fall back to view ──────
+            // ── Trending Hashtags: try RPC first with correct params ──────
             const { data: rpcTags, error: rpcErr } = await supabase
-                .rpc('get_trending_hashtags', { limit_count: 10 });
+                .rpc('get_trending_hashtags', { p_hours_back: 48, p_limit: 10 });
 
             if (!rpcErr && rpcTags?.length) {
-                setTrendingHashtags(rpcTags);
+                setTrendingHashtags(rpcTags.map(t => ({ 
+                    tag: t.hashtag || t.tag, 
+                    post_count: t.post_count, 
+                    score: t.total_likes || t.post_count 
+                })));
                 return;
             }
 

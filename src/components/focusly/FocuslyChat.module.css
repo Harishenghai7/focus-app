@@ -5,10 +5,10 @@
     max-height: 80vh;
     width: 450px;
     max-width: 90vw;
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(var(--text-primary-rgb), 0.95);
     border-radius: 24px;
     overflow: hidden;
-    box-shadow: 0 20px 60px rgba(139, 92, 246, 0.3);
+    box-shadow: 0 20px 60px rgba(var(--primary-rgb), 0.3);
     color: var(--text-primary);
     /* Moved this property inside the .container block */
 }
@@ -18,8 +18,8 @@
     align-items: center;
     justify-content: center;
     padding: 1.5rem;
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(167, 139, 250, 0.05));
-    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.1), rgba(167, 139, 250, 0.05));
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.2);
 }
 
 /* Responsive Design */

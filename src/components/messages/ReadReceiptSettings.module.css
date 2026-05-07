@@ -3,7 +3,7 @@
 .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(var(--bg-primary-rgb), 0.7);
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
@@ -14,19 +14,19 @@
 
 .modal {
     background: linear-gradient(135deg, rgba(30, 20, 50, 0.98), rgba(42, 27, 71, 0.98));
-    border: 1px solid rgba(139, 92, 246, 0.3);
+    border: 1px solid rgba(var(--primary-rgb), 0.3);
     border-radius: 20px;
     width: 90%;
     max-width: 450px;
     overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 20px 60px rgba(var(--bg-primary-rgb), 0.5);
     animation: slideUp 0.3s ease;
 }
 
 .header {
     padding: 32px 24px 24px;
     text-align: center;
-    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.2);
 }
 
 .header svg {
@@ -42,7 +42,7 @@
 
 .header p {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(var(--text-primary-rgb), 0.6);
     margin: 0;
     line-height: 1.5;
 }
@@ -72,7 +72,7 @@
 
 .settingDescription {
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(var(--text-primary-rgb), 0.6);
     line-height: 1.4;
 }
 
@@ -94,7 +94,7 @@
     position: absolute;
     cursor: pointer;
     inset: 0;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(var(--text-primary-rgb), 0.2);
     border-radius: 28px;
     transition: all 0.3s ease;
 }
@@ -112,7 +112,7 @@
 }
 
 input:checked+.slider {
-    background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
 }
 
 input:checked+.slider:before {
@@ -126,7 +126,7 @@ input:disabled+.slider {
 
 .divider {
     height: 1px;
-    background: rgba(139, 92, 246, 0.2);
+    background: rgba(var(--primary-rgb), 0.2);
     margin: 16px 0;
 }
 
@@ -134,21 +134,21 @@ input:disabled+.slider {
     display: flex;
     gap: 12px;
     padding: 16px;
-    background: rgba(139, 92, 246, 0.1);
-    border: 1px solid rgba(139, 92, 246, 0.2);
+    background: rgba(var(--primary-rgb), 0.1);
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
     border-radius: 12px;
     margin-top: 16px;
 }
 
 .note svg {
     flex-shrink: 0;
-    color: #a78bfa;
+    color: var(--primary-light);
     margin-top: 2px;
 }
 
 .note span {
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(var(--text-primary-rgb), 0.7);
     line-height: 1.5;
 }
 

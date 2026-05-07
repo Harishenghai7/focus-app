@@ -24,7 +24,7 @@
     padding: 8px;
     display: flex;
     gap: 4px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 16px rgba(var(--bg-primary-rgb), 0.4);
     z-index: 1000;
     animation: slideUp 0.2s ease;
 }
@@ -56,6 +56,6 @@
 }
 
 .reactionButton:hover {
-    background: rgba(139, 92, 246, 0.2);
+    background: rgba(var(--primary-rgb), 0.2);
     transform: scale(1.2);
 }

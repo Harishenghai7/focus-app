@@ -17,9 +17,13 @@ const ModernCallWindow = ({
 }) => {
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
+    const localContainerRef = useRef(null);
+    const dragStateRef = useRef(null);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [callDuration, setCallDuration] = useState(0);
     const [isEnding, setIsEnding] = useState(false);
+    // Draggable PiP: percentage offsets from bottom-right
+    const [pipOffset, setPipOffset] = useState({ right: 24, bottom: 120 });
 
     const {
         localStream,
@@ -29,6 +33,7 @@ const ModernCallWindow = ({
         isMuted,
         isVideoOff,
         remoteEnded,
+        videoDowngraded,
         startCall,
         answerCall,
         endCall,
@@ -38,18 +43,18 @@ const ModernCallWindow = ({
 
     // Initialize call
     useEffect(() => {
-        console.log('🎬 ModernCallWindow mounted', { callId, isInitiator });
+
 
         if (isInitiator) {
-            console.log('📞 Starting call as initiator...');
+
             startCall(audioOnly);
         } else {
-            console.log('📞 Answering call...');
+
             answerCall(audioOnly);
         }
 
         return () => {
-            console.log('🧹 ModernCallWindow unmounting');
+
             endCall();
         };
     }, [callId, isInitiator, audioOnly]);
@@ -57,7 +62,7 @@ const ModernCallWindow = ({
     // Handle Remote End
     useEffect(() => {
         if (remoteEnded) {
-            console.log('👋 Remote ended call, closing window...');
+
             // Wait 1.5s to show "Call Ended" status, then close
             const timer = setTimeout(() => {
                 handleEndCall();
@@ -89,7 +94,10 @@ const ModernCallWindow = ({
         if (remoteEnded) return 'Call Ended';
         if (isEnding) return 'Ending...';
         if (isConnecting) return 'Connecting...';
-        if (isConnected) return formatDuration(callDuration);
+        if (isConnected) {
+            const time = formatDuration(callDuration);
+            return videoDowngraded ? `Audio Only · ${time}` : time;
+        }
         return 'Calling...';
     };
 
@@ -103,13 +111,45 @@ const ModernCallWindow = ({
     // Set remote video stream
     useEffect(() => {
         if (remoteVideoRef.current && remoteStream) {
-            console.log('📺 Setting remote stream to video element');
+
             remoteVideoRef.current.srcObject = remoteStream;
         }
     }, [remoteStream]);
 
+    // Draggable PiP — pointer-driven, clamps to viewport
+    const handlePipPointerDown = (e) => {
+        if (!localContainerRef.current) return;
+        const rect = localContainerRef.current.getBoundingClientRect();
+        dragStateRef.current = {
+            startX: e.clientX,
+            startY: e.clientY,
+            startRight: pipOffset.right,
+            startBottom: pipOffset.bottom,
+            width: rect.width,
+            height: rect.height
+        };
+        try { e.target.setPointerCapture(e.pointerId); } catch (_) { }
+    };
+
+    const handlePipPointerMove = (e) => {
+        const s = dragStateRef.current;
+        if (!s) return;
+        const dx = e.clientX - s.startX;
+        const dy = e.clientY - s.startY;
+        const maxRight = window.innerWidth - s.width - 8;
+        const maxBottom = window.innerHeight - s.height - 8;
+        const nextRight = Math.max(8, Math.min(maxRight, s.startRight - dx));
+        const nextBottom = Math.max(8, Math.min(maxBottom, s.startBottom - dy));
+        setPipOffset({ right: nextRight, bottom: nextBottom });
+    };
+
+    const handlePipPointerUp = (e) => {
+        dragStateRef.current = null;
+        try { e.target.releasePointerCapture(e.pointerId); } catch (_) { }
+    };
+
     const handleEndCall = () => {
-        console.log('🛑 End call clicked - hiding window immediately');
+
         setIsEnding(true); // Hide immediately
         endCall();
         if (onEndCall) onEndCall();
@@ -180,9 +220,19 @@ const ModernCallWindow = ({
                         )}
                     </div>
 
-                    {/* Local Video (PiP) */}
+                    {/* Local Video (PiP — draggable) */}
                     {localStream && (
-                        <div className={styles.localVideoContainer}>
+                        <div
+                            ref={localContainerRef}
+                            className={styles.localVideoContainer}
+                            style={{ right: pipOffset.right, bottom: pipOffset.bottom }}
+                            onPointerDown={handlePipPointerDown}
+                            onPointerMove={handlePipPointerMove}
+                            onPointerUp={handlePipPointerUp}
+                            onPointerCancel={handlePipPointerUp}
+                            role="button"
+                            aria-label="Drag your video preview"
+                        >
                             <video
                                 ref={localVideoRef}
                                 autoPlay

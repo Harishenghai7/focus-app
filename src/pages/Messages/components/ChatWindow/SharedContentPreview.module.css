@@ -15,12 +15,12 @@
 .preview:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(124, 58, 237, 0.4);
-    border-color: #8b5cf6;
+    border-color: var(--primary);
 }
 
 .previewHeader {
     padding: 12px 16px;
-    background: linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(139, 92, 246, 0.2));
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(var(--primary-rgb), 0.2));
     border-bottom: 1px solid rgba(167, 139, 250, 0.2);
     display: flex;
     align-items: center;
@@ -34,7 +34,7 @@
 .typeLabel {
     font-size: 14px;
     font-weight: 600;
-    color: #a78bfa;
+    color: var(--primary-light);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -60,7 +60,7 @@
 .authorName {
     font-size: 14px;
     font-weight: 600;
-    color: #f8f7ff;
+    color: var(--text-primary);
 }
 
 .contentText {
@@ -95,10 +95,10 @@
 
 .tapHint {
     padding: 10px 16px;
-    background: rgba(139, 92, 246, 0.15);
+    background: rgba(var(--primary-rgb), 0.15);
     text-align: center;
     font-size: 12px;
-    color: #a78bfa;
+    color: var(--primary-light);
     font-weight: 600;
     border-top: 1px solid rgba(167, 139, 250, 0.2);
 }
@@ -112,5 +112,5 @@
 }
 
 .error {
-    color: #ef4444;
+    color: var(--error);
 }

@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import * as faceapi from 'face-api.js';
 
 const parseFromFilename = (filename) => {
     if (!filename) return null;
@@ -94,11 +95,11 @@ export const persistTrustShieldState = async ({
 export const createGuardianHandshake = async ({ teenUserId, metadata = {} }) => {
     const handshakeToken = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
     const { error } = await supabase
-        .from('guardian_approvals')
+        .from('guardian_verifications')
         .insert({
-            teen_user_id: teenUserId,
-            handshake_token: handshakeToken,
-            approval_status: 'PENDING',
+            user_id: teenUserId,
+            verification_token: handshakeToken,
+            verified: false,
             metadata,
         });
     if (error) throw error;
@@ -111,14 +112,14 @@ export const approveGuardianHandshake = async ({
     guardianEmail,
 }) => {
     const { data, error } = await supabase
-        .from('guardian_approvals')
+        .from('guardian_verifications')
         .update({
-            approval_status: 'APPROVED',
+            verified: true,
             guardian_name: guardianName || null,
             guardian_email: guardianEmail || null,
-            approved_at: new Date().toISOString(),
+            verified_at: new Date().toISOString(),
         })
-        .eq('handshake_token', handshakeToken)
+        .eq('verification_token', handshakeToken)
         .select('*')
         .single();
     if (error) throw error;
@@ -138,8 +139,6 @@ export const generateLivenessActions = () => {
 // Uses SSD MobileNet v1 (most accurate open-source face detector)
 // Multiple detection strategies with automatic retry and preprocessing
 // ═══════════════════════════════════════════════════════════════════════════════
-
-import * as faceapi from 'face-api.js';
 
 const MODEL_URL = '/models';
 let modelsLoaded = false;
@@ -166,7 +165,7 @@ const withTimeout = (promise, ms, label) => {
 const loadModels = async () => {
     // If all loaded, skip
     if (modelsLoaded && ssdMobileNetLoaded && tinyFaceLoaded && recognitionModelsLoaded) {
-        console.log('[TrustShield] Models already loaded');
+
         return;
     }
     
@@ -176,14 +175,14 @@ const loadModels = async () => {
     // ── STEP 1: Try SSD MobileNet v1 (MOST POWERFUL) ──────────────────────────
     if (!ssdMobileNetLoaded) {
         try {
-            console.log('[TrustShield] Loading SSD MobileNet v1...');
+
             await withTimeout(
                 faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
                 MODEL_TIMEOUT,
                 'SSD MobileNet v1'
             );
             ssdMobileNetLoaded = true;
-            console.log('[TrustShield] ✅ SSD MobileNet v1 loaded');
+
         } catch (err) {
             console.warn('[TrustShield] ⚠️ SSD MobileNet failed:', err.message);
             errors.push('SSD MobileNet: ' + err.message);
@@ -193,14 +192,14 @@ const loadModels = async () => {
     // ── STEP 2: Try TinyFaceDetector (FALLBACK - always load) ─────────────────
     if (!tinyFaceLoaded) {
         try {
-            console.log('[TrustShield] Loading TinyFaceDetector...');
+
             await withTimeout(
                 faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
                 MODEL_TIMEOUT,
                 'TinyFaceDetector'
             );
             tinyFaceLoaded = true;
-            console.log('[TrustShield] ✅ TinyFaceDetector loaded');
+
         } catch (err) {
             console.error('[TrustShield] ❌ TinyFaceDetector failed:', err.message);
             errors.push('TinyFaceDetector: ' + err.message);
@@ -210,7 +209,7 @@ const loadModels = async () => {
     // ── STEP 3: Load Recognition Models ───────────────────────────────────────
     if (!recognitionModelsLoaded) {
         try {
-            console.log('[TrustShield] Loading recognition models...');
+
             await withTimeout(
                 Promise.all([
                     faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
@@ -220,7 +219,7 @@ const loadModels = async () => {
                 'Recognition models'
             );
             recognitionModelsLoaded = true;
-            console.log('[TrustShield] ✅ Recognition models loaded');
+
         } catch (err) {
             console.error('[TrustShield] ❌ Recognition models failed:', err.message);
             errors.push('Recognition: ' + err.message);
@@ -244,11 +243,6 @@ const loadModels = async () => {
     }
     
     // Success with whatever we have
-    console.log('[TrustShield] ✅ System ready:', {
-        ssdMobileNet: ssdMobileNetLoaded,
-        tinyFace: tinyFaceLoaded,
-        recognition: recognitionModelsLoaded
-    });
 };
 
 /**
@@ -257,7 +251,7 @@ const loadModels = async () => {
  */
 export const prewarmModels = async () => {
     try {
-        console.log('[TrustShield] Pre-warming models...');
+
         await loadModels();
         return { success: true };
     } catch (err) {
@@ -321,7 +315,7 @@ const getFaceDescriptor = async (image) => {
                     .withFaceDescriptor();
                 
                 if (ssdDetection) {
-                    console.log(`[TrustShield] ✅ SSD MobileNet detected face (attempt ${i + 1})`);
+
                     return ssdDetection.descriptor;
                 }
             }
@@ -337,14 +331,14 @@ const getFaceDescriptor = async (image) => {
                     .withFaceDescriptor();
                 
                 if (tinyDetection) {
-                    console.log(`[TrustShield] ✅ TinyFaceDetector detected face (attempt ${i + 1})`);
+
                     return tinyDetection.descriptor;
                 }
             }
             
             // If neither detected a face, wait and retry
             if (i < maxAttempts - 1) {
-                console.log(`[TrustShield] No face detected, retrying... (${i + 1}/${maxAttempts})`);
+
                 await new Promise(r => setTimeout(r, 200));
             }
             
@@ -414,11 +408,11 @@ export const runFaceSimilarityCheck = async ({ idImageFile, selfieFrames }) => {
 
     try {
         // ── LOAD MODELS (SSD MobileNet v1 + TinyFaceDetector) ───────────────────
-        console.log('[TrustShield] Loading powerful face recognition models...');
+
         await loadModels();
 
         // ── PROCESS ID IMAGE with RETRY ────────────────────────────────────────
-        console.log('[TrustShield] Processing ID image with SSD MobileNet v1...');
+
         const idImage = await fileToImage(idImageFile);
         let idDescriptor;
         
@@ -434,7 +428,7 @@ export const runFaceSimilarityCheck = async ({ idImageFile, selfieFrames }) => {
         }
 
         // ── PROCESS SELFIE FRAMES ───────────────────────────────────────────────
-        console.log('[TrustShield] Processing selfie frames...');
+
         let bestMatch = { score: 0, frameIndex: -1 };
         const results = [];
 
@@ -461,13 +455,6 @@ export const runFaceSimilarityCheck = async ({ idImageFile, selfieFrames }) => {
         }
 
         // ── LOGGING ─────────────────────────────────────────────────────────────
-        console.log('[TrustShield] Face comparison results:', {
-            idFaceDetected: true,
-            selfiesProcessed: selfieFrames.length,
-            validComparisons: results.filter(r => r.score !== undefined).length,
-            bestMatch: bestMatch,
-            allResults: results
-        });
 
         // ── VALIDATION: Must have at least one valid comparison ─────────────────
         const validComparisons = results.filter(r => r.score !== undefined);
@@ -501,15 +488,6 @@ export const runFaceSimilarityCheck = async ({ idImageFile, selfieFrames }) => {
         const strongMatches = validScores.filter(s => s >= PASS_THRESHOLD_STRONG).length;
         const consistentMatches = validScores.filter(s => s >= PASS_THRESHOLD_CONSISTENT).length;
         const hasConsistentMajority = consistentMatches >= validScores.length * 0.5;
-        
-        console.log('[TrustShield] Multi-frame analysis:', {
-            bestScore: bestScore.toFixed(2),
-            avgScore: avgScore.toFixed(2),
-            medianScore: medianScore.toFixed(2),
-            strongMatches,
-            consistentMatches,
-            totalValid: validScores.length
-        });
         
         // DECISION LOGIC
         const passed = bestScore >= PASS_THRESHOLD_STRONG || 

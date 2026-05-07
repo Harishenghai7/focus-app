@@ -12,6 +12,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { QueryProvider } from './context/QueryProvider';
 import { FocuslyProvider } from './context/FocuslyContext';
 import FocuslyToastLayer from './components/focusly/FocuslyToastLayer';
+import FocuslyCompanion from './components/focusly/FocuslyCompanion';
 import { useFocuslySentiment } from './hooks/useFocuslySentiment';
 
 import { supabase } from './lib/supabase';
@@ -37,7 +38,10 @@ import Auth from './pages/Auth';
 import AuthCallback from './pages/Auth/AuthCallback';
 import Home from './pages/Home/Home';
 import CompleteMessages from './pages/Messages/CompleteMessages';
+import SovereignMessages from './pages/Messages/SovereignMessages';
 import Profile from './pages/Profile/Profile';
+
+import GuardianHub from './pages/GuardianHub/GuardianHub';
 
 // 5. Lazy Load Heavy Pages (Performance Optimization ⚡)
 // This prevents "WebGL" errors and speeds up initial load
@@ -129,7 +133,7 @@ const HighSecurityGuard = ({ children }) => {
             onboarding_completed: false,
             verification_status: 'PENDING'
         }).eq('id', user.id).then(() => {
-            console.log('[HighSecurityGuard] Profile reset - verification required');
+
         }).catch(err => {
             console.error('[HighSecurityGuard] Failed to reset profile:', err);
         });
@@ -191,7 +195,7 @@ const AppContent = () => {
     // Debug Logs (Keep only what's necessary)
     useEffect(() => {
         if (incomingCall) {
-            console.log('📱 Incoming Call:', incomingCall.call_type, 'from', incomingCall.caller);
+
         }
     }, [incomingCall]);
 
@@ -209,12 +213,12 @@ const AppContent = () => {
                     <Route path="/" element={user ? <Navigate to="/home" replace /> : <Navigate to="/auth" replace />} />
                     <Route path="/auth" element={user ? <Navigate to="/home" replace /> : <Auth />} />
                     <Route path="/auth/callback" element={<AuthCallback />} />
-                    <Route path="/login" element={user ? <Navigate to="/home" replace /> : <Navigate to="/auth" replace />} />
-                    <Route path="/signup" element={user ? <Navigate to="/home" replace /> : <Navigate to="/auth" replace />} />
+                    <Route path="/login" element={user ? <Navigate to="/home" replace /> : <Auth />} />
+                    <Route path="/signup" element={user ? <Navigate to="/home" replace /> : <Auth />} />
 
-                    <Route path="/forgot-password" element={<Navigate to="/auth" replace />} />
-                    <Route path="/reset-password" element={<Navigate to="/auth" replace />} />
-                    <Route path="/verify-email" element={<Navigate to="/auth" replace />} />
+                    <Route path="/forgot-password" element={<Auth />} />
+                    <Route path="/reset-password" element={<Auth />} />
+                    <Route path="/verify-email" element={<Auth />} />
                     {/* DigiLocker Callback Removed */}
 
                     {/* --- Protected Routes (all gated by VerifiedRoute) --- */}
@@ -257,10 +261,10 @@ const AppContent = () => {
                     <Route path="/settings" element={user ? withTrustGate(<Settings />) : <Navigate to="/auth" replace />} />
                     <Route path="/notifications" element={user ? withTrustGate(<Notifications />) : <Navigate to="/auth" replace />} />
 
-                    {/* Messaging & Calls */}
-                    <Route path="/messages" element={user ? withTrustGate(<CompleteMessages key={isMessagesV2 ? 'v2' : 'v1'} />) : <Navigate to="/auth" replace />} />
-                    <Route path="/messages/new/:userId" element={user ? withTrustGate(<CompleteMessages key={isMessagesV2 ? 'v2-new' : 'v1-new'} />) : <Navigate to="/auth" replace />} />
-                    <Route path="/messages/:conversationId" element={user ? withTrustGate(<CompleteMessages key={isMessagesV2 ? 'v2-conversation' : 'v1-conversation'} />) : <Navigate to="/auth" replace />} />
+                    {/* Messaging & Calls - Sovereign Whisper E2EE v2.0 */}
+                    <Route path="/messages" element={user ? withTrustGate(<SovereignMessages key="sov-msgs-v2" />) : <Navigate to="/auth" replace />} />
+                    <Route path="/messages/new/:userId" element={user ? withTrustGate(<SovereignMessages key="sov-new-v2" />) : <Navigate to="/auth" replace />} />
+                    <Route path="/messages/:conversationId" element={user ? withTrustGate(<SovereignMessages key="sov-conv-v2" />) : <Navigate to="/auth" replace />} />
                     <Route path="/post/:id" element={user ? withTrustGate(isExploreV2 ? <ExploreEnhanced /> : <Explore />) : <Navigate to="/auth" replace />} />
                     <Route path="/p/:id" element={user ? withTrustGate(isExploreV2 ? <ExploreEnhanced /> : <Explore />) : <Navigate to="/auth" replace />} />
                     <Route path="/calls" element={user ? withTrustGate(<Calls />) : <Navigate to="/auth" replace />} />
@@ -268,6 +272,7 @@ const AppContent = () => {
                     {/* Teen Care */}
                     <Route path="/guardian/dashboard" element={user ? withTrustGate(<TeenCareGuardianDashboard />) : <Navigate to="/auth" replace />} />
                     <Route path="/guardian/dashboard/:teenId" element={user ? withTrustGate(<TeenCareGuardianDashboard />) : <Navigate to="/auth" replace />} />
+                    <Route path="/guardian-hub" element={user ? withTrustGate(<GuardianHub />) : <Navigate to="/auth" replace />} />
 
                     {/* Trust Shield & Verification */}
                     <Route path="/security" element={user ? <SecurityCenter /> : <Navigate to="/auth" replace />} />
@@ -328,6 +333,7 @@ function App() {
                                     <AudioProvider>
                                         <AppContent />
                                         <FocuslyToastLayer />
+                                        <FocuslyCompanion />
                                         <ToastContainer position="bottom-right" theme="dark" limit={3} />
                                     </AudioProvider>
                                 </FocuslyProvider>

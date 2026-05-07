@@ -1,3 +1,7 @@
+/* ==========================================================
+   EmptyState — Sovereign Mirror Focusly AI Animation
+   ========================================================== */
+
 .emptyState {
     display: flex;
     flex-direction: column;
@@ -6,6 +10,26 @@
     padding: var(--space-16) var(--space-4);
     text-align: center;
     min-height: 400px;
+    position: relative;
+}
+
+/* Subtle background gradient animation */
+.emptyState::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        ellipse at 50% 50%,
+        rgba(var(--primary-rgb), 0.08) 0%,
+        transparent 70%
+    );
+    animation: emptyPulse 4s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes emptyPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.8; }
 }
 
 .iconContainer {
@@ -17,52 +41,136 @@
     opacity: 0.5;
 }
 
+/* Focusly AI Message — Satin typography */
 .message {
     font-size: var(--font-lg);
     color: var(--text-secondary);
     margin: 0 0 var(--space-6) 0;
+    max-width: 320px;
+    line-height: var(--leading-relaxed);
+    position: relative;
+    z-index: 1;
 }
 
 .mascot {
     display: grid;
-    gap: 8px;
+    gap: var(--space-3);
     justify-items: center;
-    margin-bottom: 14px;
+    margin-bottom: var(--space-4);
+    position: relative;
+    z-index: 1;
 }
 
+/* Focusly Mascot Orb with animated gradient */
 .mascotOrb {
-    width: 72px;
-    height: 72px;
+    width: 80px;
+    height: 80px;
     border-radius: 999px;
     display: grid;
     place-items: center;
-    color: #fff;
+    color: var(--text-primary);
     font-weight: 800;
-    font-size: 1.5rem;
-    background: linear-gradient(135deg, rgba(126, 87, 194, 0.85), rgba(69, 39, 160, 0.95));
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 14px 30px rgba(69, 39, 160, 0.3);
+    font-size: 1.75rem;
+    background: linear-gradient(
+        135deg,
+        rgba(var(--primary-rgb), 0.9) 0%,
+        rgba(var(--primary-rgb), 0.95) 50%,
+        rgba(69, 39, 160, 1) 100%
+    );
+    border: 2px solid rgba(var(--text-primary-rgb), 0.25);
+    box-shadow: 
+        0 14px 40px rgba(69, 39, 160, 0.4),
+        0 0 60px rgba(var(--primary-rgb), 0.2),
+        inset 0 2px 4px rgba(var(--text-primary-rgb), 0.2);
+    animation: mascotFloat 3s ease-in-out infinite, mascotGlow 4s ease-in-out infinite;
+    position: relative;
+}
+
+/* Conic shimmer ring around mascot */
+.mascotOrb::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    padding: 2px;
+    background: conic-gradient(
+        from 0deg,
+        transparent 0%,
+        rgba(var(--primary-rgb), 0.6) 20%,
+        rgba(167, 139, 250, 0.8) 40%,
+        transparent 60%,
+        rgba(var(--primary-rgb), 0.6) 80%,
+        transparent 100%
+    );
+    -webkit-mask:
+        linear-gradient(var(--text-primary) 0 0) content-box,
+        linear-gradient(var(--text-primary) 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+        linear-gradient(var(--text-primary) 0 0) content-box,
+        linear-gradient(var(--text-primary) 0 0);
+    mask-composite: exclude;
+    animation: shimmerRotate 6s linear infinite;
+    opacity: 0.8;
+}
+
+@keyframes mascotFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+@keyframes mascotGlow {
+    0%, 100% { 
+        box-shadow: 
+            0 14px 40px rgba(69, 39, 160, 0.4),
+            0 0 60px rgba(var(--primary-rgb), 0.2),
+            inset 0 2px 4px rgba(var(--text-primary-rgb), 0.2);
+    }
+    50% { 
+        box-shadow: 
+            0 14px 40px rgba(69, 39, 160, 0.5),
+            0 0 80px rgba(167, 139, 250, 0.35),
+            inset 0 2px 4px rgba(var(--text-primary-rgb), 0.3);
+    }
+}
+
+@keyframes shimmerRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .mascotLabel {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--text-faint);
-    letter-spacing: 0.02em;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: var(--font-medium);
 }
 
+/* Action button with glassmorphism */
 .action {
     padding: var(--space-3) var(--space-6);
-    background: var(--gradient-primary);
-    border: none;
+    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.8), rgba(var(--primary-rgb), 0.9));
+    border: 1px solid rgba(var(--text-primary-rgb), 0.15);
     border-radius: var(--radius-full);
     color: white;
     font-size: var(--font-sm);
     font-weight: var(--font-semibold);
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 4px 20px rgba(var(--primary-rgb), 0.3);
 }
 
 .action:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-glow);
+    transform: translateY(-3px);
+    box-shadow: 
+        0 8px 30px rgba(var(--primary-rgb), 0.5),
+        0 0 40px rgba(167, 139, 250, 0.2);
+    border-color: rgba(var(--text-primary-rgb), 0.25);
+}
+
+.action:active {
+    transform: translateY(-1px);
 }

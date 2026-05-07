@@ -71,7 +71,7 @@ class SoundLibrary {
             };
 
             this.initialized = true;
-            console.log('✅ Focusly Sound Library initialized');
+
         } catch (error) {
             console.error('❌ Failed to initialize sound library:', error);
         }

@@ -96,7 +96,7 @@ const useVerificationFSM = (options = {}) => {
       
       // Allow same-state transitions for updates
       if (newState === currentState) {
-        console.log(`[FSM] State update: ${currentState}`, data);
+
         return currentState;
       }
       
@@ -107,7 +107,7 @@ const useVerificationFSM = (options = {}) => {
         return currentState;
       }
       
-      console.log(`[FSM] Transition: ${currentState} → ${newState}`, data);
+
       return newState;
     });
     
@@ -157,7 +157,7 @@ const useVerificationFSM = (options = {}) => {
     abortControllerRef.current = null;
     retryTimerRef.current = null;
     
-    console.log('[FSM] Reset to initial state');
+
   }, []);
   
   // ═════════════════════════════════════════════════════════════════════════════

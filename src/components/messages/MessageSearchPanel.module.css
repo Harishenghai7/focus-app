@@ -7,7 +7,7 @@
     bottom: 0;
     width: 400px;
     background: linear-gradient(135deg, rgba(30, 20, 50, 0.98), rgba(42, 27, 71, 0.98));
-    border-left: 1px solid rgba(139, 92, 246, 0.3);
+    border-left: 1px solid rgba(var(--primary-rgb), 0.3);
     display: flex;
     flex-direction: column;
     z-index: 100;
@@ -19,7 +19,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 20px 24px;
-    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.2);
 }
 
 .header h2 {
@@ -32,7 +32,7 @@
 .closeButton {
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(var(--text-primary-rgb), 0.7);
     cursor: pointer;
     padding: 8px;
     border-radius: 8px;
@@ -40,8 +40,8 @@
 }
 
 .closeButton:hover {
-    background: rgba(139, 92, 246, 0.2);
-    color: #a78bfa;
+    background: rgba(var(--primary-rgb), 0.2);
+    color: var(--primary-light);
 }
 
 .searchBar {
@@ -50,11 +50,11 @@
     gap: 12px;
     padding: 16px 24px;
     background: rgba(42, 27, 71, 0.6);
-    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.2);
 }
 
 .searchBar svg {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(var(--text-primary-rgb), 0.5);
     flex-shrink: 0;
 }
 
@@ -68,13 +68,13 @@
 }
 
 .searchBar input::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(var(--text-primary-rgb), 0.4);
 }
 
 .clearButton {
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(var(--text-primary-rgb), 0.5);
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
@@ -82,14 +82,14 @@
 }
 
 .clearButton:hover {
-    color: #a78bfa;
+    color: var(--primary-light);
 }
 
 .filters {
     display: flex;
     gap: 8px;
     padding: 16px 24px;
-    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.2);
     overflow-x: auto;
 }
 
@@ -99,9 +99,9 @@
     gap: 6px;
     padding: 8px 16px;
     background: rgba(42, 27, 71, 0.6);
-    border: 1px solid rgba(139, 92, 246, 0.3);
+    border: 1px solid rgba(var(--primary-rgb), 0.3);
     border-radius: 20px;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(var(--text-primary-rgb), 0.7);
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
@@ -111,11 +111,11 @@
 
 .filterButton:hover {
     background: rgba(42, 27, 71, 0.8);
-    border-color: rgba(139, 92, 246, 0.5);
+    border-color: rgba(var(--primary-rgb), 0.5);
 }
 
 .filterButton.active {
-    background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
     border-color: transparent;
     color: white;
 }
@@ -142,14 +142,14 @@
 .spinner {
     width: 40px;
     height: 40px;
-    border: 3px solid rgba(139, 92, 246, 0.3);
-    border-top-color: #a78bfa;
+    border: 3px solid rgba(var(--primary-rgb), 0.3);
+    border-top-color: var(--primary-light);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
 
 .loading p {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(var(--text-primary-rgb), 0.7);
     font-size: 15px;
     margin: 0;
 }
@@ -157,7 +157,7 @@
 .resultCount {
     padding: 8px 24px;
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(var(--text-primary-rgb), 0.5);
     font-weight: 500;
 }
 
@@ -170,7 +170,7 @@
 }
 
 .resultItem:hover {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(var(--primary-rgb), 0.1);
 }
 
 .resultContent {
@@ -193,19 +193,19 @@
 
 .resultDate {
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(var(--text-primary-rgb), 0.5);
 }
 
 .resultText {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(var(--text-primary-rgb), 0.7);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .mediaType {
-    color: #a78bfa;
+    color: var(--primary-light);
 }
 
 .empty {
@@ -219,19 +219,19 @@
 }
 
 .empty svg {
-    color: rgba(255, 255, 255, 0.3);
+    color: rgba(var(--text-primary-rgb), 0.3);
 }
 
 .empty p {
     font-size: 16px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(var(--text-primary-rgb), 0.7);
     margin: 0;
 }
 
 .empty span {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(var(--text-primary-rgb), 0.5);
 }
 
 @keyframes slideIn {
@@ -256,16 +256,16 @@
 }
 
 .results::-webkit-scrollbar-track {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(var(--primary-rgb), 0.1);
 }
 
 .results::-webkit-scrollbar-thumb {
-    background: rgba(139, 92, 246, 0.3);
+    background: rgba(var(--primary-rgb), 0.3);
     border-radius: 3px;
 }
 
 .results::-webkit-scrollbar-thumb:hover {
-    background: rgba(139, 92, 246, 0.5);
+    background: rgba(var(--primary-rgb), 0.5);
 }
 
 .filters::-webkit-scrollbar {
@@ -273,16 +273,16 @@
 }
 
 .filters::-webkit-scrollbar-track {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(var(--primary-rgb), 0.1);
 }
 
 .filters::-webkit-scrollbar-thumb {
-    background: rgba(139, 92, 246, 0.3);
+    background: rgba(var(--primary-rgb), 0.3);
     border-radius: 2px;
 }
 
 .filters::-webkit-scrollbar-thumb:hover {
-    background: rgba(139, 92, 246, 0.5);
+    background: rgba(var(--primary-rgb), 0.5);
 }
 
 @media (max-width: 768px) {

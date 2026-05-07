@@ -4,15 +4,15 @@
 
 .spinner {
     animation: spin 1s linear infinite;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(var(--text-primary-rgb), 0.5);
 }
 
 .available {
-    color: #22c55e;
+    color: var(--success);
 }
 
 .taken {
-    color: #ef4444;
+    color: var(--error);
 }
 
 @keyframes spin {

@@ -69,7 +69,7 @@ export const useMessageQueue = (conversationId, currentUserId) => {
         const message = queue[0];
 
         try {
-            console.log('📤 Processing queued message:', message.id);
+
 
             let result;
             if (message.type === 'text') {
@@ -89,7 +89,7 @@ export const useMessageQueue = (conversationId, currentUserId) => {
                 );
             }
 
-            console.log('✅ Message sent:', result);
+
 
             // Remove from queue on success
             setQueue(prev => {
@@ -104,7 +104,7 @@ export const useMessageQueue = (conversationId, currentUserId) => {
             // Retry logic
             if (message.retryCount < MAX_RETRIES) {
                 const delay = RETRY_DELAYS[message.retryCount];
-                console.log(`🔄 Retrying in ${delay}ms (attempt ${message.retryCount + 1}/${MAX_RETRIES})`);
+
 
                 setQueue(prev => {
                     const newQueue = prev.map(m =>
@@ -151,7 +151,7 @@ export const useMessageQueue = (conversationId, currentUserId) => {
     // Listen for online event
     useEffect(() => {
         const handleOnline = () => {
-            console.log('🌐 Back online, processing queue');
+
             processQueue();
         };
 

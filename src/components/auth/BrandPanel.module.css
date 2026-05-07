@@ -1,25 +1,75 @@
 .brandPanel {
     flex: 1;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background:
+        radial-gradient(circle at top left, rgba(196, 181, 253, 0.18), transparent 28%),
+        radial-gradient(circle at 80% 15%, rgba(139, 92, 246, 0.2), transparent 30%),
+        linear-gradient(160deg, #0a0616 0%, #120b25 46%, #160d2a 100%);
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    padding: 2rem;
+    padding: clamp(2rem, 4vw, 4rem);
 }
 
 .backgroundEffect {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background:
-        radial-gradient(circle at 20% 30%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.15) 0%, transparent 50%);
-    filter: blur(40px);
+        radial-gradient(circle at 20% 30%, rgba(168, 85, 247, 0.22) 0%, transparent 42%),
+        radial-gradient(circle at 80% 70%, rgba(96, 165, 250, 0.14) 0%, transparent 38%),
+        radial-gradient(circle at 50% 10%, rgba(232, 121, 249, 0.12) 0%, transparent 34%);
+    filter: blur(60px);
     z-index: 1;
+}
+
+.gridLayer {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 70px 70px;
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.7), transparent 90%);
+    opacity: 0.2;
+    z-index: 1;
+}
+
+.orbPrimary,
+.orbSecondary,
+.orbTertiary {
+    position: absolute;
+    border-radius: 999px;
+    filter: blur(12px);
+    z-index: 1;
+    will-change: transform;
+}
+
+.orbPrimary {
+    width: 280px;
+    height: 280px;
+    top: 12%;
+    right: 12%;
+    background: radial-gradient(circle, rgba(167, 139, 250, 0.24), transparent 70%);
+    animation: drift 12s ease-in-out infinite;
+}
+
+.orbSecondary {
+    width: 220px;
+    height: 220px;
+    bottom: 10%;
+    left: 10%;
+    background: radial-gradient(circle, rgba(96, 165, 250, 0.16), transparent 72%);
+    animation: drift 15s ease-in-out infinite reverse;
+}
+
+.orbTertiary {
+    width: 180px;
+    height: 180px;
+    top: 55%;
+    right: 30%;
+    background: radial-gradient(circle, rgba(232, 121, 249, 0.12), transparent 70%);
+    animation: driftDiagonal 18s ease-in-out infinite;
 }
 
 .content {
@@ -27,53 +77,251 @@
     z-index: 2;
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
+    gap: 2rem;
+    width: min(100%, 620px);
+}
+
+/* Staggered entrance animation system */
+.animateItem {
+    animation: brandItemEnter 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.badge {
+    display: inline-flex;
     align-items: center;
-    gap: 4rem;
-    max-width: 500px;
+    gap: 0.6rem;
+    padding: 0.6rem 1rem;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(196, 181, 253, 0.22);
+    background: rgba(13, 8, 28, 0.48);
+    color: rgba(255, 255, 255, 0.84);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    backdrop-filter: blur(18px);
+    opacity: 0;
+}
+
+.badgeDot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+    animation: dotPulse 2s ease-in-out infinite;
+}
+
+.heroBlock {
+    display: flex;
+    align-items: center;
+    gap: clamp(1.25rem, 2.5vw, 2.25rem);
 }
 
 .logoContainer {
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 140px;
+    height: 140px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    opacity: 0;
 }
 
 .logoGlow {
     position: absolute;
-    width: 120px;
-    height: 120px;
-    background: rgba(168, 85, 247, 0.4);
-    filter: blur(40px);
+    inset: 18px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.55), rgba(96, 165, 250, 0.18) 65%, transparent 78%);
+    filter: blur(30px);
     border-radius: 50%;
-    animation: pulse 3s infinite ease-in-out;
+    animation: logoGlowPulse 3s infinite ease-in-out;
+}
+
+.logoRing {
+    position: absolute;
+    inset: 6px;
+    border-radius: 50%;
+    border: 1px solid rgba(196, 181, 253, 0.25);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(139, 92, 246, 0.05));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 18px 42px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(22px);
+}
+
+.logoRingOuter {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(167, 139, 250, 0.12);
+    animation: logoRingSpin 20s linear infinite;
+    background: conic-gradient(
+        from 0deg,
+        transparent 0%,
+        rgba(139, 92, 246, 0.15) 15%,
+        transparent 30%,
+        transparent 70%,
+        rgba(167, 139, 250, 0.1) 85%,
+        transparent 100%
+    );
+}
+
+.logoImage {
+    position: relative;
+    width: 84px;
+    height: 84px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 30px rgba(196, 181, 253, 0.4));
+    z-index: 2;
+}
+
+.copyBlock {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.eyebrow {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0;
 }
 
 .logoText {
-    font-size: 4rem;
-    font-weight: 800;
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(2.7rem, 5vw, 4.5rem);
+    line-height: 0.95;
+    font-weight: 700;
     color: white;
-    letter-spacing: -2px;
-    text-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
-    position: relative;
+    letter-spacing: -0.05em;
+    text-shadow: 0 0 24px rgba(168, 85, 247, 0.32);
+    opacity: 0;
 }
 
-@keyframes pulse {
-    0% {
+.description {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.78);
+    font-family: var(--font-body);
+    font-size: 1.02rem;
+    line-height: 1.7;
+    max-width: 38rem;
+    opacity: 0;
+}
+
+.signalGrid {
+    display: grid;
+    gap: 1rem;
+    width: 100%;
+}
+
+.signalCard {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1rem;
+    padding: 1.05rem 1.15rem;
+    border-radius: 24px;
+    border: 1px solid rgba(196, 181, 253, 0.16);
+    background: linear-gradient(135deg, rgba(13, 8, 28, 0.62), rgba(27, 15, 51, 0.44));
+    backdrop-filter: blur(18px);
+    box-shadow: 0 20px 40px rgba(3, 1, 8, 0.24);
+    transition: transform var(--transition-premium-fast),
+                border-color var(--transition-premium-fast),
+                box-shadow var(--transition-premium-fast);
+    opacity: 0;
+}
+
+.signalCard:hover {
+    transform: translateY(-3px);
+    border-color: rgba(196, 181, 253, 0.28);
+    box-shadow: 0 24px 48px rgba(3, 1, 8, 0.3), 0 0 20px rgba(139, 92, 246, 0.08);
+}
+
+.signalIcon {
+    width: 42px;
+    height: 42px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    font-size: 1rem;
+    color: #f8f5ff;
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.28), rgba(59, 130, 246, 0.16));
+    border: 1px solid rgba(196, 181, 253, 0.22);
+    transition: transform var(--transition-premium-fast), box-shadow var(--transition-premium-fast);
+}
+
+.signalCard:hover .signalIcon {
+    transform: scale(1.08);
+    box-shadow: 0 0 16px rgba(139, 92, 246, 0.3);
+}
+
+.signalLabel {
+    margin: 0 0 0.35rem;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.signalText {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.68);
+    line-height: 1.6;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes brandItemEnter {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+        filter: blur(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+@keyframes logoGlowPulse {
+    0%, 100% {
         transform: scale(1);
         opacity: 0.4;
     }
-
     50% {
-        transform: scale(1.2);
-        opacity: 0.6;
-    }
-
-    100% {
-        transform: scale(1);
-        opacity: 0.4;
+        transform: scale(1.15);
+        opacity: 0.7;
     }
 }
+
+@keyframes logoRingSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes drift {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(0, -14px, 0); }
+}
+
+@keyframes driftDiagonal {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    33% { transform: translate3d(10px, -12px, 0); }
+    66% { transform: translate3d(-8px, 8px, 0); }
+}
+
+@keyframes dotPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 
 @media (max-width: 768px) {
     .brandPanel {

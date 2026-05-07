@@ -83,17 +83,17 @@ const AuthCallback = () => {
                 // Route based on profile state
                 if (!profile) {
                     // No profile exists → new user → onboarding
-                    console.log('New user detected, redirecting to onboarding');
+
                     setStatus('Welcome! Setting up your profile...');
                     setTimeout(() => navigate('/onboarding', { replace: true }), 500);
                 } else if (!profile.onboarding_completed) {
                     // Profile exists but onboarding not complete → resume onboarding
-                    console.log('Incomplete onboarding, resuming...');
+
                     setStatus('Resuming your setup...');
                     setTimeout(() => navigate('/onboarding', { replace: true }), 500);
                 } else {
                     // Profile complete → go to home
-                    console.log('Profile complete, redirecting to home');
+
                     setStatus('Welcome back! Loading your feed...');
                     setTimeout(() => navigate('/home', { replace: true }), 500);
                 }

@@ -6,7 +6,7 @@ import { formatNumber } from '../../utils/formatNumber';
 const ShareButton = ({ count = 0, onClick }) => {
     const handleClick = (e) => {
         e.stopPropagation();
-        console.log('Share button clicked!');
+
         if (onClick) {
             onClick(e);
         }

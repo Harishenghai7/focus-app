@@ -21,7 +21,7 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0f0f2d 100%);
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-primary) 100%);
   overflow: hidden;
 }
 
@@ -29,7 +29,7 @@
   position: relative;
   width: 100%;
   max-width: 600px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(var(--text-primary-rgb), 0.03);
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
   border-radius: 32px;
@@ -47,16 +47,16 @@
   background-image: 
     linear-gradient(rgba(10, 10, 26, 0.95), rgba(10, 10, 26, 0.95)),
     linear-gradient(135deg, 
-      rgba(255, 255, 255, 0.15) 0%, 
-      rgba(255, 255, 255, 0.4) 50%, 
-      rgba(255, 255, 255, 0.15) 100%
+      rgba(var(--text-primary-rgb), 0.15) 0%, 
+      rgba(var(--text-primary-rgb), 0.4) 50%, 
+      rgba(var(--text-primary-rgb), 0.15) 100%
     );
   
   /* SOVEREIGN SHADOW */
   box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 25px 50px -12px rgba(var(--bg-primary-rgb), 0.5),
+    0 0 0 1px rgba(var(--text-primary-rgb), 0.05),
+    inset 0 1px 0 rgba(var(--text-primary-rgb), 0.05),
     0 0 100px rgba(102, 126, 234, 0.1);
   
   transition: all 300ms ease-in-out;
@@ -92,8 +92,8 @@
   gap: 12px;
   padding: 16px 24px;
   border-radius: 50px;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(var(--bg-primary-rgb), 0.3);
+  border: 1px solid rgba(var(--text-primary-rgb), 0.1);
   transition: all 300ms ease-in-out;
 }
 
@@ -105,7 +105,7 @@
 .statusLabel {
   font-size: 14px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(var(--text-primary-rgb), 0.9);
   letter-spacing: 0.5px;
   text-transform: uppercase;
 }
@@ -150,7 +150,7 @@
   left: 50%;
   width: 20px;
   height: 3px;
-  background: linear-gradient(90deg, #9678ff, #00ffaa);
+  background: linear-gradient(90deg, var(--primary-light), var(--text-muted));
   border-radius: 2px;
   margin-left: -10px;
   margin-top: -1.5px;
@@ -171,8 +171,8 @@
   gap: 16px;
   padding: 16px 20px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(var(--text-primary-rgb), 0.02);
+  border: 1px solid rgba(var(--text-primary-rgb), 0.05);
   transition: all 300ms ease-in-out;
   position: relative;
   overflow: hidden;
@@ -202,12 +202,12 @@
 .phaseLabel {
   font-size: 14px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(var(--text-primary-rgb), 0.6);
   transition: all 300ms ease-in-out;
 }
 
 .phaseActive .phaseLabel {
-  color: rgba(255, 255, 255, 0.95);
+  color: rgba(var(--text-primary-rgb), 0.95);
   font-weight: 600;
 }
 
@@ -217,7 +217,7 @@
   top: 0;
   bottom: 0;
   width: 4px;
-  background: linear-gradient(180deg, #9678ff, #00ffaa);
+  background: linear-gradient(180deg, var(--primary-light), var(--text-muted));
   border-radius: 2px;
 }
 
@@ -225,7 +225,7 @@
 .progressBar {
   width: 100%;
   height: 6px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(var(--text-primary-rgb), 0.05);
   border-radius: 3px;
   overflow: hidden;
   position: relative;
@@ -233,7 +233,7 @@
 
 .progressFill {
   height: 100%;
-  background: linear-gradient(90deg, #9678ff, #00ffaa, #00c3ff);
+  background: linear-gradient(90deg, var(--primary-light), var(--text-muted), var(--text-muted));
   border-radius: 3px;
   box-shadow: 0 0 20px rgba(150, 120, 255, 0.5);
   transition: width 500ms ease-out;
@@ -278,20 +278,20 @@
 .interventionTitle {
   font-size: 24px;
   font-weight: 700;
-  color: #ff5050;
+  color: var(--error);
   margin: 0;
   text-shadow: 0 0 20px rgba(255, 80, 80, 0.3);
 }
 
 .interventionMessage {
   font-size: 16px;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(var(--text-primary-rgb), 0.7);
   line-height: 1.6;
   margin: 0;
 }
 
 .interventionMessage strong {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(var(--text-primary-rgb), 0.9);
   font-weight: 600;
 }
 
@@ -313,17 +313,17 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 300ms ease-in-out;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(var(--text-primary-rgb), 0.2);
+  background: rgba(var(--text-primary-rgb), 0.05);
+  color: rgba(var(--text-primary-rgb), 0.9);
   backdrop-filter: blur(10px);
 }
 
 .retryButton:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(var(--text-primary-rgb), 0.1);
+  border-color: rgba(var(--text-primary-rgb), 0.3);
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 30px rgba(var(--bg-primary-rgb), 0.3);
 }
 
 .supportButton {
@@ -335,12 +335,12 @@
   transition: all 300ms ease-in-out;
   border: 1px solid transparent;
   background: transparent;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(var(--text-primary-rgb), 0.6);
   text-decoration: underline;
 }
 
 .supportButton:hover {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(var(--text-primary-rgb), 0.9);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -367,13 +367,13 @@
 .errorState h3 {
   font-size: 20px;
   font-weight: 600;
-  color: #ff5050;
+  color: var(--error);
   margin: 0;
 }
 
 .errorState p {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(var(--text-primary-rgb), 0.6);
   margin: 0;
   max-width: 300px;
 }
@@ -402,9 +402,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #00ffaa, #00c3ff);
+  background: linear-gradient(135deg, var(--text-muted), var(--text-muted));
   border-radius: 50%;
-  color: #0a0a1a;
+  color: var(--bg-primary);
   font-weight: 700;
   box-shadow: 0 0 40px rgba(0, 255, 170, 0.4);
 }
@@ -412,22 +412,22 @@
 .verifiedState h3 {
   font-size: 24px;
   font-weight: 700;
-  color: #00ffaa;
+  color: var(--text-muted);
   margin: 0;
   text-shadow: 0 0 20px rgba(0, 255, 170, 0.3);
 }
 
 .verifiedState p {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(var(--text-primary-rgb), 0.7);
   margin: 0;
 }
 
 .hashDisplay {
   padding: 12px 20px;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(var(--bg-primary-rgb), 0.3);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--text-primary-rgb), 0.1);
 }
 
 .hashDisplay code {
@@ -444,7 +444,7 @@
   width: 100%;
   margin-top: 24px;
   padding-top: 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(var(--text-primary-rgb), 0.1);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════

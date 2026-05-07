@@ -1,7 +1,12 @@
 /**
- * usePosts Hook — Production v3
+ * usePosts Hook — Production v4 | H2 Universal Theme
  * Uses explicit FK join syntax for profiles (profiles:user_id)
  * Works with or without auth — always shows public posts
+ * 
+ * Features:
+ * - Sovereign Caching: Stores last 10 posts locally for instant launch
+ * - Real-time synchronization via Supabase Realtime
+ * - Infinite scroll pagination with 10 items per fetch
  */
 import { useEffect, useCallback, useRef } from 'react';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
@@ -12,6 +17,39 @@ import { normalizeHydratedProfile } from '../utils/identityHydration';
 import { assertTrustShieldVerified } from '../utils/trustShieldAccess';
 
 const POSTS_PER_PAGE = 10;
+const CACHE_KEY_PREFIX = 'focus_sovereign_cache_';
+const CACHE_MAX_POSTS = 10;
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+// Sovereign Caching - Store last 10 posts for instant launch
+const cachePosts = (feedType, posts) => {
+  try {
+    const cacheKey = `${CACHE_KEY_PREFIX}${feedType}`;
+    const cacheData = {
+      timestamp: Date.now(),
+      posts: posts.slice(0, CACHE_MAX_POSTS),
+    };
+    localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+  } catch (e) {
+    // Silent fail for storage errors
+  }
+};
+
+// Retrieve cached posts
+const getCachedPosts = (feedType) => {
+  try {
+    const cacheKey = `${CACHE_KEY_PREFIX}${feedType}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (!cached) return null;
+    
+    const cacheData = JSON.parse(cached);
+    const isValid = Date.now() - cacheData.timestamp < CACHE_TTL_MS;
+    
+    return isValid ? cacheData.posts : null;
+  } catch (e) {
+    return null;
+  }
+};
 // Normalize profile/author shapes across:
 // - FK join results (post.profiles = object/array)
 // - Legacy results (post.author = object/array)
@@ -19,17 +57,21 @@ const POSTS_PER_PAGE = 10;
 const normalizeProfile = (post) => {
   if (!post) return null;
 
+  // Handle FK join results - profiles returned as array from Supabase
   const joinedProfile =
     Array.isArray(post.profiles) ? post.profiles[0] :
     Array.isArray(post.author)   ? post.author[0]   :
     post.profiles || post.author || null;
 
   if (joinedProfile) {
-    const hasLabel =
+    // Check if profile has meaningful data
+    const hasData =
       (joinedProfile.username && String(joinedProfile.username).trim()) ||
       (joinedProfile.full_name && String(joinedProfile.full_name).trim()) ||
-      (joinedProfile.avatar_url && String(joinedProfile.avatar_url).trim());
-    if (hasLabel || joinedProfile.id) return joinedProfile;
+      (joinedProfile.avatar_url && String(joinedProfile.avatar_url).trim()) ||
+      joinedProfile.id ||
+      joinedProfile.is_verified;
+    if (hasData) return joinedProfile;
   }
 
   // RPC fallback: build a profile-like object so UI components can rely on `post.profiles.*`
@@ -58,6 +100,16 @@ const normalizeProfile = (post) => {
 const enrichPosts = (rawPosts, userLikes = [], userSaves = []) =>
   rawPosts.map((post) => {
     const safeProfile = normalizeProfile(post);
+    
+    // Preserve original avatar_url from joined profile if available
+    const originalAvatar = post.profiles?.avatar_url || post.profiles?.[0]?.avatar_url || 
+                          post.author?.avatar_url || post.author?.[0]?.avatar_url ||
+                          post.avatar_url || null;
+    
+    // Merge original avatar into safeProfile before normalization
+    if (originalAvatar && safeProfile) {
+      safeProfile.avatar_url = originalAvatar;
+    }
 
     return {
       ...post,
@@ -126,17 +178,21 @@ export const usePosts = (feedType = 'home') => {
       // Home should always be public/global posts (works with or without auth).
       // The RPC `get_feed_posts` is "following feed" semantics and can return 0
       // when you do not follow anyone, which makes Home look broken.
-      const { data: secureData, error: secureError } = currentUser?.id
-        ? await supabase.rpc('get_home_feed_secure', {
-            p_user_id: currentUser.id,
-            p_limit: POSTS_PER_PAGE,
-            p_offset: offset,
-          })
-        : { data: null, error: new Error('UNAUTHENTICATED') };
+      let usedRpc = false;
+      if (currentUser?.id) {
+        const { data: secureData, error: secureError } = await supabase.rpc('get_home_feed_secure', {
+          p_user_id: currentUser.id,
+          p_limit: POSTS_PER_PAGE,
+          p_offset: offset,
+        });
+        if (!secureError && Array.isArray(secureData) && secureData.length > 0) {
+          rawPosts = secureData;
+          usedRpc = true;
+        }
+      }
 
-      if (!secureError && Array.isArray(secureData)) {
-        rawPosts = secureData || [];
-      } else {
+      // Fallback to direct query if RPC failed or returned no data
+      if (!usedRpc) {
         const { data, error } = await supabase
           .from('posts')
           .select(`*, ${PROFILE_SELECT}`)
@@ -218,6 +274,9 @@ export const usePosts = (feedType = 'home') => {
     };
   }, [feedType]); // ← only feedType dep; user comes from ref
 
+  // Get initial cached data for instant launch experience
+  const initialCachedData = useRef(getCachedPosts(feedType)).current;
+
   const {
     data,
     fetchNextPage,
@@ -237,6 +296,10 @@ export const usePosts = (feedType = 'home') => {
     staleTime:        30_000,
     gcTime:           5 * 60_000,
     retry:            2,
+    initialData: initialCachedData ? {
+      pages: [{ posts: initialCachedData, hasMore: true }],
+      pageParams: [0],
+    } : undefined,
   });
 
   const posts = Array.from(
@@ -244,6 +307,13 @@ export const usePosts = (feedType = 'home') => {
       (data?.pages?.flatMap((p) => p.posts) || []).map((post) => [post.id, post])
     ).values()
   );
+
+  // Sovereign Caching: Store posts for instant launch
+  useEffect(() => {
+    if (posts.length > 0) {
+      cachePosts(feedType, posts);
+    }
+  }, [posts, feedType]);
 
   const prefetchNextPage = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {

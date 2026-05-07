@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap');
 
 :root {
    /* ============================================
@@ -6,9 +6,11 @@
        Brand Gradient: #7E57C2 → #4527A0
        ============================================ */
 
-   /* Background Layers */
+   /* Background Layers (Golden Deep Purple Base) */
    --bg-primary: #0f0a1e;
+   --bg-primary-rgb: 15, 10, 30;
    --bg-secondary: #160d2a;
+   --bg-secondary-rgb: 22, 13, 42;
    --bg-tertiary: #1e1235;
    --bg-card: #1a1030;
    --bg-elevated: #231542;
@@ -21,11 +23,11 @@
    --glass-bg: rgba(126, 87, 194, 0.1);
    --glass-bg-hover: rgba(126, 87, 194, 0.15);
    --glass-bg-solid: rgba(23, 13, 48, 0.85);
-   --glass-border: rgba(255, 255, 255, 0.12);
-   --glass-border-hover: rgba(139, 92, 246, 0.45);
+   --glass-border: rgba(167, 139, 250, 0.2);
+   --glass-border-hover: rgba(167, 139, 250, 0.4);
    --glass-border-active: rgba(139, 92, 246, 0.8);
-   --glass-surface: rgba(255, 255, 255, 0.04);
-   --glass-surface-hover: rgba(255, 255, 255, 0.08);
+   --glass-surface: rgba(126, 87, 194, 0.05);
+   --glass-surface-hover: rgba(126, 87, 194, 0.1);
 
    /* Blur Depths */
    --blur-sm: blur(10px);
@@ -49,6 +51,7 @@
 
    /* Primary Palette */
    --primary: #8b5cf6;
+   --primary-rgb: 139, 92, 246;
    --primary-hover: #7c3aed;
    --primary-light: #a78bfa;
    --primary-dim: rgba(139, 92, 246, 0.2);
@@ -64,12 +67,16 @@
 
    /* Status Colors */
    --success: #10B981;
+   --success-rgb: 16, 185, 129;
    --success-dim: rgba(16, 185, 129, 0.15);
    --warning: #F59E0B;
+   --warning-rgb: 245, 158, 11;
    --warning-dim: rgba(245, 158, 11, 0.15);
    --error: #ef4444;
+   --error-rgb: 239, 68, 68;
    --error-dim: rgba(239, 68, 68, 0.15);
    --info: #3B82F6;
+   --info-rgb: 59, 130, 246;
    --info-dim: rgba(59, 130, 246, 0.15);
 
    /* ============================================
@@ -77,6 +84,7 @@
        ============================================ */
 
    --text-primary: #ffffff;
+   --text-primary-rgb: 255, 255, 255;
    --text-secondary: #e2d9f3;
    --text-tertiary: #b8a8d4;
    --text-muted: #a78bfa;
@@ -129,6 +137,8 @@
        ============================================ */
 
    --font-primary: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+   --font-body: 'Manrope', 'Inter', system-ui, sans-serif;
+   --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
    --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
 
    /* Font Sizes */
@@ -250,6 +260,7 @@
    --transition-premium-fast: 220ms cubic-bezier(0.22, 1, 0.36, 1);
    --transition-premium: 340ms cubic-bezier(0.22, 1, 0.36, 1);
    --transition-premium-slow: 480ms cubic-bezier(0.22, 1, 0.36, 1);
+   --transition-cinematic: 720ms cubic-bezier(0.22, 1, 0.36, 1);
 
    /* ============================================
        LAYOUT DIMENSIONS
@@ -262,4 +273,150 @@
    --content-max: 680px;
    --feed-max: 600px;
    --right-panel-width: 340px;
+
+   /* ============================================
+       H2 THEME UNIFICATION (Universal Foundation)
+       Mapping legacy h2- variables to the global Royal Lavender system
+       ============================================ */
+
+   --h2-black: var(--bg-primary);
+   --h2-black-soft: var(--bg-secondary);
+   --h2-black-elevated: var(--bg-elevated);
+
+   --h2-glass-blur: 20px;
+   --h2-glass-border: var(--glass-border);
+   --h2-glass-bg: var(--glass-bg);
+   --h2-glass-bg-hover: var(--glass-bg-hover);
+   --h2-glass-shadow: var(--shadow-card);
+
+   --h2-satin-border: var(--glass-border);
+   --h2-satin-inset: var(--shadow-inset);
+
+   --h2-purple: var(--primary);
+   --h2-purple-light: var(--primary-light);
+   --h2-purple-dark: var(--primary-hover);
+   --h2-magenta: #ec4899;
+   --h2-magenta-light: #f472b6;
+   --h2-gold: var(--warning);
+   --h2-gold-light: #fbbf24;
+   --h2-success: var(--success);
+   --h2-error: var(--error);
+   --h2-warning: var(--warning);
+
+   --h2-text-primary: var(--text-primary);
+   --h2-text-secondary: var(--text-secondary);
+   --h2-text-tertiary: var(--text-tertiary);
+   --h2-text-muted: var(--text-muted);
+
+   --h2-space-xs: var(--space-1);
+   --h2-space-sm: var(--space-2);
+   --h2-space-md: var(--space-4);
+   --h2-space-lg: var(--space-6);
+   --h2-space-xl: var(--space-8);
+   --h2-space-2xl: var(--space-12);
+
+   --h2-radius-sm: var(--radius-sm);
+   --h2-radius-md: var(--radius-md);
+   --h2-radius-lg: var(--radius-lg);
+   --h2-radius-xl: var(--radius-xl);
+   --h2-radius-2xl: var(--radius-2xl);
+   --h2-radius-full: var(--radius-full);
+
+   --h2-transition-fast: var(--transition-fast);
+   --h2-transition-base: var(--transition-base);
+   --h2-transition-slow: var(--transition-slow);
+   --h2-transition-cinematic: var(--transition-cinematic, 0.8s cubic-bezier(0.4, 0, 0.2, 1));
+
+   --h2-z-base: var(--z-base);
+   --h2-z-elevated: var(--z-raised);
+   --h2-z-dropdown: var(--z-dropdown);
+   --h2-z-sticky: var(--z-sticky);
+   --h2-z-modal: var(--z-modal);
+   --h2-z-popover: var(--z-popover);
+   --h2-z-tooltip: var(--z-tooltip);
+   --h2-z-toast: var(--z-toast);
+
+   /* Legacy aliases still used across shared controls */
+   --border-default: var(--border-medium);
+   --lavender-gradient: var(--gradient-royal);
+
+   /* ============================================
+       GLASSMORPHISM DEPTH LAYERS (3 tiers)
+       ============================================ */
+
+   /* Tier 1 — Subtle surface (cards, list items) */
+   --glass-depth-1: rgba(126, 87, 194, 0.06);
+   --glass-depth-1-border: rgba(167, 139, 250, 0.12);
+   --glass-depth-1-blur: blur(12px);
+
+   /* Tier 2 — Elevated surface (modals, dropdowns) */
+   --glass-depth-2: rgba(126, 87, 194, 0.12);
+   --glass-depth-2-border: rgba(167, 139, 250, 0.22);
+   --glass-depth-2-blur: blur(20px);
+
+   /* Tier 3 — Floating surface (overlays, tooltips) */
+   --glass-depth-3: rgba(126, 87, 194, 0.18);
+   --glass-depth-3-border: rgba(167, 139, 250, 0.3);
+   --glass-depth-3-blur: blur(30px);
+
+   /* ============================================
+       INTERACTIVE STATE TOKENS
+       ============================================ */
+
+   --hover-bg: rgba(139, 92, 246, 0.08);
+   --hover-bg-strong: rgba(139, 92, 246, 0.15);
+   --active-bg: rgba(139, 92, 246, 0.2);
+   --selected-bg: rgba(139, 92, 246, 0.12);
+   --selected-border: rgba(139, 92, 246, 0.5);
+   --disabled-opacity: 0.4;
+
+   /* ============================================
+       AVATAR SYSTEM
+       ============================================ */
+
+   --avatar-xs: 28px;
+   --avatar-sm: 36px;
+   --avatar-md: 44px;
+   --avatar-lg: 56px;
+   --avatar-xl: 72px;
+   --avatar-2xl: 96px;
+   --avatar-3xl: 128px;
+   --avatar-ring-width: 2px;
+   --avatar-ring-color: var(--primary);
+   --avatar-ring-gradient: var(--gradient-royal);
+   --avatar-online-color: #10B981;
+   --avatar-offline-color: rgba(255, 255, 255, 0.2);
+
+   /* ============================================
+       CONTENT OVERLAY SYSTEM
+       ============================================ */
+
+   --overlay-dark: rgba(0, 0, 0, 0.65);
+   --overlay-darker: rgba(0, 0, 0, 0.8);
+   --overlay-light: rgba(0, 0, 0, 0.4);
+   --overlay-gradient-bottom: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+   --overlay-gradient-top: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), transparent);
+   --overlay-vignette: radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.4) 100%);
+
+   /* ============================================
+       ENHANCED SHADOW CASCADE
+       ============================================ */
+
+   --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.5), 
+                        0 0 0 1px rgba(139, 92, 246, 0.15),
+                        0 0 20px rgba(139, 92, 246, 0.1);
+   --shadow-floating: 0 16px 48px rgba(0, 0, 0, 0.6), 
+                      0 0 0 1px rgba(255, 255, 255, 0.05);
+   --shadow-modal: 0 24px 80px rgba(0, 0, 0, 0.7),
+                   0 0 0 1px rgba(139, 92, 246, 0.1),
+                   0 0 40px rgba(139, 92, 246, 0.08);
+
+   /* ============================================
+       INTERACTION FEEDBACK
+       ============================================ */
+
+   --ripple-color: rgba(139, 92, 246, 0.25);
+   --focus-ring: 0 0 0 3px rgba(139, 92, 246, 0.3);
+   --focus-ring-error: 0 0 0 3px rgba(239, 68, 68, 0.3);
+   --focus-ring-success: 0 0 0 3px rgba(16, 185, 129, 0.3);
 }

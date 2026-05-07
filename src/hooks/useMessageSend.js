@@ -39,16 +39,6 @@ export const useMessageSend = (senderId, receiverId, session) => {
             const msgType = options.type || options.messageType || 'text';
             const replyToId = options.replyTo || options.reply_to_message_id || null;
 
-            console.log('📤 sendMessage called:', {
-                senderId,
-                receiverId,
-                conversationId: options.conversationId,
-                content,
-                msgType,
-                metadata: options.metadata,
-                attachmentData: options.attachmentData
-            });
-
             if (!session) {
                 throw new Error('No active session - please log in');
             }
@@ -87,7 +77,7 @@ export const useMessageSend = (senderId, receiverId, session) => {
                 payload.attachments = messageAttachments;
             }
 
-            console.log('📦 Final payload:', payload);
+
 
             // Use native Supabase JS SDK
             const { data, error: insertErr } = await supabase
@@ -101,7 +91,7 @@ export const useMessageSend = (senderId, receiverId, session) => {
                 throw new Error(insertErr.message);
             }
 
-            console.log('✅ Message sent successfully:', data);
+
             playMessageSent();
 
             return data;

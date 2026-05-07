@@ -14,21 +14,15 @@ export const useFollowers = (userId) => {
             if (!userId) return;
 
             setLoading(true);
-            console.log('🚀 [Followers] Starting fetch for:', userId);
+
 
             try {
                 // 1. Get Config
                 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://nmhrtllprmonqqocwzvf.supabase.co';
                 const supabaseKey = process.env.REACT_APP_SUPABASE_KEY || supabase.supabaseKey;
 
-                console.log('📊 [Followers] Config check:', {
-                    hasUrl: !!supabaseUrl,
-                    hasKey: !!supabaseKey
-                });
-
                 // 2. Get Token (Try localStorage directly to avoid Supabase client hang)
                 let token = null;
-                console.log('🔑 [Followers] Getting token...');
 
                 // Try getting session from Supabase client first, but with timeout
                 try {
@@ -55,10 +49,10 @@ export const useFollowers = (userId) => {
                     console.error('❌ [Followers] No token found');
                     throw new Error('Not authenticated');
                 }
-                console.log('✅ [Followers] Got token');
+
 
                 // 3. Fetch Follows
-                console.log('📡 [Followers] Fetching follows list...');
+
                 const followsUrl = `${supabaseUrl}/rest/v1/follows?following_id=eq.${userId}&select=follower_id,created_at`;
 
                 const followsRes = await fetch(followsUrl, {
@@ -74,7 +68,7 @@ export const useFollowers = (userId) => {
                 if (!followsRes.ok) throw new Error(`Follows fetch error: ${followsRes.status}`);
 
                 const followsData = await followsRes.json();
-                console.log('✅ [Followers] Follows data:', followsData.length);
+
 
                 if (followsData.length === 0) {
                     if (isMounted) {
@@ -86,7 +80,7 @@ export const useFollowers = (userId) => {
 
                 // 4. Fetch Profiles
                 const ids = followsData.map(f => f.follower_id).join(',');
-                console.log('📡 [Followers] Fetching profiles...');
+
 
                 const profilesUrl = `${supabaseUrl}/rest/v1/profiles?id=in.(${ids})&select=id,username,full_name,avatar_url,verified`;
                 const profilesRes = await fetch(profilesUrl, {
@@ -102,7 +96,7 @@ export const useFollowers = (userId) => {
                 if (!profilesRes.ok) throw new Error(`Profiles fetch error: ${profilesRes.status}`);
 
                 const profilesData = await profilesRes.json();
-                console.log('✅ [Followers] Profiles data:', profilesData.length);
+
 
                 // 5. Combine
                 const combined = followsData.map(f => {

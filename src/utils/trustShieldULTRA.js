@@ -156,10 +156,10 @@ export const generateUltraFingerprint = () => {
     navigator.webdriver,
     
     // Screen
-    screen.width + 'x' + screen.height + '@' + screen.colorDepth,
-    screen.availWidth + 'x' + screen.availHeight,
+    window.screen.width + 'x' + window.screen.height + '@' + window.screen.colorDepth,
+    window.screen.availWidth + 'x' + window.screen.availHeight,
     window.devicePixelRatio,
-    screen.orientation?.type,
+    window.screen.orientation?.type,
     
     // Timezone
     Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -608,10 +608,19 @@ export const verifySovereignIdentity = async (hash, userId = null) => {
   if (!hash) return { unique: false, message: 'Identity hash missing — cannot verify.' };
 
   try {
-    const { data, error } = await supabase.rpc('verify_unique_identity', {
+
+    
+    // Add timeout to prevent hanging
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('RPC_TIMEOUT')), 10000)
+    );
+    
+    const rpcPromise = supabase.rpc('verify_unique_identity', {
       p_hash:    hash,
       p_user_id: userId || null,
     });
+    
+    const { data, error } = await Promise.race([rpcPromise, timeoutPromise]);
 
     if (error) {
       console.error('[TrustShield] verify_unique_identity RPC error:', error);
@@ -621,6 +630,8 @@ export const verifySovereignIdentity = async (hash, userId = null) => {
         message: 'Identity verification service unavailable. Please try again.',
       };
     }
+
+
 
     if (!data?.unique) {
       return {
@@ -632,6 +643,10 @@ export const verifySovereignIdentity = async (hash, userId = null) => {
 
     return { unique: true };
   } catch (e) {
+    if (e.message === 'RPC_TIMEOUT') {
+      console.error('[TrustShield] verifySovereignIdentity TIMEOUT after 10s');
+      return { unique: false, message: 'Identity check timed out. Please try again.' };
+    }
     console.error('[TrustShield] verifySovereignIdentity exception:', e);
     return { unique: false, message: 'Identity check failed. Please try again.' };
   }

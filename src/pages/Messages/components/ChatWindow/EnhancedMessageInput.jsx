@@ -166,19 +166,19 @@ const EnhancedMessageInput = ({
                 const isImage = mediaFile.type.startsWith('image/');
                 const uploadFn = isImage ? uploadImage : uploadVideo;
 
-                console.log('📤 Uploading media:', mediaFile.name);
+
                 const attachmentData = await uploadFn(mediaFile, currentUserId, (percent) => {
                     setUploadProgress(percent);
                 });
-                console.log('✅ Upload complete:', attachmentData);
+
 
                 messageData.type = isImage ? 'image' : 'video';
                 messageData.attachmentData = attachmentData;
             }
 
-            console.log('📨 Sending message:', messageData);
+
             await onSendMessage(messageData);
-            console.log('✅ Message sent successfully');
+
 
             // Clear input and reset file input
             setText('');

@@ -27,7 +27,7 @@ const TeenCareDebug = () => {
                     .eq('parent_id', user.id);
 
                 setRawData(data);
-                console.log('Raw guardian_relationships data:', data);
+
             } catch (err) {
                 console.error('Error fetching raw data:', err);
             }

@@ -88,6 +88,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
     const channelRef = useRef(null);
     const captureIntervalRef = useRef(null);
     const keysPressed = useRef(new Set());
+    const fileInputRef = useRef(null);
 
     // Progress calculation
     const progress = useMemo(() => {
@@ -275,47 +276,71 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
         setError('');
         setErrorType(null);
         
-        try {
-            // Try front camera first (selfie mode)
-            const stream = await navigator.mediaDevices.getUserMedia({ 
+        const cameraConfigs = [
+            // Try front camera first for liveness/selfie
+            { 
                 video: { 
                     facingMode: 'user',
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 }
+                    width: { ideal: 1920 },
+                    height: { ideal: 1080 }
                 }, 
                 audio: false 
-            });
-            streamRef.current = stream;
-            if (videoRef.current) {
-                videoRef.current.srcObject = stream;
-                videoRef.current.onloadedmetadata = () => {
-                    setVideoReady(true);
-                    setCameraDenied(false);
-                };
-            }
-        } catch (err) {
-            console.error('[TrustShield] Front camera failed:', err);
-            
-            // Try any available camera
+            },
+            // Try back camera
+            { 
+                video: { 
+                    facingMode: 'environment',
+                    width: { ideal: 1920 },
+                    height: { ideal: 1080 }
+                }, 
+                audio: false 
+            },
+            // Fallback to any high-res camera
+            { 
+                video: { width: { ideal: 1280 }, height: { ideal: 720 } }, 
+                audio: false 
+            },
+            // Final fallback
+            { video: true, audio: false },
+        ];
+        
+        let lastError = null;
+        
+        for (let i = 0; i < cameraConfigs.length; i++) {
             try {
-                const fallbackStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { width: { ideal: 1280 }, height: { ideal: 720 } }, 
-                    audio: false 
-                });
-                streamRef.current = fallbackStream;
+                const stream = await navigator.mediaDevices.getUserMedia(cameraConfigs[i]);
+                streamRef.current = stream;
                 if (videoRef.current) {
-                    videoRef.current.srcObject = fallbackStream;
+                    videoRef.current.srcObject = stream;
+                    videoRef.current.playsInline = true; // Critical for iOS
+                    videoRef.current.muted = true; // Required for autoplay
                     videoRef.current.onloadedmetadata = () => {
                         setVideoReady(true);
                         setCameraDenied(false);
                     };
+                    await videoRef.current.play();
                 }
-            } catch (fallbackErr) {
-                console.error('[TrustShield] Camera access denied:', fallbackErr);
-                setCameraDenied(true);
-                setErrorType('camera');
-                setError('Camera access is required. Please enable camera permissions or use "Use Phone" option.');
+                return; // Success
+            } catch (err) {
+                lastError = err;
+                console.warn(`[TrustShield] Camera attempt ${i + 1} failed:`, err.message);
             }
+        }
+        
+        // All attempts failed
+        console.error('[TrustShield] All camera attempts failed:', lastError);
+        setCameraDenied(true);
+        setErrorType('camera');
+        
+        // Specific error messages
+        if (lastError?.name === 'NotAllowedError' || lastError?.name === 'PermissionDeniedError') {
+            setError('Camera permission denied. Please enable camera permissions in your browser settings.');
+        } else if (lastError?.name === 'NotFoundError') {
+            setError('No camera found. Please use the file upload option instead.');
+        } else if (lastError?.name === 'NotReadableError') {
+            setError('Camera is in use by another app. Please close other apps and try again.');
+        } else {
+            setError('Camera access failed. Please use the file upload option instead.');
         }
     }, []);
 
@@ -367,16 +392,40 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
         }
         
         const file = event.target.files?.[0];
-        if (!file) return;
+        if (!file) {
+            console.warn('[TrustShield] No file selected');
+            return;
+        }
+        
+        // Reset file input so same file can be selected again
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
         
         setIdFile(file);
         setError('');
         setErrorType(null);
         setShowDobMismatchModal(false);
+        setOcrResult(null);
         
-        const result = await scanID(file, formData?.ageTier || null);
+
+        
+        let result;
+        try {
+            result = await scanID(file, formData?.ageTier || null);
+        } catch (scanErr) {
+            console.error('[TrustShield] scanID threw error:', scanErr);
+            setError('Failed to process image: ' + (scanErr.message || 'Unknown error'));
+            return;
+        }
+        
+        if (!result) {
+            setError('No result from OCR. Please try again.');
+            return;
+        }
         
         if (!result.ok) {
+            console.error('[TrustShield] OCR failed:', result.reason);
             setError(result.reason || 'Failed to read ID. Please try again with better lighting.');
             return;
         }
@@ -678,7 +727,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
         }
         
         // Final check before navigation
-        console.log('[TrustShield] ✅ All guards passed - proceeding to next step');
+
         onNext();
     }, [matchResult, ocrResult, isTeen, handshakeLink, formData?.guardianHandshakeLink, updateFormData, onNext]);
 
@@ -872,6 +921,7 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                                 <label className={styles.uploadBtn}>
                                     <Camera size={16} /> Take Photo
                                     <input 
+                                        key={`camera-${Date.now()}`}
                                         type="file" 
                                         accept="image/*" 
                                         capture="environment"
@@ -888,6 +938,8 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                                 }}>
                                     <Upload size={16} /> Upload File
                                     <input 
+                                        key={`upload-${Date.now()}`}
+                                        ref={fileInputRef}
                                         type="file" 
                                         accept="image/*" 
                                         onChange={handleIdUpload} 

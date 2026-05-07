@@ -49,7 +49,7 @@ const TrendingPanel = () => {
 
             if (postsRes.ok) {
                 const posts = await postsRes.json();
-                console.log('✅ Viral posts fetched:', posts.length);
+
                 // Add default counts
                 const postsWithCounts = posts.map(post => ({
                     ...post,

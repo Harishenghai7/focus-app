@@ -12,7 +12,7 @@
 
 .dimmed {
     position: absolute;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(var(--bg-primary-rgb), 0.6);
     pointer-events: none;
 }
 
@@ -20,8 +20,8 @@
     position: absolute;
     border: 2px solid var(--primary-lavender);
     box-shadow:
-        0 0 0 2000px rgba(0, 0, 0, 0),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+        0 0 0 2000px rgba(var(--bg-primary-rgb), 0),
+        inset 0 0 0 1px rgba(var(--text-primary-rgb), 0.3);
     cursor: move;
     pointer-events: auto;
     transition: box-shadow 0.2s;
@@ -29,8 +29,8 @@
 
 .cropBox:hover {
     box-shadow:
-        0 0 0 2000px rgba(0, 0, 0, 0),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+        0 0 0 2000px rgba(var(--bg-primary-rgb), 0),
+        inset 0 0 0 1px rgba(var(--text-primary-rgb), 0.5),
         0 0 20px rgba(var(--primary-lavender-rgb), 0.4);
 }
 
@@ -42,7 +42,7 @@
 
 .gridLine {
     position: absolute;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(var(--text-primary-rgb), 0.3);
     pointer-events: none;
 }
 

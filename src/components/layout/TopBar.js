@@ -45,18 +45,24 @@ const TopBar = () => {
             const { count: notifCount } = await supabase
                 .from('notifications')
                 .select('*', { count: 'exact', head: true })
-                .eq('recipient_id', user.id)
+                .eq('user_id', user.id)
                 .eq('read', false);
 
-            // Get unread messages count
-            const { count: msgCount } = await supabase
-                .from('messages')
-                .select('*', { count: 'exact', head: true })
-                .eq('recipient_id', user.id)
-                .eq('read', false);
+            // Get unread messages count using optimized RPC
+            let unreadMsgCount = 0;
+            try {
+                const { data: unreadCount, error: unreadErr } = await supabase
+                    .rpc('get_unread_message_count', { p_user_id: user.id });
+                if (!unreadErr && unreadCount !== null) {
+                    unreadMsgCount = unreadCount;
+                }
+            } catch {
+                // Silent fail - message count is non-critical
+                unreadMsgCount = 0;
+            }
 
             setUnreadNotifications(notifCount || 0);
-            setUnreadMessages(msgCount || 0);
+            setUnreadMessages(unreadMsgCount);
         } catch (error) {
             console.error('Error fetching unread counts:', error);
         }

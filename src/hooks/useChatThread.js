@@ -48,7 +48,7 @@ export const useChatThread = (currentUserId, conversationId, session) => {
 
     const fetchConversation = async () => {
         try {
-            console.log('🔍 useChatThread: Fetching conversation:', conversationId);
+
             // Get conversation details
             const { data: conv, error: convError } = await supabase
                 .from('conversations')
@@ -60,11 +60,11 @@ export const useChatThread = (currentUserId, conversationId, session) => {
                 console.error('❌ Error fetching conversation:', convError);
                 throw convError;
             }
-            console.log('✅ Conversation fetched:', conv);
+
             setConversation(conv);
 
             // Get participants
-            console.log('🔍 Fetching participants for conversation:', conversationId);
+
             const { data: parts, error: partsError } = await supabase
                 .from('conversation_participants')
                 .select(`
@@ -78,7 +78,7 @@ export const useChatThread = (currentUserId, conversationId, session) => {
                 throw partsError;
             }
 
-            console.log('📋 Fetched participants:', parts);
+
             setParticipants(parts || []);
         } catch (err) {
             console.error('Error fetching conversation:', err);
@@ -89,10 +89,10 @@ export const useChatThread = (currentUserId, conversationId, session) => {
     const fetchMessages = async () => {
         try {
             setLoading(true);
-            console.log('📨 Fetching messages for conversation:', conversationId);
+
 
             // Use session passed from parent
-            console.log('🔐 Using passed session:', session ? 'YES' : 'NO');
+
 
             if (!session) {
                 console.error('❌ No session for fetch');
@@ -102,7 +102,7 @@ export const useChatThread = (currentUserId, conversationId, session) => {
             }
 
             // Use native Supabase JS SDK
-            console.log('📡 Fetching via SDK...');
+
             const { data, error: fetchErr } = await supabase
                 .from('messages')
                 .select('*')
@@ -113,11 +113,6 @@ export const useChatThread = (currentUserId, conversationId, session) => {
                 console.error('❌ Fetch error:', fetchErr.message);
                 throw new Error(fetchErr.message);
             }
-
-            console.log('📨 Fetch result:', {
-                messageCount: data?.length || 0,
-                conversationId,
-            });
 
             setMessages(data || []);
             setError(null);
@@ -146,19 +141,19 @@ export const useChatThread = (currentUserId, conversationId, session) => {
     };
 
     const handleNewMessage = (payload) => {
-        console.log('New message:', payload);
+
         setMessages(prev => [...prev, payload.new]);
     };
 
     const handleMessageUpdate = (payload) => {
-        console.log('Message updated:', payload);
+
         setMessages(prev => prev.map(msg =>
             msg.id === payload.new.id ? { ...msg, ...payload.new } : msg
         ));
     };
 
     const handleMessageDelete = (payload) => {
-        console.log('Message deleted:', payload);
+
         setMessages(prev => prev.filter(msg => msg.id !== payload.old.id));
     };
 

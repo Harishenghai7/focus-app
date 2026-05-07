@@ -13,17 +13,8 @@ export const useBoltzFeed = (tab = 'foryou') => {
   const [page, setPage] = useState(0);
   const [moreLoading, setMoreLoading] = useState(false);
   const ITEMS_PER_PAGE = 10;
-  const isMissingTable = (err) => /does not exist|Could not find the table|42P01|PGRST205/i.test(
-    `${err?.message || ''}${err?.details || ''}${err?.hint || ''}${err?.code || ''}`
-  );
-
-  const resolveBoltzSaveTable = useCallback(async () => {
-    const primary = await supabase.from('saved_boltz').select('boltz_id').limit(1);
-    if (!primary.error || !isMissingTable(primary.error)) return 'saved_boltz';
-    const fallback = await supabase.from('boltz_saves').select('boltz_id').limit(1);
-    if (!fallback.error || !isMissingTable(fallback.error)) return 'boltz_saves';
-    return 'saved_boltz';
-  }, []);
+  // Always use boltz_saves as the correct table
+  const BOLTZ_SAVES_TABLE = 'boltz_saves';
 
   // ── Use ref for user so fetchInitialBoltz is STABLE (only tab dep) ──
   const userRef = useRef(user);
@@ -57,6 +48,7 @@ export const useBoltzFeed = (tab = 'foryou') => {
         await assertTrustShieldVerified(currentUser.id);
       }
 
+      // Use unified RPC that handles all column variations
       const { data: secureData, error: secureError } = currentUser?.id
         ? await supabase.rpc('get_boltz_feed_secure', {
             p_user_id: currentUser.id,
@@ -68,11 +60,10 @@ export const useBoltzFeed = (tab = 'foryou') => {
       // For You — public boltz, no auth required
       const { data, error } = !secureError
         ? { data: secureData, error: null }
-        : await supabase
-            .from('boltz')
-            .select('*, profiles:user_id(id, username, full_name, avatar_url, is_verified)')
-            .order('created_at', { ascending: false })
-            .limit(ITEMS_PER_PAGE);
+        : await supabase.rpc('get_public_boltz_feed', {
+            p_limit: ITEMS_PER_PAGE,
+            p_offset: 0,
+          });
 
       if (error) throw error;
       boltzData = data || [];
@@ -83,7 +74,7 @@ export const useBoltzFeed = (tab = 'foryou') => {
     let userSaves = [];
     if (currentUser?.id && boltzData.length > 0) {
       const boltzIds = boltzData.map((b) => b.id);
-      const saveTable = await resolveBoltzSaveTable();
+      const saveTable = BOLTZ_SAVES_TABLE;
       const [likesRes, savesRes] = await Promise.allSettled([
         supabase.from('boltz_likes').select('boltz_id').eq('user_id', currentUser.id).in('boltz_id', boltzIds),
         supabase.from(saveTable).select('boltz_id').eq('user_id', currentUser.id).in('boltz_id', boltzIds),
@@ -120,7 +111,7 @@ export const useBoltzFeed = (tab = 'foryou') => {
         thumbnail_url:  item.thumbnail_url || item.poster_url || item.preview_image || item.cover_url || null,
       };
     });
-  }, [tab, resolveBoltzSaveTable]); // ← ONLY tab dep + stable helpers.
+  }, [tab]); // ← ONLY tab dep + stable helpers.
 
   const {
     loading: initialLoading,
@@ -150,26 +141,15 @@ export const useBoltzFeed = (tab = 'foryou') => {
       let newItems   = [];
 
       if (tab === 'following' && currentUser?.id) {
-        const { data: followingData } = await supabase
-          .from('follows')
-          .select('following_id')
-          .eq('follower_id', currentUser.id);
-
-        const ids = followingData?.map((f) => f.following_id) || [];
-        if (ids.length === 0) { setHasMore(false); return; }
-
-        const { data } = await supabase
-          .from('boltz')
-          .select('*, profiles:user_id(id, username, full_name, avatar_url, is_verified)')
-          .in('user_id', ids)
-          .order('created_at', { ascending: false })
-          .range(offset, offset + ITEMS_PER_PAGE - 1);
-
+        // Use following-specific RPC
+        const { data } = await supabase.rpc('get_following_boltz_feed', {
+          p_user_id: currentUser.id,
+          p_limit: ITEMS_PER_PAGE,
+          p_offset: offset,
+        });
         newItems = data || [];
       } else {
-        if (currentUser?.id) {
-          await assertTrustShieldVerified(currentUser.id);
-        }
+        // Use unified RPC that handles all column variations
         const { data: secureData, error: secureError } = currentUser?.id
           ? await supabase.rpc('get_boltz_feed_secure', {
               p_user_id: currentUser.id,
@@ -178,19 +158,18 @@ export const useBoltzFeed = (tab = 'foryou') => {
             })
           : { data: null, error: new Error('UNAUTHENTICATED') };
 
-        const { data } = await supabase
-          .from('boltz')
-          .select('*, profiles:user_id(id, username, full_name, avatar_url, is_verified)')
-          .order('created_at', { ascending: false })
-          .range(offset, offset + ITEMS_PER_PAGE - 1);
+        const { data: publicData } = await supabase.rpc('get_public_boltz_feed', {
+          p_limit: ITEMS_PER_PAGE,
+          p_offset: offset,
+        });
 
-        newItems = secureError ? (data || []) : (secureData || []);
+        newItems = secureError ? (publicData || []) : (secureData || publicData || []);
       }
 
       let userLikes = [], userSaves = [];
       if (userRef.current?.id && newItems.length > 0) {
         const boltzIds = newItems.map((b) => b.id);
-        const saveTable = await resolveBoltzSaveTable();
+        const saveTable = BOLTZ_SAVES_TABLE;
         const [likesRes, savesRes] = await Promise.allSettled([
           supabase.from('boltz_likes').select('boltz_id').eq('user_id', userRef.current.id).in('boltz_id', boltzIds),
           supabase.from(saveTable).select('boltz_id').eq('user_id', userRef.current.id).in('boltz_id', boltzIds),

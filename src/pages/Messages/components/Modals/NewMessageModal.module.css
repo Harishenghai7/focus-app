@@ -8,7 +8,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(var(--bg-primary-rgb), 0.8);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -27,7 +27,7 @@
 }
 
 .modal {
-    background: #262626;
+    background: var(--bg-primary);
     border-radius: 16px;
     width: 90%;
     max-width: 548px;
@@ -56,20 +56,20 @@
     align-items: center;
     justify-content: space-between;
     padding: 16px 20px;
-    border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.1);
 }
 
 .title {
     font-size: 16px;
     font-weight: 700;
-    color: #FFFFFF;
+    color: var(--text-primary);
     margin: 0;
 }
 
 .closeBtn {
     background: none;
     border: none;
-    color: #FFFFFF;
+    color: var(--text-primary);
     cursor: pointer;
     padding: 4px;
     display: flex;
@@ -88,26 +88,26 @@
     align-items: center;
     gap: 12px;
     padding: 12px 20px;
-    border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.1);
 }
 
 .searchLabel {
     font-size: 16px;
     font-weight: 600;
-    color: #FFFFFF;
+    color: var(--text-primary);
 }
 
 .searchInput {
     flex: 1;
     background: none;
     border: none;
-    color: #FFFFFF;
+    color: var(--text-primary);
     font-size: 14px;
     outline: none;
 }
 
 .searchInput::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(var(--text-primary-rgb), 0.4);
 }
 
 /* Selected Users Pills */
@@ -116,7 +116,7 @@
     flex-wrap: wrap;
     gap: 8px;
     padding: 12px 20px;
-    border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.1);
 }
 
 .userPill {
@@ -124,16 +124,16 @@
     align-items: center;
     gap: 6px;
     padding: 6px 12px;
-    background: rgba(139, 92, 246, 0.2);
+    background: rgba(var(--primary-rgb), 0.2);
     border-radius: 20px;
     font-size: 14px;
-    color: #FFFFFF;
+    color: var(--text-primary);
 }
 
 .userPill button {
     background: none;
     border: none;
-    color: #FFFFFF;
+    color: var(--text-primary);
     cursor: pointer;
     padding: 0;
     display: flex;
@@ -152,7 +152,7 @@
     padding: 12px 20px 8px;
     font-size: 14px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(var(--text-primary-rgb), 0.5);
 }
 
 /* Users List */
@@ -171,7 +171,7 @@
 }
 
 .usersList::-webkit-scrollbar-thumb {
-    background: rgba(139, 92, 246, 0.3);
+    background: rgba(var(--primary-rgb), 0.3);
     border-radius: 3px;
 }
 
@@ -185,7 +185,7 @@
 }
 
 .userItem:hover {
-    background: rgba(139, 92, 246, 0.05);
+    background: rgba(var(--primary-rgb), 0.05);
 }
 
 .avatar {
@@ -203,12 +203,12 @@
 .username {
     font-size: 14px;
     font-weight: 600;
-    color: #FFFFFF;
+    color: var(--text-primary);
 }
 
 .fullName {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(var(--text-primary-rgb), 0.5);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -217,7 +217,7 @@
 .checkbox {
     width: 24px;
     height: 24px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(var(--text-primary-rgb), 0.3);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -226,8 +226,8 @@
 }
 
 .checkbox.checked {
-    background: #5B51D8;
-    border-color: #5B51D8;
+    background: var(--primary);
+    border-color: var(--primary);
 }
 
 /* Loading & Empty States */
@@ -237,14 +237,14 @@
     align-items: center;
     justify-content: center;
     padding: 40px 20px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(var(--text-primary-rgb), 0.5);
 }
 
 .spinner {
     width: 32px;
     height: 32px;
-    border: 3px solid rgba(139, 92, 246, 0.2);
-    border-top-color: #8B5CF6;
+    border: 3px solid rgba(var(--primary-rgb), 0.2);
+    border-top-color: var(--primary);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
@@ -258,16 +258,16 @@
 /* Footer */
 .footer {
     padding: 16px 20px;
-    border-top: 1px solid rgba(139, 92, 246, 0.1);
+    border-top: 1px solid rgba(var(--primary-rgb), 0.1);
 }
 
 .chatBtn {
     width: 100%;
     padding: 10px 24px;
-    background: #5B51D8;
+    background: var(--primary);
     border: none;
     border-radius: 8px;
-    color: #FFFFFF;
+    color: var(--text-primary);
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -275,7 +275,7 @@
 }
 
 .chatBtn:hover:not(:disabled) {
-    background: #6D63E8;
+    background: var(--primary);
     transform: translateY(-1px);
 }
 

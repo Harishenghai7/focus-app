@@ -9,7 +9,7 @@ import UserAvatar from '../ui/Avatar';
 import FocusIDBadge from '../ui/FocusIDBadge';
 import CommentsDrawer from './CommentsDrawer';
 import ShareModal from './ShareModal';
-import UniversalInteractionBar from '../ui/UniversalInteractionBar';
+import InteractionBar from '../shared/InteractionBar';
 import UniversalActionMenu from '../ui/UniversalActionMenu';
 import { pickDisplayLabel } from '../../utils/displayName';
 import styles from './PostCard.module.css';
@@ -38,7 +38,6 @@ const PostCard = ({ post }) => {
     const [showShare, setShowShare]         = useState(false);
     const [showActions, setShowActions]     = useState(false);
     const [heartBurst, setHeartBurst]       = useState(false);
-    const { toggleLike } = useInteractions(post?.id, 'post');
     const lastTap = useRef(0);
     const moreBtnRef = useRef(null);
 
@@ -145,17 +144,10 @@ const PostCard = ({ post }) => {
                 )}
 
                 {/* ── Universal Interaction Bar ──────────── */}
-                <UniversalInteractionBar
-                    postId={post?.id}
-                    contentType="post"
-                    isLiked={post?.is_liked || false}
-                    likeCount={post?.likes_count || 0}
-                    isSaved={post?.is_saved || false}
-                    commentCount={post?.comments_count || 0}
-                    shareCount={post?.shares_count ?? 0}
-                    savesCount={post?.saves_count ?? 0}
-                    onCommentClick={() => setShowComments(true)}
-                    onShareClick={() => setShowShare(true)}
+                <InteractionBar
+                    item={post}
+                    type="post"
+                    onCommentsClick={() => setShowComments(true)}
                 />
             </article>
 

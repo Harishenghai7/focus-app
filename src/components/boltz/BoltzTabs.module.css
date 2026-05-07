@@ -10,7 +10,7 @@
     align-items: center;
     gap: 8px;
     padding: 4px;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(var(--bg-primary-rgb), 0.5);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     z-index: 200;
@@ -21,7 +21,7 @@
 .tab {
     background: transparent;
     border: none;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(var(--text-primary-rgb), 0.6);
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
@@ -35,7 +35,7 @@
 }
 
 .tab:hover {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(var(--text-primary-rgb), 0.9);
 }
 
 .tab:active {
@@ -43,8 +43,8 @@
 }
 
 .tab.active {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+    background: rgba(var(--text-primary-rgb), 0.2);
 }
 
 /* Mobile */

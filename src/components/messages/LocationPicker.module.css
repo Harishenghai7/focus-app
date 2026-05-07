@@ -3,7 +3,7 @@
 .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(var(--bg-primary-rgb), 0.7);
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
@@ -14,12 +14,12 @@
 
 .modal {
     background: linear-gradient(135deg, rgba(30, 20, 50, 0.98), rgba(42, 27, 71, 0.98));
-    border: 1px solid rgba(139, 92, 246, 0.3);
+    border: 1px solid rgba(var(--primary-rgb), 0.3);
     border-radius: 20px;
     width: 90%;
     max-width: 500px;
     overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 20px 60px rgba(var(--bg-primary-rgb), 0.5);
     animation: slideUp 0.3s ease;
 }
 
@@ -28,7 +28,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 20px 24px;
-    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.2);
 }
 
 .header h2 {
@@ -41,7 +41,7 @@
 .closeButton {
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(var(--text-primary-rgb), 0.7);
     cursor: pointer;
     padding: 8px;
     border-radius: 8px;
@@ -49,8 +49,8 @@
 }
 
 .closeButton:hover {
-    background: rgba(139, 92, 246, 0.2);
-    color: #a78bfa;
+    background: rgba(var(--primary-rgb), 0.2);
+    color: var(--primary-light);
 }
 
 .content {
@@ -68,14 +68,14 @@
     gap: 12px;
     padding: 16px;
     background: rgba(42, 27, 71, 0.6);
-    border: 1px solid rgba(139, 92, 246, 0.3);
+    border: 1px solid rgba(var(--primary-rgb), 0.3);
     border-radius: 12px;
     margin-bottom: 16px;
 }
 
 .info svg {
     flex-shrink: 0;
-    color: #a78bfa;
+    color: var(--primary-light);
 }
 
 .coords {
@@ -87,7 +87,7 @@
 
 .accuracy {
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(var(--text-primary-rgb), 0.6);
 }
 
 .liveToggle {
@@ -95,8 +95,8 @@
     align-items: center;
     gap: 12px;
     padding: 12px;
-    background: rgba(139, 92, 246, 0.1);
-    border: 1px solid rgba(139, 92, 246, 0.2);
+    background: rgba(var(--primary-rgb), 0.1);
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
     border-radius: 10px;
     cursor: pointer;
 }
@@ -109,7 +109,7 @@
 
 .liveToggle span {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(var(--text-primary-rgb), 0.9);
 }
 
 .loading {
@@ -124,14 +124,14 @@
 .spinner {
     width: 40px;
     height: 40px;
-    border: 3px solid rgba(139, 92, 246, 0.3);
-    border-top-color: #a78bfa;
+    border: 3px solid rgba(var(--primary-rgb), 0.3);
+    border-top-color: var(--primary-light);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
 
 .loading p {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(var(--text-primary-rgb), 0.7);
     font-size: 15px;
     margin: 0;
 }

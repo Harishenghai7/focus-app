@@ -6,6 +6,7 @@ import Modal from '../ui/Modal';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import { focusToast } from '../../utils/focusToast';
+import getTrustShieldState from '../../utils/trustShieldPolicy';
 import styles from './SettingsMenu.module.css';
 
 const SettingsMenu = ({ isOwnProfile, profile, onClose }) => {
@@ -13,6 +14,11 @@ const SettingsMenu = ({ isOwnProfile, profile, onClose }) => {
     const navigate = useNavigate();
     const { signOut, user } = useAuth();
     const [showQRModal, setShowQRModal] = useState(false);
+    const [showTeenCareModal, setShowTeenCareModal] = useState(false);
+    const [pairingCode, setPairingCode] = useState(null);
+    const [pairingExpiresAt, setPairingExpiresAt] = useState(null);
+    const [verifyCode, setVerifyCode] = useState('');
+    const [teenCareBusy, setTeenCareBusy] = useState(false);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -42,7 +48,7 @@ const SettingsMenu = ({ isOwnProfile, profile, onClose }) => {
                     url: `${window.location.origin}/profile/${profile?.username}`
                 });
             } catch (err) {
-                console.log('Share cancelled');
+
             }
         } else {
             handleCopyLink();
@@ -70,6 +76,52 @@ const SettingsMenu = ({ isOwnProfile, profile, onClose }) => {
         // Don't close menu immediately so modal can open
     };
 
+    const trust = getTrustShieldState(profile);
+    const isTeen = Boolean(trust?.age != null && trust.age < 18);
+
+    const handleTeenCareOpen = () => {
+        setShowTeenCareModal(true);
+    };
+
+    const handleGeneratePairingCode = async () => {
+        setTeenCareBusy(true);
+        try {
+            const { data, error } = await supabase.rpc('generate_link_code');
+            if (error) throw error;
+            const row = Array.isArray(data) ? data[0] : data;
+            if (!row?.pairing_code) {
+                throw new Error('Failed to generate pairing code');
+            }
+            setPairingCode(row.pairing_code);
+            setPairingExpiresAt(row.expires_at);
+            focusToast.success('Pairing code generated');
+        } catch (err) {
+            focusToast.error(err?.message || 'Failed to generate code');
+        } finally {
+            setTeenCareBusy(false);
+        }
+    };
+
+    const handleVerifyPairingCode = async () => {
+        const code = String(verifyCode || '').trim();
+        if (!code) return;
+
+        setTeenCareBusy(true);
+        try {
+            const { data, error } = await supabase.rpc('verify_link_code', { p_pairing_code: code });
+            if (error) throw error;
+            if (!data) throw new Error('Verification failed');
+            focusToast.success('Guardian linked successfully');
+            setVerifyCode('');
+            setShowTeenCareModal(false);
+            onClose();
+        } catch (err) {
+            focusToast.error(err?.message || 'Failed to verify code');
+        } finally {
+            setTeenCareBusy(false);
+        }
+    };
+
     if (isOwnProfile) {
         return (
             <>
@@ -85,6 +137,10 @@ const SettingsMenu = ({ isOwnProfile, profile, onClose }) => {
                     <button className={styles.menuItem} onClick={handleQRCode}>
                         <Icon name="QrCode" size={18} />
                         <span>QR Code</span>
+                    </button>
+                    <button className={styles.menuItem} onClick={handleTeenCareOpen}>
+                        <Icon name="Shield" size={18} />
+                        <span>Teen Care</span>
                     </button>
                     <div className={styles.divider} />
                     <button className={styles.menuItem} onClick={handleSwitchAccount}>
@@ -114,6 +170,75 @@ const SettingsMenu = ({ isOwnProfile, profile, onClose }) => {
                         <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>
                             Scan this code to visit @{user?.user_metadata?.username}'s profile
                         </p>
+                    </div>
+                </Modal>
+
+                <Modal
+                    isOpen={showTeenCareModal}
+                    onClose={() => setShowTeenCareModal(false)}
+                    title={isTeen ? 'Request Protection' : 'Guardian Link'}
+                >
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', padding: '8px 4px' }}>
+                        {isTeen ? (
+                            <>
+                                <div style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.4 }}>
+                                    Generate a secure pairing code. It expires in 10 minutes.
+                                </div>
+                                <button
+                                    className={styles.menuItem}
+                                    onClick={handleGeneratePairingCode}
+                                    disabled={teenCareBusy}
+                                    style={{ justifyContent: 'center' }}
+                                >
+                                    <span>{teenCareBusy ? 'Generating...' : 'Generate Code'}</span>
+                                </button>
+                                {pairingCode && (
+                                    <div style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        gap: '10px',
+                                        padding: '14px',
+                                        borderRadius: '16px',
+                                        background: 'rgba(255,255,255,0.06)',
+                                        border: '1px solid rgba(255,255,255,0.10)'
+                                    }}>
+                                        <div style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '6px' }}>{pairingCode}</div>
+                                        <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                                            Expires at: {pairingExpiresAt ? new Date(pairingExpiresAt).toLocaleTimeString() : 'soon'}
+                                        </div>
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <>
+                                <div style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.4 }}>
+                                    Enter the ward's pairing code. Trust Shield verification is required.
+                                </div>
+                                <input
+                                    value={verifyCode}
+                                    onChange={(e) => setVerifyCode(e.target.value)}
+                                    placeholder="Enter code"
+                                    autoCapitalize="characters"
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px 14px',
+                                        borderRadius: '14px',
+                                        border: '1px solid rgba(255,255,255,0.14)',
+                                        background: 'rgba(0,0,0,0.25)',
+                                        color: 'var(--text-primary)'
+                                    }}
+                                />
+                                <button
+                                    className={styles.menuItem}
+                                    onClick={handleVerifyPairingCode}
+                                    disabled={teenCareBusy || !String(verifyCode || '').trim()}
+                                    style={{ justifyContent: 'center' }}
+                                >
+                                    <span>{teenCareBusy ? 'Verifying...' : 'Link Ward'}</span>
+                                </button>
+                            </>
+                        )}
                     </div>
                 </Modal>
             </>

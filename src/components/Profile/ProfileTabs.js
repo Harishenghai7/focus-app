@@ -6,6 +6,7 @@ import styles from './ProfileTabs.module.css';
 const TABS = [
     { id: 'posts', label: 'Posts', icon: 'Grid3x3' },
     { id: 'boltz', label: 'Boltz', icon: 'Video' },
+    { id: 'flash', label: 'Flash', icon: 'Sparkles' },
     { id: 'saved', label: 'Saved', icon: 'Bookmark' },
     { id: 'tagged', label: 'Tagged', icon: 'UserCheck' }
 ];

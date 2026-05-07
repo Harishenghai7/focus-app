@@ -42,7 +42,7 @@
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 20px rgba(var(--bg-primary-rgb), 0.2);
 }
 
 .dots {
@@ -50,7 +50,7 @@
     bottom: 24px;
     display: flex;
     gap: 8px;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(var(--bg-primary-rgb), 0.5);
     padding: 8px 12px;
     border-radius: 20px;
 }
@@ -59,7 +59,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(var(--text-primary-rgb), 0.5);
     border: none;
     cursor: pointer;
 }

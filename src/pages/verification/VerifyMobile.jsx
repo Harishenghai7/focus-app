@@ -59,8 +59,8 @@ const VerifyMobile = () => {
             setStatus('models_loading');
             setMessage('Loading Native AI Modules...');
             
-            // Loading models from Global CDN to ensure fastest speed for mobile CPU
-            const MODEL_URL = 'https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights';
+            // Loading models from local /models folder
+            const MODEL_URL = '/models';
             await Promise.all([
                 faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
                 faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),

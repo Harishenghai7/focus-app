@@ -67,8 +67,8 @@
     background: var(--glass-surface-hover);
     border-color: var(--primary-dim);
     transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.2);
-    color: #fff;
+    box-shadow: 0 6px 16px rgba(var(--primary-rgb), 0.2);
+    color: var(--text-primary);
 }
 
 .oauthBtn:active {
@@ -86,5 +86,5 @@
 
 @keyframes pulse {
     0%, 100% { opacity: 0.6; }
-    50% { opacity: 1; text-shadow: 0 0 10px rgba(139, 92, 246, 0.5); }
+    50% { opacity: 1; text-shadow: 0 0 10px rgba(var(--primary-rgb), 0.5); }
 }

@@ -8,7 +8,7 @@
 .eyeButton {
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(var(--text-primary-rgb), 0.5);
     cursor: pointer;
     padding: 0;
     display: flex;
@@ -28,7 +28,7 @@
 }
 
 .errorText {
-    color: #ef4444;
+    color: var(--error);
     font-size: 0.8rem;
     margin-left: 30px;
 }
@@ -47,11 +47,11 @@
     gap: 0.5rem;
     font-size: 0.9rem;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(var(--text-primary-rgb), 0.9);
 }
 
 .dobIcon {
-    color: var(--lavender-400, #c4b5fd);
+    color: var(--lavender-400, var(--primary-light));
     font-size: 1rem;
 }
 
@@ -62,7 +62,7 @@
 }
 
 .dobSelect {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(var(--text-primary-rgb), 0.05);
     border: 1px solid rgba(196, 181, 253, 0.2);
     border-radius: 12px;
     padding: 0.75rem 1rem;
@@ -75,24 +75,24 @@
 }
 
 .dobSelect:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(var(--text-primary-rgb), 0.08);
     border-color: rgba(196, 181, 253, 0.3);
 }
 
 .dobSelect:focus {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--lavender-400, #c4b5fd);
+    background: rgba(var(--text-primary-rgb), 0.1);
+    border-color: var(--lavender-400, var(--primary-light));
     box-shadow: 0 0 0 3px rgba(196, 181, 253, 0.1);
 }
 
 .dobSelect option {
-    background: #1a1a2e;
+    background: var(--bg-primary);
     color: white;
     padding: 0.5rem;
 }
 
 .dobError {
-    color: #ef4444;
+    color: var(--error);
     font-size: 0.85rem;
     margin-top: 0.25rem;
     display: flex;
@@ -112,21 +112,21 @@
 }
 
 .ageMessage.error {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #fca5a5;
+    background: rgba(var(--error-rgb), 0.1);
+    border: 1px solid rgba(var(--error-rgb), 0.3);
+    color: var(--error);
 }
 
 .ageMessage.info {
     background: rgba(196, 181, 253, 0.1);
     border: 1px solid rgba(196, 181, 253, 0.3);
-    color: var(--lavender-300, #ddd6fe);
+    color: var(--lavender-300, var(--text-primary));
 }
 
 .ageMessage.success {
     background: rgba(34, 197, 94, 0.1);
     border: 1px solid rgba(34, 197, 94, 0.3);
-    color: #86efac;
+    color: var(--success);
 }
 
 @keyframes slideIn {

@@ -1,0 +1,710 @@
+/* ==========================================================
+   SOVEREIGN CONTROL CENTER — Settings Architecture
+   H2 Royal Lavender Glassmorphism Design System
+   ========================================================== */
+
+/* ── CSS Custom Properties ───────────────────────────────── */
+:root {
+  --royal-lavender: var(--primary);
+  --royal-lavender-light: var(--primary);
+  --royal-lavender-dark: var(--primary);
+  --royal-glow: rgba(var(--primary-rgb), 0.4);
+  --glass-bg: rgba(var(--primary-rgb), 0.03);
+  --glass-border: rgba(var(--text-primary-rgb), 0.08);
+  --glass-blur: blur(25px);
+  --tile-radius: 20px;
+  --transition-smooth: 300ms ease-in-out;
+  --satin-silver: var(--text-secondary);
+}
+
+/* ── Main Layout ─────────────────────────────────────────── */
+.sovereignContainer {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-primary, var(--bg-primary));
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background blur effect when entering settings */
+.sovereignContainer::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  backdrop-filter: blur(40px);
+  background: rgba(10, 10, 15, 0.7);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ── Sidebar (Master View) ───────────────────────────────── */
+.sidebar {
+  width: 320px;
+  min-width: 320px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border-right: 1px solid var(--glass-border);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 10;
+  transition: transform var(--transition-smooth);
+}
+
+.sidebarHeader {
+  padding: 0 8px 24px;
+  border-bottom: 1px solid var(--glass-border);
+  margin-bottom: 16px;
+}
+
+.sidebarTitle {
+  font-size: 1.6rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--royal-lavender), var(--royal-lavender-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 4px;
+  letter-spacing: -0.02em;
+}
+
+.sidebarSubtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted, var(--text-muted));
+  margin: 0;
+}
+
+/* ── Province Navigation ─────────────────────────────────── */
+.provinceList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.provinceButton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary, var(--text-muted));
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.provinceButton::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--royal-lavender);
+  border-radius: 0 2px 2px 0;
+  opacity: 0;
+  transition: opacity var(--transition-smooth);
+}
+
+.provinceButton:hover {
+  background: rgba(var(--text-primary-rgb), 0.03);
+  color: var(--text-primary, var(--text-primary));
+  transform: translateX(4px);
+}
+
+.provinceButton.active {
+  background: rgba(var(--primary-rgb), 0.08);
+  border-color: rgba(var(--primary-rgb), 0.2);
+  color: var(--royal-lavender-light);
+}
+
+.provinceButton.active::before {
+  opacity: 1;
+}
+
+.provinceIcon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  filter: saturate(0.8);
+  transition: filter var(--transition-smooth);
+}
+
+.provinceButton.active .provinceIcon {
+  filter: saturate(1.2) drop-shadow(0 0 8px var(--royal-glow));
+}
+
+.provinceLabel {
+  flex: 1;
+}
+
+.provinceChevron {
+  font-size: 0.8rem;
+  opacity: 0.5;
+  transition: transform var(--transition-smooth);
+}
+
+.provinceButton.active .provinceChevron {
+  transform: translateX(4px);
+  opacity: 1;
+  color: var(--royal-lavender);
+}
+
+/* ── Content Area (Detail View) ──────────────────────────── */
+.contentArea {
+  flex: 1;
+  margin-left: 320px;
+  padding: 32px 40px;
+  max-width: 800px;
+  min-height: 100vh;
+}
+
+.contentHeader {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.contentTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-primary, var(--text-primary));
+  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.contentDescription {
+  font-size: 0.95rem;
+  color: var(--text-muted, var(--text-muted));
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Glassmorphism Tiles ────────────────────────────────── */
+.glassTile {
+  background: var(--glass-bg);
+  backdrop-filter: blur(25px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--tile-radius);
+  padding: 24px;
+  margin-bottom: 16px;
+  transition: all var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.glassTile::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(var(--text-primary-rgb), 0.1), 
+    transparent
+  );
+}
+
+.glassTile:hover {
+  border-color: rgba(var(--primary-rgb), 0.15);
+  box-shadow: 0 4px 24px rgba(var(--primary-rgb), 0.08);
+}
+
+.glassTileHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.glassTileIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(var(--primary-rgb), 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--royal-lavender-light);
+  font-size: 1.2rem;
+}
+
+.glassTileTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary, var(--text-primary));
+  margin: 0;
+}
+
+.glassTileDescription {
+  font-size: 0.85rem;
+  color: var(--text-muted, var(--text-muted));
+  margin: 4px 0 0;
+}
+
+/* ── Setting Row ─────────────────────────────────────────── */
+.settingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(var(--text-primary-rgb), 0.03);
+}
+
+.settingRow:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.settingRow:first-child {
+  padding-top: 0;
+}
+
+.settingInfo {
+  flex: 1;
+  min-width: 0;
+  padding-right: 16px;
+}
+
+.settingLabel {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary, var(--text-primary));
+  margin: 0 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settingDescription {
+  font-size: 0.8rem;
+  color: var(--text-muted, var(--text-muted));
+  margin: 0;
+  line-height: 1.4;
+}
+
+.settingControl {
+  flex-shrink: 0;
+}
+
+/* ── Royal Lavender Toggle ───────────────────────────────── */
+.toggleSwitch {
+  position: relative;
+  width: 52px;
+  height: 28px;
+  background: rgba(var(--text-primary-rgb), 0.1);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+  border: 1px solid rgba(var(--text-primary-rgb), 0.1);
+}
+
+.toggleSwitch.active {
+  background: var(--royal-lavender);
+  border-color: var(--royal-lavender);
+  box-shadow: 0 0 12px var(--royal-glow);
+}
+
+.toggleKnob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: var(--text-primary);
+  border-radius: 50%;
+  transition: transform var(--transition-smooth);
+  box-shadow: 0 2px 4px rgba(var(--bg-primary-rgb), 0.2);
+}
+
+.toggleSwitch.active .toggleKnob {
+  transform: translateX(24px);
+}
+
+/* ── Satin Silver Icons ──────────────────────────────────── */
+.satinIcon {
+  color: var(--satin-silver);
+  filter: drop-shadow(0 1px 2px rgba(var(--bg-primary-rgb), 0.3));
+  transition: all var(--transition-smooth);
+}
+
+.satinIcon:hover {
+  filter: drop-shadow(0 0 8px rgba(192, 192, 192, 0.5));
+}
+
+/* ── Trust Shield Badge ──────────────────────────────────── */
+.trustShieldBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.trustShieldBadge.verified {
+  background: rgba(76, 175, 80, 0.15);
+  color: var(--glass-bg-solid);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.trustShieldBadge.pending {
+  background: rgba(255, 152, 0, 0.15);
+  color: var(--warning);
+  border: 1px solid rgba(255, 152, 0, 0.3);
+}
+
+.trustShieldBadge.unverified {
+  background: rgba(244, 67, 54, 0.15);
+  color: var(--error);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+/* ── Content Filter Slider ───────────────────────────────── */
+.filterSlider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(var(--text-primary-rgb), 0.02);
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+}
+
+.filterOption {
+  flex: 1;
+  text-align: center;
+  padding: 10px 8px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+  color: var(--text-muted, var(--text-muted));
+}
+
+.filterOption:hover {
+  background: rgba(var(--text-primary-rgb), 0.03);
+  color: var(--text-primary, var(--text-primary));
+}
+
+.filterOption.active {
+  background: var(--royal-lavender);
+  color: var(--text-primary);
+  box-shadow: 0 2px 12px var(--royal-glow);
+}
+
+/* ── Biometric Button ───────────────────────────────────── */
+.biometricButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, var(--royal-lavender), var(--royal-lavender-dark));
+  border: none;
+  border-radius: 14px;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+  box-shadow: 0 4px 16px rgba(var(--primary-rgb), 0.3);
+}
+
+.biometricButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(var(--primary-rgb), 0.4);
+}
+
+.biometricButton:active {
+  transform: translateY(0);
+}
+
+.biometricButton.secondary {
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary, var(--text-primary));
+  box-shadow: none;
+}
+
+.biometricButton.secondary:hover {
+  border-color: var(--royal-lavender);
+  background: rgba(var(--primary-rgb), 0.05);
+}
+
+/* ── Danger Zone ──────────────────────────────────────────── */
+.dangerZone {
+  border-color: rgba(244, 67, 54, 0.2);
+  background: rgba(244, 67, 54, 0.02);
+}
+
+.dangerZone:hover {
+  border-color: rgba(244, 67, 54, 0.3);
+  box-shadow: 0 4px 24px rgba(244, 67, 54, 0.08);
+}
+
+.dangerButton {
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  color: var(--error);
+}
+
+.dangerButton:hover {
+  background: rgba(244, 67, 54, 0.2);
+}
+
+/* ── Mobile Navigation ───────────────────────────────────── */
+.mobileNav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(10, 10, 15, 0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--glass-border);
+  padding: 12px 16px;
+  z-index: 100;
+}
+
+.mobileNavItems {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.mobileNavItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted, var(--text-muted));
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+}
+
+.mobileNavItem.active {
+  color: var(--royal-lavender-light);
+}
+
+.mobileNavIcon {
+  font-size: 1.3rem;
+}
+
+/* ── Mobile Province List ────────────────────────────────── */
+.mobileProvinceList {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.mobileProvinceCard {
+  background: var(--glass-bg);
+  backdrop-filter: blur(25px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--tile-radius);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+}
+
+.mobileProvinceCard:hover {
+  border-color: rgba(var(--primary-rgb), 0.2);
+  transform: translateX(8px);
+}
+
+.mobileProvinceIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(var(--primary-rgb), 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+
+.mobileProvinceInfo {
+  flex: 1;
+}
+
+.mobileProvinceTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, var(--text-primary));
+  margin: 0 0 4px;
+}
+
+.mobileProvinceDesc {
+  font-size: 0.8rem;
+  color: var(--text-muted, var(--text-muted));
+  margin: 0;
+}
+
+/* ── Responsive Breakpoints ───────────────────────────────── */
+@media (max-width: 1024px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .contentArea {
+    margin-left: 0;
+    padding: 20px 16px 100px;
+    max-width: 100%;
+  }
+
+  .mobileNav {
+    display: block;
+  }
+
+  .mobileProvinceList {
+    display: flex;
+  }
+
+  .contentTitle {
+    font-size: 1.4rem;
+  }
+
+  .glassTile {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .contentArea {
+    padding: 16px 12px 100px;
+  }
+
+  .settingRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .settingControl {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .filterSlider {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .filterOption {
+    width: 100%;
+  }
+}
+
+/* ── Animations ───────────────────────────────────────────── */
+@keyframes royalGlow {
+  0%, 100% {
+    box-shadow: 0 0 12px var(--royal-glow);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--royal-glow), 0 0 40px rgba(var(--primary-rgb), 0.2);
+  }
+}
+
+.royalGlow {
+  animation: royalGlow 2s ease-in-out infinite;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slideIn {
+  animation: slideIn 300ms ease-out;
+}
+
+/* ── Loading States ───────────────────────────────────────── */
+.savingIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--royal-lavender-light);
+}
+
+.savingIndicator::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--royal-lavender-light);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Scrollbar Styling ───────────────────────────────────── */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(var(--primary-rgb), 0.3);
+  border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--primary-rgb), 0.5);
+}

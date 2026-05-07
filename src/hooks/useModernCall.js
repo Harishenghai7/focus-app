@@ -14,11 +14,14 @@ export const useModernCall = (userId, callId) => {
     const [isMuted, setIsMuted] = useState(false);
     const [isVideoOff, setIsVideoOff] = useState(false);
     const [remoteEnded, setRemoteEnded] = useState(false);
+    // True once we've auto-downgraded to "High-Fidelity Audio Only" due to weak link.
+    const [videoDowngraded, setVideoDowngraded] = useState(false);
 
     const peerRef = useRef(null);
     const localStreamRef = useRef(null);
     const iceCandidatesQueue = useRef([]);
     const channelRef = useRef(null);
+    const statsMonitorRef = useRef(null);
 
     // ICE Servers configuration
     const rtcConfig = {
@@ -31,7 +34,7 @@ export const useModernCall = (userId, callId) => {
     // Initialize media
     const initMedia = useCallback(async (audioOnly = true) => {
         try {
-            console.log('🎤 Requesting media...', audioOnly ? 'Audio only' : 'Audio + Video');
+            console.info('[Call] Requesting media', { audioOnly });
 
             const constraints = {
                 audio: {
@@ -47,16 +50,16 @@ export const useModernCall = (userId, callId) => {
             };
 
             const stream = await navigator.mediaDevices.getUserMedia(constraints);
-            console.log('✅ Media granted');
+            console.info('[Call] Media granted');
 
             setLocalStream(stream);
             localStreamRef.current = stream;
             return stream;
         } catch (err) {
-            console.error('❌ Media error:', err);
+            console.error('[Call] Media error:', err);
 
             if (!audioOnly && (err.name === 'NotReadableError' || err.name === 'NotAllowedError')) {
-                console.log('⚠️ Video failed, falling back to audio only...');
+                console.warn('[Call] Video failed, falling back to audio only');
                 try {
                     const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     setLocalStream(audioStream);
@@ -78,7 +81,7 @@ export const useModernCall = (userId, callId) => {
         if (!callId || !userId) return;
 
         const signalData = { type, ...payload };
-        console.log(`📤 Sending signal (${type}) via Hybrid Channel...`);
+        console.info('[Call] Sending signal', { type, callId });
 
         // 1. Send via Broadcast (Fast, Ephemeral)
         if (channelRef.current) {
@@ -86,7 +89,7 @@ export const useModernCall = (userId, callId) => {
                 type: 'broadcast',
                 event: 'signal',
                 payload: { ...signalData, from_user: userId }
-            }).catch(err => console.warn('⚠️ Broadcast failed:', err));
+            }).catch(err => console.warn('[Call] Broadcast failed:', err));
         }
 
         // 2. Send via Database (Persistent, Reliable)
@@ -100,8 +103,7 @@ export const useModernCall = (userId, callId) => {
         if (type === 'offer' || type === 'answer') {
             // For critical signals, we log errors but don't block execution
             dbPromise.then(({ error }) => {
-                if (error) console.error(`❌ DB Insert Error (${type}):`, error);
-                else console.log(`✅ DB Insert Success (${type})`);
+                if (error) console.error(`[Call] DB insert error (${type}):`, error);
             });
         }
     }, [callId, userId]);
@@ -112,13 +114,12 @@ export const useModernCall = (userId, callId) => {
 
         pc.onicecandidate = (event) => {
             if (event.candidate) {
-                console.log('❄️ New ICE candidate generated');
                 sendSignal('candidate', { candidate: event.candidate });
             }
         };
 
         pc.onconnectionstatechange = () => {
-            console.log('🔄 Connection state:', pc.connectionState);
+            console.info('[Call] Connection state', { state: pc.connectionState });
             if (pc.connectionState === 'connected') {
                 setIsConnected(true);
                 setIsConnecting(false);
@@ -129,7 +130,7 @@ export const useModernCall = (userId, callId) => {
         };
 
         pc.ontrack = (event) => {
-            console.log('📺 Received remote track');
+            console.info('[Call] Received remote track');
             setRemoteStream(event.streams[0]);
         };
 
@@ -142,7 +143,7 @@ export const useModernCall = (userId, callId) => {
 
         try {
             setIsConnecting(true);
-            console.log('📞 Starting call as initiator...');
+            console.info('[Call] Starting call as initiator', { callId, audioOnly });
 
             const stream = await initMedia(audioOnly);
             const pc = createPeerConnection(userId, callId);
@@ -152,12 +153,11 @@ export const useModernCall = (userId, callId) => {
             const offer = await pc.createOffer();
             await pc.setLocalDescription(offer);
 
-            console.log('📡 Sending offer...');
             sendSignal('offer', { sdp: offer });
 
             peerRef.current = pc;
         } catch (err) {
-            console.error('❌ Start call error:', err);
+            console.error('[Call] Start call error:', err);
             setIsConnecting(false);
         }
     }, [callId, userId, initMedia, createPeerConnection, sendSignal]);
@@ -168,7 +168,7 @@ export const useModernCall = (userId, callId) => {
 
         try {
             setIsConnecting(true);
-            console.log('📞 Answering call...');
+            console.info('[Call] Answering call', { callId, audioOnly });
 
             const stream = await initMedia(audioOnly);
             const pc = createPeerConnection(userId, callId);
@@ -178,18 +178,16 @@ export const useModernCall = (userId, callId) => {
             peerRef.current = pc;
 
             if (iceCandidatesQueue.current.length > 0) {
-                console.log('❄️ Processing queued candidates:', iceCandidatesQueue.current.length);
+                console.info('[Call] Processing queued ICE candidates', { count: iceCandidatesQueue.current.length });
                 for (const candidate of iceCandidatesQueue.current) {
                     await pc.addIceCandidate(candidate);
                 }
                 iceCandidatesQueue.current = [];
             }
 
-            console.log('👋 Sending READY signal...');
             sendSignal('ready', {});
 
             // Start Polling for Offer (Backup)
-            console.log('🔄 Starting offer polling...');
             const pollInterval = setInterval(async () => {
                 if (peerRef.current && peerRef.current.remoteDescription) {
                     clearInterval(pollInterval);
@@ -208,7 +206,6 @@ export const useModernCall = (userId, callId) => {
                             if (row.from_user === userId) continue;
                             const signal = JSON.parse(row.signal);
                             if (signal.type === 'offer') {
-                                console.log('📜 Polling found OFFER:', signal);
                                 if (peerRef.current && !peerRef.current.remoteDescription) {
                                     await pc.setRemoteDescription(new RTCSessionDescription(signal.sdp));
                                     const answer = await pc.createAnswer();
@@ -228,7 +225,7 @@ export const useModernCall = (userId, callId) => {
             setTimeout(() => clearInterval(pollInterval), 30000);
 
         } catch (err) {
-            console.error('❌ Answer call error:', err);
+            console.error('[Call] Answer call error:', err);
             setIsConnecting(false);
         }
     }, [callId, userId, initMedia, createPeerConnection, sendSignal]);
@@ -237,18 +234,18 @@ export const useModernCall = (userId, callId) => {
     useEffect(() => {
         if (!callId || !userId) return;
 
-        console.log('👂 Listening for signals...', callId);
+        console.info('[Call] Listening for signals', { callId });
 
         const handleSignal = async (signal, fromUser) => {
             if (fromUser === userId) return;
-            console.log('📨 Received signal:', signal.type);
+            console.info('[Call] Received signal', { type: signal.type });
 
             try {
                 const pc = peerRef.current;
 
                 if (signal.type === 'offer') {
                     if (!pc) {
-                        console.log('⚠️ Received offer but peer not ready');
+                        console.warn('[Call] Received offer but peer not ready');
                         return;
                     }
                     if (pc.remoteDescription) return; // Already handled
@@ -271,14 +268,12 @@ export const useModernCall = (userId, callId) => {
                     }
                 }
                 else if (signal.type === 'ready') {
-                    console.log('👋 Peer is ready, re-sending offer...');
                     if (pc && pc.localDescription && pc.localDescription.type === 'offer') {
-                        console.log('📡 Re-sending offer to ready peer...');
                         sendSignal('offer', { sdp: pc.localDescription });
                     }
                 }
                 else if (signal.type === 'end') {
-                    console.log('👋 Peer ended the call');
+                    console.info('[Call] Peer ended the call');
                     setRemoteEnded(true);
 
                     if (peerRef.current) {
@@ -288,7 +283,7 @@ export const useModernCall = (userId, callId) => {
                     setIsConnected(false);
                 }
             } catch (err) {
-                console.error('❌ Signal processing error:', err);
+                console.error('[Call] Signal processing error:', err);
             }
         };
 
@@ -312,7 +307,7 @@ export const useModernCall = (userId, callId) => {
                 handleSignal(signal, payload.new.from_user);
             })
             .subscribe((status) => {
-                console.log('📡 Channel status:', status);
+                console.info('[Call] Channel status', { status });
                 if (status === 'SUBSCRIBED') {
                     channelRef.current = channel;
                 }
@@ -327,10 +322,9 @@ export const useModernCall = (userId, callId) => {
                 filter: `id=eq.${callId}`
             }, (payload) => {
                 const newStatus = payload.new.status;
-                console.log('📞 Call status changed:', newStatus);
+                console.info('[Call] Call status changed', { status: newStatus });
 
                 if (newStatus === 'rejected' || newStatus === 'ended') {
-                    console.log('🚫 Call was rejected or ended remotely');
                     setRemoteEnded(true);
                 }
             })
@@ -343,13 +337,84 @@ export const useModernCall = (userId, callId) => {
         };
     }, [callId, userId, sendSignal]);
 
+    // ───────────────────────────────────────────────────────────────────
+    // Adaptive bitrate monitor — auto-downgrade to "High-Fidelity Audio Only"
+    // when the outbound video link is starved. Does NOT drop the call.
+    // ───────────────────────────────────────────────────────────────────
+    useEffect(() => {
+        if (!isConnected) return;
+        if (videoDowngraded) return;
+        const stream = localStreamRef.current;
+        const pc = peerRef.current;
+        if (!stream || !pc) return;
+        const hasVideo = stream.getVideoTracks().some(t => t.enabled);
+        if (!hasVideo) return;
+
+        let prevBytes = 0;
+        let prevTs = 0;
+        let weakStreaks = 0;
+        const THRESHOLD_KBPS = 80;       // Below this we consider the link weak.
+        const WEAK_STREAK_LIMIT = 2;     // Two consecutive weak windows → downgrade.
+
+        const tick = async () => {
+            try {
+                const stats = await pc.getStats(null);
+                let bytesSent = 0;
+                let ts = 0;
+                stats.forEach(report => {
+                    if (report.type === 'outbound-rtp' && report.kind === 'video' && !report.isRemote) {
+                        bytesSent += report.bytesSent || 0;
+                        ts = Math.max(ts, report.timestamp || 0);
+                    }
+                });
+                if (prevTs && ts && bytesSent >= prevBytes) {
+                    const dt = (ts - prevTs) / 1000; // seconds
+                    if (dt > 0.5) {
+                        const kbps = ((bytesSent - prevBytes) * 8) / 1000 / dt;
+                        if (kbps < THRESHOLD_KBPS) {
+                            weakStreaks += 1;
+                            console.warn(`📉 Weak video link: ${kbps.toFixed(1)} kbps (streak ${weakStreaks})`);
+                        } else {
+                            weakStreaks = 0;
+                        }
+                        if (weakStreaks >= WEAK_STREAK_LIMIT) {
+                            console.warn('⚠️ Auto-downgrading to High-Fidelity Audio Only');
+                            stream.getVideoTracks().forEach(t => { t.enabled = false; });
+                            // Stop the senders' video to free bandwidth.
+                            pc.getSenders().forEach(sender => {
+                                if (sender.track && sender.track.kind === 'video') {
+                                    try { sender.track.enabled = false; } catch (_) { }
+                                }
+                            });
+                            setVideoDowngraded(true);
+                            setIsVideoOff(true);
+                            sendSignal('downgrade', { reason: 'weak-link' }).catch(() => { });
+                        }
+                    }
+                }
+                prevBytes = bytesSent;
+                prevTs = ts;
+            } catch (err) {
+                // Ignore transient stats errors
+            }
+        };
+
+        statsMonitorRef.current = setInterval(tick, 3000);
+        return () => {
+            if (statsMonitorRef.current) {
+                clearInterval(statsMonitorRef.current);
+                statsMonitorRef.current = null;
+            }
+        };
+    }, [isConnected, videoDowngraded, sendSignal]);
+
     // End call
     const endCall = useCallback(async () => {
-        console.log('📴 Ending call...');
+
 
         // Send end signal if we are connected or connecting
         if (isConnected || isConnecting) {
-            console.log('📤 Sending END signal...');
+
             await sendSignal('end', {});
         }
 
@@ -400,6 +465,7 @@ export const useModernCall = (userId, callId) => {
         isVideoOff,
         error,
         remoteEnded,
+        videoDowngraded,
         startCall,
         answerCall,
         endCall,

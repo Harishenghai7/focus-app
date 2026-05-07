@@ -30,7 +30,7 @@ export const useSessions = () => {
                 table: 'user_sessions',
                 filter: `user_id=eq.${user.id}`
             }, (payload) => {
-                console.log('💻 Sessions updated:', payload);
+
                 fetchSessions();
             })
             .subscribe();
@@ -43,7 +43,7 @@ export const useSessions = () => {
     const fetchSessions = async () => {
         try {
             setLoading(true);
-            console.log('💻 Fetching user sessions...');
+
 
             const { data, error: fetchError } = await supabase
                 .from('user_sessions')
@@ -53,7 +53,7 @@ export const useSessions = () => {
 
             if (fetchError) throw fetchError;
 
-            console.log('✅ Sessions fetched:', data?.length || 0);
+
             setSessions(data || []);
             setError(null);
         } catch (err) {
@@ -75,7 +75,7 @@ export const useSessions = () => {
 
             if (error) throw error;
 
-            console.log('✅ Session ended successfully');
+
             setSessions(prev => prev.filter(s => s.id !== sessionId));
             return { success: true };
         } catch (err) {
@@ -94,7 +94,7 @@ export const useSessions = () => {
 
             if (error) throw error;
 
-            console.log('✅ All other sessions ended successfully');
+
             await fetchSessions();
             return { success: true };
         } catch (err) {

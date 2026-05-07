@@ -17,7 +17,7 @@
 .replyPreview {
     padding: 12px 16px;
     background: rgba(42, 27, 71, 0.6);
-    border-left: 3px solid #8b5cf6;
+    border-left: 3px solid var(--primary);
     border-radius: 12px;
     margin-bottom: 12px;
     display: flex;
@@ -45,7 +45,7 @@
 
 .replyTo {
     font-size: 12px;
-    color: #a78bfa;
+    color: var(--primary-light);
     font-weight: 600;
     margin-bottom: 4px;
 }
@@ -74,7 +74,7 @@
 
 .closeReply:hover {
     background: rgba(42, 27, 71, 0.6);
-    color: #f8f7ff;
+    color: var(--text-primary);
 }
 
 /* Input Row */
@@ -99,7 +99,7 @@
     border-radius: 50%;
     background: rgba(42, 27, 71, 0.6);
     border: 1px solid rgba(167, 139, 250, 0.2);
-    color: #a78bfa;
+    color: var(--primary-light);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -110,7 +110,7 @@
 
 .actionButton:hover {
     background: rgba(42, 27, 71, 0.9);
-    border-color: #8b5cf6;
+    border-color: var(--primary);
     transform: scale(1.05);
 }
 
@@ -132,7 +132,7 @@
 
 .inputWrapper:focus-within {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary-dim), 0 4px 20px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 0 0 3px var(--primary-dim), 0 4px 20px rgba(var(--primary-rgb), 0.2);
 }
 
 .textInput {
@@ -140,7 +140,7 @@
     padding: 10px 50px 10px 16px;
     background: transparent;
     border: none;
-    color: #f8f7ff;
+    color: var(--text-primary);
     font-size: 15px;
     line-height: 1.4;
     resize: none;
@@ -167,7 +167,7 @@
     border-radius: 50%;
     background: transparent;
     border: none;
-    color: #a78bfa;
+    color: var(--primary-light);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -267,7 +267,7 @@
     border: 1px solid rgba(167, 139, 250, 0.3);
     border-radius: 16px;
     padding: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 24px rgba(var(--bg-primary-rgb), 0.4);
     z-index: 100;
     animation: slideUp 0.2s ease;
     max-width: 320px;
@@ -309,8 +309,8 @@
 }
 
 .emojiCategory.active {
-    background: rgba(139, 92, 246, 0.2);
-    color: #a78bfa;
+    background: rgba(var(--primary-rgb), 0.2);
+    color: var(--primary-light);
 }
 
 .emojiGrid {
@@ -373,7 +373,7 @@
 
 .previewName {
     font-size: 14px;
-    color: #f8f7ff;
+    color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -389,9 +389,9 @@
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: rgba(239, 68, 68, 0.2);
+    background: rgba(var(--error-rgb), 0.2);
     border: none;
-    color: #ef4444;
+    color: var(--error);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -400,7 +400,7 @@
 }
 
 .removePreview:hover {
-    background: rgba(239, 68, 68, 0.3);
+    background: rgba(var(--error-rgb), 0.3);
     transform: scale(1.1);
 }
 
@@ -419,7 +419,7 @@
     width: 20px;
     height: 20px;
     border: 2px solid rgba(167, 139, 250, 0.2);
-    border-top-color: #a78bfa;
+    border-top-color: var(--primary-light);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -432,7 +432,7 @@
 
 .uploadText {
     font-size: 14px;
-    color: #a78bfa;
+    color: var(--primary-light);
 }
 
 /* Mobile Responsive */

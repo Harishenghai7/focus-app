@@ -5,7 +5,7 @@
 .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(var(--bg-primary-rgb), 0.75);
     backdrop-filter: blur(4px);
     z-index: 1000;
     display: flex;
@@ -24,7 +24,7 @@
     background: rgba(17, 17, 24, 0.88);
     backdrop-filter: blur(25px);
     border-radius: 20px 20px 0 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    border-top: 1px solid rgba(var(--text-primary-rgb), 0.12);
     display: flex;
     flex-direction: column;
     max-height: 80vh;
@@ -39,7 +39,7 @@
 .handle {
     width: 36px;
     height: 4px;
-    background: rgba(255,255,255,0.15);
+    background: rgba(var(--text-primary-rgb), 0.15);
     border-radius: 2px;
     margin: 10px auto 0;
     flex-shrink: 0;
@@ -51,26 +51,26 @@
     align-items: center;
     justify-content: space-between;
     padding: 12px 16px;
-    border-bottom: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+    border-bottom: 1px solid var(--border-subtle, rgba(var(--text-primary-rgb), 0.06));
     flex-shrink: 0;
 }
 
 .title {
     font-weight: 600;
     font-size: 0.95rem;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary, var(--text-primary));
 }
 
 .count {
-    color: var(--text-muted, #666);
+    color: var(--text-muted, var(--glass-bg-solid));
     font-weight: 400;
     font-size: 0.85rem;
 }
 
 .closeBtn {
-    background: rgba(255,255,255,0.06);
+    background: rgba(var(--text-primary-rgb), 0.06);
     border: none;
-    color: var(--text-secondary, #aaa);
+    color: var(--text-secondary, var(--text-muted));
     cursor: pointer;
     padding: 6px;
     border-radius: 50%;
@@ -78,7 +78,7 @@
     align-items: center;
     transition: background 0.15s, color 0.15s;
 }
-.closeBtn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.closeBtn:hover { background: rgba(var(--text-primary-rgb), 0.12); color: var(--text-primary); }
 
 /* ── Comment List ────────────────────────────────────────── */
 .list {
@@ -91,24 +91,24 @@
 }
 .list::-webkit-scrollbar { width: 4px; }
 .list::-webkit-scrollbar-track { background: transparent; }
-.list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+.list::-webkit-scrollbar-thumb { background: rgba(var(--text-primary-rgb), 0.1); border-radius: 4px; }
 
 /* Loading skeletons */
 .loading { display: flex; flex-direction: column; gap: 16px; padding: 8px 0; }
 .skeleton { display: flex; gap: 10px; align-items: flex-start; }
-.skeletonAvatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.08); flex-shrink: 0; }
+.skeletonAvatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(var(--text-primary-rgb), 0.08); flex-shrink: 0; }
 .skeletonContent { flex: 1; display: flex; flex-direction: column; gap: 6px; }
 .skeletonLine {
     height: 10px;
     border-radius: 5px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.06) 75%);
+    background: linear-gradient(90deg, rgba(var(--text-primary-rgb), 0.06) 25%, rgba(var(--text-primary-rgb), 0.1) 50%, rgba(var(--text-primary-rgb), 0.06) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
 }
 @keyframes shimmer { to { background-position: -200% 0; } }
 
 /* Empty */
-.empty { padding: 40px 0; text-align: center; color: var(--text-muted, #666); font-size: 0.9rem; }
+.empty { padding: 40px 0; text-align: center; color: var(--text-muted, var(--glass-bg-solid)); font-size: 0.9rem; }
 .emptyHint { margin-top: 6px; font-size: 0.82rem; }
 
 /* ── Comment Row ─────────────────────────────────────────── */
@@ -156,7 +156,7 @@
 
 .commentBubble {
     display: inline-block;
-    background: var(--bg-tertiary, rgba(255,255,255,0.05));
+    background: var(--bg-tertiary, rgba(var(--text-primary-rgb), 0.05));
     border-radius: 0 12px 12px 12px;
     padding: 8px 12px;
     max-width: 100%;
@@ -165,30 +165,30 @@
 .commentUsername {
     font-size: 0.8rem;
     font-weight: 600;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary, var(--text-primary));
     display: flex;
     align-items: center;
     gap: 4px;
     margin-bottom: 3px;
 }
 
-.verified { color: #60A5FA; font-size: 0.7rem; }
+.verified { color: var(--text-muted); font-size: 0.7rem; }
 
 .commentText {
     font-size: 0.88rem;
-    color: var(--text-primary, #e0e0e0);
+    color: var(--text-primary, var(--text-secondary));
     line-height: 1.4;
     word-break: break-word;
     margin: 0;
 }
 
 .mention {
-    color: #c4b5fd;
+    color: var(--primary-light);
     font-weight: 600;
     text-decoration: none;
 }
 .mention:hover {
-    color: #ddd6fe;
+    color: var(--text-primary);
     text-decoration: underline;
 }
 
@@ -202,12 +202,12 @@
 
 .commentTime {
     font-size: 0.72rem;
-    color: var(--text-muted, #666);
+    color: var(--text-muted, var(--glass-bg-solid));
 }
 
 .commentLikeCount {
     font-size: 0.72rem;
-    color: var(--text-muted, #666);
+    color: var(--text-muted, var(--glass-bg-solid));
 }
 
 .replyBtn {
@@ -215,19 +215,19 @@
     border: none;
     font-size: 0.72rem;
     font-weight: 600;
-    color: var(--text-muted, #888);
+    color: var(--text-muted, var(--text-muted));
     cursor: pointer;
     padding: 0;
     transition: color 0.15s;
 }
-.replyBtn:hover { color: var(--text-primary, #fff); }
+.replyBtn:hover { color: var(--text-primary, var(--text-primary)); }
 
 .commentLikeBtn {
     background: none;
     border: none;
     cursor: pointer;
     padding: 4px;
-    color: var(--text-muted, #666);
+    color: var(--text-muted, var(--glass-bg-solid));
     display: flex;
     align-items: center;
     margin-top: 4px;
@@ -235,13 +235,13 @@
     flex-shrink: 0;
 }
 .commentLikeBtn:hover { transform: scale(1.2); }
-.commentLiked { color: #ff3040 !important; }
+.commentLiked { color: var(--error) !important; }
 
 /* ── Input Bar ───────────────────────────────────────────── */
 .inputBar {
     padding: 10px 12px;
-    border-top: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
-    background: var(--bg-secondary, #111118);
+    border-top: 1px solid var(--border-subtle, rgba(var(--text-primary-rgb), 0.06));
+    background: var(--bg-secondary, var(--bg-primary));
     flex-shrink: 0;
     padding-bottom: calc(10px + env(safe-area-inset-bottom));
 }
@@ -255,11 +255,11 @@
     border-radius: 8px;
     margin-bottom: 8px;
     font-size: 0.78rem;
-    color: var(--text-secondary, #aaa);
+    color: var(--text-secondary, var(--text-muted));
 }
-.replyingTo strong { color: var(--primary, #7C3AED); }
+.replyingTo strong { color: var(--primary, var(--primary)); }
 .replyingTo button {
-    background: none; border: none; cursor: pointer; color: var(--text-muted, #666); padding: 2px; display: flex;
+    background: none; border: none; cursor: pointer; color: var(--text-muted, var(--glass-bg-solid)); padding: 2px; display: flex;
 }
 
 .inputRow {
@@ -270,23 +270,23 @@
 
 .input {
     flex: 1;
-    background: var(--bg-tertiary, rgba(255,255,255,0.06));
-    border: 1px solid var(--border-subtle, rgba(255,255,255,0.08));
+    background: var(--bg-tertiary, rgba(var(--text-primary-rgb), 0.06));
+    border: 1px solid var(--border-subtle, rgba(var(--text-primary-rgb), 0.08));
     border-radius: 22px;
     padding: 9px 16px;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary, var(--text-primary));
     font-size: 0.88rem;
     outline: none;
     transition: border-color 0.2s;
     font-family: inherit;
 }
-.input:focus { border-color: var(--primary, #7C3AED); }
-.input::placeholder { color: var(--text-muted, #555); }
+.input:focus { border-color: var(--primary, var(--primary)); }
+.input::placeholder { color: var(--text-muted, var(--glass-bg-solid)); }
 
 .sendBtn {
-    background: var(--primary, #7C3AED);
+    background: var(--primary, var(--primary));
     border: none;
-    color: #fff;
+    color: var(--text-primary);
     cursor: pointer;
     padding: 9px;
     border-radius: 50%;
@@ -296,5 +296,5 @@
     flex-shrink: 0;
 }
 .sendBtn:disabled { opacity: 0.4; cursor: default; }
-.sendBtn:not(:disabled):hover { background: var(--primary-hover, #6D28D9); transform: scale(1.05); }
+.sendBtn:not(:disabled):hover { background: var(--primary-hover, var(--primary-hover)); transform: scale(1.05); }
 .sendBtn:not(:disabled):active { transform: scale(0.95); }

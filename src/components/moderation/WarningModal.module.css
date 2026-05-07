@@ -4,7 +4,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(var(--bg-primary-rgb), 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -13,12 +13,12 @@
 }
 
 .modal {
-    background: #fff;
+    background: var(--text-primary);
     padding: 2rem;
     border-radius: 16px;
     width: 90%;
     max-width: 500px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 25px rgba(var(--bg-primary-rgb), 0.2);
     text-align: center;
     animation: slideUp 0.3s ease-out;
 }
@@ -37,7 +37,7 @@
 
 .icon {
     font-size: 3rem;
-    color: #ff4d4f;
+    color: var(--error);
     margin-bottom: 1rem;
 }
 
@@ -45,11 +45,11 @@
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
-    color: #1a1a1a;
+    color: var(--bg-secondary);
 }
 
 .message {
-    color: #666;
+    color: var(--glass-bg-solid);
     margin-bottom: 1.5rem;
     line-height: 1.5;
 }
@@ -70,27 +70,27 @@
 }
 
 .primaryButton {
-    background: #6c5ce7;
+    background: var(--primary);
     color: white;
 }
 
 .primaryButton:hover {
-    background: #5b4bc4;
+    background: var(--primary);
 }
 
 .secondaryButton {
-    background: #f1f2f6;
-    color: #1a1a1a;
+    background: var(--text-primary);
+    color: var(--bg-secondary);
 }
 
 .secondaryButton:hover {
-    background: #dfe4ea;
+    background: var(--text-secondary);
 }
 
 .appealLink {
     display: block;
     margin-top: 1rem;
-    color: #6c5ce7;
+    color: var(--primary);
     text-decoration: underline;
     cursor: pointer;
     font-size: 0.9rem;

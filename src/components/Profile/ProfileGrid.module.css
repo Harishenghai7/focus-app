@@ -1,12 +1,62 @@
+/* ==========================================================
+   ProfileGrid — Sovereign Mirror Adaptive Grid System
+   ========================================================== */
+
 .grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 4px;
     width: 100%;
+    padding: var(--space-2);
 }
 
-@media (max-width: 768px) {
+/* Tablet: 3 columns with larger gaps */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        padding: var(--space-3);
+    }
+}
+
+/* Desktop: 4-5 columns with satin glow on hover */
+@media (min-width: 1025px) {
+    .grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        padding: var(--space-4);
+    }
+}
+
+/* Large Desktop: 5 columns */
+@media (min-width: 1400px) {
+    .grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+    }
+}
+
+/* TV/Super wide: 6 columns */
+@media (min-width: 1800px) {
+    .grid {
+        grid-template-columns: repeat(6, 1fr);
+        gap: 12px;
+    }
+}
+
+/* Mobile: 3-column masonry-like feel */
+@media (max-width: 480px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2px;
+        padding: var(--space-1);
+    }
+}
+
+/* Small Mobile: 2 columns */
+@media (max-width: 360px) {
     .grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 2px;
     }
 }

@@ -13,21 +13,21 @@
 }
 
 .forgotLink {
-    color: #a855f7;
+    color: var(--primary);
     font-size: 0.9rem;
     text-decoration: none;
     transition: color 0.2s ease;
 }
 
 .forgotLink:hover {
-    color: #c084fc;
+    color: var(--primary-light);
     text-decoration: underline;
 }
 
 .eyeButton {
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(var(--text-primary-rgb), 0.5);
     cursor: pointer;
     padding: 0;
     display: flex;
@@ -46,7 +46,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(var(--bg-primary-rgb), 0.7);
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
@@ -62,18 +62,18 @@
     padding: 2rem;
     max-width: 450px;
     width: 90%;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 20px 60px rgba(var(--bg-primary-rgb), 0.5);
 }
 
 .modalContent h3 {
-    color: var(--lavender-300, #ddd6fe);
+    color: var(--lavender-300, var(--text-primary));
     font-size: 1.5rem;
     margin-bottom: 1rem;
     font-weight: 600;
 }
 
 .modalContent p {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(var(--text-primary-rgb), 0.8);
     line-height: 1.6;
     margin-bottom: 0.75rem;
 }

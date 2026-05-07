@@ -17,7 +17,7 @@
     flex: 1;
     padding: 40px 20px;
     text-align: center;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(var(--text-primary-rgb), 0.5);
 }
 
 .selectConversation svg {
@@ -28,13 +28,13 @@
 .selectTitle {
     font-size: 22px;
     font-weight: 300;
-    color: #FFFFFF;
+    color: var(--text-primary);
     margin: 0 0 8px 0;
 }
 
 .selectText {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(var(--text-primary-rgb), 0.5);
     margin: 0;
     max-width: 400px;
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import UserAvatar from '../ui/Avatar';
 import VerifiedBadge from '../shared/VerifiedBadge';
 import ProfileStats from './ProfileStats';
@@ -17,31 +18,51 @@ const ProfileHeader = ({
 }) => {
     if (!profile) return null;
 
+    const isTrustShieldVerified = profile.is_verified && profile.trust_level >= 4;
+
     return (
-        <div className={styles.header}>
+        <motion.div
+            className={styles.header}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        >
             <div className={styles.bannerSurface} aria-hidden="true">
                 {profile.banner_url || profile.cover_url ? (
                     <img src={profile.banner_url || profile.cover_url} alt="" className={styles.bannerImage} />
                 ) : (
                     <div className={styles.bannerFallback}>
                         <span className={styles.bannerMark}>F</span>
-                        <span className={styles.bannerText}>FocuslyMascot</span>
+                        <span className={styles.bannerText}>Focusly</span>
                     </div>
                 )}
-            </div>
-            {/* ── Avatar ──────────────────────────────────── */}
-            <div className={styles.avatarSection}>
-                <UserAvatar
-                    src={profile.avatar_url}
-                    username={profile.username}
-                    fullName={profile.full_name}
-                    size="3xl"
-                    hasStory={hasStories}
-                    className={styles.avatar}
-                />
+                {/* Obsidian blur overlay */}
+                <div className={styles.bannerOverlay} />
             </div>
 
-            {/* ── Info ────────────────────────────────────── */}
+            {/* ── Avatar with Sovereign Pulse ──────────────────────────────────── */}
+            <div className={`${styles.avatarSection} ${isTrustShieldVerified ? styles.sovereignAvatar : ''}`}>
+                <motion.div
+                    className={styles.avatarWrapper}
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                >
+                    <UserAvatar
+                        src={profile.avatar_url}
+                        username={profile.username}
+                        fullName={profile.full_name}
+                        size="3xl"
+                        hasStory={hasStories}
+                        isVerified={profile.is_verified}
+                        className={styles.avatar}
+                    />
+                    {isTrustShieldVerified && (
+                        <div className={styles.sovereignPulse} aria-hidden="true" />
+                    )}
+                </motion.div>
+            </div>
+
+            {/* ── Info Section ────────────────────────────────────── */}
             <div className={styles.infoSection}>
                 {/* Name + actions row */}
                 <div className={styles.topRow}>
@@ -51,7 +72,7 @@ const ProfileHeader = ({
                                 {profile.username}
                             </h2>
                             {profile.is_verified && (
-                                <VerifiedBadge size={18} />
+                                <VerifiedBadge size={20} trustShield={isTrustShieldVerified} />
                             )}
                         </div>
                         {profile.full_name && (
@@ -67,7 +88,7 @@ const ProfileHeader = ({
                     />
                 </div>
 
-                {/* Stats */}
+                {/* Stats with glassmorphism cards */}
                 <ProfileStats
                     postsCount={profile.posts_count}
                     followersCount={profile.followers_count}
@@ -76,7 +97,7 @@ const ProfileHeader = ({
                     onFollowingClick={onFollowingClick}
                 />
 
-                {/* Bio */}
+                {/* Bio with satin typography */}
                 <ProfileBio
                     fullName={profile.full_name}
                     bio={profile.bio}
@@ -84,7 +105,7 @@ const ProfileHeader = ({
                     location={profile.location}
                 />
             </div>
-        </div>
+        </motion.div>
     );
 };
 

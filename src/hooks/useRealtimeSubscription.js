@@ -31,7 +31,7 @@ export const useRealtimeSubscription = (config) => {
     useEffect(() => {
         if (!enabled || !table) return;
 
-        console.log(`🔌 Setting up subscription: ${channelName}`);
+
 
         // 1. Realtime Subscription
         const channel = supabase
@@ -39,12 +39,12 @@ export const useRealtimeSubscription = (config) => {
             .on('postgres_changes',
                 { event, schema, table, filter },
                 (payload) => {
-                    console.log(`⚡ Realtime event (${table}):`, payload);
+
                     if (onEventRef.current) onEventRef.current(payload);
                 }
             )
             .subscribe((status) => {
-                console.log(`📡 Subscription status (${channelName}):`, status);
+
             });
 
         channelRef.current = channel;
@@ -52,7 +52,7 @@ export const useRealtimeSubscription = (config) => {
         // 2. Polling Fallback
         let pollTimer;
         if (pollingFnRef.current) {
-            console.log(`🔄 Polling enabled for ${channelName} every ${pollingInterval}ms`);
+
 
             // Initial poll
             pollingFnRef.current().catch(err => console.warn(`⚠️ Initial poll failed (${channelName}):`, err));
@@ -69,7 +69,7 @@ export const useRealtimeSubscription = (config) => {
         }
 
         return () => {
-            console.log(`🔌 Cleaning up subscription: ${channelName}`);
+
             supabase.removeChannel(channel);
             if (pollTimer) clearInterval(pollTimer);
         };

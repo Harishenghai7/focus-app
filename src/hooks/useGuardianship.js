@@ -45,13 +45,13 @@ export const useGuardianship = () => {
     // Fetch teens (if current user is a guardian)
     const fetchTeens = async () => {
         if (!user) {
-            console.log('⚠️ useGuardianship: No user found');
+
             setTeens([]);
             return;
         }
 
         try {
-            console.log('🔍 Fetching teens for guardian:', user.id);
+
             const { data, error: fetchError } = await supabase
                 .from('guardian_relationships')
                 .select(`
@@ -77,7 +77,7 @@ export const useGuardianship = () => {
                 throw fetchError;
             }
 
-            console.log('✅ Teens fetched:', data?.length || 0, data);
+
             setTeens(data || []);
         } catch (err) {
             console.error('❌ Error fetching teens:', err);

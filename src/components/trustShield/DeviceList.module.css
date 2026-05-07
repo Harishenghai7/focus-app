@@ -65,8 +65,8 @@
 }
 
 .suspiciousBadge {
-    background: #fee2e2;
-    color: #ef4444;
+    background: var(--error-dim);
+    color: var(--error);
     font-size: 10px;
     padding: 2px 6px;
     border-radius: 4px;
@@ -83,7 +83,7 @@
 }
 
 .deleteButton:hover {
-    color: #ef4444;
+    color: var(--error);
 }
 
 .empty {

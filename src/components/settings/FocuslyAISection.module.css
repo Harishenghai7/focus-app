@@ -1,0 +1,401 @@
+/* ==========================================================
+   Province 4: Focusly AI Styles
+   ========================================================== */
+
+/* Companion Preview */
+.companionPreview {
+    display: flex;
+    justify-content: center;
+    padding: 24px 0;
+    margin-bottom: 20px;
+    background: rgba(var(--text-primary-rgb), 0.02);
+    border-radius: 16px;
+    border: 1px dashed rgba(var(--primary-rgb), 0.3);
+}
+
+.mascotPreview {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.mascotAvatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--royal-lavender, var(--primary)), var(--royal-lavender-dark, var(--primary)));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--text-primary);
+    box-shadow: 0 4px 20px rgba(var(--primary-rgb), 0.4);
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+.mascotInfo {
+    text-align: left;
+}
+
+.mascotName {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary, var(--text-primary));
+    margin: 0 0 4px;
+}
+
+.mascotStatus {
+    font-size: 0.85rem;
+    color: var(--royal-lavender-light, var(--primary));
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mascotStatus::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--glass-bg-solid);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--glass-bg-solid);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Personality Grid */
+.personalityGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.personalityCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 12px;
+    background: rgba(var(--text-primary-rgb), 0.02);
+    border: 2px solid transparent;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 300ms ease;
+}
+
+.personalityCard:hover {
+    background: rgba(var(--text-primary-rgb), 0.04);
+    transform: translateY(-2px);
+}
+
+.personalityCard.active {
+    border-color: var(--royal-lavender, var(--primary));
+    background: rgba(var(--primary-rgb), 0.1);
+    box-shadow: 0 4px 20px rgba(var(--primary-rgb), 0.15);
+}
+
+.personalityIcon {
+    font-size: 2rem;
+    transition: transform 300ms ease;
+}
+
+.personalityCard:hover .personalityIcon {
+    transform: scale(1.1);
+}
+
+.personalityLabel {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary, var(--text-primary));
+    transition: color 300ms ease;
+}
+
+.personalityCard.active .personalityLabel {
+    color: var(--royal-lavender-light, var(--primary));
+}
+
+.personalityDescription {
+    font-size: 0.7rem;
+    color: var(--text-muted, var(--text-muted));
+    text-align: center;
+    line-height: 1.4;
+}
+
+.personalityCard.active .personalityDescription {
+    color: var(--text-secondary, var(--text-muted));
+}
+
+/* Personality Traits */
+.personalityTraits {
+    border-top: 1px solid rgba(var(--text-primary-rgb), 0.05);
+    padding-top: 20px;
+}
+
+/* Voice Controls */
+.voiceControls {
+    padding: 20px;
+    background: rgba(var(--text-primary-rgb), 0.02);
+    border-radius: 16px;
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Sound Controls */
+.soundControls {
+    padding: 20px;
+    background: rgba(var(--text-primary-rgb), 0.02);
+    border-radius: 16px;
+    margin-top: 16px;
+}
+
+.soundToggles {
+    margin-top: 16px;
+    border-top: 1px solid rgba(var(--text-primary-rgb), 0.05);
+    padding-top: 16px;
+}
+
+/* Slider Control */
+.sliderControl {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sliderControl label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary, var(--text-muted));
+}
+
+.sliderContainer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sliderLabel {
+    font-size: 0.75rem;
+    color: var(--text-muted, var(--text-muted));
+    min-width: 40px;
+}
+
+.slider {
+    flex: 1;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(var(--text-primary-rgb), 0.1);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--royal-lavender, var(--primary));
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.4);
+    transition: transform 200ms ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+.slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: var(--royal-lavender, var(--primary));
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.4);
+}
+
+.sliderValue {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--royal-lavender-light, var(--primary));
+    min-width: 50px;
+    text-align: right;
+}
+
+/* Verbosity Section */
+.verbositySection {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(var(--text-primary-rgb), 0.05);
+}
+
+.subSectionTitle {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary, var(--text-muted));
+    margin: 0 0 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.verbosityOptions {
+    display: flex;
+    gap: 10px;
+}
+
+.verbosityButton {
+    flex: 1;
+    padding: 12px 16px;
+    background: rgba(var(--text-primary-rgb), 0.02);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.1);
+    border-radius: 10px;
+    color: var(--text-secondary, var(--text-muted));
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 200ms ease;
+}
+
+.verbosityButton:hover {
+    background: rgba(var(--text-primary-rgb), 0.04);
+    color: var(--text-primary, var(--text-primary));
+}
+
+.verbosityButton.active {
+    background: rgba(var(--primary-rgb), 0.15);
+    border-color: var(--royal-lavender, var(--primary));
+    color: var(--royal-lavender-light, var(--primary));
+}
+
+/* Speed Options */
+.speedOptions {
+    display: flex;
+    gap: 12px;
+}
+
+.speedButton {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 16px;
+    background: rgba(var(--text-primary-rgb), 0.02);
+    border: 2px solid transparent;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 300ms ease;
+}
+
+.speedButton:hover {
+    background: rgba(var(--text-primary-rgb), 0.04);
+}
+
+.speedButton.active {
+    border-color: var(--royal-lavender, var(--primary));
+    background: rgba(var(--primary-rgb), 0.08);
+}
+
+.speedDemo {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(var(--primary-rgb), 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--royal-lavender-light, var(--primary));
+}
+
+.speedLabel {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary, var(--text-primary));
+}
+
+.speedButton.active .speedLabel {
+    color: var(--royal-lavender-light, var(--primary));
+}
+
+.speedDescription {
+    font-size: 0.75rem;
+    color: var(--text-muted, var(--text-muted));
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .personalityGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .speedOptions {
+        flex-direction: column;
+    }
+
+    .verbosityOptions {
+        flex-direction: column;
+    }
+
+    .mascotPreview {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .mascotInfo {
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .personalityGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .personalityCard {
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 16px;
+    }
+
+    .personalityIcon {
+        font-size: 1.5rem;
+    }
+
+    .sliderContainer {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .sliderLabel {
+        min-width: auto;
+    }
+
+    .sliderValue {
+        text-align: center;
+    }
+}

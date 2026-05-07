@@ -48,8 +48,8 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    border: 3px solid rgba(139, 92, 246, 0.2);
-    border-top-color: var(--primary-lavender, #a78bfa);
+    border: 3px solid rgba(var(--primary-rgb), 0.2);
+    border-top-color: var(--primary-lavender, var(--primary-light));
     animation: spin 0.85s linear infinite;
 }
 
@@ -123,13 +123,109 @@
     border-radius: var(--radius-full);
     font-weight: var(--font-semibold);
     text-decoration: none;
-    color: #fff;
+    color: var(--text-primary);
     background: var(--gradient-brand);
     box-shadow: var(--shadow-md);
 }
 
 .cta:hover {
     filter: brightness(1.06);
+}
+
+/* Tabs (Royal Lavender pill bar) */
+.tabs {
+    display: flex;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+    padding: var(--space-1);
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-full);
+    backdrop-filter: var(--blur-md);
+    -webkit-backdrop-filter: var(--blur-md);
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+    flex: 1;
+    min-width: max-content;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: var(--font-sm);
+    font-weight: var(--font-semibold);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.tab:hover {
+    color: var(--text-primary);
+    background: var(--glass-surface-hover);
+}
+
+.tabActive {
+    color: var(--text-primary);
+    background: var(--gradient-brand);
+    box-shadow: 0 4px 14px rgba(var(--primary-rgb), 0.35);
+}
+
+.tabActive:hover {
+    color: var(--text-primary);
+    background: var(--gradient-brand);
+    filter: brightness(1.05);
+}
+
+/* Avatar in row */
+.avatar {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: visible;
+    flex-shrink: 0;
+    cursor: pointer;
+    background: var(--gradient-brand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatarPlaceholder {
+    color: white;
+    font-weight: var(--font-bold);
+    font-size: var(--font-lg);
+}
+
+.shieldDot {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--gradient-brand);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-primary);
+    box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.5);
 }
 
 .list {
@@ -194,9 +290,9 @@
     color: var(--text-secondary);
 }
 
-.callTypeBadge.incoming { color: #10B981; border-color: rgba(16, 185, 129, 0.3); }
+.callTypeBadge.incoming { color: var(--glass-bg-solid); border-color: rgba(var(--success-rgb), 0.3); }
 .callTypeBadge.outgoing { color: var(--primary-lavender); }
-.callTypeBadge.missed { color: #ef4444; border-color: rgba(239, 68, 68, 0.3); }
+.callTypeBadge.missed { color: var(--error); border-color: rgba(var(--error-rgb), 0.3); }
 
 .time {
     font-size: var(--font-xs);
@@ -224,7 +320,7 @@
     background: var(--glass-surface-hover);
     border-color: var(--primary-dim);
     transform: scale(1.12);
-    box-shadow: 0 0 16px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 0 16px rgba(var(--primary-rgb), 0.4);
 }
 
 .callActionBtn:active {
@@ -232,10 +328,10 @@
 }
 
 .callActionBtn.video {
-    color: #10B981;
-    border-color: rgba(16, 185, 129, 0.3);
+    color: var(--glass-bg-solid);
+    border-color: rgba(var(--success-rgb), 0.3);
 }
 
 .callActionBtn.video:hover {
-    box-shadow: 0 0 16px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 0 16px rgba(var(--success-rgb), 0.3);
 }

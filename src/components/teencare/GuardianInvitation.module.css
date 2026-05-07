@@ -3,7 +3,7 @@
 .guardianInvitationOverlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(var(--bg-primary-rgb), 0.8);
     backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
@@ -15,12 +15,12 @@
 .guardianInvitationModal {
     background: rgba(26, 26, 26, 0.95);
     backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(139, 92, 246, 0.2);
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
     border-radius: 16px;
     padding: var(--space-6);
     max-width: 500px;
     width: 100%;
-    box-shadow: 0 16px 48px rgba(139, 92, 246, 0.25);
+    box-shadow: 0 16px 48px rgba(var(--primary-rgb), 0.25);
     position: relative;
 }
 
@@ -47,7 +47,7 @@
 }
 
 .closeBtn:hover {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(var(--primary-rgb), 0.1);
     color: var(--text-primary);
 }
 
@@ -98,8 +98,8 @@
 
 .emailInput,
 .relationshipSelect {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(139, 92, 246, 0.3);
+    background: rgba(var(--text-primary-rgb), 0.05);
+    border: 1px solid rgba(var(--primary-rgb), 0.3);
     border-radius: 8px;
     padding: 12px 16px;
     font-size: var(--font-sm);
@@ -110,13 +110,13 @@
 .emailInput:focus,
 .relationshipSelect:focus {
     outline: none;
-    border-color: #9b87f5;
+    border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(155, 135, 245, 0.1);
 }
 
 .infoBox {
-    background: rgba(139, 92, 246, 0.05);
-    border: 1px solid rgba(139, 92, 246, 0.2);
+    background: rgba(var(--primary-rgb), 0.05);
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
     border-radius: 12px;
     padding: var(--space-4);
     display: flex;
@@ -148,7 +148,7 @@
 }
 
 .errorMessage {
-    background: rgba(239, 68, 68, 0.1);
+    background: rgba(var(--error-rgb), 0.1);
     border: 1px solid var(--error);
     border-radius: 8px;
     padding: var(--space-3);
@@ -167,10 +167,10 @@
 
 .cancelBtn {
     background: transparent;
-    color: #c4b5fd;
+    color: var(--primary-light);
     padding: 10px 24px;
     border-radius: 8px;
-    border: 1px solid rgba(139, 92, 246, 0.5);
+    border: 1px solid rgba(var(--primary-rgb), 0.5);
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -179,12 +179,12 @@
 }
 
 .cancelBtn:hover:not(:disabled) {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(var(--primary-rgb), 0.1);
 }
 
 .submitBtn {
-    background: linear-gradient(135deg, #9b87f5, #7c3aed);
-    color: #ffffff;
+    background: linear-gradient(135deg, var(--primary), var(--primary));
+    color: var(--text-primary);
     padding: 10px 24px;
     border-radius: 8px;
     border: none;
@@ -208,7 +208,7 @@
 .modalFooter {
     margin-top: var(--space-4);
     padding-top: var(--space-4);
-    border-top: 1px solid rgba(139, 92, 246, 0.2);
+    border-top: 1px solid rgba(var(--primary-rgb), 0.2);
     font-size: var(--font-xs);
     color: var(--text-muted);
     text-align: center;

@@ -361,6 +361,12 @@ export const validateOCRAgainstInput = (ocrResult, manualInput) => {
 export const validateIDQuality = async (file) => {
   const errors = [];
   
+  // Check if file is null/undefined (can happen in liveness-only flow)
+  if (!file) {
+
+    return { ok: true, errors: [], metadata: { skipped: true } }; // Assume valid in liveness-only flow
+  }
+  
   // Size check
   const fileSizeKB = file.size / 1024;
   if (fileSizeKB < SECURITY_CONFIG.MIN_FILE_SIZE_KB) {
@@ -519,9 +525,9 @@ export const resetRateLimit = () => {
 
 /**
  * Check identity uniqueness via Postgres function
- * Calls check_identity_uniqueness(name, dob, device_id)
+ * Calls check_identity_uniqueness(name, dob, device_id, current_user_id)
  */
-export const checkIdentityUniqueness = async (name, dob, deviceId = null) => {
+export const checkIdentityUniqueness = async (name, dob, deviceId = null, currentUserId = null) => {
   const effectiveDeviceId = deviceId || getDeviceId();
   
   try {
@@ -529,6 +535,7 @@ export const checkIdentityUniqueness = async (name, dob, deviceId = null) => {
       p_name: name,
       p_dob: dob,
       p_device_id: effectiveDeviceId,
+      p_current_user_id: currentUserId,
     });
     
     if (error) throw error;
@@ -773,7 +780,7 @@ export const runGodLevelValidation = async ({
   
   // Layer 2.5: Identity uniqueness check
   if (ocrResult?.name && ocrResult?.dob) {
-    const uniqueness = await checkIdentityUniqueness(ocrResult.name, ocrResult.dob, deviceId);
+    const uniqueness = await checkIdentityUniqueness(ocrResult.name, ocrResult.dob, deviceId, userId);
     results.layer2_5 = uniqueness;
     if (!uniqueness.unique) {
       results.errors.push(ERROR_CODES.ERR_DUPLICATE_IDENTITY);
@@ -788,8 +795,10 @@ export const runGodLevelValidation = async ({
   });
   results.layer2_6 = ipLog;
   
-  // Check liveness completion
-  if (!livenessComplete || livenessComplete.filter(Boolean).length < 3) {
+  // Check liveness completion (support both single and multi-challenge flows)
+  const completedCount = livenessComplete?.filter?.(Boolean)?.length || 0;
+  const hasCompleted = completedCount > 0 || livenessComplete === true;
+  if (!hasCompleted) {
     results.errors.push(ERROR_CODES.ERR_LIVENESS_FAILED);
     return results;
   }

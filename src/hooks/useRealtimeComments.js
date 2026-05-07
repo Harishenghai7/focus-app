@@ -25,7 +25,7 @@ export const useRealtimeComments = (postId) => {
                     filter: `post_id=eq.${postId}`,
                 },
                 (payload) => {
-                    console.log('Real-time comment update:', payload);
+
 
                     // Invalidate comments query
                     queryClient.invalidateQueries({ queryKey: ['comments', postId] });

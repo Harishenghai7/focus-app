@@ -35,107 +35,10 @@ const ExploreEnhanced = () => {
     const [followingUsers, setFollowingUsers] = useState(new Set());
     const searchTimeoutRef = useRef(null);
 
-    useEffect(() => {
-        if (!routeContentId) return;
-        const merged = [...posts, ...boltz];
-        if (!merged.length) return;
-        const target = merged.find((item) => item.id === routeContentId);
-        if (target) {
-            setSelectedPost(target);
-        }
-    }, [routeContentId, posts, boltz]);
+    // Define functions BEFORE the useEffects that use them
+    // IMPORTANT: loadTrendingHashtags must be defined BEFORE loadExploreContent
 
-    // Load initial content on mount — no dep on user?.id to avoid empty state
-    useEffect(() => {
-        loadExploreContent();
-    }, [loadExploreContent]); // runs once on mount
-
-    // Load following status when user is available
-    useEffect(() => {
-        if (user?.id) {
-            loadFollowingStatus();
-        }
-    }, [user?.id, loadFollowingStatus]);
-
-    const loadFollowingStatus = useCallback(async () => {
-        if (!user?.id) return;
-
-        try {
-            const { data } = await supabase
-                .from('follows')
-                .select('following_id')
-                .eq('follower_id', user.id);
-            if (data) {
-                setFollowingUsers(new Set(data.map(f => f.following_id)));
-            }
-        } catch (error) {
-            console.error('Error loading following status:', error);
-        }
-    }, [user?.id]);
-
-    const loadExploreContent = useCallback(async () => {
-        setLoading(true);
-        try {
-            // Fetch ALL posts (no media_url filter — text posts are valid content)
-            // IMPORTANT: schema uses `media_urls` (array), not `media_url` (singular) in most setups.
-            const { data: postsData, error: postsError } = await supabase
-                .from('posts')
-                .select('id, user_id, media_urls, caption, content, created_at, type, likes_count, comments_count, views_count, profiles:user_id(id, username, full_name, avatar_url, is_verified, trust_tier)')
-                .order('created_at', { ascending: false })
-                .limit(60);
-            if (postsError) throw postsError;
-
-            // Fetch boltz
-            const { data: boltzData, error: boltzError } = await supabase
-                .from('boltz')
-                .select('id, user_id, video_url, thumbnail_url, description, created_at, likes_count, comments_count, views_count, profiles:user_id(id, username, full_name, avatar_url, is_verified, trust_tier)')
-                .order('created_at', { ascending: false })
-                .limit(60);
-            if (boltzError) throw boltzError;
-
-            // Fetch top users for sidebar
-            const { data: topUsersData } = await supabase
-                .from('profiles')
-                .select('id, username, full_name, avatar_url, is_verified, followers_count, bio')
-                .order('followers_count', { ascending: false, nullsFirst: false })
-                .limit(20);
-
-            const enrichedPosts = (postsData || []).map(post => ({
-                ...post,
-                type:    'post',
-                media_url: post.media_urls?.[0] || null,
-                user: normalizeHydratedProfile(post.profiles, post.user_id),
-            }));
-
-            const enrichedBoltz = (boltzData || []).map(item => ({
-                ...item,
-                type:      'boltz',
-                media_url: item.thumbnail_url || item.video_url,
-                user: normalizeHydratedProfile(item.profiles, item.user_id),
-            }));
-
-            setPosts(enrichedPosts);
-            setBoltz(enrichedBoltz);
-            setTopUsers(
-                (topUsersData || []).map(u => ({
-                    ...u,
-                    avatar_url: normalizeHydratedProfile(u, u.id).avatar_url,
-                }))
-            );
-            await loadTrendingHashtags(postsData || []);
-
-        } catch (error) {
-            console.error('Explore load error:', error);
-            setPosts([]);
-            setBoltz([]);
-            setTopUsers([]);
-            setTrendingHashtags([]);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    const loadTrendingHashtags = async (recentPosts = []) => {
+    const loadTrendingHashtags = useCallback(async (recentPosts = []) => {
         try {
             const viewsToTry = ['trending_hashtags_48h_v', 'trending_hashtags_24h_v'];
             for (const viewName of viewsToTry) {
@@ -150,10 +53,10 @@ const ExploreEnhanced = () => {
                 }
             }
         } catch (error) {
-            console.warn('Trending hashtag view unavailable; using client aggregation fallback.', error);
+            console.warn('[Explore] Trending view unavailable, using fallback.', error);
         }
 
-        // Fallback: derive real tags from recent post captions/content (last 48h batch).
+        // Fallback: derive real tags from recent post captions/content
         const bucket = new Map();
         (recentPosts || []).forEach((p) => {
             const text = `${p.caption || ''} ${p.content || ''}`;
@@ -168,7 +71,197 @@ const ExploreEnhanced = () => {
             .slice(0, 10)
             .map(([hashtag, post_count]) => ({ hashtag, post_count }));
         setTrendingHashtags(ranked);
-    };
+    }, []);
+
+    const loadFollowingStatus = useCallback(async () => {
+        if (!user?.id) return;
+
+        try {
+            const { data } = await supabase
+                .from('follows')
+                .select('following_id')
+                .eq('follower_id', user.id);
+            if (data) {
+                setFollowingUsers(new Set(data.map(f => f.following_id)));
+            }
+        } catch (error) {
+            console.error('[Explore] Following status error:', error);
+        }
+    }, [user?.id]);
+
+    const loadExploreContent = useCallback(async () => {
+        setLoading(true);
+
+        
+        let postsData = [];
+        let boltzData = [];
+        let topUsersData = [];
+        
+        try {
+            // Fetch posts using unified RPC
+
+            const { data: postsRpcData, error: postsError } = await supabase.rpc('get_public_feed', {
+                p_limit: 60,
+                p_offset: 0
+            });
+            
+            if (postsError) {
+                console.error('[Explore] Posts RPC error:', postsError);
+                // Fallback: simple query
+                const { data: simplePosts } = await supabase
+                    .from('posts')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(60);
+                postsData = simplePosts || [];
+            } else {
+                postsData = postsRpcData || [];
+            }
+
+
+            // Fetch boltz using unified RPC
+
+            const { data: boltzRpcData, error: boltzError } = await supabase.rpc('get_public_boltz_feed', {
+                p_limit: 60,
+                p_offset: 0
+            });
+            
+            if (boltzError) {
+                console.error('[Explore] Boltz RPC error:', boltzError);
+                // Fallback: simple query
+                const { data: simpleBoltz } = await supabase
+                    .from('boltz')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(60);
+                boltzData = simpleBoltz || [];
+            } else {
+                boltzData = boltzRpcData || [];
+            }
+
+
+            // Fetch top users
+
+            const usersResult = await supabase
+                .from('profiles')
+                .select('id, username, full_name, avatar_url, is_verified, followers_count, bio')
+                .order('followers_count', { ascending: false, nullsFirst: false })
+                .limit(20);
+            
+            if (usersResult.error) {
+                console.error('[Explore] Users error:', usersResult.error);
+            } else {
+                topUsersData = usersResult.data || [];
+
+            }
+
+            // Create a lookup map for user profiles
+            const usersMap = new Map();
+            topUsersData.forEach(u => usersMap.set(u.id, u));
+
+            // Enrich posts - RPC returns user data directly (username, avatar_url, etc.)
+            const enrichedPosts = (postsData || []).map(post => {
+                // Build user object from RPC response fields
+                const userFromRpc = post.username ? {
+                    id: post.user_id,
+                    username: post.username,
+                    full_name: post.full_name,
+                    avatar_url: post.avatar_url,
+                    is_verified: post.is_verified,
+                    trust_tier: post.trust_tier
+                } : null;
+                const user = userFromRpc || usersMap.get(post.user_id) || null;
+                return {
+                    ...post,
+                    type: 'post',
+                    media_url: post.media_urls?.[0] || post.media_url || null,
+                    user: normalizeHydratedProfile(user, post.user_id),
+                };
+            });
+
+            // Enrich boltz - RPC returns user data directly
+            const enrichedBoltz = (boltzData || []).map(item => {
+                const userFromRpc = item.username ? {
+                    id: item.user_id,
+                    username: item.username,
+                    full_name: item.full_name,
+                    avatar_url: item.avatar_url,
+                    is_verified: item.is_verified
+                } : null;
+                const user = userFromRpc || usersMap.get(item.user_id) || null;
+                return {
+                    ...item,
+                    type: 'boltz',
+                    media_url: item.thumbnail_url || item.video_url,
+                    video_url: item.video_url,
+                    thumbnail_url: item.thumbnail_url,
+                    user: normalizeHydratedProfile(user, item.user_id),
+                };
+            });
+
+            // Enrich users
+            const enrichedUsers = (topUsersData || []).map(u => ({
+                ...u,
+                avatar_url: normalizeHydratedProfile(u, u.id).avatar_url,
+            }));
+
+
+
+            // Set state
+            setPosts(enrichedPosts);
+            setBoltz(enrichedBoltz);
+            setTopUsers(enrichedUsers);
+            
+            // Load trending hashtags
+            if (postsData && postsData.length > 0) {
+                await loadTrendingHashtags(postsData);
+            }
+
+
+
+        } catch (error) {
+            console.error('[Explore] CRITICAL ERROR:', error);
+            setPosts([]);
+            setBoltz([]);
+            setTopUsers([]);
+            setTrendingHashtags([]);
+        } finally {
+            setLoading(false);
+        }
+    }, []); // Empty deps - loadTrendingHashtags is stable from useCallback above
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // USEEFFECTS (must come AFTER function definitions)
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    // Handle route content ID
+    useEffect(() => {
+        if (!routeContentId) return;
+        const merged = [...posts, ...boltz];
+        if (!merged.length) return;
+        const target = merged.find((item) => item.id === routeContentId);
+        if (target) {
+            setSelectedPost(target);
+        }
+    }, [routeContentId, posts, boltz]);
+
+    // Load initial content on mount - runs once only
+    useEffect(() => {
+
+        loadExploreContent();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // Empty array = run once on mount
+
+    // Load following status when user is available
+    useEffect(() => {
+        if (user?.id) {
+            loadFollowingStatus();
+        }
+    }, [user?.id, loadFollowingStatus]);
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // HANDLERS
+    // ═══════════════════════════════════════════════════════════════════════════════
 
     const handleSearch = useCallback(async (query) => {
         const trimmedQuery = query.trim();
@@ -181,92 +274,145 @@ const ExploreEnhanced = () => {
 
         setSearchQuery(trimmedQuery);
         setSearchLoading(true);
+        
+        const q = trimmedQuery.toLowerCase();
+
+
 
         try {
-            // Search posts
-            const { data: searchedPostsData, error: spError } = await supabase.from('posts')
-                .select('*, profiles:user_id(id, username, full_name, avatar_url, is_verified, trust_tier)')
-                .not('media_urls', 'is', null)
-                .ilike('caption', `%${trimmedQuery}%`)
-                .order('created_at', { ascending: false })
-                .limit(20);
-            if (spError) console.error('Search Posts Error:', spError);
+            // Always fetch users from top list for client-side filtering
+            // This ensures we can match partial strings reliably
 
-            // Search boltz
-            const { data: searchedBoltzData, error: sbError } = await supabase.from('boltz')
-                .select('*, profiles:user_id(id, username, full_name, avatar_url, is_verified, trust_tier)')
-                .not('video_url', 'is', null)
-                .ilike('description', `%${trimmedQuery}%`)
-                .order('created_at', { ascending: false })
-                .limit(20);
-            if (sbError) console.error('Search Boltz Error:', sbError);
-
-            // Search users
-            const { data: searchedUsersData, error: suError } = await supabase.from('profiles')
-                .select('*')
-                .or(`username.ilike.%${trimmedQuery}%,full_name.ilike.%${trimmedQuery}%`)
+            const { data: allUsersData, error: allUsersError } = await supabase
+                .from('profiles')
+                .select('id, username, full_name, avatar_url, is_verified, followers_count, bio')
                 .order('followers_count', { ascending: false, nullsFirst: false })
-                .limit(20);
-            if (suError) console.error('Search Users Error:', suError);
+                .limit(200);
+            
+            if (allUsersError) {
+                console.error('[Explore] All users fetch error:', allUsersError);
+            }
 
-            let searchedPosts = searchedPostsData || [];
-            let searchedBoltz = searchedBoltzData || [];
-            let searchedUsers = searchedUsersData || [];
 
+            // Client-side filter users - more reliable than Supabase ILIKE for partial matches
+            let searchedUsers = (allUsersData || []).filter((u) => {
+                const usernameMatch = (u.username || '').toLowerCase().includes(q);
+                const fullNameMatch = (u.full_name || '').toLowerCase().includes(q);
+                const bioMatch = (u.bio || '').toLowerCase().includes(q);
+                return usernameMatch || fullNameMatch || bioMatch;
+            });
+
+
+            // Rank users by relevance
             const rankUsers = (usersInput) =>
                 [...(usersInput || [])].sort((a, b) => {
-                    const q = trimmedQuery.toLowerCase();
                     const score = (u) => {
                         const username = (u.username || '').toLowerCase();
                         const fullName = (u.full_name || '').toLowerCase();
                         let s = 0;
-                        if (username === q) s += 120;
-                        if (username.startsWith(q)) s += 80;
-                        if (username.includes(q)) s += 45;
-                        if (fullName.startsWith(q)) s += 30;
-                        if (fullName.includes(q)) s += 20;
-                        s += Math.min(Number(u.followers_count || 0) / 1000, 25);
+                        // Exact match gets highest score
+                        if (username === q) s += 200;
+                        if (fullName === q) s += 150;
+                        // Starts with query
+                        if (username.startsWith(q)) s += 100;
+                        if (fullName.startsWith(q)) s += 80;
+                        // Contains query
+                        if (username.includes(q)) s += 50;
+                        if (fullName.includes(q)) s += 40;
+                        if ((u.bio || '').toLowerCase().includes(q)) s += 20;
+                        // Followers boost
+                        s += Math.min(Number(u.followers_count || 0) / 500, 30);
                         return s;
                     };
                     return score(b) - score(a);
                 });
 
-            // Fallback if strict filtered query returns nothing.
-            if (searchedUsers.length === 0) {
-                const { data: fallbackUsersData } = await supabase
-                    .from('profiles')
-                    .select('id, username, full_name, avatar_url, is_verified, followers_count')
-                    .order('followers_count', { ascending: false, nullsFirst: false })
-                    .limit(80);
-                const q = trimmedQuery.toLowerCase();
-                searchedUsers = (fallbackUsersData || []).filter((u) =>
-                    (u.username || '').toLowerCase().includes(q) ||
-                    (u.full_name || '').toLowerCase().includes(q)
-                );
-            }
             searchedUsers = rankUsers(searchedUsers);
 
-            searchedPosts = searchedPosts.map(post => ({
-                ...post,
-                type: 'post',
-                user: normalizeHydratedProfile(post.profiles, post.user_id)
-            }));
+            // Search posts from Supabase
 
-            searchedBoltz = searchedBoltz.map(boltz => ({
-                ...boltz,
-                type: 'boltz',
-                media_url: boltz.thumbnail_url || boltz.video_url,
-                user: normalizeHydratedProfile(boltz.profiles, boltz.user_id)
-            }));
+            const { data: searchedPostsData, error: spError } = await supabase
+                .from('posts')
+                .select(`
+                    *, 
+                    profiles:user_id(id, username, full_name, avatar_url, is_verified, trust_tier)
+                `)
+                .or(`caption.ilike.%${trimmedQuery}%,content.ilike.%${trimmedQuery}%`)
+                .order('created_at', { ascending: false })
+                .limit(30);
+            
+            if (spError) {
+                console.error('[Explore] Search posts error:', spError);
+            } else {
+
+            }
+
+            // Search boltz from Supabase
+
+            const { data: searchedBoltzData, error: sbError } = await supabase
+                .from('boltz')
+                .select(`
+                    *, 
+                    profiles:user_id(id, username, full_name, avatar_url, is_verified, trust_tier)
+                `)
+                .ilike('description', `%${trimmedQuery}%`)
+                .order('created_at', { ascending: false })
+                .limit(30);
+            
+            if (sbError) {
+                console.error('[Explore] Search boltz error:', sbError);
+            } else {
+
+            }
+
+            // Enrich posts and boltz with user data (handle both RPC and FK join formats)
+            const enrichedPosts = (searchedPostsData || []).map(post => {
+                const userFromRpc = post.username ? {
+                    id: post.user_id,
+                    username: post.username,
+                    full_name: post.full_name,
+                    avatar_url: post.avatar_url,
+                    is_verified: post.is_verified,
+                    trust_tier: post.trust_tier
+                } : null;
+                return {
+                    ...post,
+                    type: 'post',
+                    media_url: post.media_urls?.[0] || post.media_url || null,
+                    user: normalizeHydratedProfile(userFromRpc || post.profiles, post.user_id)
+                };
+            });
+
+            const enrichedBoltz = (searchedBoltzData || []).map((item, idx) => {
+                const userFromRpc = item.username ? {
+                    id: item.user_id,
+                    username: item.username,
+                    full_name: item.full_name,
+                    avatar_url: item.avatar_url,
+                    is_verified: item.is_verified
+                } : null;
+                return {
+                    ...item,
+                    type: 'boltz',
+                    media_url: item.thumbnail_url || item.video_url,
+                    video_url: item.video_url,
+                    thumbnail_url: item.thumbnail_url || item.poster_url || item.preview_image || item.cover_url || null,
+                    user: normalizeHydratedProfile(userFromRpc || item.profiles, item.user_id)
+                };
+            });
+
+
 
             setSearchResults({
-                posts: searchedPosts,
-                boltz: searchedBoltz,
+                posts: enrichedPosts,
+                boltz: enrichedBoltz,
                 users: searchedUsers
             });
 
+
+
         } catch (error) {
-            console.error('❌ [SEARCH] Error:', error);
+            console.error('[Explore] Search error:', error);
         } finally {
             setSearchLoading(false);
         }
@@ -379,35 +525,35 @@ const ExploreEnhanced = () => {
                     </div>
                 </div>
 
-                {/* Category Tabs */}
+                {/* Category Tabs with Refresh */}
                 <div className={styles.tabs}>
                     <button
                         className={`${styles.tab} ${activeTab === 'all' ? styles.active : ''}`}
                         onClick={() => setActiveTab('all')}
                     >
                         <Sparkles size={18} />
-                        <span>All</span>
+                        <span>All ({posts.length + boltz.length})</span>
                     </button>
                     <button
                         className={`${styles.tab} ${activeTab === 'users' ? styles.active : ''}`}
                         onClick={() => setActiveTab('users')}
                     >
                         <Users size={18} />
-                        <span>Users</span>
+                        <span>Users ({topUsers.length})</span>
                     </button>
                     <button
                         className={`${styles.tab} ${activeTab === 'posts' ? styles.active : ''}`}
                         onClick={() => setActiveTab('posts')}
                     >
                         <Image size={18} />
-                        <span>Posts</span>
+                        <span>Posts ({posts.length})</span>
                     </button>
                     <button
                         className={`${styles.tab} ${activeTab === 'boltz' ? styles.active : ''}`}
                         onClick={() => setActiveTab('boltz')}
                     >
                         <Zap size={18} />
-                        <span>Boltz</span>
+                        <span>Boltz ({boltz.length})</span>
                     </button>
                     <button
                         className={`${styles.tab} ${activeTab === 'trending' ? styles.active : ''}`}
@@ -415,6 +561,16 @@ const ExploreEnhanced = () => {
                     >
                         <TrendingUp size={18} />
                         <span>Trending</span>
+                    </button>
+                    <button
+                        className={styles.tab}
+                        onClick={() => {
+
+                            loadExploreContent();
+                        }}
+                        style={{ marginLeft: 'auto', background: 'rgba(139, 92, 246, 0.2)' }}
+                    >
+                        <span>🔄 Refresh</span>
                     </button>
                 </div>
 
@@ -512,6 +668,15 @@ const ExploreEnhanced = () => {
                                     {!searchQuery && activeTab === 'all' && (
                                         <h2 className={styles.sectionTitle}>Discover</h2>
                                     )}
+                                    {!searchQuery && activeTab === 'posts' && (
+                                        <h2 className={styles.sectionTitle}>Latest Posts</h2>
+                                    )}
+                                    {!searchQuery && activeTab === 'boltz' && (
+                                        <h2 className={styles.sectionTitle}>Boltz Videos</h2>
+                                    )}
+                                    {!searchQuery && activeTab === 'trending' && (
+                                        <h2 className={styles.sectionTitle}>Trending Now</h2>
+                                    )}
                                     <div className={styles.contentGrid}>
                                         {content.map(item => (
                                             <div
@@ -523,9 +688,22 @@ const ExploreEnhanced = () => {
                                                     <div className={styles.videoWrapper}>
                                                         <video
                                                             src={item.video_url}
+                                                            poster={item.thumbnail_url}
                                                             className={styles.contentMedia}
                                                             muted
                                                             playsInline
+                                                            preload="metadata"
+                                                            crossOrigin="anonymous"
+                                                            onLoadedMetadata={(e) => {
+                                                                try {
+                                                                    const v = e.currentTarget;
+                                                                    v.currentTime = 0.001;
+                                                                    v.pause();
+                                                                } catch {}
+                                                            }}
+                                                            onError={(e) => {
+                                                                console.error('[Explore] Video failed to load:', item.video_url);
+                                                            }}
                                                         />
                                                         <div className={styles.playIcon}>▶</div>
                                                         <div className={styles.boltzBadge}>⚡</div>
@@ -536,6 +714,10 @@ const ExploreEnhanced = () => {
                                                             src={item.media_url}
                                                             alt={item.caption || 'Post'}
                                                             className={styles.contentMedia}
+                                                            onError={(e) => {
+                                                                console.error('[Explore] Image failed to load:', item.media_url);
+                                                                e.target.style.display = 'none';
+                                                            }}
                                                         />
                                                     ) : (
                                                         <div className={styles.textPostCard}>
@@ -569,8 +751,20 @@ const ExploreEnhanced = () => {
                                     <div className={styles.emptyIcon}>
                                         {searchQuery ? '🔍' : '✨'}
                                     </div>
-                                    <h3>{searchQuery ? 'No results found' : 'No content yet'}</h3>
-                                    <p>{searchQuery ? 'Try searching for something else' : 'Be the first to share something!'}</p>
+                                    <h3>
+                                        {searchQuery ? 'No results found' : 
+                                         activeTab === 'posts' ? 'No posts yet' :
+                                         activeTab === 'boltz' ? 'No boltz videos yet' :
+                                         activeTab === 'trending' ? 'No trending content yet' :
+                                         'No content yet'}
+                                    </h3>
+                                    <p>
+                                        {searchQuery ? 'Try searching for something else' : 
+                                         activeTab === 'posts' ? 'Create a post to see it here!' :
+                                         activeTab === 'boltz' ? 'Upload a boltz video to see it here!' :
+                                         activeTab === 'trending' ? 'Content will appear here once there\'s more activity' :
+                                         'Be the first to share something!'}
+                                    </p>
                                 </div>
                             )}
                         </>

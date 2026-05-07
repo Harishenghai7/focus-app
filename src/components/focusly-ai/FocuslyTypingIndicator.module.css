@@ -11,7 +11,7 @@
     height: 36px;
     border-radius: 50%;
     overflow: hidden;
-    background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary) 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -25,11 +25,11 @@
 }
 
 .typingBubble {
-    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-light) 100%);
     padding: 14px 20px;
     border-radius: 18px;
     border-bottom-left-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(var(--bg-primary-rgb), 0.05);
     min-width: 70px;
 }
 
@@ -45,7 +45,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary) 100%);
     box-shadow: 0 2px 4px rgba(147, 51, 234, 0.3);
 }
 

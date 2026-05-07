@@ -13,7 +13,7 @@ const FlaggedAccountsQueue = () => {
 
     const handleAction = (id, action) => {
         // In real app: call API to ban or restore user
-        console.log(`${action} user ${id}`);
+
         setUsers(users.filter(u => u.id !== id));
     };
 

@@ -40,10 +40,10 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(var(--bg-primary-rgb), 0.5);
     backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #ffffff;
+    border: 1px solid rgba(var(--text-primary-rgb), 0.2);
+    color: var(--text-primary);
     font-size: 24px;
     cursor: pointer;
     display: flex;
@@ -54,7 +54,7 @@
 }
 
 .navBtn:hover {
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(var(--bg-primary-rgb), 0.7);
     transform: translateY(-50%) scale(1.1);
 }
 
@@ -80,7 +80,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(var(--text-primary-rgb), 0.5);
     border: none;
     cursor: pointer;
     transition: all 0.2s;
@@ -88,11 +88,11 @@
 }
 
 .dot:hover {
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(var(--text-primary-rgb), 0.8);
 }
 
 .activeDot {
-    background: #9b87f5;
+    background: var(--primary);
     width: 24px;
     border-radius: 4px;
 }

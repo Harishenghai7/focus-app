@@ -175,7 +175,7 @@ const ProtectedTrustRoute = ({ children }) => {
 
         try {
             // Get device fingerprint
-            const deviceId = getDeviceId();
+            const deviceId = await getDeviceId();
             
             // Check rate limiting
             const rateLimit = await checkRateLimit(deviceId);
@@ -211,23 +211,16 @@ const ProtectedTrustRoute = ({ children }) => {
             // Check if onboarding is marked complete but not verified
             const onboardingDone = data?.onboarding_completed === true;
             
-            console.log('[ProtectedTrustRoute] 🔒 God-Level Status Check:', {
+            setVerificationState({
+                isChecking: false,
                 status,
                 isVerified,
                 isLocked,
                 lockedStep,
                 stepSource: stepData.source,
                 deviceId: deviceId?.slice(0, 8) + '...',
-                rateLimited: !rateLimit.allowed,
-            });
-
-            setVerificationState({
-                isChecking: false,
-                isVerified,
-                isLocked,
-                lockedStep,
-                deviceId,
                 rateLimit,
+                rateLimited: !rateLimit.allowed,
             });
 
             // Reset onboarding if marked complete but not verified
@@ -291,7 +284,7 @@ const ProtectedTrustRoute = ({ children }) => {
                 table: 'profiles',
                 filter: `id=eq.${user.id}`,
             }, (payload) => {
-                console.log('[ProtectedTrustRoute] 🔄 Real-time update:', payload);
+
                 syncVerificationState();
             })
             .subscribe();
@@ -383,7 +376,7 @@ const ProtectedTrustRoute = ({ children }) => {
     // ═══════════════════════════════════════════════════════════════════════════
     // USER IS VERIFIED - Allow access
     // ═══════════════════════════════════════════════════════════════════════════
-    console.log('[ProtectedTrustRoute] ✅ ACCESS GRANTED:', location.pathname);
+
     return children;
 };
 

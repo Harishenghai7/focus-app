@@ -43,7 +43,7 @@ const ContentModerationExample = () => {
     } = useUploadMedia({
         enableModeration: true,
         onModerationResult: (result) => {
-            console.log('[Upload] Moderation result:', result);
+
         }
     });
 
@@ -80,13 +80,6 @@ const ContentModerationExample = () => {
             });
 
             if (result) {
-                console.log('[Upload] Success:', {
-                    url: result.url,
-                    contentRating: result.contentRating,
-                    safetyHash: result.safetyHash,
-                    moderationPassed: result.moderationPassed
-                });
-
                 // Reset form
                 setCaption('');
                 setSelectedFiles([]);

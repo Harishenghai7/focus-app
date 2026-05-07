@@ -1,93 +1,185 @@
-.container {
+/* ═══════════════════════════════════════════════════════════════════════════
+   SOVEREIGN TYPE SELECT - H2 Royal Lavender Theme
+   With Haptic Pulse Animations
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.sovereignTypeSelect {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100%;
     padding: 24px;
+    background: transparent;
 }
 
 .title {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 700;
-    margin-bottom: 40px;
+    margin-bottom: 48px;
     color: var(--text-primary);
+    text-align: center;
+    text-shadow: 0 2px 20px rgba(var(--primary-rgb), 0.3);
+    letter-spacing: -0.5px;
 }
 
 .grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+    gap: 32px;
     width: 100%;
     max-width: 900px;
 }
 
-.card {
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-default);
-    border-radius: 20px;
-    padding: 32px;
+.sovereignCard {
+    background: rgba(var(--text-primary-rgb), 0.03);
+    border: 1px solid rgba(var(--text-primary-rgb), 0.12);
+    border-radius: 24px;
+    padding: 40px 32px;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     cursor: pointer;
-    transition: all 0.3s ease;
-    height: 300px;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    height: 320px;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
 }
 
-.card:hover {
-    background: var(--bg-secondary);
-    border-color: var(--primary-lavender);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+.sovereignCard::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.05), rgba(236, 72, 153, 0.05));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sovereignCard:hover::before {
+    opacity: 1;
+}
+
+.sovereignCard:hover {
+    border-color: rgba(var(--primary-rgb), 0.4);
+    box-shadow:
+        0 24px 64px rgba(var(--bg-primary-rgb), 0.4),
+        0 0 40px rgba(var(--primary-rgb), 0.1);
+    transform: translateY(-4px);
+}
+
+/* Haptic Pulse Ring */
+.hapticPulse {
+    position: absolute;
+    inset: -2px;
+    border-radius: 26px;
+    pointer-events: none;
 }
 
 .iconWrapper {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
+    width: 88px;
+    height: 88px;
+    border-radius: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 24px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    margin-bottom: 28px;
+    border: 2px solid;
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+.sovereignCard:hover .iconWrapper {
+    transform: scale(1.05);
+    box-shadow: 0 8px 32px rgba(var(--primary-rgb), 0.2);
 }
 
 .label {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 700;
     margin-bottom: 12px;
     color: var(--text-primary);
+    position: relative;
+    z-index: 1;
 }
 
 .desc {
     font-size: 14px;
-    color: var(--text-secondary);
-    line-height: 1.5;
+    color: var(--text-muted);
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
 }
 
+/* Selection Indicator */
+.selectionIndicator {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 0 0 24px 24px;
+    transform-origin: left;
+}
+
+/* Hint Text */
+.hint {
+    margin-top: 48px;
+    font-size: 13px;
+    color: var(--glass-bg-solid);
+    letter-spacing: 0.5px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 @media (max-width: 768px) {
-    .grid {
-        grid-template-columns: 1fr;
+    .title {
+        font-size: 22px;
+        margin-bottom: 32px;
     }
 
-    .card {
+    .grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        max-width: 400px;
+    }
+
+    .sovereignCard {
         height: auto;
         padding: 24px;
         flex-direction: row;
         text-align: left;
         gap: 20px;
         justify-content: flex-start;
+        border-radius: 16px;
     }
 
     .iconWrapper {
-        width: 60px;
-        height: 60px;
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
         margin-bottom: 0;
     }
 
     .label {
+        font-size: 18px;
         margin-bottom: 4px;
+    }
+
+    .desc {
+        font-size: 13px;
+    }
+
+    .hint {
+        margin-top: 32px;
+    }
+
+    .selectionIndicator {
+        border-radius: 0 0 16px 16px;
     }
 }

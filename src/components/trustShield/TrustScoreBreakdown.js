@@ -5,6 +5,7 @@ import styles from './TrustScoreBreakdown.module.css';
 
 const TrustScoreBreakdown = ({ breakdown }) => {
     const items = [
+        { label: 'Trust Shield', value: breakdown.trustShield, max: TRUST_SCORE_WEIGHTS.TRUST_SHIELD, icon: null, highlight: true },
         { label: 'Base Score', value: breakdown.base, max: TRUST_SCORE_WEIGHTS.BASE, icon: null },
         { label: 'Email Verified', value: breakdown.email, max: TRUST_SCORE_WEIGHTS.EMAIL_VERIFIED, icon: null },
         { label: 'OAuth Linked', value: breakdown.oauth, max: TRUST_SCORE_WEIGHTS.OAUTH_LINKED, icon: null },

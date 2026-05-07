@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './BottomNav.module.css';
 import CustomIcon from '../CustomIcon/CustomIcon';
@@ -7,6 +7,7 @@ import { ROUTES } from '../../utils/constants';
 const BottomNav = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const [isScrolled, setIsScrolled] = useState(false);
 
     const navItems = [
         { icon: 'home', path: ROUTES.HOME, label: 'Home' },
@@ -15,6 +16,34 @@ const BottomNav = () => {
         { icon: 'boltz', path: ROUTES.BOLTZ, label: 'Boltz' },
         { icon: 'profile', path: ROUTES.PROFILE, label: 'Profile' },
     ];
+
+    // Handle scroll effect - increases blur when scrolling
+    useEffect(() => {
+        let rafId = null;
+        let lastScrollY = window.scrollY;
+        
+        const handleScroll = () => {
+            if (rafId) return;
+            
+            rafId = requestAnimationFrame(() => {
+                const currentScrollY = window.scrollY;
+                const scrolled = currentScrollY > 50;
+                
+                if (scrolled !== isScrolled && Math.abs(currentScrollY - lastScrollY) > 5) {
+                    setIsScrolled(scrolled);
+                }
+                
+                lastScrollY = currentScrollY;
+                rafId = null;
+            });
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            if (rafId) cancelAnimationFrame(rafId);
+        };
+    }, [isScrolled]);
 
     const handleNavClick = (path, special) => {
         if (special) {
@@ -31,7 +60,11 @@ const BottomNav = () => {
     };
 
     return (
-        <nav className={styles.bottomNav} role="navigation" aria-label="Main navigation">
+        <nav 
+            className={`${styles.bottomNav} ${isScrolled ? styles.scrolled : ''}`} 
+            role="navigation" 
+            aria-label="Main navigation"
+        >
             {navItems.map((item) => {
                 const isActive = location.pathname === item.path;
 

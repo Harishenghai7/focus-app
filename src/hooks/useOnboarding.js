@@ -160,7 +160,7 @@ const useOnboarding = () => {
                 await refreshProfile();
             }
 
-            console.log('Onboarding complete, navigating to home...');
+
             setIsSubmitting(false); // Stop loading before navigating
             navigate('/home', { replace: true }); // Use replace to prevent going back
         } catch (err) {

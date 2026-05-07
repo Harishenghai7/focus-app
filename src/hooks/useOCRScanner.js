@@ -355,7 +355,7 @@ export const useOCRScanner = () => {
         });
         tesseractSource = purified.canvas;
         purifyMethod    = purified.method;
-        console.log(`[TrustShield] ✅ Image purified via ${purifyMethod}`);
+
       } catch (purifyErr) {
         console.warn('[TrustShield] Purification skipped:', purifyErr.message);
         // Continue with original — OCR is still attempted

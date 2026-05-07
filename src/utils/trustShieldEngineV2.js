@@ -20,7 +20,7 @@ export const runBulletproofVerification = async ({
     userId,
     userEmail
 }) => {
-    console.log('[TrustShieldV3] 🔒 ULTRA STRICT VERIFICATION STARTING');
+
     
     // ═══════════════════════════════════════════════════════════════════════════
     // � VALIDATION LAYER 1: Basic OCR checks
@@ -99,7 +99,7 @@ export const runBulletproofVerification = async ({
         // ✅ SUCCESS - Identity hash stored, duplicate check passed
         // ═══════════════════════════════════════════════════════════════════════
         
-        console.log('[TrustShieldV3] ✅ ULTRA VERIFICATION SUCCESS:', result);
+
         
         return {
             passed: true,
@@ -151,7 +151,7 @@ const generateSimpleDeviceId = () => {
  * Fire background checks (non-blocking, runs after user proceeds)
  */
 const fireBackgroundChecks = async (data) => {
-    console.log('[TrustShieldV3] 🔥 Background checks starting...');
+
     
     try {
         // Import and run device fingerprinting in background
@@ -168,7 +168,7 @@ const fireBackgroundChecks = async (data) => {
             localStorage.setItem('trustShieldDeviceId', deviceData.fingerprintId);
         }
         
-        console.log('[TrustShieldV3] ✅ Background checks complete');
+
     } catch (err) {
         console.warn('[TrustShieldV3] Background check error (non-critical):', err);
     }
@@ -210,7 +210,7 @@ export const checkExistingDevice = async () => {
  * Maintains compatibility with existing code
  */
 export const runFaceSimilarityCheck = async (params) => {
-    console.log('[TrustShieldV2] Using bulletproof ID verification (face recognition disabled)');
+
     return runBulletproofVerification(params);
 };
 
@@ -218,7 +218,7 @@ export const runFaceSimilarityCheck = async (params) => {
  * Pre-warm the verification system (no models to load now!)
  */
 export const prewarmModels = async () => {
-    console.log('[TrustShieldV2] System ready - no models to load');
+
     return { success: true, method: 'id_only' };
 };
 

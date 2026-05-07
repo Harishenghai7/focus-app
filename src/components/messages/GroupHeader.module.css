@@ -3,9 +3,9 @@
     align-items: center;
     justify-content: space-between;
     padding: 16px 20px;
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(var(--text-primary-rgb), 0.95);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.1);
 }
 
 .leftSection {
@@ -22,7 +22,7 @@
     border: none;
     background: transparent;
     border-radius: 50%;
-    color: #8b5cf6;
+    color: var(--primary);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -31,7 +31,7 @@
 }
 
 .backButton:hover {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(var(--primary-rgb), 0.1);
 }
 
 .groupAvatars {
@@ -72,7 +72,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--text-muted) 100%);
     color: white;
     font-size: 12px;
     font-weight: 600;
@@ -85,13 +85,13 @@
 }
 
 .groupInfo:hover .groupName {
-    color: #8b5cf6;
+    color: var(--primary);
 }
 
 .groupName {
     font-size: 16px;
     font-weight: 600;
-    color: #1f2937;
+    color: var(--bg-secondary);
     margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -101,7 +101,7 @@
 
 .memberCount {
     font-size: 12px;
-    color: #9ca3af;
+    color: var(--text-muted);
     margin: 2px 0 0;
 }
 
@@ -115,9 +115,9 @@
     width: 40px;
     height: 40px;
     border: none;
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(var(--primary-rgb), 0.1);
     border-radius: 50%;
-    color: #8b5cf6;
+    color: var(--primary);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -126,7 +126,7 @@
 }
 
 .actionButton:hover {
-    background: rgba(139, 92, 246, 0.2);
+    background: rgba(var(--primary-rgb), 0.2);
     transform: scale(1.05);
 }
 
@@ -138,13 +138,13 @@
     position: absolute;
     top: calc(100% + 8px);
     right: 0;
-    background: rgba(255, 255, 255, 0.98);
+    background: rgba(var(--text-primary-rgb), 0.98);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(139, 92, 246, 0.15);
+    border: 1px solid rgba(var(--primary-rgb), 0.15);
     border-radius: 12px;
     padding: 6px;
     min-width: 180px;
-    box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 8px 32px rgba(var(--primary-rgb), 0.2);
     animation: slideDown 0.2s ease;
     z-index: 100;
 }
@@ -160,14 +160,14 @@
     border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
-    color: #1f2937;
+    color: var(--bg-secondary);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     text-align: left;
 }
 
 .menuItem:hover {
-    background: rgba(139, 92, 246, 0.1);
-    color: #8b5cf6;
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
 }
 
 .menuItem svg {
@@ -176,12 +176,12 @@
 }
 
 .menuItem.danger {
-    color: #ef4444;
+    color: var(--error);
 }
 
 .menuItem.danger:hover {
-    background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
+    background: rgba(var(--error-rgb), 0.1);
+    color: var(--error);
 }
 
 @keyframes slideDown {
