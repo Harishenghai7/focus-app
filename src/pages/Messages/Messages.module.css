@@ -2,10 +2,13 @@
 
 .container {
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - var(--topbar-height) - var(--bottomnav-height));
+  height: calc(100dvh - var(--topbar-height) - var(--bottomnav-height));
   display: flex;
   flex-direction: column;
   background: var(--bg-secondary);
+  position: relative;
+  overflow: hidden;
 }
 
 /* Main Content Layout */
@@ -125,16 +128,38 @@
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-  .listContainer {
-    width: 100%;
+  .container {
+    height: calc(100dvh - 60px - 70px); /* Adjust based on actual TopBar/BottomNav heights */
   }
 
-  .windowContainer {
+  .listContainer {
+    width: 100%;
+    height: 100%;
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: var(--z-dropdown);
+    z-index: 10;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .listContainer.hidden {
+    display: flex;
+    transform: translateX(-100%);
+  }
+
+  .windowContainer {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 20;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(0);
+  }
+
+  .windowContainer.hidden {
+    display: flex;
+    transform: translateX(100%);
   }
 }

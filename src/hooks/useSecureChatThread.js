@@ -34,33 +34,31 @@ export function useSecureChatThread(currentUserId, conversationId, session) {
 
         const fetchConversation = async () => {
             try {
-                const { data, error } = await supabase
-                    .from('conversations')
-                    .select('*')
-                    .eq('id', conversationId)
-                    .single();
+                // Fetch participants from the junction table for reliability
+                const { data: participantsData, error: partsError } = await supabase
+                    .from('conversation_participants')
+                    .select('user_id')
+                    .eq('conversation_id', conversationId);
 
-                if (error) throw error;
+                if (partsError) throw partsError;
 
-                if (data) {
-                    // Find the other participant
-                    const participants = data.participants || [];
-                    const other = participants.find(p => p !== currentUserId);
-                    if (other) {
-                        setOtherUserId(other);
-                        
-                        // Fetch other user details
-                        const { data: userData } = await supabase
-                            .from('profiles')
-                            .select('id, username, full_name, avatar_url, is_online, last_seen')
-                            .eq('id', other)
-                            .single();
-                        
-                        setOtherUser(userData);
-                    }
+                const participantIds = participantsData?.map(p => p.user_id) || [];
+                const other = participantIds.find(id => id !== currentUserId);
+                
+                if (other) {
+                    setOtherUserId(other);
+                    
+                    // Fetch other user details
+                    const { data: userData, error: userError } = await supabase
+                        .from('profiles')
+                        .select('id, username, full_name, avatar_url, is_online, last_seen')
+                        .eq('id', other)
+                        .single();
+                    
+                    if (!userError) setOtherUser(userData);
                 }
             } catch (err) {
-                console.error('Failed to fetch conversation:', err);
+                console.error('Failed to fetch conversation details:', err);
             }
         };
 

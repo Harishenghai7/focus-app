@@ -338,18 +338,84 @@
    CATEGORY PILLS
    ═══════════════════════════════════════════════════════════════════════════════ */
 
+/* Category Pills Scroll fix */
 .categoryPills {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding: 4px;
-  justify-content: center;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+    display: flex;
+    gap: 12px;
+    padding: 16px 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    justify-content: flex-start;
+    -webkit-overflow-scrolling: touch;
 }
 
 .categoryPills::-webkit-scrollbar {
-  display: none;
+    display: none;
+}
+
+/* Mobile Pillars Section */
+.mobilePillars {
+    margin: 24px 0 32px;
+    padding: 0 4px;
+}
+
+.pillarsGrid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.pillarMiniCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+    padding: 12px 8px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pillarMiniIcon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(var(--pillar-color-rgb, 255, 255, 255), 0.1);
+    color: var(--pillar-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.pillarMiniLabel {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.pillarMiniCard:active {
+    transform: scale(0.95);
+    background: var(--glass-surface-hover);
+}
+
+@media (max-width: 480px) {
+    .pillarsGrid {
+        gap: 8px;
+    }
+    .pillarMiniCard {
+        padding: 10px 4px;
+    }
+    .pillarMiniLabel {
+        font-size: 10px;
+    }
 }
 
 .categoryPill {

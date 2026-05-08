@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './TopBar.module.css';
 import CustomIcon from '../CustomIcon/CustomIcon';
+import PillarMenu from './PillarMenu';
 import { supabase } from '../../lib/supabase';
+import { Menu } from 'lucide-react';
 
 const TopBar = () => {
     const navigate = useNavigate();
     const [unreadNotifications, setUnreadNotifications] = useState(0);
     const [unreadMessages, setUnreadMessages] = useState(0);
+    const [isPillarMenuOpen, setIsPillarMenuOpen] = useState(false);
 
     useEffect(() => {
         // Fetch unread counts
@@ -80,9 +83,23 @@ const TopBar = () => {
 
     return (
         <header className={styles.topBar}>
-            <div className={styles.logo} onClick={() => navigate('/home')}>
-                <h1 className="text-gradient">Focus</h1>
+            <div className={styles.leftSection}>
+                <button 
+                    className={styles.menuBtn} 
+                    onClick={() => setIsPillarMenuOpen(true)}
+                    aria-label="Open Pillars Menu"
+                >
+                    <Menu size={24} />
+                </button>
+                <div className={styles.logo} onClick={() => navigate('/home')}>
+                    <h1 className="text-gradient">Focus</h1>
+                </div>
             </div>
+
+            <PillarMenu 
+                isOpen={isPillarMenuOpen} 
+                onClose={() => setIsPillarMenuOpen(false)} 
+            />
 
             <div className={styles.actions}>
                 {/* Notifications Button */}

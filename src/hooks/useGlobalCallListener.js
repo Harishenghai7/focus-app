@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase, supabaseUrl, supabaseAnonKey } from '../lib/supabase';
 import { useAuth } from './useAuth';
 
@@ -7,6 +8,7 @@ import { useAuth } from './useAuth';
  */
 export const useGlobalCallListener = () => {
     const { user, session } = useAuth();
+    const navigate = useNavigate();
     const [incomingCall, setIncomingCall] = useState(null);
 
     useEffect(() => {
@@ -184,8 +186,7 @@ export const useGlobalCallListener = () => {
 
         // Navigate to conversation
         if (incomingCall.conversation_id) {
-
-            window.location.href = `/messages/${incomingCall.conversation_id}`;
+            navigate(`/messages/${incomingCall.conversation_id}`);
         } else {
             console.warn('⚠️ No conversation_id!');
         }
