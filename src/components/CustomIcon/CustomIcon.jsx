@@ -157,6 +157,27 @@ const CustomIcon = ({
             ),
         },
 
+        video: {
+            outline: (
+                <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+                    <path d="M23 7L16 12L23 17V7Z" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round"/>
+                    <rect x="1" y="5" width="15" height="14" rx="2" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+            ),
+            filled: (
+                <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+                    <path d="M23 7L16 12L23 17V7Z" fill="url(#lavenderGradient)"/>
+                    <rect x="1" y="5" width="15" height="14" rx="2" fill="url(#lavenderGradient)"/>
+                    <defs>
+                        <linearGradient id="lavenderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#9b87f5" />
+                            <stop offset="100%" stopColor="#7c3aed" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            ),
+        },
+
         profile: {
             outline: (
                 <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -180,6 +201,45 @@ const CustomIcon = ({
                         d="M4 20C4 16.6863 6.68629 14 10 14H14C17.3137 14 20 16.6863 20 20"
                         fill="url(#lavenderGradient)"
                     />
+                    <defs>
+                        <linearGradient id="lavenderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#9b87f5" />
+                            <stop offset="100%" stopColor="#7c3aed" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            ),
+        },
+        user: {
+            outline: (
+                <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="8" r="4" stroke={color} strokeWidth={strokeWidth}/>
+                    <path d="M4 20C4 16.6863 6.68629 14 10 14H14C17.3137 14 20 16.6863 20 20" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round"/>
+                </svg>
+            ),
+            filled: (
+                <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="8" r="4" fill="url(#lavenderGradient)"/>
+                    <path d="M4 20C4 16.6863 6.68629 14 10 14H14C17.3137 14 20 16.6863 20 20" fill="url(#lavenderGradient)"/>
+                    <defs>
+                        <linearGradient id="lavenderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#9b87f5" />
+                            <stop offset="100%" stopColor="#7c3aed" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            ),
+        },
+
+        shield: {
+            outline: (
+                <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+            ),
+            filled: (
+                <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="url(#lavenderGradient)"/>
                     <defs>
                         <linearGradient id="lavenderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stopColor="#9b87f5" />

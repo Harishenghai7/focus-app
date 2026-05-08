@@ -15,6 +15,7 @@
     width: 100%;
     min-width: 0;
     min-height: 0;
+    padding-top: calc(70px + env(safe-area-inset-top, 0px));
     padding-bottom: var(--bottomnav-height);
 }
 

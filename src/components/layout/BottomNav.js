@@ -12,9 +12,9 @@ const BottomNav = () => {
     const navItems = [
         { icon: 'home', path: ROUTES.HOME, label: 'Home' },
         { icon: 'explore', path: ROUTES.EXPLORE, label: 'Explore' },
-        { icon: 'create', path: ROUTES.CREATE, label: 'Create', special: true },
-        { icon: 'boltz', path: ROUTES.BOLTZ, label: 'Boltz' },
-        { icon: 'profile', path: ROUTES.PROFILE, label: 'Profile' },
+        { icon: 'shield', path: '#pillars', label: 'Pillars', special: true },
+        { icon: 'video', path: ROUTES.BOLTZ, label: 'Boltz' },
+        { icon: 'user', path: ROUTES.PROFILE, label: 'Profile' },
     ];
 
     // Handle scroll effect - increases blur when scrolling
@@ -46,14 +46,19 @@ const BottomNav = () => {
     }, [isScrolled]);
 
     const handleNavClick = (path, special) => {
+        if (path === '#pillars') {
+            // Open the pillar menu instead of navigating
+            const event = new CustomEvent('open-pillar-menu');
+            window.dispatchEvent(event);
+            return;
+        }
+
         if (special) {
-            // Special handling for create button (could open modal)
             navigate(path);
         } else {
             navigate(path);
         }
 
-        // Haptic feedback (if available)
         if (navigator.vibrate) {
             navigator.vibrate(10);
         }

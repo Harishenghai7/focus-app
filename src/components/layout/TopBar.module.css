@@ -1,7 +1,7 @@
 /* Top Bar / Header - Mobile-First Design System Compliant */
 
 .topBar {
-    position: sticky;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
@@ -14,16 +14,15 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 var(--space-4);
-    z-index: 100;
-    box-shadow: 0 4px 30px rgba(var(--bg-primary-rgb), 0.2);
+    z-index: 9999; /* Stay above everything */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
     transition: all var(--transition-base);
+    padding-top: env(safe-area-inset-top, 0px);
 }
 
-/* Safe area padding for devices with notch */
 @supports (padding-top: env(safe-area-inset-top)) {
     .topBar {
-        padding-top: calc(env(safe-area-inset-top) + 8px);
-        height: calc(60px + env(safe-area-inset-top));
+        height: calc(70px + env(safe-area-inset-top));
     }
 }
 

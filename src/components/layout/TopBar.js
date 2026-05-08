@@ -13,6 +13,9 @@ const TopBar = () => {
     const [isPillarMenuOpen, setIsPillarMenuOpen] = useState(false);
 
     useEffect(() => {
+        const handleOpenMenu = () => setIsPillarMenuOpen(true);
+        window.addEventListener('open-pillar-menu', handleOpenMenu);
+
         // Fetch unread counts
         fetchUnreadCounts();
 
@@ -34,6 +37,7 @@ const TopBar = () => {
             .subscribe();
 
         return () => {
+            window.removeEventListener('open-pillar-menu', handleOpenMenu);
             notificationsSubscription.unsubscribe();
             messagesSubscription.unsubscribe();
         };
