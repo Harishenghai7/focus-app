@@ -13,9 +13,6 @@ const TopBar = () => {
     const [isPillarMenuOpen, setIsPillarMenuOpen] = useState(false);
 
     useEffect(() => {
-        const handleOpenMenu = () => setIsPillarMenuOpen(true);
-        window.addEventListener('open-pillar-menu', handleOpenMenu);
-
         // Fetch unread counts
         fetchUnreadCounts();
 
@@ -37,7 +34,6 @@ const TopBar = () => {
             .subscribe();
 
         return () => {
-            window.removeEventListener('open-pillar-menu', handleOpenMenu);
             notificationsSubscription.unsubscribe();
             messagesSubscription.unsubscribe();
         };
@@ -88,22 +84,10 @@ const TopBar = () => {
     return (
         <header className={styles.topBar}>
             <div className={styles.leftSection}>
-                <button 
-                    className={styles.menuBtn} 
-                    onClick={() => setIsPillarMenuOpen(true)}
-                    aria-label="Open Pillars Menu"
-                >
-                    <Menu size={24} />
-                </button>
                 <div className={styles.logo} onClick={() => navigate('/home')}>
                     <h1 className="text-gradient">Focus</h1>
                 </div>
             </div>
-
-            <PillarMenu 
-                isOpen={isPillarMenuOpen} 
-                onClose={() => setIsPillarMenuOpen(false)} 
-            />
 
             <div className={styles.actions}>
                 {/* Notifications Button */}
