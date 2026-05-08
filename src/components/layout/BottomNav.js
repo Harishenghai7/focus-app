@@ -16,7 +16,6 @@ const BottomNav = () => {
     const navItems = [
         { icon: 'home', path: ROUTES.HOME, label: 'Home' },
         { icon: 'explore', path: ROUTES.EXPLORE, label: 'Explore' },
-        { icon: 'create', path: ROUTES.CREATE, label: 'Create', special: true },
         { icon: 'video', path: ROUTES.BOLTZ, label: 'Boltz' },
         { icon: 'user', path: ROUTES.PROFILE, label: 'Profile' },
         { icon: 'shield', path: '#pillars', label: 'Safety' },
@@ -24,9 +23,9 @@ const BottomNav = () => {
 
     const safetyPillars = [
         { id: 'shield', icon: Shield, label: 'Trust Shield', path: '/trust-shield', color: '#10b981' },
-        { id: 'moderator', icon: Gavel, label: 'Moderator', path: '/moderator', color: '#f59e0b' },
+        { id: 'moderator', icon: Gavel, label: 'Moderation', path: '/moderation', color: '#f59e0b' },
         { id: 'support', icon: Heart, label: 'Support', path: '/support', color: '#ef4444' },
-        { id: 'teen', icon: Baby, label: 'Teen Care', path: '/teen', color: '#8b5cf6' },
+        { id: 'teen', icon: Baby, label: 'Teen Care', path: '/teen-care', color: '#8b5cf6' },
         { id: 'focusly', icon: Sparkles, label: 'Focusly AI', path: '/focusly-ai', color: '#06b6d4' },
     ];
 
@@ -130,7 +129,7 @@ const BottomNav = () => {
                     return (
                         <button
                             key={item.path}
-                            className={`${styles.navItem} ${isActive ? styles.active : ''} ${item.special ? styles.special : ''} ${item.path === '#pillars' ? styles.safetyBtn : ''}`}
+                            className={`${styles.navItem} ${isActive ? styles.active : ''} ${item.path === '#pillars' ? styles.safetyBtn : ''}`}
                             onClick={() => handleNavClick(item.path, item.special)}
                             aria-label={item.label}
                             aria-current={isActive ? 'page' : undefined}
@@ -138,7 +137,7 @@ const BottomNav = () => {
                             <div className={styles.navIconWrapper}>
                                 <CustomIcon
                                     name={item.icon}
-                                    size={item.special ? 28 : 22}
+                                    size={24}
                                     active={isActive || (item.path === '#pillars' && isMenuOpen)}
                                 />
                             </div>
@@ -147,6 +146,17 @@ const BottomNav = () => {
                     );
                 })}
             </nav>
+
+            {/* Floating Create Button */}
+            <button 
+                className={styles.floatingCreateBtn}
+                onClick={() => navigate(ROUTES.CREATE)}
+                aria-label="Create Post"
+            >
+                <div className={styles.createIconWrapper}>
+                    <CustomIcon name="create" size={32} active />
+                </div>
+            </button>
         </>
     );
 };

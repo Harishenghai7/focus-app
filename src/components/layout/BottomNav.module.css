@@ -11,8 +11,8 @@
     border-radius: 50px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 8px;
+    justify-content: space-around;
+    padding: 0 12px;
     z-index: 1000;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -46,10 +46,10 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 1px;
-    min-width: 44px;
+    gap: 2px;
+    min-width: 48px;
     min-height: 48px;
-    padding: 2px 4px;
+    padding: 4px 8px;
     background: transparent;
     border: none;
     border-radius: 12px;
@@ -68,8 +68,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     transition: all var(--transition-bounce);
     color: var(--text-secondary);
@@ -145,7 +145,7 @@
 .floatingMenu {
     position: fixed;
     bottom: calc(64px + var(--space-4) + 16px);
-    right: var(--space-4);
+    right: 24px;
     width: 200px;
     background: var(--glass-surface);
     backdrop-filter: blur(30px);
@@ -237,4 +237,35 @@
 
 .menuActive {
     transform: translateY(-4px);
+}
+
+/* Floating Create Button */
+.floatingCreateBtn {
+    position: fixed;
+    bottom: calc(64px + var(--space-4) + 24px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--gradient-brand);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1002;
+    box-shadow: 0 8px 32px rgba(124, 58, 237, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floatingCreateBtn:active {
+    transform: translateX(-50%) scale(0.9);
+}
+
+.createIconWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
 }
