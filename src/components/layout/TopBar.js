@@ -117,6 +117,18 @@ const TopBar = () => {
                         </span>
                     )}
                 </button>
+
+                {/* Settings Button */}
+                <button
+                    className={styles.actionBtn}
+                    onClick={() => {
+                        if (navigator.vibrate) navigator.vibrate(10);
+                        navigate('/settings');
+                    }}
+                    aria-label="Settings"
+                >
+                    <CustomIcon name="settings" size={24} />
+                </button>
             </div>
         </header>
     );
