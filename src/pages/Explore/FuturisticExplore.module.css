@@ -136,7 +136,7 @@
 }
 
 .heroText {
-  font-size: 32px;
+  font-size: 24px;
   font-weight: 800;
   background: linear-gradient(135deg, #c4b5fd 0%, #8b5cf6 50%, #7c3aed 100%);
   -webkit-background-clip: text;
@@ -341,15 +341,14 @@
 /* Category Pills Scroll fix */
 .categoryPills {
     display: flex;
-    gap: 12px;
-    padding: 16px 4px;
+    gap: 10px;
+    padding: 12px 16px;
     overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
-    justify-content: flex-start;
     -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 16px;
 }
 
 .categoryPills::-webkit-scrollbar {
@@ -420,21 +419,19 @@
 
 .categoryPill {
   position: relative;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  background: rgba(var(--text-primary-rgb), 0.04);
-  border: 1px solid rgba(var(--text-primary-rgb), 0.08);
+  padding: 8px 16px;
+  background: rgba(var(--text-primary-rgb), 0.06);
+  border: 1px solid rgba(var(--text-primary-rgb), 0.12);
   border-radius: 50px;
-  color: rgba(var(--text-primary-rgb), 0.6);
+  color: rgba(var(--text-primary-rgb), 0.7);
   font-size: 13px;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   white-space: nowrap;
-  overflow: hidden;
+  scroll-snap-align: start;
+  flex-shrink: 0;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
@@ -1158,19 +1155,21 @@
   }
 
   .heroHeader {
-    padding: 16px 12px;
+    padding: 16px 12px 8px;
+    top: 0;
   }
-
-  .heroText {
-    font-size: 24px;
+  
+  .heroTitle { gap: 8px; }
+  .heroText { font-size: 22px; }
+  .heroSubtitle { display: none; }
+  
+  .categoryPills {
+    padding: 8px 12px;
+    gap: 8px;
   }
-
-  .heroSubtitle {
-    font-size: 13px;
-  }
-
+  
   .categoryPill {
-    padding: 8px 14px;
+    padding: 7px 14px;
     font-size: 12px;
   }
 

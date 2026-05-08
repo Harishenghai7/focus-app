@@ -392,6 +392,7 @@ const SovereignChatPane = ({
     const [showGifPicker, setShowGifPicker] = useState(false);
     const [showStickerPicker, setShowStickerPicker] = useState(false);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [showMoreActions, setShowMoreActions] = useState(false);
     
     // Attachment State
     const [selectedFile, setSelectedFile] = useState(null);
@@ -1067,34 +1068,65 @@ const SovereignChatPane = ({
                             accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
                         />
 
-                        {/* Attachment Button */}
+                        {/* More/Primary Toggle Button (Mobile) */}
                         <button 
-                            className={styles.inputBtn}
-                            onClick={() => fileInputRef.current?.click()}
-                            title="Attach file"
-                        >
-                            <Icons.attach />
-                        </button>
-
-                        {/* GIF Button */}
-                        <button 
-                            className={styles.inputBtn}
-                            onClick={() => setShowGifPicker(true)}
-                            title="Send GIF"
+                            className={`${styles.inputBtn} ${showMoreActions ? styles.moreActive : ''}`}
+                            onClick={() => setShowMoreActions(!showMoreActions)}
+                            title="More actions"
                         >
                             <Icons.gif />
                         </button>
 
-                        {/* Sticker Button */}
-                        <button 
-                            className={styles.inputBtn}
-                            onClick={() => setShowStickerPicker(true)}
-                            title="Send sticker"
-                        >
-                            <Icons.sticker />
-                        </button>
+                        <div className={`${styles.actionGroup} ${showMoreActions ? styles.showActions : ''}`}>
+                            <button 
+                                className={styles.inputBtn}
+                                onClick={() => fileInputRef.current?.click()}
+                                title="Attach file"
+                            >
+                                <Icons.attach />
+                            </button>
 
-                        {/* Emoji Button */}
+                            <button 
+                                className={styles.inputBtn}
+                                onClick={() => setShowStickerPicker(true)}
+                                title="Send sticker"
+                            >
+                                <Icons.sticker />
+                            </button>
+
+                            <button 
+                                className={styles.inputBtn}
+                                onClick={() => setShowLocationPicker(true)}
+                                title="Share location"
+                            >
+                                <Icons.location />
+                            </button>
+
+                            <button 
+                                className={styles.inputBtn}
+                                onClick={() => setShowPollCreator(true)}
+                                title="Create poll"
+                            >
+                                <Icons.poll />
+                            </button>
+                        </div>
+
+                        <textarea
+                            ref={inputRef}
+                            className={styles.inputField}
+                            placeholder="Message..."
+                            value={inputValue}
+                            onChange={handleInputChange}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey && !isMobile) {
+                                    e.preventDefault();
+                                    handleSend();
+                                }
+                            }}
+                            rows={1}
+                        />
+
+                        {/* Quick Emoji Button */}
                         <button 
                             className={styles.inputBtn}
                             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
@@ -1103,68 +1135,24 @@ const SovereignChatPane = ({
                             <Icons.emoji />
                         </button>
                         
-                        <textarea
-                            ref={inputRef}
-                            className={styles.inputField}
-                            placeholder="Type a secure message..."
-                            value={inputValue}
-                            onChange={handleInputChange}
-                            onKeyPress={handleKeyPress}
-                            rows={1}
-                        />
-
-                        {/* Voice Button */}
-                        <button 
-                            className={styles.inputBtn}
-                            onClick={() => setIsRecording(true)}
-                            title="Voice message"
-                        >
-                            <Icons.mic />
-                        </button>
-
-                        {/* Location Button */}
-                        <button 
-                            className={styles.inputBtn}
-                            onClick={() => setShowLocationPicker(true)}
-                            title="Share location"
-                        >
-                            <Icons.location />
-                        </button>
-
-                        {/* Poll Button */}
-                        <button 
-                            className={styles.inputBtn}
-                            onClick={() => setShowPollCreator(true)}
-                            title="Create poll"
-                        >
-                            <Icons.poll />
-                        </button>
-
-                        {/* Event Button */}
-                        <button 
-                            className={styles.inputBtn}
-                            onClick={() => setShowEventCreator(true)}
-                            title="Create event"
-                        >
-                            <Icons.calendar />
-                        </button>
-
-                        {/* Video Note Button */}
-                        <button 
-                            className={styles.inputBtn}
-                            onClick={() => setShowVideoRecorder(true)}
-                            title="Video note"
-                        >
-                            <Icons.videoNote />
-                        </button>
-                        
-                        <button 
-                            className={styles.sendBtn}
-                            onClick={handleSend}
-                            disabled={!inputValue.trim() || sending}
-                        >
-                            <Icons.send />
-                        </button>
+                        {/* Send or Voice Toggle */}
+                        {!inputValue.trim() ? (
+                            <button 
+                                className={styles.inputBtn}
+                                onClick={() => setIsRecording(true)}
+                                title="Voice message"
+                            >
+                                <Icons.mic />
+                            </button>
+                        ) : (
+                            <button 
+                                className={styles.sendBtn}
+                                onClick={handleSend}
+                                disabled={sending}
+                            >
+                                <Icons.send />
+                            </button>
+                        )}
                     </div>
                 )}
 
@@ -1188,12 +1176,11 @@ const SovereignChatPane = ({
                 🎯 ALL MODALS - ADVANCED FEATURES
                 ═════════════════════════════════════════════════════════════════ */}
 
-            {/* Active Call */}
             {activeCall && (
                 <ModernCallWindow
                     callId={activeCall.id}
                     userId={currentUserId}
-                    otherUser={user}
+                    otherUser={otherUserData || otherUser}
                     isInitiator={isInitiator}
                     audioOnly={callType === 'audio'}
                     onEndCall={endCall}
