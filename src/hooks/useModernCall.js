@@ -14,8 +14,15 @@ export const useModernCall = (userId, callId) => {
     const [isMuted, setIsMuted] = useState(false);
     const [isVideoOff, setIsVideoOff] = useState(false);
     const [remoteEnded, setRemoteEnded] = useState(false);
-    // True once we've auto-downgraded to "High-Fidelity Audio Only" due to weak link.
     const [videoDowngraded, setVideoDowngraded] = useState(false);
+    // Screen sharing state
+    const [isScreenSharing, setIsScreenSharing] = useState(false);
+    const screenStreamRef = useRef(null);
+    // Connection quality: 'excellent' | 'good' | 'poor' | 'critical'
+    const [connectionQuality, setConnectionQuality] = useState('unknown');
+    const [qualityStats, setQualityStats] = useState({ rtt: 0, packetLoss: 0, bandwidth: 0, jitter: 0 });
+    // Call reactions
+    const [incomingReactions, setIncomingReactions] = useState([]);
 
     const peerRef = useRef(null);
     const localStreamRef = useRef(null);
@@ -272,6 +279,13 @@ export const useModernCall = (userId, callId) => {
                         sendSignal('offer', { sdp: pc.localDescription });
                     }
                 }
+                else if (signal.type === 'reaction') {
+                    const reaction = { id: Date.now(), emoji: signal.emoji, timestamp: Date.now() };
+                    setIncomingReactions(prev => [...prev, reaction]);
+                    setTimeout(() => {
+                        setIncomingReactions(prev => prev.filter(r => r.id !== reaction.id));
+                    }, 3000);
+                }
                 else if (signal.type === 'end') {
                     console.info('[Call] Peer ended the call');
                     setRemoteEnded(true);
@@ -408,16 +422,102 @@ export const useModernCall = (userId, callId) => {
         };
     }, [isConnected, videoDowngraded, sendSignal]);
 
+    // ───────────────────────────────────────────────────────────────────
+    // Connection quality monitor — RTT, packet loss, bandwidth, jitter
+    // ───────────────────────────────────────────────────────────────────
+    useEffect(() => {
+        if (!isConnected) { setConnectionQuality('unknown'); return; }
+        const pc = peerRef.current;
+        if (!pc) return;
+
+        const qualityInterval = setInterval(async () => {
+            try {
+                const stats = await pc.getStats(null);
+                let rtt = 0, packetLoss = 0, bandwidth = 0, jitter = 0;
+                let packetsReceived = 0, packetsLost = 0;
+
+                stats.forEach(report => {
+                    if (report.type === 'candidate-pair' && report.state === 'succeeded') {
+                        rtt = report.currentRoundTripTime ? report.currentRoundTripTime * 1000 : 0;
+                        bandwidth = report.availableOutgoingBitrate ? report.availableOutgoingBitrate / 1000 : 0;
+                    }
+                    if (report.type === 'inbound-rtp' && !report.isRemote) {
+                        packetsReceived += report.packetsReceived || 0;
+                        packetsLost += report.packetsLost || 0;
+                        if (report.jitter) jitter = Math.max(jitter, report.jitter * 1000);
+                    }
+                });
+
+                const total = packetsReceived + packetsLost;
+                packetLoss = total > 0 ? (packetsLost / total) * 100 : 0;
+
+                setQualityStats({ rtt: Math.round(rtt), packetLoss: parseFloat(packetLoss.toFixed(1)), bandwidth: Math.round(bandwidth), jitter: Math.round(jitter) });
+
+                // Determine quality level
+                if (rtt < 100 && packetLoss < 1 && bandwidth > 300) setConnectionQuality('excellent');
+                else if (rtt < 250 && packetLoss < 3 && bandwidth > 150) setConnectionQuality('good');
+                else if (rtt < 500 && packetLoss < 8) setConnectionQuality('poor');
+                else setConnectionQuality('critical');
+            } catch (_) { /* ignore stats errors */ }
+        }, 3000);
+
+        return () => clearInterval(qualityInterval);
+    }, [isConnected]);
+
+    // Screen sharing
+    const startScreenShare = useCallback(async () => {
+        try {
+            const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: 'always' }, audio: false });
+            screenStreamRef.current = screenStream;
+            const pc = peerRef.current;
+            if (!pc) return;
+
+            const videoSender = pc.getSenders().find(s => s.track?.kind === 'video');
+            if (videoSender) {
+                await videoSender.replaceTrack(screenStream.getVideoTracks()[0]);
+            }
+
+            screenStream.getVideoTracks()[0].onended = () => stopScreenShare();
+            setIsScreenSharing(true);
+            sendSignal('screen-share', { active: true });
+        } catch (err) {
+            console.warn('[Call] Screen share failed:', err);
+        }
+    }, [sendSignal]);
+
+    const stopScreenShare = useCallback(async () => {
+        if (screenStreamRef.current) {
+            screenStreamRef.current.getTracks().forEach(t => t.stop());
+            screenStreamRef.current = null;
+        }
+        // Restore camera track
+        const pc = peerRef.current;
+        const stream = localStreamRef.current;
+        if (pc && stream) {
+            const videoTrack = stream.getVideoTracks()[0];
+            const videoSender = pc.getSenders().find(s => s.track?.kind === 'video');
+            if (videoSender && videoTrack) {
+                await videoSender.replaceTrack(videoTrack);
+            }
+        }
+        setIsScreenSharing(false);
+        sendSignal('screen-share', { active: false });
+    }, [sendSignal]);
+
+    // Send call reaction
+    const sendReaction = useCallback((emoji) => {
+        sendSignal('reaction', { emoji });
+    }, [sendSignal]);
+
     // End call
     const endCall = useCallback(async () => {
-
-
-        // Send end signal if we are connected or connecting
         if (isConnected || isConnecting) {
-
             await sendSignal('end', {});
         }
-
+        if (screenStreamRef.current) {
+            screenStreamRef.current.getTracks().forEach(t => t.stop());
+            screenStreamRef.current = null;
+        }
         if (peerRef.current) {
             peerRef.current.close();
             peerRef.current = null;
@@ -430,6 +530,7 @@ export const useModernCall = (userId, callId) => {
         setRemoteStream(null);
         setIsConnected(false);
         setIsConnecting(false);
+        setIsScreenSharing(false);
     }, [isConnected, isConnecting, sendSignal]);
 
     const toggleMute = useCallback(() => {
@@ -466,10 +567,17 @@ export const useModernCall = (userId, callId) => {
         error,
         remoteEnded,
         videoDowngraded,
+        isScreenSharing,
+        connectionQuality,
+        qualityStats,
+        incomingReactions,
         startCall,
         answerCall,
         endCall,
         toggleMute,
-        toggleVideo
+        toggleVideo,
+        startScreenShare,
+        stopScreenShare,
+        sendReaction
     };
 };

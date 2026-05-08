@@ -1,0 +1,119 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   BoltzReactionPicker — GOD-LEVEL | H2 Royal Lavender
+   Floating Glass Pill with Staggered Emoji Scale-In
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+}
+
+.container {
+  position: absolute;
+  right: 80px;
+  bottom: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  animation: pickerFadeIn 200ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.pill {
+  display: flex;
+  gap: 4px;
+  padding: 8px 12px;
+  background: rgba(15, 10, 30, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 28px;
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.7),
+    0 0 40px rgba(139, 92, 246, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.arrow {
+  width: 12px;
+  height: 12px;
+  background: rgba(15, 10, 30, 0.92);
+  border-right: 1px solid rgba(139, 92, 246, 0.3);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+  transform: rotate(45deg);
+  margin-right: 20px;
+  margin-top: -7px;
+}
+
+.reactionBtn {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.15s ease;
+  animation: emojiScaleIn 300ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.reactionBtn:hover {
+  transform: scale(1.35);
+  background: rgba(139, 92, 246, 0.15);
+}
+
+.reactionBtn:active {
+  transform: scale(0.9);
+}
+
+.reactionBtn.active {
+  background: rgba(139, 92, 246, 0.25);
+  box-shadow: 0 0 16px rgba(139, 92, 246, 0.4);
+}
+
+.emoji {
+  font-size: 26px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+@keyframes pickerFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes emojiScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    right: 68px;
+    bottom: 160px;
+  }
+
+  .reactionBtn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .emoji {
+    font-size: 24px;
+  }
+}

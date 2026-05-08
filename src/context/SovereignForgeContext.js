@@ -3,14 +3,14 @@ import { performPurityScan } from '../services/ContentModerationService';
 
 const STORAGE_KEY = 'sovereign_forge_state';
 const UPLOAD_QUEUE_KEY = 'sovereign_upload_queue';
+const AUTOSAVE_INTERVAL = 3000;
 
 const STEPS = {
     TYPE: 0,
     MEDIA: 1,
     EDIT: 2,
-    MUSIC: 3,
-    DETAILS: 4,
-    PREVIEW: 5
+    DETAILS: 3,   // Merged Music + Details into one step
+    PREVIEW: 4
 };
 
 const initialState = {
@@ -24,13 +24,41 @@ const initialState = {
         tags: [],
         audience: 'everyone',
         hideLikes: false,
-        turnOffComments: false
+        turnOffComments: false,
+        mentions: [],
+        scheduledAt: null
+    },
+    poll: {
+        enabled: false,
+        question: '',
+        options: ['', ''],
+        duration: '24h'
+    },
+    subtitles: [],
+    effects: {
+        speed: 1,
+        reverse: false,
+        loop: false,
+        boomerang: false
+    },
+    transitions: [],
+    thumbnailConfig: {
+        type: 'auto',         // 'auto' | 'frame' | 'custom'
+        frameTime: 0,
+        customFile: null
     },
     shadowUpload: {
         inProgress: false,
         progress: 0,
         uploadedUrls: [],
-        errors: []
+        errors: [],
+        stage: 'idle'         // 'idle' | 'optimizing' | 'uploading' | 'processing' | 'complete' | 'failed'
+    },
+    uploadRetry: {
+        attempts: 0,
+        maxAttempts: 3,
+        lastError: null,
+        canRetry: false
     },
     purityCheck: {
         isScanning: false,
@@ -39,8 +67,10 @@ const initialState = {
         warnings: [],
         contentRating: 1.0
     },
+    draftId: null,
     lastSaved: null,
-    isRecovering: false
+    isRecovering: false,
+    autosaveStatus: 'idle'    // 'idle' | 'saving' | 'saved' | 'error'
 };
 
 const actionTypes = {
@@ -48,10 +78,21 @@ const actionTypes = {
     SET_CREATE_MODE: 'SET_CREATE_MODE',
     SET_MEDIA_FILES: 'SET_MEDIA_FILES',
     UPDATE_MEDIA_EDITS: 'UPDATE_MEDIA_EDITS',
+    REORDER_MEDIA: 'REORDER_MEDIA',
+    REMOVE_MEDIA: 'REMOVE_MEDIA',
     SET_MUSIC: 'SET_MUSIC',
     SET_POST_DETAILS: 'SET_POST_DETAILS',
+    SET_POLL: 'SET_POLL',
+    SET_SUBTITLES: 'SET_SUBTITLES',
+    SET_EFFECTS: 'SET_EFFECTS',
+    SET_TRANSITIONS: 'SET_TRANSITIONS',
+    SET_THUMBNAIL_CONFIG: 'SET_THUMBNAIL_CONFIG',
     SET_SHADOW_UPLOAD: 'SET_SHADOW_UPLOAD',
+    SET_UPLOAD_STAGE: 'SET_UPLOAD_STAGE',
     SET_PURITY_CHECK: 'SET_PURITY_CHECK',
+    SET_UPLOAD_RETRY: 'SET_UPLOAD_RETRY',
+    SET_DRAFT_ID: 'SET_DRAFT_ID',
+    SET_AUTOSAVE_STATUS: 'SET_AUTOSAVE_STATUS',
     SAVE_STATE: 'SAVE_STATE',
     LOAD_STATE: 'LOAD_STATE',
     CLEAR_STATE: 'CLEAR_STATE',
@@ -78,12 +119,36 @@ const forgeReducer = (state, action) => {
                         : item
                 )
             };
+        case actionTypes.REORDER_MEDIA: {
+            const { fromIndex, toIndex } = action.payload;
+            const newFiles = [...state.mediaFiles];
+            const [moved] = newFiles.splice(fromIndex, 1);
+            newFiles.splice(toIndex, 0, moved);
+            return { ...state, mediaFiles: newFiles };
+        }
+        case actionTypes.REMOVE_MEDIA:
+            return {
+                ...state,
+                mediaFiles: state.mediaFiles.filter(f => f.id !== action.payload)
+            };
         case actionTypes.SET_MUSIC:
             return { ...state, selectedMusic: action.payload };
         case actionTypes.SET_POST_DETAILS:
             return { ...state, postDetails: { ...state.postDetails, ...action.payload } };
+        case actionTypes.SET_POLL:
+            return { ...state, poll: { ...state.poll, ...action.payload } };
+        case actionTypes.SET_SUBTITLES:
+            return { ...state, subtitles: action.payload };
+        case actionTypes.SET_EFFECTS:
+            return { ...state, effects: { ...state.effects, ...action.payload } };
+        case actionTypes.SET_TRANSITIONS:
+            return { ...state, transitions: action.payload };
+        case actionTypes.SET_THUMBNAIL_CONFIG:
+            return { ...state, thumbnailConfig: { ...state.thumbnailConfig, ...action.payload } };
         case actionTypes.SET_SHADOW_UPLOAD:
             return { ...state, shadowUpload: { ...state.shadowUpload, ...action.payload } };
+        case actionTypes.SET_UPLOAD_STAGE:
+            return { ...state, shadowUpload: { ...state.shadowUpload, stage: action.payload } };
         case actionTypes.UPDATE_UPLOAD_PROGRESS:
             return {
                 ...state,
@@ -100,7 +165,8 @@ const forgeReducer = (state, action) => {
                     ...state.shadowUpload,
                     inProgress: false,
                     progress: 100,
-                    uploadedUrls: action.payload.urls
+                    uploadedUrls: action.payload.urls,
+                    stage: 'complete'
                 }
             };
         case actionTypes.ADD_UPLOAD_ERROR:
@@ -108,13 +174,20 @@ const forgeReducer = (state, action) => {
                 ...state,
                 shadowUpload: {
                     ...state.shadowUpload,
-                    errors: [...state.shadowUpload.errors, action.payload]
+                    errors: [...state.shadowUpload.errors, action.payload],
+                    stage: 'failed'
                 }
             };
+        case actionTypes.SET_UPLOAD_RETRY:
+            return { ...state, uploadRetry: { ...state.uploadRetry, ...action.payload } };
         case actionTypes.SET_PURITY_CHECK:
             return { ...state, purityCheck: { ...state.purityCheck, ...action.payload } };
+        case actionTypes.SET_DRAFT_ID:
+            return { ...state, draftId: action.payload };
+        case actionTypes.SET_AUTOSAVE_STATUS:
+            return { ...state, autosaveStatus: action.payload };
         case actionTypes.SAVE_STATE:
-            return { ...state, lastSaved: new Date().toISOString() };
+            return { ...state, lastSaved: new Date().toISOString(), autosaveStatus: 'saved' };
         case actionTypes.LOAD_STATE:
             return { ...state, ...action.payload, isRecovering: false };
         case actionTypes.SET_RECOVERING:
@@ -130,16 +203,19 @@ const SovereignForgeContext = createContext(null);
 
 export const SovereignForgeProvider = ({ children }) => {
     const [state, dispatch] = useReducer(forgeReducer, initialState);
-    const uploadWorkerRef = useRef(null);
     const saveTimeoutRef = useRef(null);
 
-    // Persist state to localStorage with debounce
+    // Autosave with debounce — persists every 3 seconds
     useEffect(() => {
         if (saveTimeoutRef.current) {
             clearTimeout(saveTimeoutRef.current);
         }
 
         saveTimeoutRef.current = setTimeout(() => {
+            if (state.step === STEPS.TYPE && !state.createMode) return;
+
+            dispatch({ type: actionTypes.SET_AUTOSAVE_STATUS, payload: 'saving' });
+
             const stateToSave = {
                 step: state.step,
                 createMode: state.createMode,
@@ -150,19 +226,30 @@ export const SovereignForgeProvider = ({ children }) => {
                 })),
                 selectedMusic: state.selectedMusic,
                 postDetails: state.postDetails,
+                poll: state.poll,
+                subtitles: state.subtitles,
+                effects: state.effects,
+                transitions: state.transitions,
+                thumbnailConfig: { ...state.thumbnailConfig, customFile: null },
                 shadowUpload: state.shadowUpload,
+                draftId: state.draftId,
                 lastSaved: new Date().toISOString()
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
             dispatch({ type: actionTypes.SAVE_STATE });
-        }, 500);
+
+            // Reset status to idle after 2s
+            setTimeout(() => {
+                dispatch({ type: actionTypes.SET_AUTOSAVE_STATUS, payload: 'idle' });
+            }, 2000);
+        }, AUTOSAVE_INTERVAL);
 
         return () => {
             if (saveTimeoutRef.current) {
                 clearTimeout(saveTimeoutRef.current);
             }
         };
-    }, [state.step, state.createMode, state.mediaFiles, state.selectedMusic, state.postDetails, state.shadowUpload]);
+    }, [state.step, state.createMode, state.mediaFiles, state.selectedMusic, state.postDetails, state.poll, state.subtitles, state.effects, state.transitions, state.thumbnailConfig, state.shadowUpload, state.draftId]);
 
     // Recovery on mount
     useEffect(() => {
@@ -176,7 +263,6 @@ export const SovereignForgeProvider = ({ children }) => {
                     const hoursSinceSave = (now - lastSaved) / (1000 * 60 * 60);
 
                     if (hoursSinceSave < 24 && parsed.step > STEPS.TYPE) {
-                        // Sanitize loaded state to prevent undefined/null issues
                         const sanitizedState = {
                             ...parsed,
                             selectedMusic: parsed.selectedMusic || null,
@@ -188,16 +274,36 @@ export const SovereignForgeProvider = ({ children }) => {
                                 audience: 'everyone',
                                 hideLikes: false,
                                 turnOffComments: false,
+                                mentions: [],
+                                scheduledAt: null,
                                 ...parsed.postDetails
+                            },
+                            poll: {
+                                enabled: false,
+                                question: '',
+                                options: ['', ''],
+                                duration: '24h',
+                                ...parsed.poll
+                            },
+                            subtitles: parsed.subtitles || [],
+                            effects: {
+                                speed: 1,
+                                reverse: false,
+                                loop: false,
+                                boomerang: false,
+                                ...parsed.effects
+                            },
+                            transitions: parsed.transitions || [],
+                            thumbnailConfig: {
+                                type: 'auto',
+                                frameTime: 0,
+                                customFile: null,
+                                ...parsed.thumbnailConfig
                             }
                         };
 
                         dispatch({ type: actionTypes.SET_RECOVERING, payload: true });
                         dispatch({ type: actionTypes.LOAD_STATE, payload: sanitizedState });
-
-                        setTimeout(() => {
-                            dispatch({ type: actionTypes.SET_RECOVERING, payload: false });
-                        }, 1500);
                     }
                 }
             } catch (error) {
@@ -212,8 +318,12 @@ export const SovereignForgeProvider = ({ children }) => {
     const startShadowUpload = useCallback(async (files, supabaseClient) => {
         dispatch({
             type: actionTypes.SET_SHADOW_UPLOAD,
-            payload: { inProgress: true, progress: 0, uploadedUrls: [], errors: [] }
+            payload: { inProgress: true, progress: 0, uploadedUrls: [], errors: [], stage: 'optimizing' }
         });
+
+        // Brief optimization stage
+        await new Promise(resolve => setTimeout(resolve, 500));
+        dispatch({ type: actionTypes.SET_UPLOAD_STAGE, payload: 'uploading' });
 
         const uploadedUrls = [];
         const totalFiles = files.length;
@@ -225,7 +335,7 @@ export const SovereignForgeProvider = ({ children }) => {
                 const fileName = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
                 const filePath = `temp/${fileName}`;
 
-                const { data, error } = await supabaseClient.storage
+                const { error } = await supabaseClient.storage
                     .from('shadow-uploads')
                     .upload(filePath, file, {
                         cacheControl: '3600',
@@ -258,8 +368,15 @@ export const SovereignForgeProvider = ({ children }) => {
                     type: actionTypes.ADD_UPLOAD_ERROR,
                     payload: { file: file.name, error: error.message }
                 });
+                dispatch({
+                    type: actionTypes.SET_UPLOAD_RETRY,
+                    payload: { canRetry: true, lastError: error.message }
+                });
             }
         }
+
+        dispatch({ type: actionTypes.SET_UPLOAD_STAGE, payload: 'processing' });
+        await new Promise(resolve => setTimeout(resolve, 300));
 
         dispatch({
             type: actionTypes.COMPLETE_UPLOAD,
@@ -268,6 +385,22 @@ export const SovereignForgeProvider = ({ children }) => {
 
         return uploadedUrls;
     }, []);
+
+    // Retry failed uploads with exponential backoff
+    const retryUpload = useCallback(async (files, supabaseClient) => {
+        const { attempts, maxAttempts } = state.uploadRetry;
+        if (attempts >= maxAttempts) return;
+
+        const backoffMs = Math.min(1000 * Math.pow(2, attempts), 10000);
+        await new Promise(resolve => setTimeout(resolve, backoffMs));
+
+        dispatch({
+            type: actionTypes.SET_UPLOAD_RETRY,
+            payload: { attempts: attempts + 1, canRetry: false }
+        });
+
+        return startShadowUpload(files, supabaseClient);
+    }, [state.uploadRetry, startShadowUpload]);
 
     // Purity Gate - Content Moderation
     const runPurityCheck = useCallback(async (content) => {
@@ -331,6 +464,7 @@ export const SovereignForgeProvider = ({ children }) => {
         STEPS,
         actionTypes,
         startShadowUpload,
+        retryUpload,
         runPurityCheck,
         goToStep,
         nextStep,

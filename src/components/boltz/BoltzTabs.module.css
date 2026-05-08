@@ -1,70 +1,76 @@
-/* BoltzTabs - Overlay Style Like Instagram */
-
+/* BoltzTabs — Floating Glass Tab Bar with Gradient Underline */
 .container {
     position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 120;
     display: flex;
     justify-content: center;
-    align-items: center;
+    padding: 48px 16px 12px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
+    pointer-events: none;
+}
+
+.tabs {
+    display: flex;
     gap: 8px;
     padding: 4px;
-    background: rgba(var(--bg-primary-rgb), 0.5);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    z-index: 200;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
     pointer-events: auto;
-    border-radius: 24px;
 }
 
 .tab {
+    position: relative;
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
     background: transparent;
     border: none;
-    color: rgba(var(--text-primary-rgb), 0.6);
-    font-size: 15px;
-    font-weight: 700;
+    border-radius: 12px;
     cursor: pointer;
-    padding: 8px 20px;
-    border-radius: 20px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    text-transform: none;
-    position: relative;
-    letter-spacing: 0.02em;
-    pointer-events: auto;
+    transition: all 0.25s ease;
+    font-family: var(--font-primary, 'Inter', sans-serif);
+    white-space: nowrap;
 }
 
 .tab:hover {
-    color: rgba(var(--text-primary-rgb), 0.9);
-}
-
-.tab:active {
-    transform: scale(0.96);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .tab.active {
-    color: var(--text-primary);
-    background: rgba(var(--text-primary-rgb), 0.2);
+    color: #fff;
+    font-weight: 700;
 }
 
-/* Mobile */
-@media (max-width: 768px) {
-    .container {
-        top: 16px;
-        gap: 4px;
-        padding: 3px;
-    }
-
-    .tab {
-        font-size: 14px;
-        padding: 6px 16px;
-    }
+.indicator {
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 3px;
+    background: linear-gradient(90deg, #8b5cf6, #ec4899);
+    border-radius: 2px;
+    animation: indicatorSlide 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
 }
 
-/* Desktop */
+@keyframes indicatorSlide {
+    from { transform: translateX(-50%) scaleX(0); }
+    to { transform: translateX(-50%) scaleX(1); }
+}
+
 @media (min-width: 1024px) {
-    .container {
-        left: calc(50% + 140px);
-        /* Account for sidebar */
-    }
+    .container { left: 280px; }
+}
+
+@media (max-width: 768px) {
+    .container { padding: 44px 12px 8px; }
+    .tab { padding: 6px 14px; font-size: 13px; }
 }

@@ -1,0 +1,492 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   🎬 SOVEREIGN ANIMATIONS — Cinematic Motion System
+   Focus Messaging & Calls Ecosystem
+   ═══════════════════════════════════════════════════════════════════════════
+   
+   Design Principles:
+   - Every animation uses premium easing: cubic-bezier(0.22, 1, 0.36, 1)
+   - Spring physics for interactive elements
+   - Subtle, intelligent — never distracting
+   - Full prefers-reduced-motion support
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── MESSAGE ANIMATIONS ─────────────────────────────────────────────────── */
+
+/* Spring-physics message entrance — feels alive */
+@keyframes messageFadeInSpring {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+    filter: blur(2px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.01);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Sent message — slides from right */
+@keyframes messageSentEntrance {
+  0% {
+    opacity: 0;
+    transform: translateX(24px) scale(0.95);
+  }
+  60% {
+    transform: translateX(-2px) scale(1.005);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Received message — slides from left */
+@keyframes messageReceivedEntrance {
+  0% {
+    opacity: 0;
+    transform: translateX(-24px) scale(0.95);
+  }
+  60% {
+    transform: translateX(2px) scale(1.005);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Message deletion — slides out */
+@keyframes messageSlideOut {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    max-height: 200px;
+  }
+  50% {
+    opacity: 0;
+    transform: translateX(60px) scale(0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(80px) scale(0.85);
+    max-height: 0;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+/* Message edit highlight — subtle golden flash */
+@keyframes messageEditFlash {
+  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+  50% { box-shadow: 0 0 20px 4px rgba(245, 158, 11, 0.2); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+
+/* ─── REACTION ANIMATIONS ────────────────────────────────────────────────── */
+
+/* Emoji reaction burst — pops then settles */
+@keyframes reactionBurst {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Reaction picker slide-up */
+@keyframes reactionPickerIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Call reaction — floats upward and fades */
+@keyframes floatReaction {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-40px) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-120px) scale(0.8);
+  }
+}
+
+/* ─── TYPING INDICATOR ───────────────────────────────────────────────────── */
+
+/* Neural pulse — organic feel like synapses firing */
+@keyframes typingNeural {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.4;
+    background: rgba(167, 139, 250, 0.6);
+  }
+  30% {
+    transform: translateY(-10px) scale(1.2);
+    opacity: 1;
+    background: rgba(139, 92, 246, 1);
+  }
+  60% {
+    transform: translateY(2px) scale(0.9);
+    opacity: 0.7;
+  }
+}
+
+/* Typing container breathing */
+@keyframes typingContainerPulse {
+  0%, 100% {
+    background: rgba(139, 92, 246, 0.06);
+    border-color: rgba(139, 92, 246, 0.15);
+  }
+  50% {
+    background: rgba(139, 92, 246, 0.1);
+    border-color: rgba(139, 92, 246, 0.25);
+  }
+}
+
+/* ─── ENCRYPTION & SECURITY ──────────────────────────────────────────────── */
+
+/* Shield breathing glow — trust indicator */
+@keyframes encryptionShieldBreathe {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.3));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6));
+    transform: scale(1.05);
+  }
+}
+
+/* Lock icon pulse — shows encryption active */
+@keyframes lockPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* Key rotation indicator */
+@keyframes keyRotation {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Security banner slide-down */
+@keyframes securityBannerIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── CALL ANIMATIONS ────────────────────────────────────────────────────── */
+
+/* Incoming call ring pulse — concentric circles */
+@keyframes callRingPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 20px rgba(139, 92, 246, 0);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+  }
+}
+
+/* Call connecting ripple */
+@keyframes callConnectRipple {
+  0% {
+    width: 60px;
+    height: 60px;
+    opacity: 0.6;
+    border-color: rgba(139, 92, 246, 0.6);
+  }
+  100% {
+    width: 200px;
+    height: 200px;
+    opacity: 0;
+    border-color: rgba(139, 92, 246, 0);
+  }
+}
+
+/* Connection quality bars */
+@keyframes qualityBarPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Avatar audio visualizer — during voice calls */
+@keyframes avatarAudioPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(139, 92, 246, 0);
+  }
+}
+
+/* Screen share indicator glow */
+@keyframes screenShareGlow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+  }
+}
+
+/* ─── INBOX ANIMATIONS ───────────────────────────────────────────────────── */
+
+/* Thread item staggered entrance */
+@keyframes inboxSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Unread badge pop */
+@keyframes unreadBadgePop {
+  0% {
+    transform: scale(0);
+  }
+  60% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Unread badge glow */
+@keyframes unreadBadgeGlow {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(126, 87, 194, 0.4);
+  }
+  50% {
+    box-shadow: 0 2px 16px rgba(126, 87, 194, 0.7);
+  }
+}
+
+/* Online status pulse */
+@keyframes onlineStatusPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0);
+  }
+}
+
+/* Pinned indicator shimmer */
+@keyframes pinnedShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ─── UI ELEMENT ANIMATIONS ──────────────────────────────────────────────── */
+
+/* Scroll-to-bottom FAB pop */
+@keyframes scrollFABPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) translateY(20px);
+  }
+  70% {
+    transform: scale(1.1) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Modal/overlay entrance */
+@keyframes overlayFadeIn {
+  0% {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    backdrop-filter: blur(20px);
+  }
+}
+
+/* Panel slide-in from right */
+@keyframes panelSlideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Panel slide-in from left */
+@keyframes panelSlideInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Context menu entrance */
+@keyframes contextMenuIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Shimmer loading effect */
+@keyframes sovereignShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Ambient background drift — subtle mesh movement */
+@keyframes ambientDrift {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(2%, -1%) scale(1.02);
+  }
+  66% {
+    transform: translate(-1%, 2%) scale(0.98);
+  }
+}
+
+/* ─── UTILITY CLASSES ────────────────────────────────────────────────────── */
+
+.sovereign-animate-message-sent {
+  animation: messageSentEntrance 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.sovereign-animate-message-received {
+  animation: messageReceivedEntrance 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.sovereign-animate-message-spring {
+  animation: messageFadeInSpring 450ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.sovereign-animate-reaction {
+  animation: reactionBurst 400ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.sovereign-animate-slide-out {
+  animation: messageSlideOut 350ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.sovereign-animate-fab-pop {
+  animation: scrollFABPop 350ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.sovereign-animate-panel-right {
+  animation: panelSlideInRight 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.sovereign-animate-panel-left {
+  animation: panelSlideInLeft 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.sovereign-animate-context-menu {
+  animation: contextMenuIn 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.sovereign-animate-overlay {
+  animation: overlayFadeIn 300ms ease both;
+}
+
+/* Staggered animation delay helpers */
+.sovereign-stagger-1 { animation-delay: 30ms; }
+.sovereign-stagger-2 { animation-delay: 60ms; }
+.sovereign-stagger-3 { animation-delay: 90ms; }
+.sovereign-stagger-4 { animation-delay: 120ms; }
+.sovereign-stagger-5 { animation-delay: 150ms; }
+.sovereign-stagger-6 { animation-delay: 180ms; }
+.sovereign-stagger-7 { animation-delay: 210ms; }
+.sovereign-stagger-8 { animation-delay: 240ms; }
+
+/* ─── REDUCED MOTION ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .sovereign-animate-message-sent,
+  .sovereign-animate-message-received,
+  .sovereign-animate-message-spring,
+  .sovereign-animate-reaction,
+  .sovereign-animate-slide-out,
+  .sovereign-animate-fab-pop,
+  .sovereign-animate-panel-right,
+  .sovereign-animate-panel-left,
+  .sovereign-animate-context-menu,
+  .sovereign-animate-overlay {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

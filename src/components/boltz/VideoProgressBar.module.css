@@ -1,59 +1,68 @@
-/* VideoProgressBar - Pro-Grade Progress Indicator */
-
+/* VideoProgressBar — Gradient Fill with Glow Head */
 .container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    padding: 0 0 0;
+}
+
+.track {
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    position: relative;
+    transition: height 0.15s ease;
+}
+
+.container:hover .track { height: 5px; }
+
+.buffered {
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    height: 3px;
-    background: rgba(var(--text-primary-rgb), 0.15);
-    z-index: 150;
-    overflow: hidden;
-}
-
-.progress {
     height: 100%;
-    background: linear-gradient(90deg, var(--primary-light) 0%, var(--primary-light) 50%, var(--primary-light) 100%);
-    background-size: 200% 100%;
-    animation: shimmer 2s linear infinite;
-    transition: width 0.1s linear;
-    box-shadow:
-        0 0 12px rgba(167, 139, 250, 0.6),
-        0 0 24px rgba(167, 139, 250, 0.3);
-    position: relative;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 0 2px 2px 0;
+    transition: width 0.3s ease;
 }
 
-.progress::after {
-    content: '';
+.fill {
     position: absolute;
     top: 0;
-    right: 0;
-    width: 4px;
+    left: 0;
     height: 100%;
-    background: rgba(var(--text-primary-rgb), 0.8);
-    box-shadow: 0 0 8px rgba(var(--text-primary-rgb), 0.6);
+    background: linear-gradient(90deg, #8b5cf6, #c084fc, #ec4899);
+    border-radius: 0 2px 2px 0;
+    transition: width 0.1s linear;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
 }
 
-@keyframes shimmer {
-    0% {
-        background-position: 200% 0;
-    }
-
-    100% {
-        background-position: -200% 0;
-    }
+.glow {
+    position: absolute;
+    right: 0;
+    top: -4px;
+    width: 20px;
+    height: 11px;
+    background: radial-gradient(ellipse at right, rgba(139, 92, 246, 0.6), transparent);
+    filter: blur(3px);
+    pointer-events: none;
 }
 
-/* Mobile */
-@media (max-width: 768px) {
-    .container {
-        height: 2.5px;
-    }
+.head {
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.8);
+    transition: width 0.15s ease, height 0.15s ease;
+    flex-shrink: 0;
 }
 
-/* Desktop */
-@media (min-width: 1024px) {
-    .container {
-        height: 3px;
-    }
+.container:hover .head {
+    width: 12px;
+    height: 12px;
+    margin-right: -6px;
 }

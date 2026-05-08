@@ -26,6 +26,14 @@ const Sidebar = () => {
         { icon: 'Settings', label: 'Settings', path: ROUTES.SETTINGS },
     ];
 
+    const pillarItems = [
+        { icon: 'Shield', label: 'Focus Trust Shield', path: '/trust-shield' },
+        { icon: 'Filter', label: 'Focus Content Filter & Moderator', path: '/moderation' },
+        { icon: 'Heart', label: 'Focus Report & Support System', path: '/support' },
+        { icon: 'Users', label: 'Focus Teen Care', path: '/teen-care' },
+        { icon: 'Star', label: 'Focusly AI', path: '/focusly-ai' },
+    ];
+
     const handleLogout = async () => {
         await signOut();
         navigate(ROUTES.LOGIN);
@@ -44,6 +52,24 @@ const Sidebar = () => {
                         to={item.path}
                         className={({ isActive }) =>
                             `${styles.navItem} ${isActive ? styles.active : ''}`
+                        }
+                    >
+                        <Icon name={item.icon} size={24} />
+                        <span className={styles.label}>{item.label}</span>
+                    </NavLink>
+                ))}
+
+                <div className={styles.sectionHeader}>
+                    <span className={styles.sectionTitle}>Pillars</span>
+                    <div className={styles.sectionLine} />
+                </div>
+
+                {pillarItems.map((item) => (
+                    <NavLink
+                        key={item.path}
+                        to={item.path}
+                        className={({ isActive }) =>
+                            `${styles.navItem} ${styles.pillarItem} ${isActive ? styles.active : ''}`
                         }
                     >
                         <Icon name={item.icon} size={24} />

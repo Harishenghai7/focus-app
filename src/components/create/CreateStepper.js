@@ -3,7 +3,7 @@ import styles from './CreateStepper.module.css';
 import { Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const STEPS = ['Media', 'Edit', 'Music', 'Details', 'Preview'];
+const STEPS = ['Media', 'Edit', 'Details', 'Preview'];
 
 const CreateStepper = ({ currentStep, completedSteps }) => {
     return (

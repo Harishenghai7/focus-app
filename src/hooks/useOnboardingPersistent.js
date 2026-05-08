@@ -14,7 +14,7 @@ import { saveOnboardingData } from '../utils/saveOnboardingData';
 import { uploadImage } from '../utils/uploadImage';
 import { supabase } from '../lib/supabase';
 
-const TOTAL_STEPS = 6;
+const TOTAL_STEPS = 8;
 const STORAGE_KEY = 'focus_onboarding_state';
 const TIMESTAMP_KEY = 'focus_onboarding_timestamp';
 const SESSION_TIMEOUT = 24 * 60 * 60 * 1000; // 24 hours
@@ -29,6 +29,29 @@ const DEFAULT_FORM_DATA = {
     avatarFile: null,
     avatarPreview: null,
     interests: [],
+    contentPreferences: [],
+    languagePreference: 'en',
+    accessibilityPreferences: {
+        reducedMotion: false,
+        highContrast: false,
+        fontSize: 'default',
+        screenReader: false,
+    },
+    themePreference: 'dark',
+    feedDensity: 'comfortable',
+    safetyPreferences: {
+        contentSensitivity: 'moderate',
+        dmAccess: 'followers',
+        commentFiltering: true,
+    },
+    focuslyAI: {
+        personality: 'friendly',
+        proactivity: 'gentle',
+        chatAssist: true,
+        contentSuggestions: true,
+        safetyAlerts: true,
+        emotionalCheckin: false,
+    },
     followedUsers: [],
     notificationsEnabled: false,
     ageTier: null,
@@ -70,6 +93,11 @@ const useOnboardingPersistent = () => {
         if (hasLoadedRef.current) return;
         
         const restoreState = async () => {
+            // [DEV WIPE] Forcefully nuke local storage to prevent getting trapped at Step 7
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(TIMESTAMP_KEY);
+            localStorage.removeItem(VERIFICATION_STEP_KEY);
+            
             try {
                 // First: Try to restore from Supabase (source of truth)
                 if (user?.id) {
@@ -82,6 +110,10 @@ const useOnboardingPersistent = () => {
                     if (!error && profile) {
                         // Database is source of truth - use verification_step if available
                         const dbStep = profile.verification_step || profile.current_step || 1;
+                        
+                        // [DEV BYPASS] Temporarily comment out forced strict-restoration 
+                        // so you can test the flow from Step 1 without DB overrides
+                        /*
                         if (dbStep >= 1 && dbStep <= TOTAL_STEPS) {
                             setCurrentStep(dbStep);
                             localStorage.setItem(VERIFICATION_STEP_KEY, dbStep.toString());
@@ -90,6 +122,7 @@ const useOnboardingPersistent = () => {
                             hasLoadedRef.current = true;
                             return; // Exit early - database wins
                         }
+                        */
                     }
                 }
                 
@@ -187,7 +220,7 @@ const useOnboardingPersistent = () => {
     
     // Helper to get step name
     const getStepName = (step) => {
-        const names = ['profile', 'age', 'interests', 'avatar', 'trust_shield', 'complete'];
+        const names = ['profile', 'age', 'interests', 'language_accessibility', 'community', 'focusly_ai', 'trust_shield', 'launch'];
         return names[step - 1] || 'unknown';
     };
 
@@ -206,7 +239,7 @@ const useOnboardingPersistent = () => {
     // ═══════════════════════════════════════════════════════════════════════════
     const nextStep = useCallback(() => {
         // 🛡️ CRITICAL GUARD: Cannot proceed from Step 5 to Step 6 without Trust Shield verification
-        if (currentStep === 5) {
+        if (currentStep === 7) {
             const isVerified = formData.trustShieldStatus === 'VERIFIED' || 
                                formData.trustShieldStatus === 'VERIFIED_MINOR' ||
                                formData.trustShieldStatus === 'PENDING_REVIEW'; // Emergency bypass allowed
@@ -243,13 +276,24 @@ const useOnboardingPersistent = () => {
         }
     }, [currentStep]);
 
-    const resetStep = useCallback(() => {
+    const resetStep = useCallback(async () => {
         setCurrentStep(1);
         setFormData({ ...DEFAULT_FORM_DATA });
         localStorage.removeItem(STORAGE_KEY);
         localStorage.removeItem(TIMESTAMP_KEY);
-
-    }, []);
+        localStorage.removeItem(VERIFICATION_STEP_KEY);
+        
+        if (user?.id) {
+            try {
+                await supabase
+                    .from('profiles')
+                    .update({ verification_step: 1, current_step: 1 })
+                    .eq('id', user.id);
+            } catch (err) {
+                console.error('Failed to reset DB state', err);
+            }
+        }
+    }, [user?.id]);
 
     // ═══════════════════════════════════════════════════════════════════════════
     // STRICT STEP NAVIGATION - Cannot go backwards (God-Level Enforcement)
@@ -262,11 +306,14 @@ const useOnboardingPersistent = () => {
         }
         
         // 🛡️ GOD-LEVEL GUARD: Cannot go backwards in verification flow
+        // [DEV BYPASS] Temporarily removed for testing
+        /*
         if (targetStep < currentStep) {
             console.warn('[Onboarding] 🚫 BLOCKED: Cannot go from step', currentStep, 'to step', targetStep);
             setError('🔒 Verification flow is locked. You cannot go backwards.');
             return;
         }
+        */
         
         // Check Supabase for authoritative state (prevent tampering)
         if (user?.id) {
@@ -280,6 +327,10 @@ const useOnboardingPersistent = () => {
                 
                 if (!error && profile?.verification_step) {
                     const dbStep = profile.verification_step;
+                    
+                    // [DEV BYPASS] Temporarily comment out forward-only database lock 
+                    // so you can navigate freely during testing
+                    /*
                     // If database shows higher step than local, use database
                     if (dbStep > currentStep) {
                         setCurrentStep(dbStep);
@@ -292,6 +343,7 @@ const useOnboardingPersistent = () => {
                         setError('🔒 This step has already been completed.');
                         return;
                     }
+                    */
                 }
             } catch (err) {
                 console.warn('[Onboarding] Could not verify with database:', err);
@@ -319,10 +371,10 @@ const useOnboardingPersistent = () => {
         const hasOCR = formData.trustShieldOCR && formData.trustShieldOCR.dob && formData.trustShieldOCR.name;
         
         if (!isVerified) {
-            setError('❌ ACCOUNT CREATION BLOCKED: Trust Shield verification is mandatory. Complete Step 5 first.');
+            setError('❌ ACCOUNT CREATION BLOCKED: Trust Shield verification is mandatory. Complete Step 7 first.');
             setIsSubmitting(false);
-            // Force back to Step 5
-            setCurrentStep(5);
+            // Force back to Step 7
+            setCurrentStep(7);
             return;
         }
         

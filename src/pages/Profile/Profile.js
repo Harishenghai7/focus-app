@@ -2,8 +2,13 @@ import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import MainLayout from '../../components/layout/MainLayout';
+import SovereignBanner from '../../components/Profile/SovereignBanner';
 import ProfileHeader from '../../components/Profile/ProfileHeader';
+import TrustShieldMatrix from '../../components/Profile/TrustShieldMatrix';
+import InterestsConstellation from '../../components/Profile/InterestsConstellation';
 import HighlightCarousel from '../../components/Profile/HighlightCarousel';
+import AchievementsOrbit from '../../components/Profile/AchievementsOrbit';
+import ActivityPulse from '../../components/Profile/ActivityPulse';
 import ProfileTabs from '../../components/Profile/ProfileTabs';
 import ProfileGrid from '../../components/Profile/ProfileGrid';
 import FollowersModal from '../../components/Profile/FollowersModal';
@@ -17,6 +22,8 @@ import { useProfileTabs } from '../../hooks/useProfileTabs';
 import { useProfileGrid } from '../../hooks/useProfileGrid';
 import { useHighlights } from '../../hooks/useHighlights';
 import { useAuth } from '../../hooks/useAuth';
+import { useUserInterests } from '../../hooks/useUserInterests';
+import { useActivityInsights } from '../../hooks/useActivityInsights';
 import getTrustShieldState from '../../utils/trustShieldPolicy';
 import useGuardianLinks from '../../hooks/useGuardianLinks';
 import { triggerHaptic } from '../../utils/haptics';
@@ -32,8 +39,15 @@ const Profile = () => {
     // Determine the profile to load
     const profileUsername = username || currentUser?.id;
 
-    // Fetch profile data - always call hooks
-    const { profile, loading: profileLoading, error, currentUserRelation, updateFollowStatus, refresh: refreshProfile } = useProfile(profileUsername);
+    // Fetch profile data
+    const {
+        profile,
+        loading: profileLoading,
+        error,
+        currentUserRelation,
+        updateFollowStatus,
+        refresh: refreshProfile,
+    } = useProfile(profileUsername);
 
     const isOwnProfile = useMemo(() => {
         if (!currentUser) return false;
@@ -56,6 +70,12 @@ const Profile = () => {
 
     // Highlights
     const { highlights, loading: highlightsLoading } = useHighlights(profile?.id, isOwnProfile);
+
+    // Interests
+    const { interests } = useUserInterests(profile?.id);
+
+    // Activity Insights (own profile only)
+    const { insights } = useActivityInsights(profile?.id, isOwnProfile);
 
     // Modal states
     const [showFollowersModal, setShowFollowersModal] = useState(false);
@@ -99,28 +119,37 @@ const Profile = () => {
         }
     };
 
+    const handleEditBanner = () => {
+        // Navigate to edit profile with banner focus
+        navigate('/settings?section=profile&focus=banner');
+    };
+
+    const handleEditInterests = () => {
+        navigate('/settings?section=profile&focus=interests');
+    };
+
     // Empty state messages — Focusly AI personality
     const getEmptyMessage = () => {
         switch (activeTab) {
             case 'posts':
-                return isOwnProfile 
-                    ? 'Macha, your mirror is empty! Go to the Forge and create your first vision.' 
+                return isOwnProfile
+                    ? 'Macha, your mirror is empty! Go to the Forge and create your first vision.'
                     : 'No posts yet';
             case 'boltz':
-                return isOwnProfile 
-                    ? 'Time to create some magic! Record your first Boltz and share your story.' 
+                return isOwnProfile
+                    ? 'Time to create some magic! Record your first Boltz and share your story.'
                     : 'No Boltz yet';
             case 'flash':
-                return isOwnProfile 
-                    ? 'Your highlights await! Create Flash stories to preserve your best moments.' 
+                return isOwnProfile
+                    ? 'Your highlights await! Create Flash stories to preserve your best moments.'
                     : 'No Flash highlights yet';
             case 'saved':
-                return isOwnProfile 
-                    ? 'Your collection is waiting. Save posts that inspire you.' 
+                return isOwnProfile
+                    ? 'Your collection is waiting. Save posts that inspire you.'
                     : 'No saved posts yet';
             case 'tagged':
-                return isOwnProfile 
-                    ? "You haven't been tagged yet. Share your profile to get noticed!" 
+                return isOwnProfile
+                    ? "You haven't been tagged yet. Share your profile to get noticed!"
                     : 'No tagged posts';
             default:
                 return 'Nothing here yet';
@@ -129,20 +158,15 @@ const Profile = () => {
 
     const getEmptyIcon = () => {
         switch (activeTab) {
-            case 'posts':
-                return 'Grid3x3';
-            case 'boltz':
-                return 'Video';
-            case 'saved':
-                return 'Bookmark';
-            case 'tagged':
-                return 'UserCheck';
-            default:
-                return 'Inbox';
+            case 'posts': return 'Grid3x3';
+            case 'boltz': return 'Video';
+            case 'saved': return 'Bookmark';
+            case 'tagged': return 'UserCheck';
+            default: return 'Inbox';
         }
     };
 
-    // Wait for auth to load
+    // ── Loading State ────────────────────────────────────────
     if (authLoading) {
         return (
             <MainLayout>
@@ -153,12 +177,13 @@ const Profile = () => {
         );
     }
 
-    // If no username and no current user, show error
+    // ── No Profile Username ──────────────────────────────────
     if (!profileUsername) {
         return (
             <MainLayout>
                 <div className={styles.profileContainer}>
                     <div className={styles.error}>
+                        <div className={styles.errorIcon}>🔍</div>
                         <h2>Profile not found</h2>
                         <p>Please log in to view your profile</p>
                     </div>
@@ -167,7 +192,7 @@ const Profile = () => {
         );
     }
 
-    // Loading state
+    // ── Profile Loading ──────────────────────────────────────
     if (profileLoading) {
         return (
             <MainLayout>
@@ -178,12 +203,13 @@ const Profile = () => {
         );
     }
 
-    // Error state - only show if we have NO profile data
+    // ── Error State ──────────────────────────────────────────
     if (!profile && error) {
         return (
             <MainLayout>
                 <div className={styles.profileContainer}>
                     <div className={styles.error}>
+                        <div className={styles.errorIcon}>🚫</div>
                         <h2>Profile not found</h2>
                         <p>{error || 'This profile does not exist'}</p>
                     </div>
@@ -192,12 +218,20 @@ const Profile = () => {
         );
     }
 
-    // Check if user has active stories (for avatar ring)
     const hasStories = highlights && highlights.length > 0;
 
+    // ── Render ───────────────────────────────────────────────
     return (
         <MainLayout>
             <div className={styles.profileContainer}>
+                {/* Zone 1: Sovereign Banner */}
+                <SovereignBanner
+                    bannerUrl={profile.banner_url || profile.cover_url}
+                    isOwnProfile={isOwnProfile}
+                    onEditBanner={handleEditBanner}
+                />
+
+                {/* Zone 2: Identity Nucleus */}
                 <ProfileHeader
                     profile={profile}
                     isOwnProfile={isOwnProfile}
@@ -209,15 +243,56 @@ const Profile = () => {
                     onProfileUpdate={refreshProfile}
                 />
 
-                {!highlightsLoading && (
-                    <HighlightCarousel
-                        highlights={highlights}
+                {/* Zone 3: Trust Shield Matrix */}
+                <div className={styles.sectionZone}>
+                    <TrustShieldMatrix
+                        profile={profile}
                         isOwnProfile={isOwnProfile}
-                        onHighlightClick={handleHighlightClick}
-                        onAddClick={handleAddHighlight}
                     />
+                </div>
+
+                {/* Zone 4: Interests Constellation */}
+                <div className={styles.sectionZone}>
+                    <InterestsConstellation
+                        interests={interests}
+                        isOwnProfile={isOwnProfile}
+                        onEditInterests={handleEditInterests}
+                    />
+                </div>
+
+                {/* Flash Highlights Carousel */}
+                {!highlightsLoading && (
+                    <div className={styles.sectionZone}>
+                        <div className={styles.highlightWrap}>
+                            <HighlightCarousel
+                                highlights={highlights}
+                                isOwnProfile={isOwnProfile}
+                                onHighlightClick={handleHighlightClick}
+                                onAddClick={handleAddHighlight}
+                            />
+                        </div>
+                    </div>
                 )}
 
+                {/* Zone 5: Achievements Orbit */}
+                <div className={styles.sectionZone}>
+                    <AchievementsOrbit
+                        badges={profile.badges || []}
+                        isOwnProfile={isOwnProfile}
+                    />
+                </div>
+
+                {/* Zone 6: Activity Pulse (own profile) */}
+                {isOwnProfile && (
+                    <div className={styles.sectionZone}>
+                        <ActivityPulse
+                            insights={insights}
+                            isOwnProfile={isOwnProfile}
+                        />
+                    </div>
+                )}
+
+                {/* Guardian Hub Card */}
                 {isOwnProfile && trust?.status === 'VERIFIED' && !guardianLinksLoading && guardianLinks.length > 0 && (
                     <div
                         className={styles.guardianHubCard}
@@ -233,6 +308,7 @@ const Profile = () => {
                     </div>
                 )}
 
+                {/* Zone 7: Content Cosmos — Tabs + Grid */}
                 <ProfileTabs
                     activeTab={activeTab}
                     onTabChange={(tab) => {
@@ -264,7 +340,7 @@ const Profile = () => {
                     </AnimatePresence>
                 </div>
 
-                {/* Modals */}
+                {/* ── Modals ──────────────────────────────────────── */}
                 <FollowersModal
                     isOpen={showFollowersModal}
                     onClose={() => setShowFollowersModal(false)}
@@ -283,9 +359,6 @@ const Profile = () => {
                         post={selectedPost}
                         onClose={() => setSelectedPost(null)}
                         onUpdate={(postId, updates) => {
-                            // Update the items in the grid
-                            // items is from useProfileGrid, we might need to update it there
-                            // For now, we update the selected post locally
                             setSelectedPost(prev => ({ ...prev, ...updates }));
                         }}
                     />

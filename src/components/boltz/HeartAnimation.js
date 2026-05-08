@@ -1,13 +1,23 @@
 import React from 'react';
 import styles from './HeartAnimation.module.css';
-import { Heart } from 'lucide-react';
 
-const HeartAnimation = () => {
-    return (
-        <div className={styles.container}>
-            <Heart size={120} fill="#FF0000" color="#FF0000" />
-        </div>
-    );
-};
+const HeartAnimation = () => (
+    <div className={styles.container}>
+        {[...Array(8)].map((_, i) => (
+            <div
+                key={i}
+                className={styles.heart}
+                style={{
+                    '--i': i,
+                    '--size': `${20 + Math.random() * 30}px`,
+                    '--x': `${35 + Math.random() * 30}%`,
+                    '--delay': `${Math.random() * 0.2}s`,
+                }}
+            >
+                ❤️
+            </div>
+        ))}
+    </div>
+);
 
 export default HeartAnimation;

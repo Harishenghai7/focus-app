@@ -4,21 +4,17 @@ import { Music } from 'lucide-react';
 
 const BoltzMusicInfo = ({ music, playing, onClick }) => {
     if (!music) return null;
+    const trackName = music.title || music.name || 'Original Sound';
 
     return (
-        <div className={styles.container} onClick={onClick}>
-            <Music size={16} className={`${styles.musicIcon} ${playing ? styles.playing : ''}`} />
-            <div className={styles.musicDetails}>
-                <div className={styles.musicName}>
-                    {music.name || 'Unknown Track'}
-                </div>
-                {music.artist && (
-                    <div className={styles.artistName}>
-                        {music.artist}
-                    </div>
-                )}
+        <button className={styles.container} onClick={(e) => { e.stopPropagation(); onClick?.(); }}>
+            <Music size={12} className={styles.icon} />
+            <div className={styles.marqueeContainer}>
+                <span className={`${styles.trackName} ${playing ? styles.scrolling : ''}`}>
+                    {trackName} • {trackName}
+                </span>
             </div>
-        </div>
+        </button>
     );
 };
 

@@ -1,16 +1,32 @@
-/* Profile Page - Royal Lavender Theme */
+/* ═══════════════════════════════════════════════════════════════════════════
+   Profile Page — Immersive Sovereign Layout
+   Focus Digital Identity System
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 .profileContainer {
     max-width: 1200px;
     margin: 0 auto;
     background: var(--bg-primary);
     min-height: 100vh;
+    position: relative;
 }
 
+/* ── Section Zones ────────────────────────────────────────── */
+.sectionZone {
+    margin-bottom: var(--space-4);
+}
+
+/* ── Content Grid ─────────────────────────────────────────── */
 .content {
     padding: var(--space-4);
 }
 
+/* ── Highlights Wrapper ───────────────────────────────────── */
+.highlightWrap {
+    padding: 0 var(--space-4);
+}
+
+/* ── Error State ──────────────────────────────────────────── */
 .error {
     display: flex;
     flex-direction: column;
@@ -19,46 +35,64 @@
     padding: var(--space-16);
     text-align: center;
     min-height: 60vh;
+    gap: var(--space-3);
+}
+
+.errorIcon {
+    font-size: 48px;
+    margin-bottom: var(--space-2);
+    opacity: 0.7;
 }
 
 .error h2 {
+    font-family: var(--font-display);
     font-size: var(--font-3xl);
     font-weight: var(--font-bold);
     background: var(--gradient-royal);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: var(--space-4);
+    margin: 0;
 }
 
 .error p {
     font-size: var(--font-lg);
     color: var(--text-secondary);
+    margin: 0;
 }
 
- .guardianHubCard {
-     margin: 12px var(--space-4) 0;
-     border-radius: 18px;
-     padding: 16px 16px;
-     background: rgba(var(--primary-rgb), 0.05);
-     border: 1px solid rgba(var(--primary-rgb), 0.16);
-     backdrop-filter: blur(30px);
-     -webkit-backdrop-filter: blur(30px);
-     cursor: pointer;
- }
+/* ── Guardian Hub Card ────────────────────────────────────── */
+.guardianHubCard {
+    margin: 0 var(--space-4) var(--space-4);
+    border-radius: var(--radius-xl);
+    padding: var(--space-4);
+    background: rgba(var(--primary-rgb), 0.05);
+    border: 1px solid rgba(var(--primary-rgb), 0.16);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
 
- .guardianHubTitle {
-     font-size: 14px;
-     font-weight: 800;
-     color: var(--text-primary);
- }
+.guardianHubCard:hover {
+    background: rgba(var(--primary-rgb), 0.08);
+    border-color: rgba(var(--primary-rgb), 0.25);
+    box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.1);
+}
 
- .guardianHubSub {
-     margin-top: 4px;
-     font-size: 12px;
-     color: var(--text-secondary);
- }
+.guardianHubTitle {
+    font-size: var(--font-sm);
+    font-weight: var(--font-extrabold);
+    color: var(--text-primary);
+}
 
+.guardianHubSub {
+    margin-top: 4px;
+    font-size: var(--font-xs);
+    color: var(--text-secondary);
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
 @media (max-width: 768px) {
     .profileContainer {
         max-width: 100%;
@@ -68,7 +102,25 @@
         padding: var(--space-2);
     }
 
+    .highlightWrap {
+        padding: 0 var(--space-2);
+    }
+
+    .sectionZone {
+        margin-bottom: var(--space-3);
+    }
+
     .guardianHubCard {
-        margin: 12px var(--space-2) 0;
+        margin: 0 var(--space-2) var(--space-3);
+    }
+}
+
+@media (max-width: 480px) {
+    .error {
+        padding: var(--space-8);
+    }
+
+    .error h2 {
+        font-size: var(--font-2xl);
     }
 }

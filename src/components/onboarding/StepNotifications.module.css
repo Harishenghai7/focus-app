@@ -1,137 +1,119 @@
-.container {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    align-items: center;
-    text-align: center;
-    width: 100%;
+.container { display: flex; flex-direction: column; gap: 1.3rem; }
+.header { display: grid; gap: 0.5rem; }
+.title { margin: 0; font-family: var(--font-display, 'Space Grotesk', sans-serif); font-size: clamp(1.4rem, 2.8vw, 1.85rem); font-weight: 700; color: #fff; }
+.subtitle { margin: 0; color: rgba(255,255,255,0.6); font-size: 0.9rem; line-height: 1.55; }
+
+/* Summary card */
+.summaryCard {
+    padding: 1.15rem; border-radius: 24px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+    border: 1px solid rgba(196,181,253,0.12);
+    animation: summaryIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
 }
 
-.content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    width: 100%;
+.summaryLabel {
+    display: inline-flex; padding: 0.3rem 0.6rem; border-radius: 999px;
+    background: rgba(167,139,250,0.1); color: rgba(167,139,250,0.8);
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
 }
+
+.summaryProfile { display: flex; align-items: center; gap: 0.75rem; margin: 0.85rem 0; }
+
+.summaryAvatar {
+    width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
+    background: linear-gradient(135deg, rgba(167,139,250,0.3), rgba(59,130,246,0.2));
+    display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 1.1rem;
+    box-shadow: 0 0 16px rgba(139,92,246,0.15); overflow: hidden;
+}
+.summaryAvatarImg { width: 100%; height: 100%; object-fit: cover; }
+.summaryName { margin: 0; color: #fff; font-size: 1rem; font-weight: 700; }
+.summaryHandle { margin: 0; color: rgba(167,139,250,0.7); font-size: 0.82rem; }
+
+.summaryGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+.summaryItem {
+    display: flex; align-items: center; gap: 0.45rem; padding: 0.55rem 0.65rem;
+    border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.75); font-size: 0.78rem; font-weight: 600;
+}
+.summaryIcon { color: rgba(167,139,250,0.6); font-size: 0.8rem; flex-shrink: 0; }
+
+/* Notifications */
+.notifSection {
+    padding: 1rem; border-radius: 22px;
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(196,181,253,0.08);
+}
+
+.notifHeader { text-align: center; margin-bottom: 0.85rem; }
 
 .glowRing {
-    padding: 12px;
-    border-radius: 50%;
-    background: radial-gradient(circle at center, rgba(167, 139, 250, 0.2) 0%, transparent 70%);
-    margin-bottom: 8px;
-    animation: pulseGlow 3s infinite ease-in-out;
+    width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 0.65rem;
+    background: linear-gradient(135deg, rgba(167,139,250,0.2), rgba(59,130,246,0.12));
+    display: grid; place-items: center;
+    box-shadow: 0 0 24px rgba(139,92,246,0.15);
+    animation: ringPulse 3s ease-in-out infinite;
 }
 
-.iconWrapper {
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(124, 58, 237, 0.3));
-    border: 1px solid rgba(167, 139, 250, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-    color: var(--primary-light);
-    box-shadow: 0 8px 32px rgba(124, 58, 237, 0.2);
-}
+.bellIcon { color: #fff; font-size: 1.3rem; }
 
-.title {
-    color: var(--text-primary);
-    font-size: 28px;
-    font-weight: 800;
-    margin: 0;
-    letter-spacing: -0.02em;
-}
+.notifTitle { margin: 0; color: #fff; font-size: 1.05rem; font-weight: 700; }
+.notifDesc { margin: 0.3rem 0 0; color: rgba(255,255,255,0.5); font-size: 0.85rem; }
 
-.subtitle {
-    color: var(--primary-light);
-    font-size: 15px;
-    font-weight: 500;
-    margin: 0 0 8px 0;
-}
-
-.benefitsGrid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    width: 100%;
-    max-width: 440px;
-    margin-top: 8px;
-}
-
+.benefitsGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
 .benefitCard {
-    background: rgba(var(--text-primary-rgb), 0.03);
-    border: 1px solid rgba(var(--text-primary-rgb), 0.08);
-    border-radius: 16px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
+    display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+    padding: 0.7rem 0.5rem; border-radius: 14px; background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.04);
+}
+.benefitIcon { font-size: 1rem; }
+.benefitCard span { color: rgba(255,255,255,0.65); font-size: 0.75rem; font-weight: 600; }
+
+/* Launch section */
+.launchSection { animation: launchIn 0.6s cubic-bezier(0.22,1,0.36,1) both; }
+
+.emotionalCopy {
+    display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.85rem 1rem;
+    border-radius: 18px; background: rgba(139,92,246,0.05); border: 1px solid rgba(139,92,246,0.1);
+    margin-bottom: 1rem;
+}
+.emotionalCopy p { margin: 0; color: rgba(255,255,255,0.7); font-size: 0.9rem; line-height: 1.55; }
+.emotionalCopy strong { color: #fff; }
+.rocketIcon { color: #a78bfa; font-size: 1.1rem; flex-shrink: 0; margin-top: 0.15rem; }
+
+.actions { display: flex; justify-content: space-between; gap: 0.75rem; }
+
+/* Launch button */
+.launchButton {
+    display: inline-flex; align-items: center; gap: 0.65rem;
+    padding: 0.95rem 2rem; border-radius: 999px; border: none; cursor: pointer;
+    background: linear-gradient(135deg, #7c3aed, #8b5cf6, #a78bfa);
+    color: #fff; font-size: 1rem; font-weight: 700; font-family: inherit;
+    box-shadow: 0 8px 28px rgba(139,92,246,0.3), 0 0 0 1px rgba(139,92,246,0.2);
+    transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
+    animation: launchGlow 2s ease-in-out infinite;
+    position: relative; overflow: hidden;
+}
+.launchButton:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 12px 36px rgba(139,92,246,0.4), 0 0 0 2px rgba(139,92,246,0.3);
+}
+.launchButton:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+.launchButton:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.launchSpinner {
+    width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.2);
+    border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite;
 }
 
-.benefitCard:hover {
-    background: rgba(var(--text-primary-rgb), 0.08);
-    border-color: rgba(167, 139, 250, 0.4);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(var(--bg-primary-rgb), 0.2);
-}
+/* Keyframes */
+@keyframes summaryIn { from { opacity: 0; transform: translateY(12px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes launchIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes ringPulse { 0%, 100% { box-shadow: 0 0 20px rgba(139,92,246,0.15); } 50% { box-shadow: 0 0 32px rgba(139,92,246,0.3); } }
+@keyframes launchGlow { 0%, 100% { box-shadow: 0 8px 28px rgba(139,92,246,0.3), 0 0 0 1px rgba(139,92,246,0.2); } 50% { box-shadow: 0 8px 36px rgba(139,92,246,0.45), 0 0 0 2px rgba(139,92,246,0.3); } }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-.benefitIcon {
-    font-size: 24px;
-    filter: drop-shadow(0 0 8px rgba(var(--text-primary-rgb), 0.2));
-}
-
-.benefitCard span {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-secondary);
-}
-
-.description {
-    color: var(--text-muted);
-    font-size: 14px;
-    line-height: 1.6;
-    max-width: 400px;
-    margin-top: 16px;
-}
-
-.actions {
-    display: flex;
-    gap: 16px;
-    width: 100%;
-    margin-top: 8px;
-}
-
-.actions button {
-    flex: 1;
-}
-
-.progressInfo {
-    display: none;
-}
-
-@keyframes pulseGlow {
-    0% { transform: scale(1); opacity: 0.8; }
-    50% { transform: scale(1.1); opacity: 1; }
-    100% { transform: scale(1); opacity: 0.8; }
-}
-
-@media (max-width: 768px) {
-    .benefitsGrid {
-        gap: 8px;
-    }
-    
-    .benefitCard {
-        padding: 12px;
-    }
-    
-    .title {
-        font-size: 24px;
-    }
+@media (max-width: 640px) {
+    .summaryGrid { grid-template-columns: repeat(2, 1fr); }
+    .benefitsGrid { grid-template-columns: repeat(2, 1fr); }
+    .actions { flex-direction: column-reverse; }
+    .launchButton { width: 100%; justify-content: center; }
 }

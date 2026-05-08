@@ -134,6 +134,41 @@
     letter-spacing: 0.01em;
 }
 
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-3) var(--space-2);
+    margin-top: var(--space-2);
+}
+
+.sectionTitle {
+    font-size: 10px;
+    font-weight: var(--font-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(var(--text-primary-rgb), 0.4);
+}
+
+.sectionLine {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.05), transparent);
+}
+
+.pillarItem {
+    opacity: 0.85;
+}
+
+.pillarItem:hover {
+    opacity: 1;
+    background: rgba(139, 92, 246, 0.04);
+}
+
+.pillarItem .label {
+    font-size: var(--font-sm);
+}
+
 /* ═══════════════════════════════════════════════════════════════
    FOOTER - User Profile
    ═══════════════════════════════════════════════════════════════ */

@@ -1,191 +1,182 @@
-/* ==========================================================
-   ProfileHeader — Focus App | Premium Instagram-inspired
-   ========================================================== */
+/* ═══════════════════════════════════════════════════════════════════════════
+   ProfileHeader — Identity Nucleus
+   Focus Sovereign Digital Identity System
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-.header {
+.nucleus {
+    position: relative;
     display: flex;
-    gap: 40px;
-    padding: 60px 30px 30px;
-    border-bottom: 1px solid var(--border-subtle, rgba(var(--text-primary-rgb), 0.07));
-    position: relative;
-    background-image: var(--gradient-mesh);
-    background-attachment: fixed;
-    border-radius: 0 0 var(--radius-3xl) var(--radius-3xl);
-    box-shadow: var(--shadow-xl);
-    margin-bottom: var(--space-6);
-    overflow: hidden;
-}
-
-.header::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: linear-gradient(to top, var(--bg-primary), transparent);
-    pointer-events: none;
-}
-
-.bannerSurface {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-}
-
-.bannerImage {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0.28;
-}
-
-.bannerFallback {
-    width: 100%;
-    height: 100%;
-    display: grid;
-    place-items: center;
-    gap: 10px;
-    background: radial-gradient(circle at 20% 30%, rgba(167, 139, 250, 0.25), transparent 45%),
-                radial-gradient(circle at 80% 70%, rgba(var(--primary-rgb), 0.15), transparent 50%),
-                linear-gradient(135deg, rgba(var(--primary-rgb), 0.3), rgba(69, 39, 160, 0.25));
-}
-
-.bannerOverlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, var(--bg-primary) 0%, transparent 60%);
-    backdrop-filter: blur(1px);
-    pointer-events: none;
-}
-
-.bannerMark {
-    width: 64px;
-    height: 64px;
-    border-radius: 999px;
-    display: grid;
-    place-items: center;
-    font-weight: 800;
-    font-size: 1.4rem;
-    color: var(--text-primary);
-    border: 1px solid rgba(var(--text-primary-rgb), 0.24);
-    background: rgba(var(--primary-rgb), 0.35);
-}
-
-.bannerText {
-    color: rgba(var(--text-primary-rgb), 0.86);
-    font-size: 0.78rem;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-}
-
-/* ── Avatar Section ──────────────────────────────────────── */
-.avatarSection {
-    flex-shrink: 0;
-    position: relative;
+    gap: 32px;
+    padding: 0 var(--space-6) var(--space-6);
+    margin-top: -64px;
     z-index: 10;
 }
 
-.avatarWrapper {
+/* ── Avatar Zone ──────────────────────────────────────────── */
+.avatarZone {
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 8px;
+}
+
+.avatarFrame {
     position: relative;
     display: inline-flex;
+    border-radius: 50%;
 }
 
-/* Sovereign Avatar — Trust Shield verified users */
-.sovereignAvatar .avatarWrapper {
+.avatar {
     position: relative;
+    z-index: 3;
 }
 
-.sovereignAvatar .avatarWrapper::before {
-    content: '';
+/* ── Trust Ring (Level 1+) ────────────────────────────────── */
+.trustRing {
     position: absolute;
-    inset: -8px;
+    inset: -6px;
     border-radius: 50%;
     padding: 3px;
+    z-index: 1;
+    pointer-events: none;
     background: conic-gradient(
         from 0deg,
         transparent 0%,
-        rgba(var(--primary-rgb), 0.8) 15%,
-        rgba(167, 139, 250, 1) 30%,
-        rgba(196, 181, 253, 0.9) 45%,
-        transparent 60%,
-        transparent 70%,
-        rgba(var(--primary-rgb), 0.8) 85%,
+        rgba(var(--primary-rgb), 0.6) 15%,
+        rgba(167, 139, 250, 0.8) 30%,
+        transparent 50%,
+        transparent 65%,
+        rgba(var(--primary-rgb), 0.6) 80%,
         transparent 100%
     );
     -webkit-mask:
-        linear-gradient(var(--text-primary) 0 0) content-box,
-        linear-gradient(var(--text-primary) 0 0);
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask:
-        linear-gradient(var(--text-primary) 0 0) content-box,
-        linear-gradient(var(--text-primary) 0 0);
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
     mask-composite: exclude;
-    animation: sovereignSpin 6s linear infinite;
-    pointer-events: none;
+    animation: trustSpin 8s linear infinite;
 }
 
-@keyframes sovereignSpin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+/* Ring color variants */
+.realRing .trustRing {
+    background: conic-gradient(
+        from 0deg,
+        transparent 0%,
+        var(--focusid-1-color) 20%,
+        rgba(245, 158, 11, 0.5) 40%,
+        transparent 60%,
+        transparent 80%,
+        var(--focusid-1-color) 95%,
+        transparent 100%
+    );
 }
 
-/* Sovereign Pulse — Royal Lavender glow ring */
+.confirmedRing .trustRing {
+    background: conic-gradient(
+        from 0deg,
+        transparent 0%,
+        var(--focusid-2-color) 20%,
+        rgba(16, 185, 129, 0.5) 40%,
+        transparent 60%,
+        transparent 80%,
+        var(--focusid-2-color) 95%,
+        transparent 100%
+    );
+}
+
+.trustedRing .trustRing {
+    background: conic-gradient(
+        from 0deg,
+        transparent 0%,
+        var(--focusid-3-color) 20%,
+        rgba(59, 130, 246, 0.5) 40%,
+        transparent 60%,
+        transparent 80%,
+        var(--focusid-3-color) 95%,
+        transparent 100%
+    );
+}
+
+.sovereignRing .trustRing {
+    background: conic-gradient(
+        from 0deg,
+        transparent 0%,
+        rgba(var(--primary-rgb), 0.8) 12%,
+        rgba(167, 139, 250, 1) 25%,
+        rgba(236, 72, 153, 0.7) 38%,
+        transparent 55%,
+        transparent 70%,
+        rgba(236, 72, 153, 0.7) 82%,
+        rgba(var(--primary-rgb), 0.8) 95%,
+        transparent 100%
+    );
+    animation-duration: 5s;
+}
+
+@keyframes trustSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ── Sovereign Pulse (Level 4 only) ───────────────────────── */
 .sovereignPulse {
     position: absolute;
     inset: -12px;
     border-radius: 50%;
-    border: 1px solid rgba(var(--primary-rgb), 0.4);
-    animation: sovereignPulse 2.5s ease-in-out infinite;
+    border: 1px solid rgba(var(--primary-rgb), 0.35);
+    animation: sovPulse 3s ease-in-out infinite;
     pointer-events: none;
+    z-index: 0;
 }
 
-.sovereignPulse::before {
-    content: '';
+.sovereignPulseOuter {
     position: absolute;
-    inset: -6px;
+    inset: -20px;
     border-radius: 50%;
-    border: 1px solid rgba(167, 139, 250, 0.2);
-    animation: sovereignPulse 2.5s ease-in-out infinite 0.5s;
+    border: 1px solid rgba(167, 139, 250, 0.15);
+    animation: sovPulse 3s ease-in-out infinite 0.8s;
+    pointer-events: none;
+    z-index: 0;
 }
 
-@keyframes sovereignPulse {
+@keyframes sovPulse {
     0%, 100% {
         transform: scale(1);
-        opacity: 0.6;
-        border-color: rgba(var(--primary-rgb), 0.4);
-        box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.3);
+        opacity: 0.5;
+        box-shadow: 0 0 16px rgba(var(--primary-rgb), 0.2);
     }
     50% {
-        transform: scale(1.05);
-        opacity: 0.9;
-        border-color: rgba(167, 139, 250, 0.6);
-        box-shadow: 0 0 40px rgba(167, 139, 250, 0.5);
+        transform: scale(1.06);
+        opacity: 0.85;
+        box-shadow: 0 0 32px rgba(var(--primary-rgb), 0.35);
     }
 }
 
-/* ── Info Section ────────────────────────────────────────── */
-.infoSection {
+/* ── Identity Info ────────────────────────────────────────── */
+.identityInfo {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--space-4);
     min-width: 0;
-    justify-content: center;
-    position: relative;
-    z-index: 10;
+    padding-top: 4px;
 }
 
-.topRow {
+.nameRow {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 16px;
+    gap: var(--space-4);
     flex-wrap: wrap;
 }
 
 .nameGroup {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
     min-width: 0;
 }
 
@@ -196,39 +187,46 @@
 }
 
 .username {
-    font-size: 1.4rem;
-    font-weight: 300;
-    color: var(--text-primary, var(--text-primary));
+    font-family: var(--font-display);
+    font-size: var(--font-2xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
     margin: 0;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
 }
 
 .fullName {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text-primary, var(--text-primary));
+    font-size: var(--font-sm);
+    font-weight: var(--font-medium);
+    color: var(--text-tertiary);
     margin: 0;
 }
 
 /* ── Responsive: Mobile ──────────────────────────────────── */
 @media (max-width: 640px) {
-    .header {
+    .nucleus {
         flex-direction: column;
         align-items: center;
         text-align: center;
-        gap: 20px;
-        padding: 20px 16px;
+        gap: var(--space-4);
+        padding: 0 var(--space-4) var(--space-4);
+        margin-top: -52px;
     }
 
-    .infoSection {
+    .identityInfo {
         align-items: center;
         width: 100%;
     }
 
-    .topRow {
+    .nameRow {
         flex-direction: column;
         align-items: center;
-        gap: 12px;
+        gap: var(--space-3);
+    }
+
+    .nameGroup {
+        align-items: center;
     }
 
     .usernameRow {
@@ -236,6 +234,19 @@
     }
 
     .username {
-        font-size: 1.2rem;
+        font-size: var(--font-xl);
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .trustRing {
+        animation: none;
+    }
+
+    .sovereignPulse,
+    .sovereignPulseOuter {
+        animation: none;
+        opacity: 0.5;
     }
 }

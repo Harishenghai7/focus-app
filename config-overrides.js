@@ -44,6 +44,8 @@ module.exports = override(
       /Critical dependency: the request of a dependency is an expression/,
       { module: /nsfwjs/ },
       { module: /@tensorflow/ },
+      { module: /@xenova[\\/]transformers/ },
+      { module: /onnxruntime/ },
     ];
 
     // ── Exclude heavy nsfwjs model bundles from parsing ──────────────────

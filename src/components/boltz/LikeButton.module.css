@@ -1,150 +1,117 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
-   LikeButton — GOD-LEVEL | H2 Royal Lavender
-   3D Lavender Heart Pulse with Sovereign Glow
+   LikeButton — Cinematic Heart with Particle Burst
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 .actionBtn {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-1);
-    background: var(--glass-surface, rgba(var(--bg-primary-rgb), 0.3));
-    backdrop-filter: var(--blur-lg, blur(20px));
-    -webkit-backdrop-filter: var(--blur-lg, blur(20px));
-    border: 1px solid var(--glass-border, rgba(var(--text-primary-rgb), 0.1));
-    border-radius: var(--radius-2xl, 16px);
-    padding: var(--space-3);
+    gap: 4px;
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 12px;
     cursor: pointer;
     color: white;
-    font-size: var(--font-xs, 12px);
-    font-weight: var(--font-semibold, 600);
-    transition: transform var(--transition-bounce, 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)),
-                box-shadow var(--transition-base, 0.2s ease),
-                background var(--transition-base, 0.2s ease);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background 0.2s ease;
     min-width: 56px;
-    box-shadow: var(--shadow-sm, 0 2px 8px rgba(var(--bg-primary-rgb), 0.3));
+    position: relative;
 }
 
-/* ── SOVEREIGN PULSE: Hover State ──────────────────────────────────────────────── */
 .actionBtn:hover {
-    background: var(--glass-surface-hover, rgba(var(--primary-rgb), 0.2));
+    background: rgba(255, 255, 255, 0.08);
     transform: scale(1.08) translateY(-2px);
-    box-shadow: 0 0 24px rgba(var(--primary-rgb), 0.5),
-                0 0 48px rgba(var(--primary-rgb), 0.3),
-                inset 0 1px 0 rgba(var(--text-primary-rgb), 0.2);
-    border-color: var(--primary-dim, rgba(167, 139, 250, 0.5));
+    box-shadow: 0 0 24px rgba(255, 255, 255, 0.1);
 }
 
-/* ── HAPTIC FEEDBACK: Active/Click State ──────────────────────────────────────── */
-.actionBtn:active {
-    transform: scale(0.94);
-    box-shadow: 0 0 12px rgba(var(--primary-rgb), 0.3);
+.actionBtn:active { transform: scale(0.92); }
+
+/* ── LIKED STATE ─────────────────────────────── */
+.actionBtn.liked {
+    color: #ff2d55;
+    border-color: rgba(255, 45, 85, 0.25);
+    box-shadow: 0 0 20px rgba(255, 45, 85, 0.2);
 }
 
-/* ── 3D LAVENDER HEART: Icon Container ─────────────────────────────────────────── */
+.actionBtn.liked:hover {
+    box-shadow: 0 0 32px rgba(255, 45, 85, 0.35);
+}
+
+/* ── ICON WRAPPER ────────────────────────────── */
 .iconWrapper {
-    width: 26px;
-    height: 26px;
+    position: relative;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    filter: drop-shadow(0 2px 8px rgba(var(--bg-primary-rgb), 0.8));
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
 }
 
-/* ── LAVENDER PULSE: Hover Glow Effect ──────────────────────────────────────────── */
-.actionBtn:hover .iconWrapper {
-    transform: scale(1.12);
-    filter: drop-shadow(0 0 16px rgba(var(--primary-rgb), 0.8));
+.iconWrapper.animating {
+    animation: heartBounce 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* ── LIKED STATE: Red Heart with Sovereign Glow ────────────────────────────────── */
-.iconWrapper.liked {
-    animation: heartPulse 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+@keyframes heartBounce {
+    0% { transform: scale(1); }
+    15% { transform: scale(1.4); }
+    30% { transform: scale(0.85); }
+    45% { transform: scale(1.15); }
+    60% { transform: scale(0.95); }
+    100% { transform: scale(1); }
 }
 
-.iconWrapper.liked svg {
-    filter: drop-shadow(0 0 20px rgba(255, 48, 64, 0.8)),
-            drop-shadow(0 0 40px rgba(255, 48, 64, 0.4));
+/* ── PARTICLE BURST ──────────────────────────── */
+.particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
 }
 
-/* ── 3D HEART PULSE ANIMATION ─────────────────────────────────────────────────── */
-@keyframes heartPulse {
+.particle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: #ff2d55;
+    border-radius: 50%;
+    animation: particleBurst 600ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    --angle: calc(var(--i) * 60deg);
+}
+
+.particle:nth-child(2n) { background: #ff6b8a; width: 4px; height: 4px; }
+.particle:nth-child(3n) { background: #ff9bb5; width: 3px; height: 3px; }
+
+@keyframes particleBurst {
     0% {
-        transform: scale(1);
-    }
-    25% {
-        transform: scale(1.3) rotate(-5deg);
-    }
-    50% {
-        transform: scale(1.1) rotate(3deg);
-    }
-    75% {
-        transform: scale(1.2) rotate(-2deg);
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(var(--angle)) translateY(0);
     }
     100% {
-        transform: scale(1) rotate(0deg);
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-28px);
     }
 }
 
-/* ── LAVENDER HEART BEAT (When Not Liked) ──────────────────────────────────────── */
-.actionBtn:not(:has(.liked)):hover .iconWrapper svg {
-    animation: lavenderBeat 1.5s ease-in-out infinite;
-}
-
-@keyframes lavenderBeat {
-    0%, 100% {
-        filter: drop-shadow(0 0 8px rgba(var(--primary-rgb), 0.4));
-    }
-    50% {
-        filter: drop-shadow(0 0 20px rgba(var(--primary-rgb), 0.8));
-    }
-}
-
-/* ── COUNT DISPLAY: Satin Finish ──────────────────────────────────────────────── */
+/* ── COUNT ────────────────────────────────────── */
 .count {
     font-size: 12px;
     font-weight: 700;
-    color: var(--text-primary);
-    text-shadow:
-        0 2px 8px rgba(var(--bg-primary-rgb), 0.9),
-        0 1px 4px rgba(var(--bg-primary-rgb), 1);
-    letter-spacing: 0.02em;
-    transition: all 0.2s ease;
+    color: currentColor;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    transition: transform 0.2s ease;
 }
 
-.actionBtn:hover .count {
-    color: var(--text-primary);
-    text-shadow: 0 0 16px rgba(var(--primary-rgb), 0.6);
+.countBounce {
+    animation: countPop 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* ── LIKED COUNT: Red Glow ────────────────────────────────────────────────────── */
-.actionBtn:has(.liked) .count {
-    color: var(--error);
-    text-shadow: 0 0 12px rgba(255, 48, 64, 0.5);
-}
-
-/* ── DESKTOP: Centered Layout ──────────────────────────────────────────────────── */
-@media (min-width: 1024px) {
-    .actionBtn {
-        min-width: 60px;
-        padding: var(--space-3);
-    }
-}
-
-/* ── MOBILE: Optimized Touch Targets ───────────────────────────────────────────── */
-@media (max-width: 768px) {
-    .actionBtn {
-        min-width: 48px;
-        padding: var(--space-2);
-    }
-
-    .iconWrapper {
-        width: 24px;
-        height: 24px;
-    }
-
-    .count {
-        font-size: 11px;
-    }
+@keyframes countPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
 }

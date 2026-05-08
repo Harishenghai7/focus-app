@@ -1,0 +1,163 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   FLOATING TOOLBAR — Professional Editor Tool Bar
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.toolbar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px;
+    background: rgba(22, 13, 42, 0.92);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 18px;
+    box-shadow:
+        0 16px 48px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    z-index: 10;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.toolbar:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.collapsed {
+    padding: 6px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COLLAPSE BUTTON
+   ═══════════════════════════════════════════════════════════════ */
+
+.collapseBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 20px;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.collapseBtn:hover {
+    color: var(--primary-light, #a78bfa);
+    background: rgba(139, 92, 246, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOOLS ROW
+   ═══════════════════════════════════════════════════════════════ */
+
+.toolsRow {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOOL BUTTON
+   ═══════════════════════════════════════════════════════════════ */
+
+.toolBtn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 10px 14px;
+    min-width: 56px;
+    background: none;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    color: var(--text-muted, #a78bfa);
+    transition: all 0.2s ease;
+}
+
+.toolBtn:hover {
+    color: var(--text-primary, #ffffff);
+    background: rgba(139, 92, 246, 0.08);
+}
+
+.toolActive {
+    color: var(--primary-light, #a78bfa);
+}
+
+.toolLabel {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ACTIVE INDICATOR
+   ═══════════════════════════════════════════════════════════════ */
+
+.activeIndicator {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: rgba(139, 92, 246, 0.12);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    z-index: -1;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GRIP HANDLE
+   ═══════════════════════════════════════════════════════════════ */
+
+.gripHandle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.15);
+    padding: 2px 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE — Horizontal on mobile
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    .toolbar {
+        flex-direction: row;
+        border-radius: 14px;
+        padding: 6px;
+    }
+
+    .toolsRow {
+        flex-direction: row;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .toolsRow::-webkit-scrollbar {
+        display: none;
+    }
+
+    .toolBtn {
+        padding: 8px 10px;
+        min-width: 48px;
+    }
+
+    .toolLabel {
+        font-size: 9px;
+    }
+
+    .gripHandle {
+        display: none;
+    }
+
+    .collapseBtn {
+        display: none;
+    }
+}

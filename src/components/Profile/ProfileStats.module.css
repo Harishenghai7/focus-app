@@ -1,141 +1,75 @@
-/* ==========================================================
-   ProfileStats — Sovereign Mirror Glassmorphism
-   ========================================================== */
+/* ═══════════════════════════════════════════════════════════════════════════
+   ProfileStats — Glassmorphic Stat Cards
+   Focus Sovereign Digital Identity System
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 .stats {
     display: flex;
-    gap: var(--space-4);
-    align-items: center;
-    flex-wrap: wrap;
+    gap: var(--space-2);
+    width: 100%;
 }
 
-.stat {
+.statCard {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-1);
-    background: rgba(var(--text-primary-rgb), 0.04);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(var(--text-primary-rgb), 0.08);
-    padding: var(--space-3) var(--space-5);
-    cursor: pointer;
-    transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    gap: 2px;
+    padding: var(--space-3) var(--space-2);
+    background: rgba(var(--primary-rgb), 0.04);
+    border: 1px solid rgba(var(--primary-rgb), 0.1);
     border-radius: var(--radius-xl);
-    box-shadow: 0 4px 24px rgba(var(--bg-primary-rgb), 0.4), 0 0 0 1px rgba(var(--text-primary-rgb), 0.03);
-    min-width: 90px;
-    position: relative;
-    overflow: hidden;
+    cursor: default;
+    transition: all var(--transition-base);
+    font-family: var(--font-primary);
+    color: inherit;
+    text-decoration: none;
 }
 
-/* Satin border shimmer effect */
-.stat::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(
-        135deg,
-        rgba(var(--text-primary-rgb), 0.1) 0%,
-        rgba(var(--primary-rgb), 0.2) 50%,
-        rgba(var(--text-primary-rgb), 0.1) 100%
-    );
-    -webkit-mask:
-        linear-gradient(var(--text-primary) 0 0) content-box,
-        linear-gradient(var(--text-primary) 0 0);
-    -webkit-mask-composite: xor;
-    mask:
-        linear-gradient(var(--text-primary) 0 0) content-box,
-        linear-gradient(var(--text-primary) 0 0);
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.35s ease;
+button.statCard {
+    cursor: pointer;
 }
 
-.stat:hover { 
-    transform: translateY(-4px); 
-    box-shadow: 
-        0 8px 32px rgba(var(--bg-primary-rgb), 0.5),
-        0 0 30px rgba(var(--primary-rgb), 0.15);
-    border-color: rgba(var(--primary-rgb), 0.25);
+.statCard:hover {
     background: rgba(var(--primary-rgb), 0.08);
-}
-
-.stat:hover::before {
-    opacity: 1;
-}
-
-.stat:active { transform: scale(0.96) translateY(-2px); }
-
-/* Posts stat (first one) is not clickable */
-.stat:first-child { 
-    cursor: default; 
-}
-
-.stat:first-child:hover { 
-    transform: translateY(-4px);
-    box-shadow: 0 8px 32px rgba(var(--bg-primary-rgb), 0.5);
-    border-color: rgba(var(--text-primary-rgb), 0.08);
-    background: rgba(var(--text-primary-rgb), 0.04);
-}
-
-.stat:first-child:hover::before {
-    opacity: 0;
+    border-color: rgba(var(--primary-rgb), 0.2);
+    box-shadow: 0 0 16px rgba(var(--primary-rgb), 0.08);
+    transform: translateY(-1px);
 }
 
 .statValue {
-    font-size: 1.25rem;
-    font-weight: var(--font-bold);
+    font-family: var(--font-display);
+    font-size: var(--font-xl);
+    font-weight: var(--font-extrabold);
     color: var(--text-primary);
+    line-height: 1;
     letter-spacing: -0.02em;
-    line-height: 1.1;
-    text-shadow: 0 0 20px rgba(var(--primary-rgb), 0.3);
 }
 
 .statLabel {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    font-weight: var(--font-medium);
+    font-size: 10px;
+    font-weight: var(--font-semibold);
+    color: var(--text-tertiary);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
 }
 
-/* Royal Lavender glow on hover for clickable stats */
-.stat:not(:first-child):hover .statValue {
-    color: var(--primary-lavender);
-    text-shadow: 0 0 20px rgba(var(--primary-rgb), 0.5);
-}
-
-/* Responsive adjustments */
+/* ── Responsive ───────────────────────────────────────────── */
 @media (max-width: 640px) {
     .stats {
-        gap: var(--space-2);
-        width: 100%;
-        justify-content: space-around;
+        gap: var(--space-1);
     }
-    
-    .stat {
-        padding: var(--space-2) var(--space-3);
-        min-width: 70px;
-    }
-    
-    .statValue { 
-        font-size: 1.1rem; 
-    }
-    
-    .statLabel { 
-        font-size: 0.68rem;
-        letter-spacing: 0.05em;
-    }
-}
 
-/* Desktop hover state with satin glow */
-@media (min-width: 1024px) {
-    .stat:hover {
-        box-shadow: 
-            0 12px 40px rgba(var(--bg-primary-rgb), 0.5),
-            0 0 40px rgba(var(--primary-rgb), 0.2),
-            inset 0 1px 0 rgba(var(--text-primary-rgb), 0.1);
+    .statCard {
+        padding: var(--space-2) var(--space-1);
+        border-radius: var(--radius-lg);
+    }
+
+    .statValue {
+        font-size: var(--font-lg);
+    }
+
+    .statLabel {
+        font-size: 9px;
     }
 }

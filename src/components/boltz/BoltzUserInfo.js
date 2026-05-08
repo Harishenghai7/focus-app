@@ -1,61 +1,54 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import styles from './BoltzUserInfo.module.css';
-import VerifiedBadge from '../shared/VerifiedBadge';
 import BoltzCaption from './BoltzCaption';
-import UserAvatar from '../ui/Avatar';
+import { BadgeCheck, UserPlus } from 'lucide-react';
 
-const FALLBACK_AVATAR = 'https://api.dicebear.com/7.x/bottts/svg?seed=Focusly';
-
-const BoltzUserInfo = ({ user, caption, onFollow, isOwnContent }) => {
-    const navigate = useNavigate();
-
-    if (!user) return null;
-    const safeHandle = user.username || `focusly_${(user.actual_user_id || user.id || 'guest').toString().slice(0, 6)}`;
-
-    const isVerified = user.is_verified || (user.trust_tier || 0) >= 4;
-
-    const handleProfileClick = (e) => {
-        e.stopPropagation();
-        if (user?.username) navigate(`/profile/${user.username}`);
-    };
+const BoltzUserInfo = ({ user, caption, onFollow, isOwnContent, category }) => {
+    const profile = Array.isArray(user) ? user[0] : user;
+    const displayName = profile?.full_name || profile?.username || 'Creator';
+    const handle = profile?.username ? `@${profile.username}` : '';
+    const isVerified = profile?.is_verified || profile?.trust_tier >= 4;
+    const avatarUrl = profile?.avatar_url;
 
     return (
         <div className={styles.container}>
             <div className={styles.userRow}>
-                <div className={`${styles.avatarWrapper} ${isVerified ? styles.verifiedGlow : ''}`}>
-                    <UserAvatar
-                        src={user.avatar_url || FALLBACK_AVATAR}
-                        username={safeHandle}
-                        fullName={user.full_name || safeHandle}
-                        size="md"
-                        onClick={handleProfileClick}
-                        className={styles.avatar}
-                    />
-                    {isVerified && (
-                        <div className={styles.sovereignRing}>
-                            <div className={styles.pulseRing} />
+                <div className={`${styles.avatarContainer} ${isVerified ? styles.verified : ''}`}>
+                    {avatarUrl ? (
+                        <img src={avatarUrl} alt="" className={styles.avatar} loading="lazy" />
+                    ) : (
+                        <div className={styles.avatarFallback}>
+                            {displayName.charAt(0).toUpperCase()}
                         </div>
                     )}
+                    {isVerified && <div className={styles.avatarRing} />}
                 </div>
-                <div className={styles.userDetails}>
-                    <div className={`${styles.username} ${isVerified ? styles.verifiedUsername : ''}`} onClick={handleProfileClick}>
-                        @{safeHandle}
+
+                <div className={styles.nameContainer}>
+                    <div className={styles.nameRow}>
+                        <span className={styles.displayName}>{displayName}</span>
                         {isVerified && (
-                            <span className={styles.trustShieldBadge}>
-                                <VerifiedBadge size={14} />
-                                <span className={styles.shieldPulse} />
-                            </span>
+                            <BadgeCheck size={16} className={styles.verifiedBadge} />
                         )}
                     </div>
-                    {!user.is_following && !isOwnContent && (
-                        <button onClick={onFollow} className={styles.followBtn}>
-                            Follow
-                        </button>
-                    )}
+                    {handle && <span className={styles.handle}>{handle}</span>}
                 </div>
+
+                {!isOwnContent && (
+                    <button className={styles.followBtn} onClick={(e) => { e.stopPropagation(); onFollow?.(); }}>
+                        <UserPlus size={14} />
+                        <span>Follow</span>
+                    </button>
+                )}
             </div>
-            {caption && <BoltzCaption text={caption} />}
+
+            <BoltzCaption text={caption} />
+
+            {category && category !== 'entertainment' && (
+                <span className={styles.categoryBadge}>
+                    {category.charAt(0).toUpperCase() + category.slice(1)}
+                </span>
+            )}
         </div>
     );
 };

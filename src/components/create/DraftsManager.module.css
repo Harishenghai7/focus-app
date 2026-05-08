@@ -1,67 +1,17 @@
-.container {
-    background: var(--bg-secondary);
-    border-radius: var(--radius-lg);
-    padding: var(--space-4);
-}
-
-.title {
-    margin-bottom: var(--space-4);
-    color: var(--text-primary);
-}
-
-.list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-}
-
-.draftItem {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-3);
-    background: var(--bg-elevated);
-    border-radius: var(--radius-md);
-}
-
-.info {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-}
-
-.type {
-    font-weight: var(--font-bold);
-    color: var(--primary-lavender);
-}
-
-.date {
-    font-size: var(--font-xs);
-    color: var(--text-muted);
-}
-
-.actions {
-    display: flex;
-    gap: var(--space-2);
-    align-items: center;
-}
-
-.deleteBtn {
-    background: transparent;
-    border: none;
-    color: var(--text-secondary);
-    cursor: pointer;
-    padding: var(--space-2);
-    border-radius: var(--radius-sm);
-}
-
-.deleteBtn:hover {
-    background: var(--error-light);
-    color: var(--error);
-}
-
-.empty {
-    text-align: center;
-    padding: var(--space-8);
-    color: var(--text-muted);
-}
+.container { display:flex; flex-direction:column; gap:8px; }
+.toggleBtn { display:flex; align-items:center; gap:8px; padding:10px 16px; background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.15); border-radius:12px; color:var(--primary-light,#a78bfa); font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; }
+.toggleBtn:hover { background:rgba(139,92,246,0.1); border-color:rgba(139,92,246,0.25); }
+.list { display:flex; flex-direction:column; gap:6px; overflow:hidden; }
+.draftCard { display:flex; align-items:center; gap:12px; padding:12px 14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:12px; transition:all 0.2s; }
+.draftCard:hover { background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.1); }
+.draftIcon { width:36px; height:36px; border-radius:10px; background:rgba(var(--draft-color),0.12); display:flex; align-items:center; justify-content:center; color:var(--draft-color); flex-shrink:0; }
+.draftInfo { flex:1; display:flex; flex-direction:column; gap:2px; }
+.draftType { font-size:13px; font-weight:700; color:var(--text-primary); letter-spacing:0.5px; }
+.draftDate { display:flex; align-items:center; gap:4px; font-size:11px; color:var(--text-muted); }
+.draftActions { display:flex; align-items:center; gap:6px; }
+.loadBtn { padding:6px 14px; background:rgba(139,92,246,0.12); border:1px solid rgba(139,92,246,0.25); border-radius:8px; color:var(--primary-light); font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; }
+.loadBtn:hover { background:rgba(139,92,246,0.2); }
+.deleteBtn { width:28px; height:28px; border-radius:8px; background:none; border:none; color:var(--text-muted); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+.deleteBtn:hover { color:#ef4444; background:rgba(239,68,68,0.1); }
+.confirmDeleteBtn { padding:6px 12px; background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); border-radius:8px; color:#f87171; font-size:11px; font-weight:600; cursor:pointer; transition:all 0.2s; }
+.confirmDeleteBtn:hover { background:rgba(239,68,68,0.2); }

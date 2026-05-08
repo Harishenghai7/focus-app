@@ -1,76 +1,115 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { 
-    FaShieldAlt, 
-    FaUserLock, 
-    FaPalette, 
-    FaBell, 
-    FaRobot, 
-    FaHeadset,
-    FaChevronRight,
-    FaSignOutAlt
-} from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import MainLayout from '../../components/layout/MainLayout';
 import LoadingSpinner from '../../components/shared/LoadingSpinner';
-import AccountSecuritySection from '../../components/settings/AccountSecuritySection';
-import PrivacyPillarsSection from '../../components/settings/PrivacyPillarsSection';
-import PersonalizationSection from '../../components/settings/PersonalizationSection';
-import FocuslyAISection from '../../components/settings/FocuslyAISection';
-import SovereignSupportSection from '../../components/settings/SovereignSupportSection';
 import { useSettings } from '../../hooks/useSettings';
 import { useSettingsUpdate } from '../../hooks/useSettingsUpdate';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import { useAuth } from '../../hooks/useAuth';
-import sovereignStyles from '../../components/settings/SovereignSettings.module.css';
+
+/* ── Section Components ─────────────────────────────── */
+import AccountSection from '../../components/settings/sections/AccountSection';
+import PrivacySection from '../../components/settings/sections/PrivacySection';
+import SecuritySection from '../../components/settings/sections/SecuritySection';
+import NotificationsSection from '../../components/settings/sections/NotificationsSection';
+import TeenCareSection from '../../components/settings/sections/TeenCareSection';
+import TrustShieldSection from '../../components/settings/sections/TrustShieldSection';
+import ContentPreferencesSection from '../../components/settings/sections/ContentPreferencesSection';
+import AccessibilitySection from '../../components/settings/sections/AccessibilitySection';
+import FocuslyAISettingsSection from '../../components/settings/sections/FocuslyAISettingsSection';
+import DataControlsSection from '../../components/settings/sections/DataControlsSection';
+
 import styles from './Settings.module.css';
 
 /**
- * SOVEREIGN CONTROL CENTER — Settings Architecture
+ * ═══════════════════════════════════════════════════════════════
+ * SOVEREIGN NEXUS — The Focus Settings Ecosystem
  * 
- * Five Provinces of Control:
- * 1. Account & Security — Trust Shield, Biometrics, Sessions
- * 2. Privacy & Pillars — Teen Care, Content Filter, Blocked Users
- * 3. Personalization — H2 Theme, Notifications, Display
- * 4. Focusly AI — Mascot emotions, Voice/Text preferences
- * 5. Sovereign Support — Tickets, Legal, About h2 innovative
+ * 10 Provinces of Total Control:
+ *  1. Account         — Profile, email, username, linked accounts
+ *  2. Privacy         — Visibility, blocking, activity status
+ *  3. Security        — 2FA, biometrics, password, sessions
+ *  4. Notifications   — Push, email, in-app, quiet hours
+ *  5. Teen Care       — Parental controls, screen time, safety
+ *  6. Trust Shield    — Verification, trust score, identity
+ *  7. Content Prefs   — Feed filters, language, theme
+ *  8. Accessibility   — Font size, contrast, motion, screen reader
+ *  9. Focusly AI      — Mascot behavior, voice, suggestions
+ * 10. Data Controls   — Export, deletion, download, GDPR
+ * ═══════════════════════════════════════════════════════════════
  */
 
 const PROVINCES = [
-    { 
-        id: 'account', 
-        label: 'Account & Security', 
-        icon: <FaShieldAlt />,
-        description: 'Trust Shield, Biometrics, Sessions',
-        iconEmoji: '🛡️'
+    {
+        id: 'account',
+        label: 'Account',
+        icon: '👤',
+        description: 'Profile, email & linked accounts',
+        gradient: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
     },
-    { 
-        id: 'privacy', 
-        label: 'Privacy & Pillars', 
-        icon: <FaUserLock />,
-        description: 'Teen Care, Content Filter, Blocked Users',
-        iconEmoji: '🔒'
+    {
+        id: 'privacy',
+        label: 'Privacy',
+        icon: '🔒',
+        description: 'Visibility, blocking & activity status',
+        gradient: 'linear-gradient(135deg, #6366f1, #4f46e5)',
     },
-    { 
-        id: 'personalization', 
-        label: 'Personalization', 
-        icon: <FaPalette />,
-        description: 'H2 Theme, Notifications, Display',
-        iconEmoji: '🎨'
+    {
+        id: 'security',
+        label: 'Security',
+        icon: '🛡️',
+        description: '2FA, biometrics & session management',
+        gradient: 'linear-gradient(135deg, #10b981, #059669)',
     },
-    { 
-        id: 'focusly', 
-        label: 'Focusly AI', 
-        icon: <FaRobot />,
-        description: 'Mascot settings, Voice & Chat preferences',
-        iconEmoji: '🤖'
+    {
+        id: 'notifications',
+        label: 'Notifications',
+        icon: '🔔',
+        description: 'Push, email & quiet hours',
+        gradient: 'linear-gradient(135deg, #f59e0b, #d97706)',
     },
-    { 
-        id: 'support', 
-        label: 'Sovereign Support', 
-        icon: <FaHeadset />,
-        description: 'Tickets, Legal, About h2 innovative',
-        iconEmoji: '🎧'
+    {
+        id: 'teencare',
+        label: 'Teen Care',
+        icon: '🫶',
+        description: 'Parental controls & screen time',
+        gradient: 'linear-gradient(135deg, #ec4899, #db2777)',
+    },
+    {
+        id: 'trustshield',
+        label: 'Trust Shield',
+        icon: '⚡',
+        description: 'Verification & identity protection',
+        gradient: 'linear-gradient(135deg, #a78bfa, #8b5cf6)',
+    },
+    {
+        id: 'content',
+        label: 'Content Preferences',
+        icon: '🎨',
+        description: 'Theme, language & feed filters',
+        gradient: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+    },
+    {
+        id: 'accessibility',
+        label: 'Accessibility',
+        icon: '♿',
+        description: 'Font size, contrast & motion',
+        gradient: 'linear-gradient(135deg, #14b8a6, #0d9488)',
+    },
+    {
+        id: 'focuslyai',
+        label: 'Focusly AI',
+        icon: '🤖',
+        description: 'AI behavior & suggestions',
+        gradient: 'linear-gradient(135deg, #c084fc, #a855f7)',
+    },
+    {
+        id: 'datacontrols',
+        label: 'Data Controls',
+        icon: '📦',
+        description: 'Export, deletion & GDPR',
+        gradient: 'linear-gradient(135deg, #f43f5e, #e11d48)',
     },
 ];
 
@@ -79,22 +118,39 @@ const Settings = () => {
     const { user } = useAuth();
     const { settings, loading, error, updateSetting } = useSettings();
     const { isSaving } = useSettingsUpdate();
-    const [activeProvince, setActiveProvince] = useState(location.state?.section || 'account');
+    const [activeProvince, setActiveProvince] = useState(
+        location.state?.section || 'account'
+    );
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchFocused, setSearchFocused] = useState(false);
     const isMobile = useMediaQuery('(max-width: 1024px)');
 
-    // Handle province change
-    const handleProvinceChange = useCallback((provinceId) => {
-        setActiveProvince(provinceId);
-        setSidebarOpen(false);
-        
-        // Update URL without navigation
-        window.history.replaceState(
-            { section: provinceId }, 
-            '', 
-            `/settings${provinceId !== 'account' ? `?section=${provinceId}` : ''}`
+    // Filter provinces by search
+    const filteredProvinces = useMemo(() => {
+        if (!searchQuery.trim()) return PROVINCES;
+        const q = searchQuery.toLowerCase();
+        return PROVINCES.filter(
+            (p) =>
+                p.label.toLowerCase().includes(q) ||
+                p.description.toLowerCase().includes(q)
         );
-    }, []);
+    }, [searchQuery]);
+
+    // Handle province change
+    const handleProvinceChange = useCallback(
+        (provinceId) => {
+            setActiveProvince(provinceId);
+            setSidebarOpen(false);
+            setSearchQuery('');
+            window.history.replaceState(
+                { section: provinceId },
+                '',
+                `/settings${provinceId !== 'account' ? `?section=${provinceId}` : ''}`
+            );
+        },
+        []
+    );
 
     // Sync with location state
     useEffect(() => {
@@ -104,52 +160,46 @@ const Settings = () => {
     }, [location.state, activeProvince]);
 
     // Get active province data
-    const activeProvinceData = PROVINCES.find(p => p.id === activeProvince);
+    const activeProvinceData = PROVINCES.find((p) => p.id === activeProvince);
 
-    // Handle setting update with toast
-    const handleUpdateSetting = useCallback((key, value) => {
-        updateSetting(key, value);
-    }, [updateSetting]);
+    // Handle setting update
+    const handleUpdateSetting = useCallback(
+        (key, value) => {
+            updateSetting(key, value);
+        },
+        [updateSetting]
+    );
 
     // Render active province content
     const renderProvinceContent = () => {
+        const commonProps = {
+            settings,
+            onUpdateSetting: handleUpdateSetting,
+        };
+
         switch (activeProvince) {
             case 'account':
-                return (
-                    <AccountSecuritySection 
-                        settings={settings}
-                        onUpdateSetting={handleUpdateSetting}
-                    />
-                );
+                return <AccountSection {...commonProps} />;
             case 'privacy':
-                return (
-                    <PrivacyPillarsSection 
-                        settings={settings}
-                        onUpdateSetting={handleUpdateSetting}
-                    />
-                );
-            case 'personalization':
-                return (
-                    <PersonalizationSection 
-                        settings={settings}
-                        onUpdateSetting={handleUpdateSetting}
-                    />
-                );
-            case 'focusly':
-                return (
-                    <FocuslyAISection />
-                );
-            case 'support':
-                return (
-                    <SovereignSupportSection />
-                );
+                return <PrivacySection {...commonProps} />;
+            case 'security':
+                return <SecuritySection {...commonProps} />;
+            case 'notifications':
+                return <NotificationsSection {...commonProps} />;
+            case 'teencare':
+                return <TeenCareSection {...commonProps} />;
+            case 'trustshield':
+                return <TrustShieldSection {...commonProps} />;
+            case 'content':
+                return <ContentPreferencesSection {...commonProps} />;
+            case 'accessibility':
+                return <AccessibilitySection {...commonProps} />;
+            case 'focuslyai':
+                return <FocuslyAISettingsSection {...commonProps} />;
+            case 'datacontrols':
+                return <DataControlsSection {...commonProps} />;
             default:
-                return (
-                    <AccountSecuritySection 
-                        settings={settings}
-                        onUpdateSetting={handleUpdateSetting}
-                    />
-                );
+                return <AccountSection {...commonProps} />;
         }
     };
 
@@ -157,107 +207,192 @@ const Settings = () => {
         return (
             <MainLayout>
                 <div className={styles.loadingContainer}>
-                    <LoadingSpinner />
-                    <p className={styles.loadingText}>Loading Sovereign Control Center...</p>
+                    <div className={styles.loadingPulse}>
+                        <div className={styles.loadingRing} />
+                    </div>
+                    <p className={styles.loadingText}>Initializing Sovereign Nexus…</p>
                 </div>
             </MainLayout>
         );
     }
 
-    // Even if there's an error, useSettings now returns default settings
-    // so we can still show the settings page. Log the error for debugging.
     if (error) {
         console.warn('Settings error (using defaults):', error);
     }
 
     return (
         <MainLayout>
-            <div className={sovereignStyles.sovereignContainer}>
-                {/* Mobile Header with Menu Toggle */}
+            <div className={styles.nexusContainer}>
+                {/* ═══ Ambient Background ═══ */}
+                <div className={styles.ambientOrb} />
+                <div className={styles.ambientOrb2} />
+
+                {/* ═══ Mobile Header ═══ */}
                 {isMobile && (
                     <div className={styles.mobileHeader}>
-                        <button 
-                            className={styles.menuButton}
+                        <button
+                            className={styles.menuToggle}
                             onClick={() => setSidebarOpen(!sidebarOpen)}
+                            aria-label="Toggle settings menu"
                         >
-                            <span className={styles.provinceEmoji}>{activeProvinceData?.iconEmoji}</span>
-                            <span className={styles.provinceName}>{activeProvinceData?.label}</span>
+                            <span className={styles.menuIcon}>
+                                <span />
+                                <span />
+                                <span />
+                            </span>
                         </button>
+                        <div className={styles.mobileTitle}>
+                            <span className={styles.mobileEmoji}>{activeProvinceData?.icon}</span>
+                            <span>{activeProvinceData?.label}</span>
+                        </div>
                         {isSaving && (
-                            <span className={sovereignStyles.savingIndicator}>Saving...</span>
+                            <span className={styles.savingBadge}>Saving…</span>
                         )}
                     </div>
                 )}
 
-                {/* Sidebar - Master View */}
-                <aside className={`${sovereignStyles.sidebar} ${sidebarOpen ? sovereignStyles.open : ''}`}>
-                    <div className={sovereignStyles.sidebarHeader}>
-                        <h1 className={sovereignStyles.sidebarTitle}>Sovereign Control</h1>
-                        <p className={sovereignStyles.sidebarSubtitle}>Manage your Focus experience</p>
+                {/* ═══ Sidebar ═══ */}
+                <aside
+                    className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}
+                >
+                    {/* Sidebar Header */}
+                    <div className={styles.sidebarHeader}>
+                        <h1 className={styles.sidebarTitle}>Settings</h1>
+                        <p className={styles.sidebarSubtitle}>
+                            Sovereign Nexus
+                        </p>
                     </div>
 
-                    <nav className={sovereignStyles.provinceList}>
-                        {PROVINCES.map((province) => (
+                    {/* Search */}
+                    <div className={`${styles.searchContainer} ${searchFocused ? styles.searchFocused : ''}`}>
+                        <svg className={styles.searchIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.35-4.35" />
+                        </svg>
+                        <input
+                            className={styles.searchInput}
+                            type="text"
+                            placeholder="Search settings…"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onFocus={() => setSearchFocused(true)}
+                            onBlur={() => setSearchFocused(false)}
+                        />
+                        {searchQuery && (
+                            <button
+                                className={styles.searchClear}
+                                onClick={() => setSearchQuery('')}
+                            >
+                                ✕
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Province Navigation */}
+                    <nav className={styles.provinceNav}>
+                        {filteredProvinces.map((province, index) => (
                             <button
                                 key={province.id}
-                                className={`${sovereignStyles.provinceButton} ${
-                                    activeProvince === province.id ? sovereignStyles.active : ''
+                                className={`${styles.provinceBtn} ${
+                                    activeProvince === province.id
+                                        ? styles.provinceBtnActive
+                                        : ''
                                 }`}
                                 onClick={() => handleProvinceChange(province.id)}
+                                style={{
+                                    animationDelay: `${index * 30}ms`,
+                                }}
                             >
-                                <span className={sovereignStyles.provinceIcon}>
-                                    {province.iconEmoji}
+                                <span
+                                    className={styles.provinceDot}
+                                    style={{
+                                        background:
+                                            activeProvince === province.id
+                                                ? province.gradient
+                                                : 'rgba(255,255,255,0.1)',
+                                    }}
+                                />
+                                <span className={styles.provinceIconWrap}>
+                                    {province.icon}
                                 </span>
-                                <span className={sovereignStyles.provinceLabel}>{province.label}</span>
-                                <FaChevronRight className={sovereignStyles.provinceChevron} />
+                                <div className={styles.provinceText}>
+                                    <span className={styles.provinceLabel}>
+                                        {province.label}
+                                    </span>
+                                    <span className={styles.provinceDesc}>
+                                        {province.description}
+                                    </span>
+                                </div>
+                                <svg
+                                    className={styles.provinceChevron}
+                                    width="14"
+                                    height="14"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                >
+                                    <path d="m9 18 6-6-6-6" />
+                                </svg>
                             </button>
                         ))}
+
+                        {filteredProvinces.length === 0 && (
+                            <div className={styles.noResults}>
+                                <span>🔍</span>
+                                <p>No settings match "{searchQuery}"</p>
+                            </div>
+                        )}
                     </nav>
 
-                    {/* Logout Button in Sidebar */}
-                    <div className={styles.sidebarFooter}>
-                        <button 
-                            className={styles.logoutButton}
-                            onClick={() => {
-                                // Handle logout
-                                window.location.href = '/auth';
-                            }}
-                        >
-                            <FaSignOutAlt />
-                            <span>Sign Out</span>
-                        </button>
-                    </div>
                 </aside>
 
-                {/* Overlay for mobile sidebar */}
+                {/* ═══ Mobile Overlay ═══ */}
                 {isMobile && sidebarOpen && (
-                    <div 
-                        className={styles.sidebarOverlay}
+                    <div
+                        className={styles.overlay}
                         onClick={() => setSidebarOpen(false)}
                     />
                 )}
 
-                {/* Content Area - Detail View */}
-                <main className={sovereignStyles.contentArea}>
+                {/* ═══ Content Area ═══ */}
+                <main className={styles.contentArea}>
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeProvince}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            transition={{ duration: 0.3, ease: 'easeInOut' }}
+                            initial={{ opacity: 0, y: 12 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -12 }}
+                            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                            className={styles.contentInner}
                         >
                             {/* Province Header */}
-                            <header className={sovereignStyles.contentHeader}>
-                                <h2 className={sovereignStyles.contentTitle}>
-                                    <span className={styles.headerIcon}>{activeProvinceData?.icon}</span>
-                                    {activeProvinceData?.label}
-                                </h2>
-                                <p className={sovereignStyles.contentDescription}>
-                                    {activeProvinceData?.description}
-                                </p>
+                            <header className={styles.contentHeader}>
+                                <div className={styles.headerLeft}>
+                                    <div
+                                        className={styles.headerIconWrap}
+                                        style={{
+                                            background: activeProvinceData?.gradient,
+                                        }}
+                                    >
+                                        <span className={styles.headerEmoji}>
+                                            {activeProvinceData?.icon}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <h2 className={styles.contentTitle}>
+                                            {activeProvinceData?.label}
+                                        </h2>
+                                        <p className={styles.contentDescription}>
+                                            {activeProvinceData?.description}
+                                        </p>
+                                    </div>
+                                </div>
                                 {isSaving && !isMobile && (
-                                    <span className={sovereignStyles.savingIndicator}>Saving...</span>
+                                    <span className={styles.savingBadge}>
+                                        <span className={styles.savingDot} />
+                                        Saving…
+                                    </span>
                                 )}
                             </header>
 
@@ -268,37 +403,6 @@ const Settings = () => {
                         </motion.div>
                     </AnimatePresence>
                 </main>
-
-                {/* Mobile Bottom Navigation */}
-                {isMobile && (
-                    <nav className={sovereignStyles.mobileNav}>
-                        <div className={sovereignStyles.mobileNavItems}>
-                            {PROVINCES.slice(0, 4).map((province) => (
-                                <button
-                                    key={province.id}
-                                    className={`${sovereignStyles.mobileNavItem} ${
-                                        activeProvince === province.id ? sovereignStyles.active : ''
-                                    }`}
-                                    onClick={() => handleProvinceChange(province.id)}
-                                >
-                                    <span className={sovereignStyles.mobileNavIcon}>
-                                        {province.iconEmoji}
-                                    </span>
-                                    <span>{province.label.split(' ')[0]}</span>
-                                </button>
-                            ))}
-                            <button
-                                className={`${sovereignStyles.mobileNavItem} ${
-                                    activeProvince === 'support' ? sovereignStyles.active : ''
-                                }`}
-                                onClick={() => handleProvinceChange('support')}
-                            >
-                                <span className={sovereignStyles.mobileNavIcon}>🎧</span>
-                                <span>Support</span>
-                            </button>
-                        </div>
-                    </nav>
-                )}
             </div>
         </MainLayout>
     );

@@ -12,6 +12,8 @@ import {
 } from 'react-icons/fa';
 import AuthLayout from '../components/auth/AuthLayout';
 import OAuthButtons from '../components/auth/OAuthButtons';
+import SecurityPulse from '../components/auth/SecurityPulse';
+import DeviceTrustBadge from '../components/auth/DeviceTrustBadge';
 import Button from '../components/shared/Button';
 import Input from '../components/shared/Input';
 import Toast from '../components/shared/Toast';
@@ -113,20 +115,33 @@ const Auth = () => {
     const [verifyEmail, setVerifyEmail] = useState('');
     const [resetPassword, setResetPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [modeTransition, setModeTransition] = useState(false);
     const locationMode = getModeFromLocation(location);
 
     useEffect(() => {
-        setActiveMode(locationMode);
-        setToast(null);
-    }, [locationMode]);
+        if (locationMode !== activeMode) {
+            setModeTransition(true);
+            setTimeout(() => {
+                setActiveMode(locationMode);
+                setToast(null);
+                setModeTransition(false);
+            }, 250);
+        }
+    }, [locationMode, activeMode]);
 
     const navigateToMode = (mode) => {
         const nextPath = MODE_PATHS[mode] || MODE_PATHS.login;
-        setActiveMode(mode);
         setToast(null);
 
-        if (location.pathname !== nextPath || location.search) {
-            navigate(nextPath);
+        if (mode !== activeMode) {
+            setModeTransition(true);
+            setTimeout(() => {
+                setActiveMode(mode);
+                setModeTransition(false);
+                if (location.pathname !== nextPath || location.search) {
+                    navigate(nextPath);
+                }
+            }, 250);
         }
     };
 
@@ -336,17 +351,26 @@ const Auth = () => {
     return (
         <AuthLayout>
             <section className={styles.shell}>
+                {/* Hero badge with logo */}
                 <div className={styles.heroBadge}>
                     <img src={focusLogo} alt="Focus" className={styles.heroBadgeLogo} />
                     <span>Identity-first social networking</span>
                 </div>
 
+                {/* Security + Device trust row */}
+                <div className={styles.trustRow}>
+                    <SecurityPulse compact />
+                    <DeviceTrustBadge />
+                </div>
+
+                {/* Header */}
                 <header className={styles.header}>
                     <p className={styles.eyebrow}>{modeCopy.eyebrow}</p>
                     <h1 className={styles.title}>{modeCopy.title}</h1>
                     <p className={styles.subtitle}>{modeCopy.subtitle}</p>
                 </header>
 
+                {/* Signal cards */}
                 <div className={styles.signalGrid}>
                     {signalCards.map((card) => (
                         <article key={card.label} className={styles.signalCard}>
@@ -359,8 +383,10 @@ const Auth = () => {
                     ))}
                 </div>
 
+                {/* Mode controls */}
                 {showsOAuth ? (
                     <div className={styles.modeControls}>
+                        <div className={styles.modeSlider} style={{ transform: activeMode === 'signup' ? 'translateX(100%)' : 'translateX(0)' }} />
                         <button
                             type="button"
                             className={`${styles.modeTab} ${activeMode === 'login' ? styles.modeTabActive : ''}`}
@@ -383,10 +409,12 @@ const Auth = () => {
                     </button>
                 )}
 
-                <div className={styles.formSurface}>
+                {/* Form surface with transition */}
+                <div className={`${styles.formSurface} ${modeTransition ? styles.formSurfaceTransition : ''}`}>
                     {renderSupportForm()}
                 </div>
 
+                {/* Footer */}
                 <div className={styles.footerRow}>
                     {showsOAuth && (
                         <span className={styles.footerStatic}>
@@ -403,6 +431,7 @@ const Auth = () => {
                     )}
                 </div>
 
+                {/* Insight cards */}
                 <div className={styles.auxiliaryGrid}>
                     {insightCards.map((card) => (
                         <article key={card.title} className={styles.auxiliaryCard}>
@@ -415,7 +444,9 @@ const Auth = () => {
                     ))}
                 </div>
 
+                {/* Legal note */}
                 <div className={styles.legalNote}>
+                    <FaShieldAlt className={styles.legalIcon} />
                     Focus uses secure authentication, refresh token rotation, and layered trust systems to protect your account and your community presence.
                 </div>
             </section>

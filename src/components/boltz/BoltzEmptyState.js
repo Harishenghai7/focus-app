@@ -1,24 +1,25 @@
 import React from 'react';
 import styles from './BoltzEmptyState.module.css';
-import { Video } from 'lucide-react';
-import Button from '../shared/Button';
-import { useNavigate } from 'react-router-dom';
+import { Zap } from 'lucide-react';
 
-const BoltzEmptyState = () => {
-    const navigate = useNavigate();
-
-    return (
-        <div className={styles.container}>
-            <Video size={64} className={styles.icon} />
-            <h2 className={styles.title}>No Boltz Yet</h2>
-            <p className={styles.description}>
-                Be the first to create a Boltz!
-            </p>
-            <Button onClick={() => navigate('/create')}>
-                Create Boltz
-            </Button>
+const BoltzEmptyState = () => (
+    <div className={styles.container}>
+        <div className={styles.glowOrb} />
+        <div className={styles.iconContainer}>
+            <Zap size={40} className={styles.icon} />
+            <div className={styles.pulse} />
         </div>
-    );
-};
+        <h2 className={styles.title}>Your Boltz Feed is Brewing</h2>
+        <p className={styles.subtitle}>
+            Follow creators or explore trending content to fill your feed with amazing short videos.
+        </p>
+        <div className={styles.hints}>
+            <span className={styles.hint}>📚 Learning</span>
+            <span className={styles.hint}>🎨 Creative</span>
+            <span className={styles.hint}>✨ Inspiration</span>
+            <span className={styles.hint}>💡 Tech</span>
+        </div>
+    </div>
+);
 
 export default BoltzEmptyState;

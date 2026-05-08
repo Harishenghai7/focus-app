@@ -5,6 +5,8 @@ import styles from './Boltz.module.css';
 import BoltzTabs from '../../components/boltz/BoltzTabs';
 import BoltzPlayer from '../../components/boltz/BoltzPlayer';
 import BoltzEmptyState from '../../components/boltz/BoltzEmptyState';
+import BoltzReactionPicker from '../../components/boltz/BoltzReactionPicker';
+import BoltzSessionAwareness from '../../components/boltz/BoltzSessionAwareness';
 import BoltzCommentsSheet from '../../components/modals/BoltzCommentsSheet';
 import ShareModal from '../../components/modals/ShareModal';
 import BoltzOptionsModal from '../../components/modals/BoltzOptionsModal';
@@ -12,6 +14,8 @@ import MusicPageModal from '../../components/modals/MusicPageModal';
 import LoadingSpinner from '../../components/shared/LoadingSpinner';
 import { useBoltzFeed } from '../../hooks/useBoltzFeed';
 import { useBoltzIntersection } from '../../hooks/useBoltzIntersection';
+import { useBoltzReactions } from '../../hooks/useBoltzReactions';
+import { useBoltzSession } from '../../hooks/useBoltzSession';
 import { useSwipeNavigation } from '../../hooks/useSwipeNavigation';
 import { useLike } from '../../hooks/useLike';
 import { useSave } from '../../hooks/useSave';
@@ -34,13 +38,26 @@ const Boltz = () => {
     const [showMusic, setShowMusic] = useState(false);
     const [selectedMusic, setSelectedMusic] = useState(null);
 
+    // Core hooks
     const { boltz, loading, initialLoading, hasMore, loadMore, setBoltz } = useBoltzFeed(activeTab);
     const { toggleLike, showHeartAnimation } = useLike();
     const { toggleSave } = useSave();
     const { toggleFollow } = useFollow();
     const { userId } = useFocusIdentity();
 
-    // ── IntersectionObserver engine ─────────────────────────
+    // Session tracking
+    const {
+        sessionMinutes,
+        videosWatched,
+        breakSuggestion,
+        showBreak,
+        trackVideoWatched,
+        dismissBreak,
+        takeBreak,
+        sessionContext,
+    } = useBoltzSession();
+
+    // IntersectionObserver engine
     const {
         registerRef,
         activeIndex,
@@ -52,7 +69,10 @@ const Boltz = () => {
             loadMore();
         }
 
-        // Jump to boltz deeplink if applicable
+        // Track video watched for session awareness
+        trackVideoWatched();
+
+        // Deep-link support
         if (id && boltz.length > 0) {
             const targetIdx = boltz.findIndex(b => b.id === id);
             if (targetIdx !== -1 && targetIdx !== newIndex) {
@@ -61,15 +81,52 @@ const Boltz = () => {
             }
         }
     });
-    const { registerShare } = useInteractions(boltz[activeIndex]?.id, 'boltz');
+
+    // Reactions for active boltz
+    const activeBoltz = boltz[activeIndex];
+    const {
+        reactions: boltzReactions,
+        userReaction,
+        showPicker: showReactionPicker,
+        setShowPicker: setShowReactionPicker,
+        sendReaction,
+        floatingReactions,
+    } = useBoltzReactions(activeBoltz?.id);
+
+    const { registerShare } = useInteractions(activeBoltz?.id, 'boltz');
 
     const containerRef = useSwipeNavigation(
-        () => {}, // Up/down handled by IntersectionObserver now
         () => {},
-        !showComments && !showShare && !showOptions && !showMusic
+        () => {},
+        !showComments && !showShare && !showOptions && !showMusic && !showReactionPicker
     );
 
-    // ── Handlers ────────────────────────────────────────────
+    // ── Keyboard Shortcuts ──────────────────────────────
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (showComments || showShare || showOptions) return;
+            switch (e.key) {
+                case ' ':
+                    e.preventDefault();
+                    setPlaying(p => !p);
+                    break;
+                case 'm':
+                case 'M':
+                    setMuted(m => !m);
+                    break;
+                case 'l':
+                case 'L':
+                    handleLike();
+                    break;
+                default:
+                    break;
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [showComments, showShare, showOptions, activeIndex, boltz]);
+
+    // ── Handlers ────────────────────────────────────────
     const handleUpdateBoltz = useCallback((boltzId, updates) => {
         setBoltz(prev => prev.map(b => {
             if (b.id !== boltzId) return b;
@@ -101,14 +158,13 @@ const Boltz = () => {
     const handleShareConfirmed = useCallback(async () => {
         const curr = boltz[activeIndex];
         if (!curr?.id || !userId) return;
-
-        await registerShare({ shareType: 'share' }, (id, updates) => {
-            handleUpdateBoltz(id, updates);
+        await registerShare({ shareType: 'share' }, (shareId, updates) => {
+            handleUpdateBoltz(shareId, updates);
         });
     }, [boltz, activeIndex, userId, registerShare, handleUpdateBoltz]);
 
-    const handleFollow = useCallback((userId) => {
-        toggleFollow(userId, false, (uId, updates) => {
+    const handleFollow = useCallback((targetUserId) => {
+        toggleFollow(targetUserId, false, (uId, updates) => {
             setBoltz(prev => prev.map(b => {
                 const profileObj = b.profiles || b.user;
                 if (profileObj?.id === uId) {
@@ -127,6 +183,7 @@ const Boltz = () => {
         }
     }, [boltz, activeIndex]);
 
+    // Deep-link comment opening
     useEffect(() => {
         if (!location.state?.openComments || !id || boltz.length === 0) return;
         const targetIdx = boltz.findIndex((item) => item.id === id);
@@ -136,11 +193,12 @@ const Boltz = () => {
         }
     }, [location.state, location.pathname, id, boltz, activeIndex, navigate]);
 
-    // ── Loading / Empty states ───────────────────────────────
+    // ── Loading / Empty states ───────────────────────────
     if (loading && boltz.length === 0) {
         return (
             <MainLayout>
                 <div className={styles.loading}>
+                    <div className={styles.loadingOrb} />
                     <LoadingSpinner size="lg" />
                 </div>
             </MainLayout>
@@ -155,12 +213,12 @@ const Boltz = () => {
         );
     }
 
-    // ── Render ───────────────────────────────────────────────
+    // ── Render ───────────────────────────────────────────
+    const anyModalOpen = showComments || showShare || showOptions || showMusic;
+
     return (
         <MainLayout>
-            <BoltzTabs activeTab={activeTab} onTabChange={(tab) => {
-                setActiveTab(tab);
-            }} />
+            <BoltzTabs activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab)} />
 
             <div className={styles.container} ref={containerRef}>
                 <div className={styles.carousel}>
@@ -174,7 +232,7 @@ const Boltz = () => {
                             <BoltzPlayer
                                 boltz={boltzItem}
                                 isActive={index === activeIndex}
-                                playing={playing && index === activeIndex}
+                                playing={playing && index === activeIndex && !anyModalOpen}
                                 muted={muted}
                                 preload={shouldPreload(index) ? 'auto' : 'none'}
                                 released={shouldRelease(index)}
@@ -189,24 +247,51 @@ const Boltz = () => {
                                 onOpenMusic={handleOpenMusic}
                                 showHeartAnimation={showHeartAnimation && index === activeIndex}
                                 currentUserId={userId}
+                                floatingReactions={index === activeIndex ? floatingReactions : []}
+                                onReaction={sendReaction}
+                                showReactionPicker={showReactionPicker && index === activeIndex}
+                                onToggleReactionPicker={() => setShowReactionPicker(p => !p)}
+                                boltzReactions={index === activeIndex ? boltzReactions : {}}
+                                userReaction={index === activeIndex ? userReaction : null}
                             />
                         </div>
                     ))}
                 </div>
 
+                {/* Reaction Picker */}
+                {showReactionPicker && (
+                    <BoltzReactionPicker
+                        onSelect={sendReaction}
+                        onClose={() => setShowReactionPicker(false)}
+                        activeReaction={userReaction}
+                    />
+                )}
+
+                {/* Session Awareness */}
+                {showBreak && (
+                    <BoltzSessionAwareness
+                        suggestion={breakSuggestion}
+                        onDismiss={dismissBreak}
+                        onTakeBreak={takeBreak}
+                        sessionMinutes={sessionMinutes}
+                        videosWatched={videosWatched}
+                    />
+                )}
+
+                {/* Modals */}
                 {showComments && (
                     <BoltzCommentsSheet
-                        boltzId={boltz[activeIndex]?.id}
+                        boltzId={activeBoltz?.id}
                         onClose={() => setShowComments(false)}
                         onCommentCountChange={(count) =>
-                            handleUpdateBoltz(boltz[activeIndex].id, { comments_count: count })
+                            handleUpdateBoltz(activeBoltz.id, { comments_count: count })
                         }
                     />
                 )}
 
-                {showShare && boltz[activeIndex] && (
+                {showShare && activeBoltz && (
                     <ShareModal
-                        item={boltz[activeIndex]}
+                        item={activeBoltz}
                         type="boltz"
                         onShared={handleShareConfirmed}
                         onClose={() => setShowShare(false)}
@@ -215,9 +300,9 @@ const Boltz = () => {
 
                 {showOptions && (
                     <BoltzOptionsModal
-                        boltzId={boltz[activeIndex]?.id}
-                        boltzData={boltz[activeIndex]}
-                        isOwn={boltz[activeIndex]?.user_id === userId}
+                        boltzId={activeBoltz?.id}
+                        boltzData={activeBoltz}
+                        isOwn={activeBoltz?.user_id === userId}
                         onClose={() => setShowOptions(false)}
                     />
                 )}
@@ -227,6 +312,13 @@ const Boltz = () => {
                         music={selectedMusic}
                         onClose={() => setShowMusic(false)}
                     />
+                )}
+
+                {/* Session Timer (subtle) */}
+                {sessionMinutes > 5 && (
+                    <div className={styles.sessionTimer}>
+                        {Math.floor(sessionMinutes)}m
+                    </div>
                 )}
             </div>
         </MainLayout>

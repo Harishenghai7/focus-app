@@ -1,63 +1,48 @@
 .card {
-    padding: 16px;
-    border: 2px solid var(--text-secondary);
-    border-radius: 12px;
-    background: white;
-    cursor: pointer;
-    transition: all 0.3s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    position: relative;
-    user-select: none;
+    display: flex; flex-direction: column; align-items: center; gap: 0.45rem;
+    padding: 1rem 0.75rem; border-radius: 20px;
+    border: 1px solid rgba(196,181,253,0.08);
+    background: linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01));
+    cursor: pointer; position: relative; overflow: hidden; color: #fff;
+    transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
 }
 
 .card:hover {
-    border-color: var(--primary-light);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.15);
+    border-color: rgba(196,181,253,0.2);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.2);
 }
 
-.card.selected {
-    border-color: var(--primary);
-    background: var(--text-primary);
+.selected {
+    border-color: var(--interest-color, #a78bfa) !important;
+    background: linear-gradient(145deg, color-mix(in srgb, var(--interest-color) 10%, transparent), rgba(255,255,255,0.02));
+    box-shadow: 0 0 20px color-mix(in srgb, var(--interest-color) 15%, transparent);
+    transform: scale(1.03);
 }
 
-.emoji {
-    font-size: 32px;
-    margin-bottom: 4px;
-}
+.emoji { font-size: 1.8rem; transition: transform 0.3s cubic-bezier(0.22,1,0.36,1); }
+.card:hover .emoji { transform: scale(1.12); }
+.selected .emoji { transform: scale(1.15); }
 
-.label {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-muted);
-    text-align: center;
-}
-
-.card.selected .label {
-    color: var(--primary);
-}
+.label { font-size: 0.85rem; font-weight: 700; color: rgba(255,255,255,0.85); }
 
 .check {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    color: var(--primary);
-    font-size: 14px;
+    position: absolute; top: 0.5rem; right: 0.5rem;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--interest-color, #a78bfa); color: #fff;
+    display: grid; place-items: center; font-size: 0.6rem;
+    animation: checkPop 0.3s cubic-bezier(0.22,1,0.36,1) both;
+    box-shadow: 0 0 10px color-mix(in srgb, var(--interest-color) 40%, transparent);
 }
 
-@media (max-width: 768px) {
-    .card {
-        padding: 12px;
-    }
+.ripple {
+    position: absolute; inset: 0; border-radius: inherit;
+    background: radial-gradient(circle at center, color-mix(in srgb, var(--interest-color) 8%, transparent) 0%, transparent 70%);
+    opacity: 0; transition: opacity 0.3s ease;
+}
+.selected .ripple { opacity: 1; }
 
-    .emoji {
-        font-size: 28px;
-    }
-
-    .label {
-        font-size: 13px;
-    }
+@keyframes checkPop {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
 }

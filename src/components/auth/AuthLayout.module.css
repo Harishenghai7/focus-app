@@ -3,13 +3,96 @@
     min-height: 100vh;
     width: 100%;
     position: relative;
-    background:
-        radial-gradient(circle at top left, rgba(196, 181, 253, 0.08), transparent 24%),
-        radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.07), transparent 24%),
-        linear-gradient(180deg, #05020d 0%, #0f0a1e 42%, #120b24 100%);
+    overflow: hidden;
+    background: #050210;
 }
 
-/* Full-screen particle layer */
+/* ============================================
+   CINEMATIC MESH GRADIENT BACKGROUND
+   ============================================ */
+
+.meshGradient {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse at 15% 20%, rgba(168, 85, 247, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 85% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 45%),
+        radial-gradient(ellipse at 50% 50%, rgba(139, 92, 246, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 10%, rgba(232, 121, 249, 0.07) 0%, transparent 40%),
+        linear-gradient(180deg, #050210 0%, #0a0520 30%, #0f0a1e 60%, #080418 100%);
+}
+
+/* ============================================
+   FUTURISTIC GRID OVERLAY
+   ============================================ */
+
+.gridOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+        linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.5) 0%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.5) 0%, transparent 75%);
+    animation: gridDrift 20s linear infinite;
+}
+
+/* ============================================
+   FLOATING ORBS
+   ============================================ */
+
+.orbLayer {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.orbPrimary,
+.orbSecondary,
+.orbTertiary {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    will-change: transform;
+}
+
+.orbPrimary {
+    width: 400px;
+    height: 400px;
+    top: 8%;
+    right: 15%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.18), transparent 70%);
+    animation: orbFloat 14s ease-in-out infinite;
+}
+
+.orbSecondary {
+    width: 300px;
+    height: 300px;
+    bottom: 15%;
+    left: 8%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.12), transparent 70%);
+    animation: orbFloat 18s ease-in-out infinite reverse;
+}
+
+.orbTertiary {
+    width: 250px;
+    height: 250px;
+    top: 50%;
+    left: 40%;
+    background: radial-gradient(circle, rgba(232, 121, 249, 0.1), transparent 70%);
+    animation: orbFloatDiag 22s ease-in-out infinite;
+}
+
+/* ============================================
+   PARTICLE LAYER
+   ============================================ */
+
 .particleLayer {
     position: fixed;
     inset: 0;
@@ -17,64 +100,98 @@
     pointer-events: none;
 }
 
+/* ============================================
+   FORM PANEL — GLASSMORPHISM DEPTH
+   ============================================ */
+
 .formPanel {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: clamp(1.25rem, 4vw, 3rem);
-    background:
-        linear-gradient(180deg, rgba(7, 4, 16, 0.88), rgba(18, 10, 34, 0.82)),
-        rgba(10, 6, 20, 0.75);
-    backdrop-filter: blur(26px);
-    -webkit-backdrop-filter: blur(26px);
-    border-left: 1px solid rgba(var(--text-primary-rgb), 0.08);
-    box-shadow: -24px 0 60px rgba(2, 1, 8, 0.42), inset 0 0 120px rgba(var(--primary-rgb), 0.08);
+    padding: clamp(1.5rem, 4vw, 3.5rem);
     position: relative;
-    overflow-y: auto;
     z-index: 1;
+    overflow-y: auto;
+
+    /* Deep frosted glass */
+    background:
+        linear-gradient(180deg,
+            rgba(5, 2, 16, 0.92) 0%,
+            rgba(10, 5, 32, 0.88) 40%,
+            rgba(15, 10, 30, 0.85) 100%
+        );
+    backdrop-filter: blur(40px) saturate(1.2);
+    -webkit-backdrop-filter: blur(40px) saturate(1.2);
+    border-left: 1px solid rgba(139, 92, 246, 0.08);
+    box-shadow:
+        -30px 0 80px rgba(0, 0, 0, 0.5),
+        inset 0 0 200px rgba(139, 92, 246, 0.03);
 }
 
-.formPanel::before {
-    content: '';
+/* Decorative inner border frame */
+.formPanelBorder {
     position: absolute;
     inset: 1.25rem;
     border-radius: 32px;
-    border: 1px solid rgba(196, 181, 253, 0.08);
+    border: 1px solid rgba(167, 139, 250, 0.06);
     pointer-events: none;
+    z-index: 0;
 }
 
-/* Soft ambient glow behind form area */
+/* Primary ambient glow */
 .formPanelGlow {
     position: absolute;
-    top: 30%;
+    top: 25%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 70%);
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+    animation: formGlowPulse 6s ease-in-out infinite;
+}
+
+/* Secondary warm glow */
+.formPanelGlowSecondary {
+    position: absolute;
+    bottom: 20%;
+    right: 30%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(232, 121, 249, 0.06) 0%, transparent 70%);
     filter: blur(60px);
     pointer-events: none;
     z-index: 0;
-    animation: formGlowPulse 5s ease-in-out infinite;
+    animation: formGlowPulse 8s ease-in-out infinite reverse;
 }
+
+/* ============================================
+   FORM CONTENT AREA
+   ============================================ */
 
 .formContent {
     width: 100%;
-    max-width: 560px;
+    max-width: 580px;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    animation: authContentEnter 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
     position: relative;
     z-index: 1;
+    animation: authContentEnter 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
 
 @keyframes authContentEnter {
     from {
-        transform: translateY(24px);
+        transform: translateY(30px);
         opacity: 0;
-        filter: blur(6px);
+        filter: blur(8px);
     }
     to {
         transform: translateY(0);
@@ -85,14 +202,36 @@
 
 @keyframes formGlowPulse {
     0%, 100% {
-        opacity: 0.4;
+        opacity: 0.35;
         transform: translate(-50%, -50%) scale(1);
     }
     50% {
-        opacity: 0.7;
-        transform: translate(-50%, -50%) scale(1.1);
+        opacity: 0.65;
+        transform: translate(-50%, -50%) scale(1.15);
     }
 }
+
+@keyframes orbFloat {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    25% { transform: translate3d(15px, -20px, 0) scale(1.05); }
+    50% { transform: translate3d(-10px, -35px, 0) scale(0.95); }
+    75% { transform: translate3d(20px, -15px, 0) scale(1.02); }
+}
+
+@keyframes orbFloatDiag {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    33% { transform: translate3d(25px, -20px, 0); }
+    66% { transform: translate3d(-15px, 15px, 0); }
+}
+
+@keyframes gridDrift {
+    from { transform: translate(0, 0); }
+    to { transform: translate(80px, 80px); }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 
 @media (max-width: 768px) {
     .container {
@@ -100,17 +239,29 @@
     }
 
     .formPanel {
-        padding: 1rem;
+        padding: 1.25rem;
         min-height: 100vh;
+        border-left: none;
+        border-top: 1px solid rgba(139, 92, 246, 0.06);
     }
 
-    .formPanel::before {
-        inset: 0.8rem;
+    .formPanelBorder {
+        inset: 0.75rem;
         border-radius: 24px;
     }
 
     .formPanelGlow {
-        width: 250px;
-        height: 250px;
+        width: 280px;
+        height: 280px;
+        filter: blur(50px);
     }
+
+    .formPanelGlowSecondary {
+        width: 180px;
+        height: 180px;
+    }
+
+    .orbPrimary { width: 200px; height: 200px; }
+    .orbSecondary { width: 160px; height: 160px; }
+    .orbTertiary { width: 120px; height: 120px; }
 }

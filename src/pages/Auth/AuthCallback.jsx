@@ -1,20 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { syncOAuthAvatar } from '../../utils/avatarManager';
 import styles from './Auth.module.css';
+import focusLogo from '../../assets/focus-logo.png';
+
+const STATUS_SEQUENCE = [
+    { text: 'Authenticating identity...', phase: 0 },
+    { text: 'Establishing secure session...', phase: 1 },
+    { text: 'Loading your universe...', phase: 2 },
+];
 
 /**
- * OAuth Callback Handler
- * Handles the redirect after OAuth authentication
+ * OAuth Callback Handler — Branded Ceremony
+ * Handles the redirect after OAuth authentication with a cinematic loading experience.
  * Checks if profile exists → routes to /home or /onboarding
  */
 const AuthCallback = () => {
     const navigate = useNavigate();
-    const [status, setStatus] = useState('Processing authentication...');
+    const [status, setStatus] = useState(STATUS_SEQUENCE[0].text);
+    const [phase, setPhase] = useState(0);
     const [error, setError] = useState(null);
+    const hasRun = useRef(false);
 
     useEffect(() => {
+        if (hasRun.current) return;
+        hasRun.current = true;
+
         const handleOAuthCallback = async () => {
             try {
                 // Get the hash parameters from URL
@@ -40,9 +52,11 @@ const AuthCallback = () => {
                     return;
                 }
 
-                setStatus('Setting up your session...');
+                // Phase 1: Setting up session
+                await new Promise(r => setTimeout(r, 600));
+                setPhase(1);
+                setStatus(STATUS_SEQUENCE[1].text);
 
-                // Set the session
                 const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
                     access_token: accessToken,
                     refresh_token: refreshToken || '',
@@ -50,7 +64,7 @@ const AuthCallback = () => {
 
                 if (sessionError) {
                     console.error('Session error:', sessionError);
-                    setError('Failed to establish session');
+                    setError('Failed to establish secure session');
                     setTimeout(() => navigate('/auth'), 3000);
                     return;
                 }
@@ -62,7 +76,9 @@ const AuthCallback = () => {
                     return;
                 }
 
-                setStatus('Checking your profile...');
+                // Phase 2: Loading universe
+                setPhase(2);
+                setStatus(STATUS_SEQUENCE[2].text);
 
                 // Check if profile exists and is complete
                 const { data: profile, error: profileError } = await supabase
@@ -80,21 +96,18 @@ const AuthCallback = () => {
                     console.warn('Avatar sync failed (non-blocking):', err)
                 );
 
+                // Brief pause for ceremony feel
+                await new Promise(r => setTimeout(r, 800));
+
                 // Route based on profile state
                 if (!profile) {
-                    // No profile exists → new user → onboarding
-
-                    setStatus('Welcome! Setting up your profile...');
+                    setStatus('Welcome! Preparing your journey...');
                     setTimeout(() => navigate('/onboarding', { replace: true }), 500);
                 } else if (!profile.onboarding_completed) {
-                    // Profile exists but onboarding not complete → resume onboarding
-
                     setStatus('Resuming your setup...');
                     setTimeout(() => navigate('/onboarding', { replace: true }), 500);
                 } else {
-                    // Profile complete → go to home
-
-                    setStatus('Welcome back! Loading your feed...');
+                    setStatus('Welcome back!');
                     setTimeout(() => navigate('/home', { replace: true }), 500);
                 }
 
@@ -120,9 +133,31 @@ const AuthCallback = () => {
                     </>
                 ) : (
                     <>
-                        <div className={styles.spinner}></div>
+                        {/* Animated logo with orbital ring */}
+                        <div className={styles.callbackLogoWrapper}>
+                            <div className={styles.callbackLogoGlow} />
+                            <div className={styles.callbackLogoRing} />
+                            <img src={focusLogo} alt="Focus" className={styles.callbackLogo} />
+                        </div>
+
+                        {/* Status text */}
                         <h2 className={styles.statusTitle}>{status}</h2>
-                        <p className={styles.statusMessage}>Please wait...</p>
+
+                        {/* Phase progress dots */}
+                        <div className={styles.callbackProgress}>
+                            {STATUS_SEQUENCE.map((s, i) => (
+                                <span
+                                    key={i}
+                                    className={`${styles.callbackProgressDot} ${i <= phase ? 'active' : ''}`}
+                                    style={{
+                                        background: i <= phase ? '#8b5cf6' : 'rgba(139, 92, 246, 0.2)',
+                                        boxShadow: i <= phase ? '0 0 8px rgba(139, 92, 246, 0.5)' : 'none',
+                                    }}
+                                />
+                            ))}
+                        </div>
+
+                        <p className={styles.statusMessage}>Securing your connection...</p>
                     </>
                 )}
             </div>

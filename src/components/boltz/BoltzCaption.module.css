@@ -1,57 +1,35 @@
-/* BoltzCaption - Pro-Grade Design */
-
-.container {
-    margin-top: 8px;
-    max-width: 100%;
+/* BoltzCaption — Expandable with Hashtag Highlighting */
+.caption {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.45;
+    margin: 6px 0 0;
+    max-width: 280px;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8);
+    word-break: break-word;
 }
 
-.text {
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--text-primary);
-    text-shadow:
-        0 2px 8px rgba(var(--bg-primary-rgb), 0.9),
-        0 1px 4px rgba(var(--bg-primary-rgb), 1);
-    margin: 0;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    letter-spacing: 0.01em;
+.hashtag {
+    color: var(--neon-lavender, #c4b5fd);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.hashtag:hover {
+    text-decoration: underline;
+    text-shadow: 0 0 10px rgba(196, 181, 253, 0.4);
 }
 
 .moreBtn {
-    background: transparent;
+    background: none;
     border: none;
-    color: var(--primary-light);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     padding: 0;
-    margin-left: 6px;
-    font-size: 14px;
-    text-shadow:
-        0 2px 6px rgba(var(--bg-primary-rgb), 0.8),
-        0 1px 3px rgba(var(--bg-primary-rgb), 0.9);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-left: 2px;
+    transition: color 0.15s ease;
 }
 
-.moreBtn:hover {
-    color: var(--text-primary);
-    text-shadow:
-        0 2px 8px rgba(196, 181, 253, 0.8),
-        0 1px 3px rgba(var(--bg-primary-rgb), 0.9);
-}
-
-.moreBtn:active {
-    transform: scale(0.98);
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-    .text {
-        font-size: 13px;
-        line-height: 1.4;
-    }
-
-    .moreBtn {
-        font-size: 13px;
-    }
-}
+.moreBtn:hover { color: rgba(255, 255, 255, 0.8); }

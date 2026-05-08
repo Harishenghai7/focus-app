@@ -1,58 +1,73 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
-   BoltzActionsSidebar — GOD-LEVEL | H2 Royal Lavender
-   Interactive Glass Orbs with Sovereign Pulse Effects
+   BoltzActionsSidebar — GOD-LEVEL | Staggered Glass Orbs with Aurora Borders
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 .container {
     position: absolute;
-    right: 16px;
-    bottom: 120px;
+    right: 12px;
+    bottom: 100px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-5);
+    gap: 6px;
     z-index: 100;
     pointer-events: auto;
 }
 
-/* ── GOD-LEVEL: Interactive Glass Orb ─────────────────────────────────────────── */
+/* ── STAGGERED ENTRANCE ──────────────────────────────────── */
+.buttonGroup {
+    animation: sidebarSlideIn 400ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation-delay: var(--stagger, 0ms);
+}
+
+@keyframes sidebarSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(30px) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+/* ── ACTION BUTTON (Options/Reactions) ───────────────────── */
 .actionBtn {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-1);
-    background: var(--glass-surface, rgba(var(--bg-primary-rgb), 0.3));
-    backdrop-filter: var(--blur-lg, blur(20px));
-    -webkit-backdrop-filter: var(--blur-lg, blur(20px));
-    border: 1px solid var(--glass-border, rgba(var(--text-primary-rgb), 0.1));
-    border-radius: var(--radius-2xl, 16px);
-    padding: var(--space-3);
+    gap: 4px;
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 12px;
     cursor: pointer;
     color: white;
-    font-size: var(--font-xs, 12px);
-    font-weight: var(--font-semibold, 600);
-    transition: transform var(--transition-bounce, 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)),
-                box-shadow var(--transition-base, 0.2s ease),
-                background var(--transition-base, 0.2s ease);
+    font-size: 12px;
+    font-weight: 700;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.2s ease,
+                background 0.2s ease;
     min-width: 56px;
-    box-shadow: var(--shadow-sm, 0 2px 8px rgba(var(--bg-primary-rgb), 0.3));
-    pointer-events: auto;
 }
 
-/* ── SOVEREIGN PULSE: Hover Lavender Glow ────────────────────────────────────── */
 .actionBtn:hover {
-    background: var(--glass-surface-hover, rgba(var(--primary-rgb), 0.2));
+    background: rgba(255, 255, 255, 0.08);
     transform: scale(1.08) translateY(-2px);
-    box-shadow: 0 0 24px rgba(var(--primary-rgb), 0.5),
-                0 0 48px rgba(var(--primary-rgb), 0.3),
-                inset 0 1px 0 rgba(var(--text-primary-rgb), 0.2);
-    border-color: var(--primary-dim, rgba(167, 139, 250, 0.5));
+    box-shadow: 0 0 24px rgba(139, 92, 246, 0.4);
+    border-color: rgba(139, 92, 246, 0.3);
 }
 
-/* ── HAPTIC FEEDBACK: Active State ────────────────────────────────────────────── */
 .actionBtn:active {
-    transform: scale(0.94);
-    box-shadow: 0 0 12px rgba(var(--primary-rgb), 0.3);
+    transform: scale(0.92);
+}
+
+.actionBtn.reacted {
+    color: #c4b5fd;
+    border-color: rgba(196, 181, 253, 0.3);
+    box-shadow: 0 0 16px rgba(139, 92, 246, 0.25);
 }
 
 .iconWrapper {
@@ -61,116 +76,33 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-primary);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    filter: drop-shadow(0 2px 8px rgba(var(--bg-primary-rgb), 0.8));
-    pointer-events: auto;
-}
-
-.actionBtn:hover .iconWrapper {
-    transform: scale(1.12);
-    filter: drop-shadow(0 0 12px rgba(var(--primary-rgb), 0.8));
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
 }
 
 .count {
     font-size: 12px;
     font-weight: 700;
-    color: var(--text-primary);
-    text-shadow:
-        0 2px 8px rgba(var(--bg-primary-rgb), 0.9),
-        0 1px 4px rgba(var(--bg-primary-rgb), 1);
-    letter-spacing: 0.02em;
-    min-width: 24px;
-    text-align: center;
-    transition: all 0.2s ease;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
 }
 
-.actionBtn:hover .count {
-    color: var(--text-primary);
-    text-shadow: 0 0 16px rgba(var(--primary-rgb), 0.6);
-}
-
-/* ── MUSIC DISC: Glass Orb Variant ───────────────────────────────────────────── */
-.musicButton {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 2px solid rgba(var(--text-primary-rgb), 0.8);
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 16px rgba(var(--bg-primary-rgb), 0.5),
-                0 0 0 1px rgba(var(--primary-rgb), 0.3);
-    margin-top: var(--space-2);
-}
-
-.musicButton:hover {
-    transform: scale(1.12);
-    box-shadow: 0 0 24px rgba(var(--primary-rgb), 0.5),
-                0 4px 16px rgba(var(--bg-primary-rgb), 0.5);
-    border-color: rgba(196, 181, 253, 0.9);
-}
-
-.musicButton:active {
-    transform: scale(0.95);
-}
-
-.musicDisc {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.musicDisc.spinning {
-    animation: spin 3s linear infinite;
-}
-
-.musicDisc.paused {
-    animation-play-state: paused;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* ── DESKTOP: Centered Layout ───────────────────────────────────────────────── */
+/* ── DESKTOP ─────────────────────────────────────────────── */
 @media (min-width: 1024px) {
     .container {
-        right: calc(50% - 220px);
-        bottom: 140px;
+        right: calc(50% - 270px);
+        bottom: 120px;
     }
 }
 
-/* ── MOBILE: Optimized Touch Targets ──────────────────────────────────────────── */
+/* ── MOBILE ──────────────────────────────────────────────── */
 @media (max-width: 768px) {
     .container {
-        right: 12px;
-        bottom: 80px;
-        gap: var(--space-4);
+        right: 8px;
+        bottom: 72px;
+        gap: 4px;
     }
 
     .actionBtn {
         min-width: 48px;
-        padding: var(--space-2);
-    }
-
-    .iconWrapper {
-        width: 24px;
-        height: 24px;
-    }
-
-    .count {
-        font-size: 11px;
-    }
-
-    .musicButton {
-        width: 40px;
-        height: 40px;
+        padding: 10px;
     }
 }

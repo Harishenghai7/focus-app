@@ -1,49 +1,41 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
- * 🏛️ HOME - THE TRINITY FEED ARCHITECTURE
- * H2 Universal Theme | Sovereign Edition
+ * 🏛️ HOME - CINEMATIC UNIVERSE FEED
+ * H2 Universal Theme | Sovereign Edition v3
  * ═══════════════════════════════════════════════════════════════════════════════
  * 
- * THE TRINITY:
- * 1. FLASH (Stories) - Horizontal sovereign pulse at top
- * 2. POSTS (Feed) - Vertical infinite scroll with glassmorphism
- * 3. BOLTZ (Short-form) - Immersive video overlay
- * 
- * Features:
- * - Auto-adaptive layout (Mobile/Tablet/Desktop/TV)
- * - Real-time Supabase synchronization
- * - Infinite scroll pagination (10 items per fetch)
- * - Satin blur placeholders for lazy loading
- * - Double-tap to like with lavender heart animation
- * - Trust Shield 3D badge integration
+ * THE ARCHITECTURE:
+ * 1. CONTEXTUAL GREETING - Time-adaptive, emotionally alive hero
+ * 2. FLASH (Stories) - Horizontal sovereign pulse
+ * 3. TRUSTED CREATORS - Discovery carousel
+ * 4. FEED TABS - Glass capsule navigation  
+ * 5. BOLTZ PREVIEW - Short-form video teaser (sticky sidebar on desktop)
+ * 6. POSTS FEED - Infinite scroll with diversity injection
+ * 7. WELLNESS NUDGE - Healthy engagement boundary
  * ═══════════════════════════════════════════════════════════════════════════════
  */
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaArrowRight, FaHeart, FaShieldAlt, FaVideo } from 'react-icons/fa';
+import { FaArrowUp } from 'react-icons/fa';
 import { useFocusUser } from '../../context/FocusUserContext';
 import { useResponsiveLayout } from '../../hooks/useResponsiveLayout';
 import { useStories } from '../../hooks/useStories';
 import styles from './Home.module.css';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// TRINITY COMPONENTS
+// UNIVERSE COMPONENTS
 // ═══════════════════════════════════════════════════════════════════════════════
 import MainLayout from '../../components/layout/MainLayout';
+import ContextualGreeting from '../../components/home/ContextualGreeting';
 import FlashStoriesBar from '../../components/home/FlashStoriesBar';
+import TrustedCreatorsSpotlight from '../../components/home/TrustedCreatorsSpotlight';
 import BoltzPreviewRow from '../../components/boltz/BoltzPreviewRow';
 import Feed from '../../components/feed/Feed';
 import FlashViewer from '../../components/modals/FlashViewer';
 import HomeSkeleton from './HomeSkeleton';
 import HomeErrorBoundary from './HomeErrorBoundary';
 import { supabase } from '../../lib/supabase';
-
-const homeSignals = [
-    { label: 'Trusted by design', value: 'Trust Shield-first discovery', icon: <FaShieldAlt /> },
-    { label: 'Healthy feed', value: 'Meaningful posts over noise', icon: <FaHeart /> },
-    { label: 'Boltz ready', value: 'Short-form creativity nearby', icon: <FaVideo /> }
-];
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // HOME COMPONENT
@@ -57,8 +49,11 @@ const Home = () => {
     // STATE MANAGEMENT
     // ═══════════════════════════════════════════════════════════════════════════
     const [activeStoryGroup, setActiveStoryGroup] = useState(null);
-    const [activeTab, setActiveTab] = useState('all'); // 'all' | 'following' | 'boltz'
+    const [activeTab, setActiveTab] = useState('all'); // 'all' | 'following'
     const [newPostsAvailable, setNewPostsAvailable] = useState(false);
+    const [showScrollTop, setShowScrollTop] = useState(false);
+    const scrollTimerRef = useRef(null);
+    const sessionStartRef = useRef(Date.now());
 
     // Fetch all story groups for navigation
     const { stories: allStoryGroups } = useStories();
@@ -70,7 +65,7 @@ const Home = () => {
         navigate('/create?tab=flash');
     }, [navigate]);
 
-    // Handle navigation between story groups (swipe left/right between users)
+    // Handle navigation between story groups
     const handleNavigateGroup = useCallback((direction) => {
         if (!activeStoryGroup || !allStoryGroups?.length) return;
         
@@ -90,6 +85,27 @@ const Home = () => {
         setNewPostsAvailable(false);
     }, []);
 
+    const handleScrollToTop = useCallback(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, []);
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SCROLL TRACKING — Show/hide scroll-to-top + wellness timing
+    // ═══════════════════════════════════════════════════════════════════════════
+    useEffect(() => {
+        const handleScroll = () => {
+            setShowScrollTop(window.scrollY > 600);
+            
+            // Show new posts pill when scrolled down
+            if (window.scrollY > 100 && newPostsAvailable) {
+                // keep visible
+            }
+        };
+        
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [newPostsAvailable]);
+
     // ═══════════════════════════════════════════════════════════════════════════
     // REAL-TIME NEW POSTS SUBSCRIPTION
     // ═══════════════════════════════════════════════════════════════════════════
@@ -106,7 +122,6 @@ const Home = () => {
                     table: 'posts',
                 },
                 (payload) => {
-                    // Show new posts notification if not at top
                     if (window.scrollY > 100) {
                         setNewPostsAvailable(true);
                     }
@@ -137,7 +152,7 @@ const Home = () => {
     if (!user) return null;
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // RENDER
+    // RENDER — CINEMATIC UNIVERSE
     // ═══════════════════════════════════════════════════════════════════════════
     return (
         <MainLayout>
@@ -146,32 +161,50 @@ const Home = () => {
                     className={styles.sovereignContainer}
                     data-layout={layout.isMobile ? 'mobile' : layout.isTablet ? 'tablet' : 'desktop'}
                 >
-                    {/* ═════════════════════════════════════════════════════════════════ */}
-                    {/* GLASSMORPHISM BACKDROP */}
-                    {/* ═════════════════════════════════════════════════════════════════ */}
+                    {/* Ambient backdrop */}
                     <div className={styles.glassBackdrop} />
                     
-                    {/* ═════════════════════════════════════════════════════════════════ */}
-                    {/* NEW POSTS NOTIFICATION */}
-                    {/* ═════════════════════════════════════════════════════════════════ */}
+                    {/* ═════════════════════════════════════════════════════════ */}
+                    {/* NEW POSTS NOTIFICATION — Floating pill */}
+                    {/* ═════════════════════════════════════════════════════════ */}
                     <AnimatePresence>
                         {newPostsAvailable && (
                             <motion.button
-                                initial={{ opacity: 0, y: -50 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -50 }}
+                                initial={{ opacity: 0, y: -50, scale: 0.9 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: -50, scale: 0.9 }}
+                                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
                                 className={styles.newPostsBanner}
                                 onClick={handleNewPosts}
                             >
                                 <span className={styles.pulseDot} />
-                                New posts available - Tap to view
+                                New posts available — Tap to refresh
                             </motion.button>
                         )}
                     </AnimatePresence>
 
-                    {/* ═════════════════════════════════════════════════════════════════ */}
-                    {/* TRINITY FEED CONTAINER */}
-                    {/* ═════════════════════════════════════════════════════════════════ */}
+                    {/* ═════════════════════════════════════════════════════════ */}
+                    {/* SCROLL TO TOP — Floating action button */}
+                    {/* ═════════════════════════════════════════════════════════ */}
+                    <AnimatePresence>
+                        {showScrollTop && (
+                            <motion.button
+                                initial={{ opacity: 0, scale: 0.7, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.7, y: 20 }}
+                                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                                className={styles.scrollTopBtn}
+                                onClick={handleScrollToTop}
+                                aria-label="Scroll to top"
+                            >
+                                <FaArrowUp />
+                            </motion.button>
+                        )}
+                    </AnimatePresence>
+
+                    {/* ═════════════════════════════════════════════════════════ */}
+                    {/* FEED UNIVERSE STACK */}
+                    {/* ═════════════════════════════════════════════════════════ */}
                     <div 
                         className={styles.trinityStack}
                         style={{ 
@@ -179,53 +212,22 @@ const Home = () => {
                             padding: layout.isMobile ? '0 12px' : '0 24px',
                         }}
                     >
+                        {/* ═══ LAYER 1: CONTEXTUAL GREETING ═══ */}
                         <motion.section
-                            className={styles.heroPanel}
+                            className={styles.greetingSection}
                             initial={{ opacity: 0, y: 16 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.45 }}
+                            transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
                         >
-                            <div className={styles.heroContent}>
-                                <div className={styles.heroCopy}>
-                                    <span className={styles.heroEyebrow}>Healthy Home</span>
-                                    <h1 className={styles.heroTitle}>A feed tuned for real people, real creativity, and calmer momentum.</h1>
-                                    <p className={styles.heroSubtitle}>
-                                        Focus prioritizes authentic creators, thoughtful interaction, and trust-aware discovery instead of outrage loops.
-                                    </p>
-                                </div>
-
-                                <div className={styles.heroActions}>
-                                    <button className={styles.heroButton} onClick={() => navigate('/explore')}>
-                                        Explore trusted discovery
-                                        <FaArrowRight />
-                                    </button>
-                                    <button className={styles.heroGhostButton} onClick={() => navigate('/create')}>
-                                        Create something real
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className={styles.heroMetrics}>
-                                {homeSignals.map((signal) => (
-                                    <article key={signal.label} className={styles.heroMetric}>
-                                        <span className={styles.heroMetricIcon}>{signal.icon}</span>
-                                        <div>
-                                            <p className={styles.heroMetricLabel}>{signal.label}</p>
-                                            <strong className={styles.heroMetricValue}>{signal.value}</strong>
-                                        </div>
-                                    </article>
-                                ))}
-                            </div>
+                            <ContextualGreeting />
                         </motion.section>
-                        {/* ═════════════════════════════════════════════════════════════ */}
-                        {/* LAYER 1: FLASH (STORIES) */}
-                        {/* Sovereign Pulse | Horizontal Scroll */}
-                        {/* ═════════════════════════════════════════════════════════════ */}
+
+                        {/* ═══ LAYER 2: FLASH STORIES ═══ */}
                         <motion.section 
                             className={styles.flashSection}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+                            transition={{ duration: 0.5, delay: 0.05, ease: [0.25, 0.46, 0.45, 0.94] }}
                         >
                             <FlashStoriesBar
                                 onStoryClick={setActiveStoryGroup}
@@ -233,15 +235,22 @@ const Home = () => {
                             />
                         </motion.section>
 
-                        {/* ═════════════════════════════════════════════════════════════ */}
-                        {/* LAYER 2: FEED TABS */}
-                        {/* Glass Capsule Navigation */}
-                        {/* ═════════════════════════════════════════════════════════════ */}
+                        {/* ═══ LAYER 3: TRUSTED CREATORS ═══ */}
+                        <motion.section
+                            className={styles.creatorsSection}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.45, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+                        >
+                            <TrustedCreatorsSpotlight />
+                        </motion.section>
+
+                        {/* ═══ LAYER 4: FEED TABS ═══ */}
                         <motion.nav 
                             className={styles.feedTabs}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.4, delay: 0.1 }}
+                            transition={{ duration: 0.4, delay: 0.15 }}
                         >
                             <div className={styles.tabContainer}>
                                 {['all', 'following'].map((tab) => (
@@ -266,10 +275,7 @@ const Home = () => {
                             </div>
                         </motion.nav>
 
-                        {/* ═════════════════════════════════════════════════════════════ */}
-                        {/* LAYER 3: BOLTZ PREVIEW */}
-                        {/* Short-form Video Teaser */}
-                        {/* ═════════════════════════════════════════════════════════════ */}
+                        {/* ═══ LAYER 5: BOLTZ PREVIEW ═══ */}
                         <motion.section
                             className={styles.boltzSection}
                             initial={{ opacity: 0, scale: 0.95 }}
@@ -279,15 +285,12 @@ const Home = () => {
                             <BoltzPreviewRow />
                         </motion.section>
 
-                        {/* ═════════════════════════════════════════════════════════════ */}
-                        {/* LAYER 4: POSTS FEED */}
-                        {/* Infinite Scroll | Glassmorphism Cards */}
-                        {/* ═════════════════════════════════════════════════════════════ */}
+                        {/* ═══ LAYER 6: POSTS FEED ═══ */}
                         <motion.main
                             className={styles.feedSection}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            transition={{ duration: 0.5, delay: 0.3 }}
+                            transition={{ duration: 0.5, delay: 0.25 }}
                         >
                             <Feed 
                                 feedType={activeTab === 'following' ? 'following' : 'home'} 
@@ -296,9 +299,9 @@ const Home = () => {
                         </motion.main>
                     </div>
 
-                    {/* ═════════════════════════════════════════════════════════════════ */}
+                    {/* ═════════════════════════════════════════════════════════ */}
                     {/* MODALS & OVERLAYS */}
-                    {/* ═════════════════════════════════════════════════════════════════ */}
+                    {/* ═════════════════════════════════════════════════════════ */}
                     <AnimatePresence>
                         {activeStoryGroup && (
                             <FlashViewer

@@ -17,7 +17,7 @@ import { usePinnedMessages } from '../../hooks/usePinnedMessages';
 import { useAttachmentUpload } from '../../hooks/useAttachmentUpload';
 import { focusToast } from '../../utils/focusToast';
 import { format } from 'date-fns';
-import styles from './SovereignWhisper.module.css';
+import styles from './SovereignWhisperV2.module.css';
 
 // 🚀 ADVANCED FEATURE COMPONENTS
 import GifPicker from '../../pages/Messages/components/Modals/GifPicker';
@@ -238,7 +238,7 @@ const StatusTicks = ({ status }) => {
     );
 };
 
-// Message Bubble Component with Reactions & Actions
+// Message Bubble Component with Reactions & Actions — V2 Premium
 const MessageBubble = ({ 
     message, 
     isSent, 
@@ -252,8 +252,8 @@ const MessageBubble = ({
     onMediaClick,
     isPinned 
 }) => {
-    const bubbleClass = isSent ? styles.messageBubbleSent : styles.messageBubbleReceived;
-    const encryptedClass = message.is_encrypted ? styles.messageBubbleEncrypted : '';
+    const bubbleClass = isSent ? styles.bubbleSent : styles.bubbleReceived;
+    const encryptedClass = message.is_encrypted ? styles.bubbleEncrypted : '';
     const [showActions, setShowActions] = useState(false);
     
     const formatTime = (timestamp) => {
@@ -271,139 +271,70 @@ const MessageBubble = ({
         return 'sent';
     };
 
-    // Quick reaction emojis
     const quickReactions = ['❤️', '😂', '👍', '😮', '😢', '🔥'];
 
     return (
         <div 
-            className={`${styles.messageWrapper} ${isSent ? styles.sent : styles.received}`}
+            className={`${styles.messageWrapper} ${isSent ? styles.messageSent : styles.messageReceived}`}
             onMouseEnter={() => setShowActions(true)}
             onMouseLeave={() => setShowActions(false)}
-            style={{ position: 'relative' }}
         >
-            {/* Pinned indicator */}
             {isPinned && (
-                <div style={{
-                    position: 'absolute',
-                    top: -8,
-                    right: isSent ? 'auto' : -8,
-                    left: isSent ? -8 : 'auto',
-                    color: '#FFD700',
-                    filter: 'drop-shadow(0 0 4px rgba(255, 215, 0, 0.5))'
-                }}>
+                <div style={{ position: 'absolute', top: -8, right: isSent ? 'auto' : -8, left: isSent ? -8 : 'auto', color: '#FFD700', filter: 'drop-shadow(0 0 4px rgba(255,215,0,0.5))' }}>
                     <Icons.pin />
                 </div>
             )}
 
             <div className={`${bubbleClass} ${encryptedClass}`}>
-                {/* Media content */}
                 {message.media_urls?.length > 0 && (
-                    <div 
-                        className={styles.messageMedia}
-                        onClick={() => onMediaClick?.(message)}
-                        style={{ cursor: 'pointer', marginBottom: 8 }}
-                    >
+                    <div className={styles.messageMedia} onClick={() => onMediaClick?.(message)}>
                         {message.media_urls.map((media, idx) => (
                             media.type?.startsWith('image/') ? (
-                                <img 
-                                    key={idx}
-                                    src={media.url} 
-                                    alt="Shared media"
-                                    style={{ 
-                                        maxWidth: 200, 
-                                        maxHeight: 200, 
-                                        borderRadius: 8,
-                                        objectFit: 'cover'
-                                    }} 
-                                />
+                                <img key={idx} src={media.url} alt="Shared media" />
                             ) : media.type?.startsWith('video/') ? (
-                                <video 
-                                    key={idx}
-                                    src={media.url}
-                                    style={{ 
-                                        maxWidth: 200, 
-                                        maxHeight: 200, 
-                                        borderRadius: 8 
-                                    }}
-                                    controls
-                                />
+                                <video key={idx} src={media.url} controls />
                             ) : null
                         ))}
                     </div>
                 )}
 
-                {/* Message content */}
                 <div className={styles.messageContent}>{message.content}</div>
 
-                {/* Reactions display */}
                 {message.reactions?.length > 0 && (
-                    <MessageReactions 
-                        reactions={message.reactions}
-                        currentUserId={currentUserId}
-                        onReactionClick={(emoji) => onReact?.(message, emoji)}
-                    />
+                    <div className={styles.reactions}>
+                        {Object.entries(
+                            message.reactions.reduce((acc, r) => {
+                                acc[r.emoji] = (acc[r.emoji] || 0) + 1;
+                                return acc;
+                            }, {})
+                        ).map(([emoji, count]) => (
+                            <button
+                                key={emoji}
+                                className={`${styles.reactionChip} ${message.reactions.some(r => r.user_id === currentUserId && r.emoji === emoji) ? styles.reactionChipActive : ''}`}
+                                onClick={() => onReact?.(message, emoji)}
+                            >
+                                {emoji}<span className={styles.reactionCount}>{count}</span>
+                            </button>
+                        ))}
+                    </div>
                 )}
 
-                {/* Meta */}
                 <div className={styles.messageMeta}>
-                    <span className={styles.messageTime}>
-                        {formatTime(message.created_at)}
-                    </span>
+                    <span className={styles.messageTime}>{formatTime(message.created_at)}</span>
                     {isSent && <StatusTicks status={getStatus()} />}
                 </div>
             </div>
 
-            {/* Message Actions */}
             {showActions && (
-                <div style={{
-                    position: 'absolute',
-                    top: '50%',
-                    right: isSent ? '100%' : 'auto',
-                    left: isSent ? 'auto' : '100%',
-                    transform: 'translateY(-50%)',
-                    display: 'flex',
-                    gap: 4,
-                    padding: '4px 8px',
-                    background: 'rgba(13, 13, 13, 0.9)',
-                    borderRadius: 20,
-                    border: '1px solid rgba(126, 87, 194, 0.3)',
-                    zIndex: 10
-                }}>
-                    {/* Quick reactions */}
+                <div className={`${styles.messageActions} ${isSent ? styles.messageActionsSent : styles.messageActionsReceived}`}>
                     {quickReactions.map(emoji => (
-                        <button
-                            key={emoji}
-                            onClick={() => onReact?.(message, emoji)}
-                            style={{
-                                background: 'transparent',
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontSize: 14,
-                                padding: 2
-                            }}
-                        >
-                            {emoji}
-                        </button>
+                        <button key={emoji} className={styles.quickReaction} onClick={() => onReact?.(message, emoji)}>{emoji}</button>
                     ))}
-                    
-                    {/* Action buttons */}
-                    <button onClick={() => onReply?.(message)} title="Reply">
-                        <Icons.reply />
-                    </button>
-                    {isSent && (
-                        <button onClick={() => onEdit?.(message)} title="Edit">
-                            <Icons.edit />
-                        </button>
-                    )}
-                    <button onClick={() => onForward?.(message)} title="Forward">
-                        <Icons.forward />
-                    </button>
-                    <button onClick={() => onPin?.(message)} title={isPinned ? 'Unpin' : 'Pin'}>
-                        <Icons.pin />
-                    </button>
-                    <button onClick={() => onDelete?.(message)} title="Delete">
-                        <Icons.trash />
-                    </button>
+                    <button className={styles.actionBtn} onClick={() => onReply?.(message)} title="Reply"><Icons.reply /></button>
+                    {isSent && <button className={styles.actionBtn} onClick={() => onEdit?.(message)} title="Edit"><Icons.edit /></button>}
+                    <button className={styles.actionBtn} onClick={() => onForward?.(message)} title="Forward"><Icons.forward /></button>
+                    <button className={styles.actionBtn} onClick={() => onPin?.(message)} title={isPinned ? 'Unpin' : 'Pin'}><Icons.pin /></button>
+                    <button className={styles.actionBtn} onClick={() => onDelete?.(message)} title="Delete"><Icons.trash /></button>
                 </div>
             )}
         </div>
@@ -413,7 +344,7 @@ const MessageBubble = ({
 // Typing Indicator Component
 const TypingIndicator = ({ username }) => (
     <div className={styles.typingIndicator}>
-        <div className={styles.typingDots}>
+        <div className={styles.typingBubble}>
             <span className={styles.typingDot} />
             <span className={styles.typingDot} />
             <span className={styles.typingDot} />
@@ -927,13 +858,15 @@ const SovereignChatPane = ({
 
     if (!conversationId) {
         return (
-            <div className={`${styles.sovereignChatPane} ${className}`}>
-                <div className={styles.sovereignEmptyState}>
-                    <svg className={styles.sovereignEmptyIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                    </svg>
-                    <h3 className={styles.sovereignEmptyTitle}>Select a conversation</h3>
-                    <p className={styles.sovereignEmptyText}>
+            <div className={`${styles.container} ${className}`}>
+                <div className={styles.emptyChat}>
+                    <div className={styles.emptyIcon}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
+                    </div>
+                    <h3 className={styles.emptyTitle}>Select a conversation</h3>
+                    <p className={styles.emptyText}>
                         Choose a conversation from the inbox to start messaging securely
                     </p>
                 </div>
@@ -942,55 +875,51 @@ const SovereignChatPane = ({
     }
 
     return (
-        <div className={`${styles.sovereignChatPane} ${className}`}>
+        <div className={`${styles.container} ${className}`}>
             {/* Header */}
-            <div className={styles.sovereignHeader}>
-                <div className={styles.sovereignHeaderLeft}>
+            <div className={styles.chatHeader}>
+                <div className={styles.chatHeaderLeft}>
                     {onBack && (
-                        <button className={styles.inputButton} onClick={onBack}>
+                        <button className={styles.backBtn} onClick={onBack}>
                             <Icons.back />
                         </button>
                     )}
                     
-                    <div className={styles.sovereignHeaderInfo}>
-                        <div className={styles.sovereignUsername}>
-                            {user?.username || 'Unknown'}
+                    <div className={styles.avatarContainer}>
+                        {user?.avatar_url ? (
+                            <img src={user.avatar_url} alt="" className={`${styles.avatar} ${user?.is_online ? styles.avatarOnline : ''}`} style={{width:40,height:40}} />
+                        ) : (
+                            <div className={styles.avatarFallback} style={{width:40,height:40,fontSize:16}}>
+                                {(user?.username?.[0] || '?').toUpperCase()}
+                            </div>
+                        )}
+                        {user?.is_online && <div className={styles.onlineDot} style={{width:10,height:10}} />}
+                    </div>
+
+                    <div className={styles.chatHeaderInfo}>
+                        <div className={styles.chatUsername}>
+                            {user?.full_name || user?.username || 'Unknown'}
                             <TrustShieldBadge />
                         </div>
-                        <div className={styles.sovereignStatus}>
-                            <span className={`${styles.sovereignStatusDot} ${user?.is_online ? styles.online : ''}`} />
+                        <div className={styles.chatStatus}>
                             {formatStatus()}
                         </div>
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <EncryptionStatus enabled={encryptionEnabled} />
-                    
-                    <button 
-                        className={styles.inputButton} 
-                        onClick={() => setShowSearch(true)}
-                        title="Search messages"
-                    >
-                        <Icons.search />
-                    </button>
-                    <button 
-                        className={styles.inputButton} 
-                        onClick={() => setShowPinned(true)}
-                        title="Pinned messages"
-                    >
-                        <Icons.pin />
-                    </button>
-                    <button className={styles.inputButton} onClick={handleCall} title="Voice call">
-                        <Icons.call />
-                    </button>
-                    <button className={styles.inputButton} onClick={handleVideoCall} title="Video call">
-                        <Icons.video />
-                    </button>
-                    <button className={styles.inputButton}>
-                        <Icons.more />
-                    </button>
+                <div className={styles.chatHeaderActions}>
+                    <button className={styles.headerBtn} onClick={() => setShowSearch(true)} title="Search"><Icons.search /></button>
+                    <button className={styles.headerBtn} onClick={() => setShowPinned(true)} title="Pinned"><Icons.pin /></button>
+                    <button className={styles.headerBtn} onClick={handleCall} title="Voice call"><Icons.call /></button>
+                    <button className={styles.headerBtn} onClick={handleVideoCall} title="Video call"><Icons.video /></button>
+                    <button className={styles.headerBtn}><Icons.more /></button>
                 </div>
+            </div>
+
+            {/* Encryption Banner */}
+            <div className={styles.encryptionBanner}>
+                <Icons.lock />
+                <span>{encryptionEnabled ? 'End-to-End Encrypted · Signal Protocol' : 'Standard Messaging'}</span>
             </div>
 
             {/* Pinned Messages Banner */}
@@ -1005,18 +934,18 @@ const SovereignChatPane = ({
             />
 
             {/* Messages List */}
-            <div className={styles.sovereignMessageList}>
+            <div className={styles.messageList}>
                 {loading ? (
-                    <div className={styles.loadingContainer}>
-                        <div className={styles.loadingSpinner} />
-                        <span className={styles.loadingText}>Loading messages...</span>
+                    <div className={styles.loader}>
+                        <div className={styles.spinner} />
+                        <span className={styles.loaderText}>Loading messages...</span>
                     </div>
                 ) : messages.length === 0 ? (
-                    <div className={styles.sovereignEmptyState}>
+                    <div className={styles.emptyChat}>
                         <div className={styles.dateDivider}>
                             <span className={styles.dateDividerText}>Today</span>
                         </div>
-                        <p className={styles.sovereignEmptyText}>
+                        <p className={styles.emptyText}>
                             No messages yet. Start a secure conversation!
                         </p>
                     </div>
@@ -1069,10 +998,8 @@ const SovereignChatPane = ({
             {/* Reply Preview */}
             <ReplyPreview message={replyTo} onClear={() => setReplyTo(null)} />
 
-            {/* ═════════════════════════════════════════════════════════════════
-                🚀 ULTIMATE INPUT BAR - ALL FEATURES
-                ═════════════════════════════════════════════════════════════════ */}
-            <div className={styles.sovereignInputContainer}>
+            {/* INPUT BAR */}
+            <div className={styles.inputContainer}>
                 {/* File Preview */}
                 {filePreview && (
                     <div style={{
@@ -1130,7 +1057,7 @@ const SovereignChatPane = ({
                         onCancel={() => setIsRecording(false)}
                     />
                 ) : (
-                    <div className={`${styles.sovereignInputBar} ${isTyping ? styles.typing : ''}`}>
+                    <div className={styles.inputBar}>
                         {/* Hidden file input */}
                         <input
                             type="file"
@@ -1142,7 +1069,7 @@ const SovereignChatPane = ({
 
                         {/* Attachment Button */}
                         <button 
-                            className={styles.inputButton}
+                            className={styles.inputBtn}
                             onClick={() => fileInputRef.current?.click()}
                             title="Attach file"
                         >
@@ -1151,7 +1078,7 @@ const SovereignChatPane = ({
 
                         {/* GIF Button */}
                         <button 
-                            className={styles.inputButton}
+                            className={styles.inputBtn}
                             onClick={() => setShowGifPicker(true)}
                             title="Send GIF"
                         >
@@ -1160,7 +1087,7 @@ const SovereignChatPane = ({
 
                         {/* Sticker Button */}
                         <button 
-                            className={styles.inputButton}
+                            className={styles.inputBtn}
                             onClick={() => setShowStickerPicker(true)}
                             title="Send sticker"
                         >
@@ -1169,7 +1096,7 @@ const SovereignChatPane = ({
 
                         {/* Emoji Button */}
                         <button 
-                            className={styles.inputButton}
+                            className={styles.inputBtn}
                             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                             title="Emoji"
                         >
@@ -1178,7 +1105,7 @@ const SovereignChatPane = ({
                         
                         <textarea
                             ref={inputRef}
-                            className={styles.sovereignInput}
+                            className={styles.inputField}
                             placeholder="Type a secure message..."
                             value={inputValue}
                             onChange={handleInputChange}
@@ -1188,7 +1115,7 @@ const SovereignChatPane = ({
 
                         {/* Voice Button */}
                         <button 
-                            className={styles.inputButton}
+                            className={styles.inputBtn}
                             onClick={() => setIsRecording(true)}
                             title="Voice message"
                         >
@@ -1197,7 +1124,7 @@ const SovereignChatPane = ({
 
                         {/* Location Button */}
                         <button 
-                            className={styles.inputButton}
+                            className={styles.inputBtn}
                             onClick={() => setShowLocationPicker(true)}
                             title="Share location"
                         >
@@ -1206,7 +1133,7 @@ const SovereignChatPane = ({
 
                         {/* Poll Button */}
                         <button 
-                            className={styles.inputButton}
+                            className={styles.inputBtn}
                             onClick={() => setShowPollCreator(true)}
                             title="Create poll"
                         >
@@ -1215,7 +1142,7 @@ const SovereignChatPane = ({
 
                         {/* Event Button */}
                         <button 
-                            className={styles.inputButton}
+                            className={styles.inputBtn}
                             onClick={() => setShowEventCreator(true)}
                             title="Create event"
                         >
@@ -1224,7 +1151,7 @@ const SovereignChatPane = ({
 
                         {/* Video Note Button */}
                         <button 
-                            className={styles.inputButton}
+                            className={styles.inputBtn}
                             onClick={() => setShowVideoRecorder(true)}
                             title="Video note"
                         >
@@ -1232,7 +1159,7 @@ const SovereignChatPane = ({
                         </button>
                         
                         <button 
-                            className={`${styles.inputButton} ${styles.send}`}
+                            className={styles.sendBtn}
                             onClick={handleSend}
                             disabled={!inputValue.trim() || sending}
                         >

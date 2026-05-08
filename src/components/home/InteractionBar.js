@@ -1,9 +1,17 @@
-import React from 'react';
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * InteractionBar — Cinematic Universe Edition
+ * Tactile spring-physics interactions with optimistic state management.
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+import React, { useState, useEffect, useCallback } from 'react';
 import { Heart, MessageCircle, Send, Bookmark } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import styles from './InteractionBar.module.css';
 import { logOptimisticFailure, logOptimisticSuccess } from '../../utils/telemetry';
 import { useAudio } from '../../context/AudioProvider';
+
+const springConfig = { type: 'spring', stiffness: 500, damping: 22 };
 
 const InteractionBar = ({
     isLiked,
@@ -16,28 +24,32 @@ const InteractionBar = ({
     onSave,
 }) => {
     const { play } = useAudio();
-    const [optimisticLiked, setOptimisticLiked] = React.useState(Boolean(isLiked));
-    const [optimisticSaved, setOptimisticSaved] = React.useState(Boolean(isSaved));
-    const [optimisticLikesCount, setOptimisticLikesCount] = React.useState(likesCount || 0);
+    const [optimisticLiked, setOptimisticLiked] = useState(Boolean(isLiked));
+    const [optimisticSaved, setOptimisticSaved] = useState(Boolean(isSaved));
+    const [optimisticLikesCount, setOptimisticLikesCount] = useState(likesCount || 0);
+    const [countAnimating, setCountAnimating] = useState(false);
 
-    React.useEffect(() => {
+    useEffect(() => {
         setOptimisticLiked(Boolean(isLiked));
         setOptimisticSaved(Boolean(isSaved));
         setOptimisticLikesCount(likesCount || 0);
     }, [isLiked, isSaved, likesCount]);
     
-    // Helper to format numbers (e.g. 1200 -> 1.2k)
     const formatCount = (count) => {
         if (!count) return '';
-        if (count >= 1000) return (count / 1000).toFixed(1) + 'k';
+        if (count >= 1000000) return (count / 1000000).toFixed(1) + 'M';
+        if (count >= 1000) return (count / 1000).toFixed(1) + 'K';
         return count;
     };
 
-    const handleLike = async () => {
+    const handleLike = useCallback(async () => {
         const nextLiked = !optimisticLiked;
         const nextCount = Math.max(0, optimisticLikesCount + (nextLiked ? 1 : -1));
         setOptimisticLiked(nextLiked);
         setOptimisticLikesCount(nextCount);
+        setCountAnimating(true);
+        setTimeout(() => setCountAnimating(false), 400);
+
         try {
             await onLike?.();
             if (nextLiked) play('like');
@@ -47,9 +59,9 @@ const InteractionBar = ({
             setOptimisticLikesCount(optimisticLikesCount);
             logOptimisticFailure('post_like', error);
         }
-    };
+    }, [optimisticLiked, optimisticLikesCount, onLike, play]);
 
-    const handleSave = async () => {
+    const handleSave = useCallback(async () => {
         const nextSaved = !optimisticSaved;
         setOptimisticSaved(nextSaved);
         try {
@@ -59,39 +71,46 @@ const InteractionBar = ({
             setOptimisticSaved(!nextSaved);
             logOptimisticFailure('post_save', error);
         }
-    };
+    }, [optimisticSaved, onSave]);
 
     return (
         <div className={styles.container}>
             <div className={styles.left}>
                 {/* LIKE BUTTON */}
                 <motion.button
-                    whileTap={{ scale: 0.92 }}
-                    transition={{ type: 'spring', stiffness: 430, damping: 20 }}
+                    whileTap={{ scale: 0.85 }}
+                    transition={springConfig}
                     className={`${styles.btn} ${optimisticLiked ? styles.liked : ''}`} 
                     onClick={handleLike}
-                    aria-label="Like"
+                    aria-label={optimisticLiked ? 'Unlike' : 'Like'}
                 >
-                    <Heart 
-                        size={26} 
-                        className={styles.icon}
-                        fill={optimisticLiked ? "#ff3040" : "none"} 
-                        color={optimisticLiked ? "#ff3040" : "currentColor"} 
-                    />
+                    <motion.div
+                        animate={optimisticLiked ? { scale: [1, 1.3, 1] } : { scale: 1 }}
+                        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                        <Heart 
+                            size={24} 
+                            className={styles.icon}
+                            fill={optimisticLiked ? "#ff3040" : "none"} 
+                            color={optimisticLiked ? "#ff3040" : "currentColor"} 
+                        />
+                    </motion.div>
                     {optimisticLikesCount > 0 && (
-                        <span className={styles.count}>{formatCount(optimisticLikesCount)}</span>
+                        <span className={`${styles.count} ${countAnimating ? styles.countBounce : ''}`}>
+                            {formatCount(optimisticLikesCount)}
+                        </span>
                     )}
                 </motion.button>
 
                 {/* COMMENT BUTTON */}
                 <motion.button
-                    whileTap={{ scale: 0.92 }}
-                    transition={{ type: 'spring', stiffness: 430, damping: 20 }}
+                    whileTap={{ scale: 0.85 }}
+                    transition={springConfig}
                     className={styles.btn} 
                     onClick={onComment}
                     aria-label="Comment"
                 >
-                    <MessageCircle size={26} className={styles.icon} />
+                    <MessageCircle size={24} className={styles.icon} />
                     {commentsCount > 0 && (
                         <span className={styles.count}>{formatCount(commentsCount)}</span>
                     )}
@@ -99,31 +118,36 @@ const InteractionBar = ({
 
                 {/* SHARE BUTTON */}
                 <motion.button
-                    whileTap={{ scale: 0.92 }}
-                    transition={{ type: 'spring', stiffness: 430, damping: 20 }}
+                    whileTap={{ scale: 0.85, rotate: -15 }}
+                    transition={springConfig}
                     className={styles.btn} 
                     onClick={onShare}
                     aria-label="Share"
                 >
-                    <Send size={26} className={styles.icon} />
+                    <Send size={24} className={styles.icon} />
                 </motion.button>
             </div>
 
             <div className={styles.right}>
                 {/* SAVE BUTTON */}
                 <motion.button
-                    whileTap={{ scale: 0.92 }}
-                    transition={{ type: 'spring', stiffness: 430, damping: 20 }}
+                    whileTap={{ scale: 0.85 }}
+                    transition={springConfig}
                     className={`${styles.btn} ${optimisticSaved ? styles.saved : ''}`} 
                     onClick={handleSave}
-                    aria-label="Save"
+                    aria-label={optimisticSaved ? 'Unsave' : 'Save'}
                 >
-                    <Bookmark 
-                        size={26} 
-                        className={styles.icon}
-                        fill={optimisticSaved ? "white" : "none"} 
-                        color="currentColor"
-                    />
+                    <motion.div
+                        animate={optimisticSaved ? { y: [0, -4, 0] } : { y: 0 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <Bookmark 
+                            size={24} 
+                            className={styles.icon}
+                            fill={optimisticSaved ? "currentColor" : "none"} 
+                            color="currentColor"
+                        />
+                    </motion.div>
                 </motion.button>
             </div>
         </div>

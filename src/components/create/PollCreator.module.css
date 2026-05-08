@@ -1,0 +1,36 @@
+.container { display:flex; flex-direction:column; gap:16px; }
+.toggleRow { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:14px; cursor:pointer; transition:all 0.2s; }
+.toggleRow:hover { background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.1); }
+.toggleInfo { display:flex; align-items:center; gap:10px; color:var(--text-primary); font-weight:500; }
+.toggleLabel { font-size:15px; }
+.toggle { width:44px; height:24px; border-radius:12px; background:rgba(255,255,255,0.08); padding:2px; transition:background 0.2s; }
+.toggle.on { background:var(--primary); }
+.thumb { width:20px; height:20px; border-radius:50%; background:white; transition:transform 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.3); }
+.toggle.on .thumb { transform:translateX(20px); }
+.pollForm { display:flex; flex-direction:column; gap:12px; overflow:hidden; }
+.questionInput { padding:14px 16px; background:rgba(15,23,42,0.6); border:1px solid rgba(139,92,246,0.25); border-radius:12px; color:var(--text-primary); font-size:15px; font-weight:500; outline:none; transition:all 0.2s; }
+.questionInput:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(139,92,246,0.15); }
+.questionInput::placeholder { color:var(--text-muted); opacity:0.5; }
+.optionsList { display:flex; flex-direction:column; gap:8px; }
+.optionRow { display:flex; align-items:center; gap:8px; }
+.optionNum { width:24px; height:24px; border-radius:8px; background:rgba(139,92,246,0.12); color:var(--primary-light); font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.optionInput { flex:1; padding:10px 14px; background:rgba(15,23,42,0.4); border:1px solid rgba(255,255,255,0.08); border-radius:10px; color:var(--text-primary); font-size:14px; outline:none; transition:all 0.2s; }
+.optionInput:focus { border-color:rgba(139,92,246,0.3); }
+.optionInput::placeholder { color:var(--text-muted); opacity:0.4; }
+.removeOptBtn { width:28px; height:28px; border-radius:8px; background:none; border:none; color:var(--text-muted); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+.removeOptBtn:hover { color:#ef4444; background:rgba(239,68,68,0.1); }
+.addOptBtn { display:flex; align-items:center; gap:6px; padding:8px 14px; background:none; border:1px dashed rgba(139,92,246,0.2); border-radius:10px; color:var(--primary-light); font-size:13px; font-weight:500; cursor:pointer; transition:all 0.2s; width:fit-content; }
+.addOptBtn:hover { border-color:rgba(139,92,246,0.4); background:rgba(139,92,246,0.05); }
+.durationSection { display:flex; align-items:center; gap:10px; flex-wrap:wrap; color:var(--text-muted); font-size:13px; }
+.durationLabel { font-weight:500; }
+.durationBtns { display:flex; gap:6px; margin-left:auto; }
+.durBtn { padding:5px 12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:8px; color:var(--text-secondary); font-size:12px; font-weight:500; cursor:pointer; transition:all 0.2s; }
+.durBtn:hover { background:rgba(139,92,246,0.08); }
+.durActive { background:rgba(139,92,246,0.12)!important; border-color:rgba(139,92,246,0.4)!important; color:var(--primary-light)!important; }
+.pollPreview { padding-top:8px; border-top:1px solid rgba(255,255,255,0.06); }
+.previewLabel { font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:block; }
+.previewCard { padding:16px; background:rgba(22,13,42,0.6); border:1px solid rgba(255,255,255,0.06); border-radius:14px; }
+.previewQuestion { font-size:15px; font-weight:600; color:var(--text-primary); margin:0 0 12px; }
+.previewOption { display:flex; align-items:center; gap:10px; padding:8px 0; position:relative; }
+.previewOption span { font-size:13px; color:var(--text-secondary); position:relative; z-index:1; }
+.previewBar { position:absolute; left:0; top:0; bottom:0; background:rgba(139,92,246,0.08); border-radius:6px; transition:width 0.3s; }

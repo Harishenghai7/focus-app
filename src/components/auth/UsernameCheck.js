@@ -1,51 +1,114 @@
-import React, { useState, useEffect } from 'react';
-import Input from '../shared/Input';
-import { checkUsernameAvailability } from '../../utils/checkUsername';
+import React, { useEffect, useState, useCallback } from 'react';
+import { supabase } from '../../lib/supabase';
 import styles from './UsernameCheck.module.css';
-import { FaUser, FaCheck, FaTimes, FaSpinner } from 'react-icons/fa';
 
 const UsernameCheck = ({ value, onChange, onValidityChange }) => {
-    const [status, setStatus] = useState('idle'); // idle, checking, available, taken
+    const [status, setStatus] = useState('idle'); // idle | checking | available | taken | invalid
+    const [message, setMessage] = useState('');
+
+    const checkUsername = useCallback(async (username) => {
+        if (!username || username.length < 3) {
+            setStatus(username.length > 0 ? 'invalid' : 'idle');
+            setMessage(username.length > 0 ? 'Must be at least 3 characters' : '');
+            onValidityChange?.(false);
+            return;
+        }
+
+        if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+            setStatus('invalid');
+            setMessage('Only letters, numbers, and underscores');
+            onValidityChange?.(false);
+            return;
+        }
+
+        if (username.length > 30) {
+            setStatus('invalid');
+            setMessage('Maximum 30 characters');
+            onValidityChange?.(false);
+            return;
+        }
+
+        setStatus('checking');
+        setMessage('Checking availability...');
+
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('id')
+                .ilike('username', username)
+                .maybeSingle();
+
+            if (error) throw error;
+
+            if (data) {
+                setStatus('taken');
+                setMessage('Username is taken');
+                onValidityChange?.(false);
+            } else {
+                setStatus('available');
+                setMessage('Available');
+                onValidityChange?.(true);
+            }
+        } catch (err) {
+            setStatus('idle');
+            setMessage('');
+            onValidityChange?.(true);
+        }
+    }, [onValidityChange]);
 
     useEffect(() => {
-        const check = async () => {
-            if (!value || value.length < 3) {
-                setStatus('idle');
-                onValidityChange(false);
-                return;
-            }
+        const timer = setTimeout(() => {
+            checkUsername(value);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [value, checkUsername]);
 
-            setStatus('checking');
-            const isAvailable = await checkUsernameAvailability(value);
-
-            setStatus(isAvailable ? 'available' : 'taken');
-            onValidityChange(isAvailable);
-        };
-
-        const timeoutId = setTimeout(check, 500); // Debounce 500ms
-        return () => clearTimeout(timeoutId);
-    }, [value, onValidityChange]);
-
-    const getIcon = () => {
+    const statusIcon = () => {
         switch (status) {
-            case 'checking': return <FaSpinner className={styles.spinner} />;
-            case 'available': return <FaCheck className={styles.available} />;
-            case 'taken': return <FaTimes className={styles.taken} />;
-            default: return null;
+            case 'checking':
+                return <span className={styles.spinnerIcon} />;
+            case 'available':
+                return (
+                    <svg className={styles.checkIcon} viewBox="0 0 20 20" fill="none">
+                        <path d="M5 10l3.5 3.5L15 7" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                );
+            case 'taken':
+            case 'invalid':
+                return (
+                    <svg className={styles.crossIcon} viewBox="0 0 20 20" fill="none">
+                        <path d="M6 6l8 8M14 6l-8 8" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                );
+            default:
+                return null;
         }
     };
 
     return (
         <div className={styles.wrapper}>
-            <Input
-                name="username"
-                placeholder="Username"
-                value={value}
-                onChange={onChange}
-                icon={<FaUser />}
-                rightElement={getIcon()}
-                error={status === 'taken' ? 'Username is already taken' : null}
-            />
+            <div className={`${styles.inputContainer} ${styles[status]}`}>
+                <span className={styles.atSign}>@</span>
+                <input
+                    type="text"
+                    name="username"
+                    className={styles.input}
+                    placeholder="Choose your username"
+                    value={value || ''}
+                    onChange={onChange}
+                    autoComplete="off"
+                    spellCheck="false"
+                    maxLength={30}
+                />
+                <span className={styles.statusIcon}>
+                    {statusIcon()}
+                </span>
+            </div>
+            {message && (
+                <span className={`${styles.message} ${styles[`message_${status}`]}`}>
+                    {message}
+                </span>
+            )}
         </div>
     );
 };

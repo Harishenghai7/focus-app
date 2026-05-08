@@ -1,0 +1,73 @@
+.card {
+    display: flex; flex-direction: column; gap: 0.85rem;
+    padding: 1.25rem; border-radius: 24px;
+    background:
+        radial-gradient(ellipse at top left, rgba(var(--primary-rgb), 0.06) 0%, transparent 50%),
+        linear-gradient(145deg, rgba(var(--text-primary-rgb), 0.045), rgba(var(--text-primary-rgb), 0.015));
+    border: 1px solid rgba(var(--text-primary-rgb), 0.07);
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    animation: diversityIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.card:hover {
+    border-color: rgba(var(--primary-rgb), 0.2);
+    transform: translateY(-3px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.15), 0 0 20px rgba(var(--primary-rgb), 0.06);
+}
+
+.iconWrap {
+    width: 42px; height: 42px; border-radius: 14px;
+    display: grid; place-items: center; font-size: 1.05rem;
+    color: var(--card-color, var(--primary));
+    background: rgba(var(--primary-rgb), 0.1);
+    box-shadow: 0 0 14px rgba(var(--primary-rgb), 0.08);
+}
+
+.body { display: flex; flex-direction: column; gap: 0.3rem; }
+
+.title {
+    margin: 0; color: var(--text-primary); font-size: 1rem; font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.desc {
+    margin: 0; color: rgba(var(--text-primary-rgb), 0.55); font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+/* Avatar stack */
+.avatarStack { display: flex; align-items: center; gap: 0; }
+
+.stackAvatar {
+    width: 32px; height: 32px; border-radius: 50%; overflow: hidden;
+    margin-left: -8px; border: 2.5px solid var(--bg-primary, #0a0614);
+}
+.stackAvatar:first-child { margin-left: 0; }
+
+.stackImg { width: 100%; height: 100%; object-fit: cover; }
+
+.stackFallback {
+    width: 100%; height: 100%; display: grid; place-items: center;
+    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.3), rgba(59,130,246,0.2));
+    color: #fff; font-size: 0.65rem; font-weight: 700;
+}
+
+.moreCount {
+    margin-left: 0.5rem; color: rgba(var(--text-primary-rgb), 0.5);
+    font-size: 0.78rem; font-weight: 600;
+}
+
+.cta {
+    display: inline-flex; align-items: center; align-self: flex-start;
+    padding: 0.6rem 1.1rem; border-radius: 999px; border: none; cursor: pointer;
+    background: var(--card-color, var(--primary)); color: #fff;
+    font-size: 0.85rem; font-weight: 700; font-family: inherit;
+    transition: all 0.2s ease;
+    box-shadow: 0 6px 18px rgba(var(--primary-rgb), 0.2);
+}
+.cta:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(var(--primary-rgb), 0.3); }
+
+@keyframes diversityIn {
+    from { opacity: 0; transform: translateY(12px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}

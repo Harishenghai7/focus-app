@@ -2,20 +2,23 @@ import React from 'react';
 import styles from './InterestCard.module.css';
 import { FaCheck } from 'react-icons/fa';
 
-const InterestCard = ({ label, emoji, selected, onClick }) => {
+const InterestCard = ({ label, emoji, selected, onClick, color }) => {
     return (
-        <div
+        <button
             className={`${styles.card} ${selected ? styles.selected : ''}`}
             onClick={onClick}
+            style={{ '--interest-color': color || '#a78bfa' }}
+            type="button"
         >
-            <div className={styles.emoji}>{emoji}</div>
+            <span className={styles.emoji}>{emoji}</span>
             <span className={styles.label}>{label}</span>
             {selected && (
-                <div className={styles.check}>
+                <span className={styles.check}>
                     <FaCheck />
-                </div>
+                </span>
             )}
-        </div>
+            <span className={styles.ripple} />
+        </button>
     );
 };
 

@@ -1,0 +1,87 @@
+.container { display: flex; flex-direction: column; gap: 1.2rem; }
+.header { display: grid; gap: 0.5rem; }
+.title { margin: 0; font-family: var(--font-display, 'Space Grotesk', sans-serif); font-size: clamp(1.4rem, 2.8vw, 1.85rem); font-weight: 700; color: #fff; }
+.subtitle { margin: 0; color: rgba(255,255,255,0.6); font-size: 0.9rem; line-height: 1.55; }
+.section { display: flex; flex-direction: column; gap: 0.55rem; }
+.sectionLabel { color: rgba(255,255,255,0.7); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+
+/* Personality cards */
+.personalityGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+.personalityCard {
+    display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+    padding: 1rem 0.65rem; border-radius: 20px; border: 1px solid rgba(196,181,253,0.08);
+    background: rgba(255,255,255,0.02); cursor: pointer; color: #fff; text-align: center;
+    transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
+}
+.personalityCard:hover { border-color: rgba(196,181,253,0.2); transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,0.2); }
+.personalityActive {
+    border-color: var(--p-color, #a78bfa) !important;
+    background: linear-gradient(145deg, color-mix(in srgb, var(--p-color) 10%, transparent), transparent);
+    box-shadow: 0 0 24px color-mix(in srgb, var(--p-color) 15%, transparent);
+    transform: scale(1.03);
+}
+.personalityEmoji { font-size: 2rem; transition: transform 0.3s ease; }
+.personalityCard:hover .personalityEmoji { transform: scale(1.15); }
+.personalityCard strong { font-size: 0.88rem; }
+.personalityDesc { color: rgba(255,255,255,0.45); font-size: 0.72rem; line-height: 1.35; }
+
+/* Greeting bubble */
+.greetingBubble {
+    display: flex; gap: 0.75rem; padding: 1rem; border-radius: 20px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));
+    border: 1px solid color-mix(in srgb, var(--p-color, #a78bfa) 20%, transparent);
+    animation: bubbleIn 0.4s cubic-bezier(0.22,1,0.36,1) both;
+}
+.greetingAvatar {
+    width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--p-color) 30%, transparent), rgba(59,130,246,0.15));
+    display: grid; place-items: center; color: #fff; font-size: 1rem;
+    box-shadow: 0 0 16px color-mix(in srgb, var(--p-color) 20%, transparent);
+}
+.greetingContent { flex: 1; }
+.greetingName { color: var(--p-color, #a78bfa); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+.greetingText { margin: 0.3rem 0 0; color: rgba(255,255,255,0.8); font-size: 0.9rem; line-height: 1.5; }
+.cursor { color: var(--p-color, #a78bfa); animation: blink 0.8s step-end infinite; font-weight: 300; }
+
+/* Proactivity */
+.proactivityGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.55rem; }
+.proactivityCard {
+    display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+    padding: 0.85rem 0.5rem; border-radius: 16px; border: 1px solid rgba(196,181,253,0.08);
+    background: rgba(255,255,255,0.02); cursor: pointer; color: #fff; text-align: center;
+    transition: all 0.25s ease;
+}
+.proactivityCard:hover { border-color: rgba(196,181,253,0.18); }
+.proactivityActive { border-color: rgba(139,92,246,0.35); background: rgba(139,92,246,0.06); }
+.proactivityIcon { font-size: 1.3rem; }
+.proactivityCard strong { font-size: 0.82rem; }
+.proactivityCard span { color: rgba(255,255,255,0.4); font-size: 0.7rem; }
+
+/* Channels */
+.channelList { display: grid; gap: 0.5rem; }
+.channelRow {
+    display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 0.95rem; border-radius: 16px;
+    border: 1px solid rgba(196,181,253,0.08); background: rgba(255,255,255,0.02);
+    cursor: pointer; color: #fff; width: 100%; transition: border-color 0.25s ease;
+}
+.channelRow:hover { border-color: rgba(196,181,253,0.16); }
+.channelActive { border-color: rgba(16,185,129,0.2); }
+.channelIcon { color: rgba(255,255,255,0.45); font-size: 0.95rem; flex-shrink: 0; }
+.channelActive .channelIcon { color: rgba(167,139,250,0.8); }
+.channelCopy { flex: 1; text-align: left; }
+.channelCopy strong { display: block; font-size: 0.88rem; margin-bottom: 0.1rem; }
+.channelCopy span { color: rgba(255,255,255,0.45); font-size: 0.78rem; }
+
+.toggle { width: 40px; height: 22px; border-radius: 999px; background: rgba(255,255,255,0.1); position: relative; flex-shrink: 0; transition: background 0.3s ease; }
+.toggleOn { background: #10b981; }
+.toggleDot { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform 0.3s cubic-bezier(0.22,1,0.36,1); }
+.toggleOn .toggleDot { transform: translateX(18px); }
+
+.actions { display: flex; justify-content: space-between; gap: 0.75rem; padding-top: 0.5rem; }
+
+@keyframes bubbleIn { from { opacity: 0; transform: translateY(10px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+@media (max-width: 640px) {
+    .personalityGrid, .proactivityGrid { grid-template-columns: repeat(2, 1fr); }
+}

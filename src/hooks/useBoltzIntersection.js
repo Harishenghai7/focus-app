@@ -19,9 +19,9 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 // GOD-LEVEL: 80% visibility threshold for precision activation
 const VISIBLE_THRESHOLD = 0.80;
 // Preload next video (N+1) for seamless transitions
-const PRELOAD_BUFFER = 1;
-// Release memory 2 steps away to protect 8GB RAM
-const RELEASE_BUFFER = 2;
+const PRELOAD_BUFFER = 2;
+// Release memory 3 steps away to protect 8GB RAM
+const RELEASE_BUFFER = 3;
 
 export const useBoltzIntersection = (totalCount = 0, onActiveChange) => {
     const [activeIndex, setActiveIndex] = useState(0);
@@ -102,8 +102,9 @@ export const useBoltzIntersection = (totalCount = 0, onActiveChange) => {
     }, [activeIndex]);
 
     // Helper: should this index release its source to save memory?
+    // Release items far behind AND far ahead for bidirectional memory management
     const shouldRelease = useCallback((index) => {
-        return index < activeIndex - RELEASE_BUFFER;
+        return index < activeIndex - RELEASE_BUFFER || index > activeIndex + RELEASE_BUFFER + 2;
     }, [activeIndex]);
 
     return {

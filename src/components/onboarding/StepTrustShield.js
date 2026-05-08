@@ -20,7 +20,7 @@
 
 import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Upload, Camera, ShieldCheck, RefreshCcw, ArrowLeft, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { Upload, Camera, ShieldCheck, RefreshCcw, ArrowLeft, AlertTriangle, CheckCircle, XCircle, Share2 } from 'lucide-react';
 import Button from '../shared/Button';
 import FocuslyAvatar from '../focusly-ai/FocuslyAvatar';
 import { triggerHaptic } from '../../utils/haptics';
@@ -337,13 +337,11 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
         updateFormData('identityHash', result.identityHash);
         
         try {
-            await persistTrustShieldState({
-                userId: user?.id,
-                verificationStatus: VERIFICATION_STATUS.PENDING,
-                ocrResult: result,
-                attemptResult: 'PENDING',
-                stage: 'ocr',
-            });
+            await supabase.from('profiles').update({
+                verification_step: 2,
+                identity_metadata: { ocrResult: result, stage: 'ocr', attempt: 'PENDING' },
+                updated_at: new Date().toISOString(),
+            }).eq('id', user?.id);
         } catch (persistError) {
             console.warn('[TrustShield] Persist failed:', persistError);
         }
@@ -1183,13 +1181,17 @@ const StepTrustShield = ({ formData, updateFormData, onNext, onBack, onReset }) 
                                 boxShadow: '0 5px 20px rgba(168,85,247,0.2)',
                                 boxSizing: 'border-box'
                             }}>
-                                <QRCodeSVG 
-                                    value={handshakeLink} 
-                                    style={{ width: '100%', height: '100%' }}
-                                    level="M"
-                                    bgColor="#ffffff" 
-                                    fgColor="#000000" 
-                                />
+                                <div style={{
+                                    width: '100%', height: '100%',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    flexDirection: 'column', gap: '8px', padding: '12px',
+                                    background: '#fff', borderRadius: '12px'
+                                }}>
+                                    <ShieldCheck size={40} color="#8b5cf6" />
+                                    <p style={{ fontSize: '0.7rem', color: '#333', textAlign: 'center', wordBreak: 'break-all', margin: 0 }}>
+                                        {handshakeLink}
+                                    </p>
+                                </div>
                             </div>
                             
                             <p className={styles.linkText} style={{ marginBottom: '8px', wordBreak: 'break-all' }}>

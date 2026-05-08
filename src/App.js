@@ -42,6 +42,7 @@ import SovereignMessages from './pages/Messages/SovereignMessages';
 import Profile from './pages/Profile/Profile';
 
 import GuardianHub from './pages/GuardianHub/GuardianHub';
+import FocuslyAIPage from './pages/FocuslyAIPage';
 
 // 5. Lazy Load Heavy Pages (Performance Optimization ⚡)
 // This prevents "WebGL" errors and speeds up initial load
@@ -51,6 +52,7 @@ const FocusIDVerification = lazy(() => import('./pages/verification/FocusIDVerif
 const VerifyMobile = lazy(() => import('./pages/verification/VerifyMobile'));
 const Explore = lazy(() => import('./pages/Explore/Explore'));
 const ExploreEnhanced = lazy(() => import('./pages/Explore/ExploreEnhanced'));
+const FuturisticExplore = lazy(() => import('./pages/Explore/FuturisticExplore'));
 const Create = lazy(() => import('./pages/Create/Create'));
 const Boltz = lazy(() => import('./pages/Boltz/Boltz'));
 const Settings = lazy(() => import('./pages/Settings/Settings'));
@@ -67,6 +69,8 @@ const SupportCenter = lazy(() => import('./pages/SupportCenter'));
 const SubmitTicket = lazy(() => import('./pages/SubmitTicket'));
 const AdminReports = lazy(() => import('./pages/admin/AdminReports'));
 const ModerationLogs = lazy(() => import('./pages/admin/ModerationLogs'));
+const TrustShieldDashboard = lazy(() => import('./pages/TrustShield/TrustShieldDashboard'));
+const ContentModerationHub = lazy(() => import('./pages/Moderation/ContentModerationHub'));
 
 // Auth Extras
 const Onboarding = lazy(() => import('./pages/Onboarding'));
@@ -229,16 +233,14 @@ const AppContent = () => {
                     <Route path="/onboarding" element={
                       user
                         ? (
-                            // 🛡️ Only allow access to /home if VERIFIED
-                            // onboarding_completed alone is NOT sufficient
+                            // ✅ If already fully verified, send to home
                             focusProfile?.verification_status === 'VERIFIED' ||
                             focusProfile?.trust_shield_status === 'VERIFIED' ||
                             focusProfile?.verification_status === 'VERIFIED_MINOR'
                               ? <Navigate to="/home" replace />
                               : (
-                                // 🔱 GOD-LEVEL: Check for locked step redirect
-                                // If user was locked to a specific step, they go directly there
-                                <Navigate to="/verification/trust-shield" replace />
+                                // 🌟 Render the full 8-step onboarding flow
+                                <Onboarding />
                               )
                           )
                         : <Navigate to="/auth" replace />
@@ -249,7 +251,8 @@ const AppContent = () => {
                             : <Navigate to="/auth" replace />
                     } />
 
-                    <Route path="/explore" element={user ? withTrustGate(isExploreV2 ? <ExploreEnhanced /> : <Explore />) : <Navigate to="/auth" replace />} />
+                    <Route path="/explore" element={user ? withTrustGate(<FuturisticExplore />) : <Navigate to="/auth" replace />} />
+                    <Route path="/explore/futuristic" element={user ? withTrustGate(<FuturisticExplore />) : <Navigate to="/auth" replace />} />
                     <Route path="/create" element={user ? withTrustGate(<Create />) : <Navigate to="/auth" replace />} />
 
                     <Route path="/boltz" element={user ? withTrustGate(<Boltz />) : <Navigate to="/auth" replace />} />
@@ -289,10 +292,21 @@ const AppContent = () => {
                     <Route path="/admin/reports" element={<AdminRoute><AdminReports /></AdminRoute>} />
                     <Route path="/admin/moderation/logs" element={<AdminRoute><ModerationLogs /></AdminRoute>} />
 
+                    {/* Trust Shield & Moderation Hubs */}
+                    <Route path="/trust-shield" element={user ? withTrustGate(<TrustShieldDashboard />) : <Navigate to="/auth" replace />} />
+                    <Route path="/moderation" element={user ? withTrustGate(<ContentModerationHub />) : <Navigate to="/auth" replace />} />
+
                     {/* Support */}
                     <Route path="/my-reports" element={user ? withTrustGate(<MyReports />) : <Navigate to="/auth" replace />} />
                     <Route path="/support" element={user ? <SupportCenter /> : <Navigate to="/auth" replace />} />
                     <Route path="/support/new" element={user ? <SubmitTicket /> : <Navigate to="/auth" replace />} />
+                    
+                    {/* Teen Care */}
+                    <Route path="/teen-care" element={user ? withTrustGate(<TeenCareGuardianDashboard />) : <Navigate to="/auth" replace />} />
+                    <Route path="/teen-care/:teenId" element={user ? withTrustGate(<TeenCareGuardianDashboard />) : <Navigate to="/auth" replace />} />
+
+                    {/* Focusly AI */}
+                    <Route path="/focusly-ai" element={user ? <FocuslyAIPage /> : <Navigate to="/auth" replace />} />
 
                     {/* Catch All — THE WALL */}
                     {/*
@@ -333,7 +347,6 @@ function App() {
                                     <AudioProvider>
                                         <AppContent />
                                         <FocuslyToastLayer />
-                                        <FocuslyCompanion />
                                         <ToastContainer position="bottom-right" theme="dark" limit={3} />
                                     </AudioProvider>
                                 </FocuslyProvider>

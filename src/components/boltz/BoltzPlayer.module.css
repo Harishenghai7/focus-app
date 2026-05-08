@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
    BoltzPlayer — GOD-LEVEL | H2 Royal Lavender
-   Full-Screen Video with Satin Fade Transitions & Emergency Fallback
+   Cinematic Full-Screen Video with Ambient Glow, Satin Transitions, GPU Accel
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 .container {
@@ -8,16 +8,29 @@
     width: 100%;
     height: 100vh;
     scroll-snap-align: start;
-    background: var(--bg-primary, var(--bg-primary));
+    background: var(--bg-primary, #0f0a1e);
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
+    isolation: isolate;
 }
 
-/* ── SATIN FADE TRANSITION ──────────────────────────────────────────────────────── */
+/* ── AMBIENT BACKGROUND GLOW ─────────────────────────────────── */
+.ambientGlow {
+    position: absolute;
+    inset: -40px;
+    background: radial-gradient(ellipse at center, var(--ambient-color, rgb(15, 10, 30)) 0%, transparent 70%);
+    opacity: 0.25;
+    filter: blur(60px);
+    z-index: 0;
+    transition: background 1.5s ease;
+    pointer-events: none;
+}
+
+/* ── SATIN FADE TRANSITION ───────────────────────────────────── */
 .container.transitioning {
-    animation: satinReveal 300ms ease-in-out;
+    animation: satinReveal 350ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .satinOverlay {
@@ -26,60 +39,52 @@
     background: linear-gradient(
         180deg,
         rgba(10, 4, 21, 0) 0%,
-        rgba(var(--primary-rgb), 0.1) 50%,
+        rgba(139, 92, 246, 0.06) 50%,
         rgba(10, 4, 21, 0) 100%
     );
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(3px);
     pointer-events: none;
     z-index: 25;
-    animation: satinFade 300ms ease-in-out forwards;
+    animation: satinFade 350ms ease-in-out forwards;
 }
 
 @keyframes satinReveal {
-    0% {
-        opacity: 0.8;
-    }
-    100% {
-        opacity: 1;
-    }
+    0% { opacity: 0.7; transform: scale(1.02); }
+    100% { opacity: 1; transform: scale(1); }
 }
 
 @keyframes satinFade {
-    0% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.5;
-    }
-    100% {
-        opacity: 0;
-    }
+    0% { opacity: 1; }
+    100% { opacity: 0; }
 }
 
-/* ── VIDEO ELEMENT ─────────────────────────────────────────────────────────────── */
+/* ── VIDEO ELEMENT ───────────────────────────────────────────── */
 .video {
     width: 100%;
     height: 100%;
     object-fit: cover;
     cursor: pointer;
-    background: var(--bg-primary, var(--bg-primary));
+    background: var(--bg-primary, #0f0a1e);
     opacity: 0;
-    animation: videoFadeIn 300ms ease-in-out forwards;
-    /* Hardware acceleration for GPU rendering */
+    animation: videoFadeIn 400ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
     transform: translateZ(0);
     will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    z-index: 1;
 }
 
 .video.buffering {
-    opacity: 0.7;
-    filter: blur(1px);
+    opacity: 0.6;
+    filter: blur(2px);
+    transition: opacity 0.3s ease, filter 0.3s ease;
 }
 
 @keyframes videoFadeIn {
     0% {
         opacity: 0;
-        transform: scale(1.02) translateZ(0);
-        filter: blur(2px);
+        transform: scale(1.03) translateZ(0);
+        filter: blur(4px);
     }
     100% {
         opacity: 1;
@@ -88,7 +93,7 @@
     }
 }
 
-/* ── BUFFERING INDICATOR ────────────────────────────────────────────────────────── */
+/* ── BUFFERING INDICATOR ─────────────────────────────────────── */
 .bufferingIndicator {
     position: absolute;
     top: 50%;
@@ -99,13 +104,15 @@
 }
 
 .bufferingSpinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid rgba(var(--text-primary-rgb), 0.1);
-    border-top-color: rgba(196, 181, 253, 0.9);
+    width: 44px;
+    height: 44px;
+    border: 3px solid rgba(255, 255, 255, 0.08);
     border-radius: 50%;
+    background: conic-gradient(from 0deg, rgba(196, 181, 253, 0.9), rgba(139, 92, 246, 0.6), transparent 70%);
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+    mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
     animation: bufferSpin 1s linear infinite;
-    box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.3);
+    box-shadow: 0 0 24px rgba(139, 92, 246, 0.4);
 }
 
 @keyframes bufferSpin {
@@ -113,74 +120,137 @@
     to { transform: rotate(360deg); }
 }
 
-/* ── POSTER IMAGE ──────────────────────────────────────────────────────────────── */
+/* ── POSTER IMAGE ────────────────────────────────────────────── */
 .poster {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0;
-    animation: posterFadeIn 400ms ease-in-out forwards;
-    z-index: 1;
+    z-index: 2;
+    animation: posterFadeIn 500ms ease-in-out forwards;
 }
 
 .posterFaded {
-    opacity: 0;
-    animation: posterFadeOut 300ms ease-in-out forwards;
+    animation: posterFadeOut 400ms ease-in-out forwards;
 }
 
 @keyframes posterFadeIn {
-    0% {
-        opacity: 0;
-        transform: scale(1.05);
-        filter: blur(4px);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1);
-        filter: blur(0);
-    }
+    0% { opacity: 0; transform: scale(1.05); filter: blur(6px); }
+    100% { opacity: 1; transform: scale(1); filter: blur(0); }
 }
 
 @keyframes posterFadeOut {
-    0% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0;
-    }
+    0% { opacity: 1; }
+    100% { opacity: 0; }
 }
 
-/* ── VIDEO PLACEHOLDER (Memory Release State) ──────────────────────────────────── */
+/* ── PAUSE/PLAY ICON OVERLAY ─────────────────────────────────── */
+.pauseIconOverlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 35;
+    pointer-events: none;
+    animation: pauseIconFade 800ms ease forwards;
+}
+
+.pauseIcon {
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    animation: pauseIconBounce 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    letter-spacing: 2px;
+}
+
+@keyframes pauseIconBounce {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pauseIconFade {
+    0% { opacity: 1; }
+    60% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* ── PLAYBACK SPEED BADGE ────────────────────────────────────── */
+.speedBadge {
+    position: absolute;
+    top: 60px;
+    right: 16px;
+    z-index: 40;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: var(--font-primary, 'Inter', sans-serif);
+}
+
+.speedBadge:hover {
+    background: rgba(139, 92, 246, 0.2);
+    border-color: rgba(139, 92, 246, 0.5);
+}
+
+/* ── VIDEO PLACEHOLDER (Memory Release) ──────────────────────── */
 .videoPlaceholder {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-        135deg,
-        rgba(10, 4, 21, 0.95) 0%,
-        rgba(26, 15, 46, 0.98) 100%
-    );
+    background: linear-gradient(135deg, rgba(10, 4, 21, 0.95) 0%, rgba(26, 15, 46, 0.98) 100%);
     z-index: 1;
 }
 
-/* ── DESKTOP: Contained Video ──────────────────────────────────────────────────── */
+/* ── DESKTOP RESPONSIVE ──────────────────────────────────────── */
 @media (min-width: 1024px) {
     .video {
         object-fit: contain;
     }
-
     .container {
         max-width: 500px;
         margin: 0 auto;
     }
+    .ambientGlow {
+        opacity: 0.35;
+    }
 }
 
-/* ── MOBILE: Optimized Performance ──────────────────────────────────────────────── */
+/* ── MOBILE OPTIMIZED ────────────────────────────────────────── */
 @media (max-width: 768px) {
     .bufferingSpinner {
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
         border-width: 2px;
     }
+    .pauseIcon {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+    }
+}
+
+/* ── REDUCED MOTION ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    .container.transitioning { animation: none; }
+    .satinOverlay { animation: none; opacity: 0; }
+    .video { animation: none; opacity: 1; }
+    .poster { animation: none; opacity: 1; }
+    .posterFaded { animation: none; opacity: 0; }
 }

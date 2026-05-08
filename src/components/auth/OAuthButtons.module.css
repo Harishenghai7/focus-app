@@ -1,207 +1,285 @@
 .container {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
     width: 100%;
 }
+
+/* ============================================
+   BASE OAUTH BUTTON
+   ============================================ */
 
 .oauthButton {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    gap: 0.9rem;
-    padding: 0.95rem 1rem;
+    gap: 0.85rem;
+    padding: 0.9rem 1.1rem;
     border-radius: 18px;
-    border: 1px solid rgba(196, 181, 253, 0.12);
+    border: 1px solid rgba(167, 139, 250, 0.1);
     background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
-        rgba(255, 255, 255, 0.02);
+        linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015)),
+        rgba(10, 5, 32, 0.5);
     color: white;
     font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
-    transition: 
-        transform 220ms cubic-bezier(0.22, 1, 0.36, 1), 
-        border-color 220ms cubic-bezier(0.22, 1, 0.36, 1), 
-        box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1),
-        background 220ms cubic-bezier(0.22, 1, 0.36, 1);
     width: 100%;
-    min-height: 4.2rem;
+    min-height: 3.6rem;
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition:
+        transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 260ms ease,
+        box-shadow 360ms ease,
+        background 260ms ease;
+    animation: buttonStagger 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* Animated gradient shimmer on hover */
-.oauthButton::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        135deg,
-        transparent 0%,
-        var(--brand-glow, rgba(139, 92, 246, 0.1)) 50%,
-        transparent 100%
-    );
-    opacity: 0;
-    transition: opacity 300ms ease;
-    pointer-events: none;
-}
-
-.oauthButton:hover::before {
-    opacity: 1;
-}
-
-.oauthButton:last-child {
-    grid-column: 1 / -1;
-}
+/* ============================================
+   HOVER / ACTIVE / DISABLED STATES
+   ============================================ */
 
 .oauthButton:hover:not(:disabled) {
-    transform: translateY(-3px);
-    box-shadow: 0 16px 30px rgba(4, 2, 11, 0.35), 
-                0 0 0 1px rgba(196, 181, 253, 0.1),
-                0 0 30px var(--brand-shadow, rgba(139, 92, 246, 0.1));
-    border-color: var(--brand-border, rgba(196, 181, 253, 0.26));
+    transform: translateY(-2px);
+    border-color: var(--brand-border, rgba(167, 139, 250, 0.25));
+    box-shadow:
+        0 12px 36px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(167, 139, 250, 0.08),
+        0 0 30px var(--brand-glow, rgba(139, 92, 246, 0.08));
 }
 
 .oauthButton:active:not(:disabled) {
-    transform: translateY(-1px) scale(0.985);
+    transform: translateY(0) scale(0.98);
+    transition-duration: 100ms;
 }
 
 .oauthButton:disabled {
-    opacity: 0.5;
+    opacity: 0.45;
     cursor: not-allowed;
-    filter: grayscale(100%);
+    filter: grayscale(0.6);
 }
 
-/* Loading spinner state */
 .oauthButton.loading {
+    pointer-events: none;
+    border-color: var(--brand-border, rgba(167, 139, 250, 0.3));
+    box-shadow: 0 0 30px var(--brand-glow, rgba(139, 92, 246, 0.15));
+}
+
+/* ============================================
+   HOVER GRADIENT SWEEP
+   ============================================ */
+
+.hoverSweep {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        105deg,
+        transparent 0%,
+        var(--brand-glow, rgba(139, 92, 246, 0.06)) 40%,
+        var(--brand-glow, rgba(139, 92, 246, 0.1)) 50%,
+        var(--brand-glow, rgba(139, 92, 246, 0.06)) 60%,
+        transparent 100%
+    );
+    transform: translateX(-100%);
+    transition: transform 500ms ease;
     pointer-events: none;
 }
 
-.oauthButton.loading .icon {
-    animation: iconSpin 1s linear infinite;
+.oauthButton:hover .hoverSweep {
+    transform: translateX(100%);
 }
 
+/* ============================================
+   NEON ACCENT LINE (bottom edge)
+   ============================================ */
+
+.neonAccent {
+    position: absolute;
+    bottom: 0;
+    left: 15%;
+    right: 15%;
+    height: 1px;
+    background: linear-gradient(90deg,
+        transparent,
+        var(--brand-accent, rgba(139, 92, 246, 0.4)),
+        transparent
+    );
+    opacity: 0;
+    transition: opacity 300ms ease, left 300ms ease, right 300ms ease;
+    pointer-events: none;
+}
+
+.oauthButton:hover .neonAccent {
+    opacity: 1;
+    left: 10%;
+    right: 10%;
+}
+
+/* ============================================
+   RIPPLE EFFECT
+   ============================================ */
+
+.ripple {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: var(--brand-ripple, rgba(139, 92, 246, 0.2));
+    transform: translate(-50%, -50%);
+    animation: rippleExpand 600ms cubic-bezier(0, 0.5, 0.25, 1) forwards;
+    pointer-events: none;
+}
+
+/* ============================================
+   ICON CONTAINER
+   ============================================ */
+
 .icon {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    transition: 
-        transform 300ms cubic-bezier(0.22, 1, 0.36, 1), 
-        background 300ms ease,
-        box-shadow 300ms ease;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     flex-shrink: 0;
+    transition:
+        transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+        background 300ms ease,
+        box-shadow 300ms ease,
+        border-color 300ms ease;
+    color: var(--brand-icon, #e2e2e2);
 }
+
+.oauthButton:hover:not(:disabled) .icon {
+    transform: scale(1.08);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--brand-icon-border, rgba(255, 255, 255, 0.1));
+    box-shadow: 0 0 16px var(--brand-icon-glow, rgba(139, 92, 246, 0.15));
+}
+
+/* Spinner inside icon on loading */
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-top-color: var(--brand-icon, #a78bfa);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+/* ============================================
+   LABEL & ARROW
+   ============================================ */
 
 .label {
     flex: 1;
     text-align: left;
+    font-family: var(--font-body, 'Manrope', sans-serif);
 }
 
-.oauthButton:hover:not(:disabled) .icon {
-    transform: scale(1.06) rotate(-3deg);
-    background: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 0 12px var(--brand-icon-glow, rgba(139, 92, 246, 0.2));
+.arrow {
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.2);
+    transition: color 260ms ease, transform 260ms ease;
+    flex-shrink: 0;
+}
+
+.oauthButton:hover:not(:disabled) .arrow {
+    color: rgba(255, 255, 255, 0.5);
+    transform: translateX(3px);
 }
 
 /* ============================================
-   PROVIDER-SPECIFIC BRAND COLORS
+   PROVIDER-SPECIFIC BRAND TOKENS
    ============================================ */
 
 /* Google */
 .google {
     --brand-glow: rgba(234, 88, 12, 0.08);
-    --brand-shadow: rgba(234, 88, 12, 0.12);
-    --brand-border: rgba(234, 88, 12, 0.25);
-    --brand-icon-glow: rgba(234, 88, 12, 0.25);
-}
-
-.google .icon {
-    color: #ea580c;
-}
-
-.google:hover:not(:disabled) {
-    border-color: rgba(234, 88, 12, 0.2);
+    --brand-border: rgba(234, 88, 12, 0.2);
+    --brand-accent: rgba(234, 88, 12, 0.5);
+    --brand-ripple: rgba(234, 88, 12, 0.15);
+    --brand-icon: #ea580c;
+    --brand-icon-glow: rgba(234, 88, 12, 0.2);
+    --brand-icon-border: rgba(234, 88, 12, 0.15);
 }
 
 /* Microsoft */
 .microsoft {
     --brand-glow: rgba(59, 130, 246, 0.08);
-    --brand-shadow: rgba(59, 130, 246, 0.12);
-    --brand-border: rgba(59, 130, 246, 0.25);
-    --brand-icon-glow: rgba(59, 130, 246, 0.25);
-}
-
-.microsoft .icon {
-    color: #3b82f6;
-}
-
-.microsoft:hover:not(:disabled) {
-    border-color: rgba(59, 130, 246, 0.2);
+    --brand-border: rgba(59, 130, 246, 0.2);
+    --brand-accent: rgba(59, 130, 246, 0.5);
+    --brand-ripple: rgba(59, 130, 246, 0.15);
+    --brand-icon: #3b82f6;
+    --brand-icon-glow: rgba(59, 130, 246, 0.2);
+    --brand-icon-border: rgba(59, 130, 246, 0.15);
 }
 
 /* GitHub */
 .github {
-    --brand-glow: rgba(255, 255, 255, 0.06);
-    --brand-shadow: rgba(255, 255, 255, 0.08);
-    --brand-border: rgba(255, 255, 255, 0.18);
-    --brand-icon-glow: rgba(255, 255, 255, 0.15);
-}
-
-.github .icon {
-    color: #f0f0f0;
-}
-
-.github:hover:not(:disabled) {
-    border-color: rgba(255, 255, 255, 0.14);
+    --brand-glow: rgba(255, 255, 255, 0.05);
+    --brand-border: rgba(255, 255, 255, 0.15);
+    --brand-accent: rgba(255, 255, 255, 0.35);
+    --brand-ripple: rgba(255, 255, 255, 0.1);
+    --brand-icon: #f0f0f0;
+    --brand-icon-glow: rgba(255, 255, 255, 0.12);
+    --brand-icon-border: rgba(255, 255, 255, 0.1);
 }
 
 /* Discord */
 .discord {
     --brand-glow: rgba(88, 101, 242, 0.1);
-    --brand-shadow: rgba(88, 101, 242, 0.15);
-    --brand-border: rgba(88, 101, 242, 0.3);
-    --brand-icon-glow: rgba(88, 101, 242, 0.3);
-}
-
-.discord .icon {
-    color: #5865F2;
-}
-
-.discord:hover:not(:disabled) {
-    border-color: rgba(88, 101, 242, 0.25);
+    --brand-border: rgba(88, 101, 242, 0.25);
+    --brand-accent: rgba(88, 101, 242, 0.55);
+    --brand-ripple: rgba(88, 101, 242, 0.15);
+    --brand-icon: #5865F2;
+    --brand-icon-glow: rgba(88, 101, 242, 0.25);
+    --brand-icon-border: rgba(88, 101, 242, 0.15);
 }
 
 /* Twitter / X */
 .twitter {
-    --brand-glow: rgba(255, 255, 255, 0.05);
-    --brand-shadow: rgba(255, 255, 255, 0.06);
-    --brand-border: rgba(255, 255, 255, 0.16);
-    --brand-icon-glow: rgba(255, 255, 255, 0.12);
-}
-
-.twitter .icon {
-    color: #e2e2e2;
-}
-
-.twitter:hover:not(:disabled) {
-    border-color: rgba(255, 255, 255, 0.12);
+    --brand-glow: rgba(255, 255, 255, 0.04);
+    --brand-border: rgba(255, 255, 255, 0.12);
+    --brand-accent: rgba(255, 255, 255, 0.3);
+    --brand-ripple: rgba(255, 255, 255, 0.08);
+    --brand-icon: #d4d4d4;
+    --brand-icon-glow: rgba(255, 255, 255, 0.1);
+    --brand-icon-border: rgba(255, 255, 255, 0.08);
 }
 
 /* ============================================
    ANIMATIONS
    ============================================ */
 
-@keyframes iconSpin {
-    from { transform: rotate(0deg); }
+@keyframes buttonStagger {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+        filter: blur(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+@keyframes rippleExpand {
+    to {
+        width: 500px;
+        height: 500px;
+        opacity: 0;
+    }
+}
+
+@keyframes spin {
     to { transform: rotate(360deg); }
 }
 
@@ -211,10 +289,21 @@
 
 @media (max-width: 640px) {
     .container {
-        grid-template-columns: 1fr;
+        gap: 0.5rem;
     }
 
-    .oauthButton:last-child {
-        grid-column: auto;
+    .oauthButton {
+        min-height: 3.4rem;
+        padding: 0.8rem 1rem;
+        border-radius: 16px;
+    }
+
+    .icon {
+        width: 2.2rem;
+        height: 2.2rem;
+    }
+
+    .label {
+        font-size: 0.9rem;
     }
 }

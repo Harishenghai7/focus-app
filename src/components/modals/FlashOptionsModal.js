@@ -43,10 +43,7 @@ const FlashOptionsModal = ({ flash, isOwn, onClose, onReport }) => {
         onClose();
     };
 
-    const handleCloseReport = () => {
-        setShowReportModal(false);
-        onClose();
-    };
+
 
     return (
         <>

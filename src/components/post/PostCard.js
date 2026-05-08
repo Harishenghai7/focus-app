@@ -34,6 +34,8 @@ const PostCard = ({ post }) => {
     const isVerified = author.is_verified || false;
     const trustTier  = author.trust_tier  || 0;
 
+    const { toggleLike } = useInteractions({ post });
+
     const [showComments, setShowComments]   = useState(false);
     const [showShare, setShowShare]         = useState(false);
     const [showActions, setShowActions]     = useState(false);

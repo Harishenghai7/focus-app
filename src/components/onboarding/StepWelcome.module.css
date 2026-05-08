@@ -1,83 +1,202 @@
 .container {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 1.4rem;
 }
 
-.header {
-    text-align: center;
-    margin-bottom: 10px;
-}
+.header { display: grid; gap: 0.5rem; }
 
 .title {
-    color: var(--primary);
-    font-size: var(--font-3xl);
-    font-weight: var(--font-bold);
-    margin-bottom: var(--space-2);
+    margin: 0;
+    font-family: var(--font-display, 'Space Grotesk', sans-serif);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.03em;
+}
+
+.cursor {
+    color: #a78bfa;
+    animation: blink 0.8s step-end infinite;
+    font-weight: 300;
 }
 
 .subtitle {
-    color: var(--text-secondary);
-    font-size: var(--font-base);
+    margin: 0;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.92rem;
+    line-height: 1.55;
+}
+
+.mainLayout {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.avatarSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.avatarHint {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.75rem;
+    text-align: center;
 }
 
 .form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 1rem;
 }
 
-.bioWrapper {
-    position: relative;
+.fieldGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.fieldLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.optional {
+    color: rgba(255, 255, 255, 0.35);
+    font-weight: 500;
+    font-size: 0.75rem;
+}
+
+.charRing {
+    color: rgba(167, 139, 250, 0.7);
+    font-size: 0.72rem;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.fieldSuccess {
+    color: #6ee7b7;
+    font-size: 0.78rem;
+    font-weight: 600;
+    animation: fadeIn 0.3s ease both;
 }
 
 .bioTextarea {
     width: 100%;
-    padding: var(--space-3) var(--space-4);
-    border: 2px solid var(--border-subtle);
-    background: var(--glass-surface);
-    color: var(--text-primary);
-    border-radius: var(--radius-md);
-    font-size: var(--font-base);
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    border: 1px solid rgba(167, 139, 250, 0.12);
+    background: rgba(255, 255, 255, 0.03);
+    color: #fff;
+    font-size: 0.92rem;
     font-family: inherit;
-    resize: vertical;
-    transition: all var(--transition-base);
-}
-
-.bioTextarea:focus {
+    resize: none;
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary-dim);
-    background: var(--glass-surface-hover);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    line-height: 1.5;
 }
 
-.charCount {
-    position: absolute;
-    bottom: var(--space-2);
-    right: var(--space-3);
-    font-size: var(--font-xs);
-    color: var(--text-secondary);
-    background: var(--bg-tertiary);
-    padding: 2px 6px;
-    border-radius: var(--radius-sm);
+.bioTextarea::placeholder { color: rgba(255, 255, 255, 0.28); }
+.bioTextarea:focus {
+    border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+/* Live preview card */
+.previewCard {
+    padding: 1rem;
+    border-radius: 20px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
+    border: 1px solid rgba(196, 181, 253, 0.1);
+    animation: fadeIn 0.4s ease both;
+}
+
+.previewLabel {
+    display: inline-flex;
+    padding: 0.25rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(167, 139, 250, 0.1);
+    color: rgba(167, 139, 250, 0.8);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.7rem;
+}
+
+.previewContent {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.previewAvatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.3), rgba(59, 130, 246, 0.2));
+    display: grid;
+    place-items: center;
+    box-shadow: 0 0 16px rgba(139, 92, 246, 0.15);
+}
+
+.previewAvatarImg { width: 100%; height: 100%; object-fit: cover; }
+.previewAvatarPlaceholder {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.previewName {
+    margin: 0;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.previewHandle {
+    margin: 0;
+    color: rgba(167, 139, 250, 0.7);
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.previewBio {
+    margin: 0.3rem 0 0;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 0.82rem;
+    line-height: 1.4;
 }
 
 .actions {
     display: flex;
-    gap: 12px;
-    margin-top: 8px;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
 }
 
-.actions button {
-    flex: 1;
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
 }
 
-@media (max-width: 768px) {
-    .title {
-        font-size: 24px;
-    }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-    .subtitle {
-        font-size: 14px;
-    }
+@media (max-width: 640px) {
+    .mainLayout { grid-template-columns: 1fr; }
+    .avatarSection { flex-direction: row; gap: 1rem; }
 }

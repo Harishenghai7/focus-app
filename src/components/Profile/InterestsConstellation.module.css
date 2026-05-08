@@ -1,0 +1,154 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   InterestsConstellation — Animated Interest Tag Cloud
+   Focus Profile Digital Identity System
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.constellation {
+    margin: 0 var(--space-4);
+    padding: var(--space-5);
+    background: var(--glass-depth-1);
+    border: 1px solid var(--glass-depth-1-border);
+    border-radius: var(--radius-2xl);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-4);
+}
+
+.title {
+    font-family: var(--font-display);
+    font-size: var(--font-sm);
+    font-weight: var(--font-bold);
+    color: var(--text-secondary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.titleIcon {
+    color: var(--primary);
+    font-size: var(--font-base);
+}
+
+.editBtn {
+    font-size: var(--font-xs);
+    font-weight: var(--font-semibold);
+    color: var(--primary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-base);
+    font-family: var(--font-primary);
+}
+
+.editBtn:hover {
+    background: rgba(var(--primary-rgb), 0.1);
+}
+
+/* ── Pills ────────────────────────────────────────────────── */
+.pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    font-size: var(--font-xs);
+    font-weight: var(--font-semibold);
+    color: var(--text-secondary);
+    background: rgba(var(--primary-rgb), 0.08);
+    border: 1px solid rgba(var(--primary-rgb), 0.15);
+    border-radius: var(--radius-full);
+    cursor: default;
+    transition: all var(--transition-base);
+    white-space: nowrap;
+}
+
+.pill:hover {
+    background: rgba(var(--primary-rgb), 0.15);
+    border-color: rgba(var(--primary-rgb), 0.3);
+    color: var(--text-primary);
+    box-shadow: 0 0 12px rgba(var(--primary-rgb), 0.15);
+}
+
+/* ── Toggle Button ────────────────────────────────────────── */
+.toggleBtn {
+    margin-top: var(--space-3);
+    font-size: var(--font-xs);
+    font-weight: var(--font-semibold);
+    color: var(--primary-light);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 0;
+    font-family: var(--font-primary);
+    transition: color var(--transition-base);
+}
+
+.toggleBtn:hover {
+    color: var(--text-primary);
+}
+
+/* ── Add Prompt (Empty State) ─────────────────────────────── */
+.addPrompt {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: rgba(var(--primary-rgb), 0.04);
+    border: 1px dashed rgba(var(--primary-rgb), 0.2);
+    border-radius: var(--radius-lg);
+    color: var(--text-tertiary);
+    font-size: var(--font-sm);
+    font-family: var(--font-primary);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.addPrompt:hover {
+    background: rgba(var(--primary-rgb), 0.08);
+    border-color: rgba(var(--primary-rgb), 0.35);
+    color: var(--text-secondary);
+}
+
+.addIcon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(var(--primary-rgb), 0.1);
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-lg);
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .constellation {
+        margin: 0 var(--space-2);
+        padding: var(--space-4);
+    }
+
+    .pill {
+        padding: 5px 11px;
+        font-size: 11px;
+    }
+}

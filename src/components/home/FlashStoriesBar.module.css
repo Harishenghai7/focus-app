@@ -1,359 +1,216 @@
-/* ═══════════════════════════════════════════════════════════════════════════
-   FLASH STORIES BAR — H2 Universal Theme | Sovereign Ephemerality
-   Royal Lavender Conic Gradient + Trust Shield Integration
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════
+   FlashStoriesBar.module.css — Cinematic Universe Edition
+   Animated gradient rings, live indicators, premium scroll
+   ═══════════════════════════════════════════════════════════════════════ */
 
 .container {
-    padding: var(--h2-space-md, 16px) 0;
-    border-bottom: var(--h2-satin-border, 1px solid rgba(var(--text-primary-rgb), 0.12));
-    background: transparent;
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 4px;
 }
 
-/* Glassmorphism backdrop for the stories bar */
-.container::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        180deg,
-        rgba(var(--primary-rgb), 0.03) 0%,
-        transparent 100%
-    );
-    pointer-events: none;
+.header {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 0 12px;
 }
 
+.title {
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.subtitle {
+    color: rgba(var(--text-primary-rgb), 0.35);
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+/* ═══ Scroll area ═══ */
 .scrollArea {
     display: flex;
-    gap: var(--h2-space-lg, 20px);
+    gap: 14px;
     overflow-x: auto;
-    padding: var(--h2-space-sm, 8px) var(--h2-space-md, 16px);
+    padding: 4px 12px 8px;
     scrollbar-width: none;
-    -ms-overflow-style: none;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
 }
+.scrollArea::-webkit-scrollbar { display: none; }
 
-.scrollArea::-webkit-scrollbar {
-    display: none;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   STORY TILE — Base Structure
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══ Story tile ═══ */
 .storyTile {
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--h2-space-xs, 6px);
-    min-width: 80px;
+    gap: 6px;
     cursor: pointer;
-    flex-shrink: 0;
-    transition: transform var(--h2-transition-fast, 0.15s ease);
+    scroll-snap-align: start;
+    transition: transform 0.2s ease;
 }
+.storyTile:hover { transform: translateY(-2px); }
+.storyTile:active { transform: scale(0.95); }
 
-.storyTile:hover {
-    transform: translateY(-2px);
-}
+.myStoryWrapper { flex-shrink: 0; }
 
-.storyTile:active {
-    transform: translateY(0) scale(0.97);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   SOVEREIGN RING — Royal Lavender Conic Gradient System
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-/* Base ring structure */
-.sovereignRing,
-.sovereignRingEmpty {
+/* ═══ Avatar ring ═══ */
+.avatarRing {
     position: relative;
-    width: 76px;
-    height: 76px;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
-    padding: 4px;
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    padding: 3px;
+    background: rgba(var(--text-primary-rgb), 0.12);
+    transition: box-shadow 0.3s ease;
 }
 
-/* Royal Lavender Conic Gradient — Unviewed (Active) */
-.sovereignRingUnviewed {
-    background: conic-gradient(
-        from 0deg,
-        var(--primary) 0deg,
-        var(--primary-light) 60deg,
-        var(--error) 120deg,
-        var(--text-muted) 180deg,
-        var(--primary-light) 240deg,
-        var(--primary) 300deg,
-        var(--primary) 360deg
-    );
-    animation: conicRotate 8s linear infinite;
-    box-shadow: 
-        0 0 0 0 rgba(var(--primary-rgb), 0.6),
-        0 4px 20px rgba(var(--primary-rgb), 0.4),
-        0 0 40px rgba(236, 72, 153, 0.2);
+/* Unwatched — animated gradient ring */
+.unwatched {
+    background: linear-gradient(135deg, var(--primary), #ec4899, #f59e0b, var(--primary));
+    background-size: 300% 300%;
+    animation: gradientSpin 3s linear infinite;
+    box-shadow: 0 0 14px rgba(var(--primary-rgb), 0.25);
 }
 
-/* Conic rotation animation */
-@keyframes conicRotate {
-    0% { 
-        background: conic-gradient(from 0deg, var(--primary), var(--primary-light), var(--error), var(--text-muted), var(--primary-light), var(--primary));
-    }
-    25% { 
-        background: conic-gradient(from 90deg, var(--primary), var(--primary-light), var(--error), var(--text-muted), var(--primary-light), var(--primary));
-    }
-    50% { 
-        background: conic-gradient(from 180deg, var(--primary), var(--primary-light), var(--error), var(--text-muted), var(--primary-light), var(--primary));
-    }
-    75% { 
-        background: conic-gradient(from 270deg, var(--primary), var(--primary-light), var(--error), var(--text-muted), var(--primary-light), var(--primary));
-    }
-    100% { 
-        background: conic-gradient(from 360deg, var(--primary), var(--primary-light), var(--error), var(--text-muted), var(--primary-light), var(--primary));
-    }
+/* Watched — muted ring */
+.watched {
+    background: rgba(var(--text-primary-rgb), 0.1);
 }
 
-/* Sovereign Pulse Animation for unviewed stories */
-.sovereignRingUnviewed::before {
-    content: '';
-    position: absolute;
-    inset: -4px;
-    border-radius: 50%;
-    background: conic-gradient(
-        from 0deg,
-        transparent 0deg,
-        rgba(var(--primary-rgb), 0.8) 60deg,
-        rgba(236, 72, 153, 0.8) 120deg,
-        transparent 180deg
-    );
-    filter: blur(8px);
-    opacity: 0.6;
-    animation: sovereignPulseGlow 2s ease-in-out infinite;
-    z-index: -1;
+/* Has story — own stories ring */
+.hasStory .avatarRing {
+    background: linear-gradient(135deg, var(--primary), #ec4899);
 }
 
-@keyframes sovereignPulseGlow {
-    0%, 100% {
-        opacity: 0.4;
-        transform: scale(1);
-    }
-    50% {
-        opacity: 0.8;
-        transform: scale(1.05);
-    }
+/* Add story ring */
+.addStory .avatarRing {
+    background: rgba(var(--text-primary-rgb), 0.08);
+    border: 2px dashed rgba(var(--text-primary-rgb), 0.15);
+    padding: 1px;
 }
 
-/* Viewed state — subtle satin finish */
-.sovereignRingViewed {
-    background: linear-gradient(
-        135deg,
-        rgba(var(--text-primary-rgb), 0.2),
-        rgba(var(--text-primary-rgb), 0.05)
-    );
-    border: 1px solid rgba(var(--text-primary-rgb), 0.1);
-}
-
-/* Empty state (no story) */
-.sovereignRingEmpty {
-    background: linear-gradient(
-        135deg,
-        rgba(var(--primary-rgb), 0.15),
-        rgba(236, 72, 153, 0.08)
-    );
-    border: 2px dashed rgba(var(--primary-rgb), 0.3);
-}
-
-.sovereignRingEmpty:hover {
-    border-color: rgba(var(--primary-rgb), 0.5);
-    background: linear-gradient(
-        135deg,
-        rgba(var(--primary-rgb), 0.25),
-        rgba(236, 72, 153, 0.15)
-    );
-}
-
-/* Hover effects */
-.storyTile:hover .sovereignRingUnviewed {
-    transform: scale(1.08);
-    box-shadow: 
-        0 0 0 4px rgba(var(--primary-rgb), 0.2),
-        0 8px 30px rgba(var(--primary-rgb), 0.5),
-        0 0 60px rgba(236, 72, 153, 0.3);
-}
-
-.storyTile:hover .sovereignRingViewed {
-    transform: scale(1.05);
-    border-color: rgba(var(--primary-rgb), 0.3);
-    box-shadow: 0 4px 20px rgba(var(--primary-rgb), 0.2);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   AVATAR WRAPPER — Inner Content Container
-   ═══════════════════════════════════════════════════════════════════════════ */
-.sovereignAvatarWrapper {
+.avatar {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    overflow: hidden;
-    background: var(--h2-black, var(--bg-secondary));
-    border: 3px solid transparent;
-    position: relative;
-}
-
-.sovereignThumb,
-.sovereignAvatar {
-    width: 100%;
-    height: 100%;
     object-fit: cover;
-    display: block;
-    border-radius: 50%;
+    border: 2.5px solid var(--bg-primary, #0a0614);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   🛡️ TRUST SHIELD BADGE — Identity DNA Verification
-   ═══════════════════════════════════════════════════════════════════════════ */
-.shieldBadge,
-.shieldBadgeLarge {
+.avatarFallback {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.25), rgba(59, 130, 246, 0.15));
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border: 2.5px solid var(--bg-primary, #0a0614);
+}
+
+/* Add badge */
+.addBadge {
     position: absolute;
-    bottom: -2px;
-    right: -2px;
-    width: 20px;
-    height: 20px;
+    bottom: 0;
+    right: 0;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid var(--h2-black, var(--bg-secondary));
-    z-index: 10;
-    animation: shieldShimmer 3s ease-in-out infinite;
+    background: var(--primary);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 0.55rem;
+    box-shadow: 0 0 0 2.5px var(--bg-primary, #0a0614), 0 0 8px rgba(var(--primary-rgb), 0.4);
 }
 
-.shieldBadgeLarge {
-    width: 26px;
-    height: 26px;
-}
-
-/* Purple shield — Standard verification */
-.shieldPurple {
-    background: linear-gradient(135deg, var(--primary), var(--primary));
-    color: white;
-    box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.5);
-}
-
-/* Gold shield — Premium/Elite verification */
-.shieldGold {
-    background: linear-gradient(135deg, var(--warning), var(--warning));
-    color: var(--bg-primary);
-    box-shadow: 0 2px 8px rgba(var(--warning-rgb), 0.5);
-}
-
-@keyframes shieldShimmer {
-    0%, 100% {
-        filter: brightness(1);
-    }
-    50% {
-        filter: brightness(1.2);
-    }
-}
-
-.shieldBadge svg,
-.shieldBadgeLarge svg {
-    width: 65%;
-    height: 65%;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   ADD ICON — Create New Flash Indicator
-   ═══════════════════════════════════════════════════════════════════════════ */
-.sovereignAddIcon {
+/* Live badge */
+.liveBadge {
     position: absolute;
-    bottom: -2px;
-    right: -2px;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--error));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid var(--h2-black, var(--bg-secondary));
-    box-shadow: 0 2px 10px rgba(var(--bg-primary-rgb), 0.4);
-    z-index: 10;
-    transition: all var(--h2-transition-fast, 0.15s ease);
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    font-size: 0.55rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    box-shadow: 0 0 0 2px var(--bg-primary, #0a0614), 0 0 12px rgba(239, 68, 68, 0.5);
+    animation: livePulse 2s ease-in-out infinite;
 }
 
-.sovereignAddIcon:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 16px rgba(var(--primary-rgb), 0.5);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   USERNAME — H2 Satin Text Finish
-   ═══════════════════════════════════════════════════════════════════════════ */
-.sovereignUsername {
-    font-size: 12px;
+/* Story label */
+.storyLabel {
+    color: rgba(var(--text-primary-rgb), 0.55);
+    font-size: 0.7rem;
     font-weight: 600;
-    color: var(--h2-text-primary, var(--text-primary));
-    max-width: 80px;
+    max-width: 68px;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    letter-spacing: 0.3px;
-    text-shadow: 0 1px 2px rgba(var(--bg-primary-rgb), 0.5);
-    font-family: system-ui, -apple-system, sans-serif;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   LEGACY CLASSES — Backward Compatibility
-   ═══════════════════════════════════════════════════════════════════════════ */
-/* Legacy classes removed - all styling now uses sovereign* prefixed classes */
+.labelBold {
+    color: var(--text-primary);
+    font-weight: 700;
+}
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   RESPONSIVE DESIGN
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══ Skeleton tiles ═══ */
+.skeletonTile {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.skeletonAvatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(90deg, rgba(var(--text-primary-rgb), 0.04) 25%, rgba(var(--text-primary-rgb), 0.1) 50%, rgba(var(--text-primary-rgb), 0.04) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s linear infinite;
+}
+
+.skeletonLabel {
+    width: 48px;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, rgba(var(--text-primary-rgb), 0.04) 25%, rgba(var(--text-primary-rgb), 0.08) 50%, rgba(var(--text-primary-rgb), 0.04) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s linear infinite;
+    animation-delay: 0.1s;
+}
+
+/* ═══ Animations ═══ */
+@keyframes gradientSpin {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes livePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+@keyframes shimmer {
+    to { background-position: -200% 0; }
+}
+
+/* ═══ Responsive ═══ */
 @media (max-width: 640px) {
-    .scrollArea {
-        gap: var(--h2-space-md, 16px);
-        padding: var(--h2-space-xs, 4px) var(--h2-space-sm, 8px);
-    }
-    
-    .sovereignRing,
-    .sovereignRingEmpty {
-        width: 68px;
-        height: 68px;
-        padding: 3px;
-    }
-    
-    .shieldBadge {
-        width: 18px;
-        height: 18px;
-    }
-    
-    .sovereignAddIcon {
-        width: 20px;
-        height: 20px;
-    }
-    
-    .sovereignUsername {
-        font-size: 11px;
-        max-width: 68px;
-    }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   REDUCED MOTION — Accessibility
-   ═══════════════════════════════════════════════════════════════════════════ */
-@media (prefers-reduced-motion: reduce) {
-    .sovereignRingUnviewed,
-    .sovereignRingUnviewed::before,
-    .shieldBadge,
-    .shieldBadgeLarge {
-        animation: none;
-    }
-    
-    .storyTile:hover .sovereignRingUnviewed,
-    .storyTile:hover .sovereignRingViewed {
-        transform: none;
-    }
+    .scrollArea { gap: 12px; padding: 4px 8px 8px; }
+    .avatarRing { width: 58px; height: 58px; }
+    .storyLabel { font-size: 0.65rem; max-width: 60px; }
 }

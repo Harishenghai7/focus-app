@@ -1,41 +1,37 @@
-/* VolumeControl - Instagram Reels Style */
-
-.button {
+/* VolumeControl — Glass Pill with Animated Icon */
+.container {
     position: absolute;
-    bottom: 20px;
-    right: 70px;
-    width: 40px;
-    height: 40px;
-    background: rgba(var(--bg-primary-rgb), 0.5);
-    backdrop-filter: blur(10px);
-    border: none;
+    top: 60px;
+    left: 16px;
+    z-index: 40;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 50%;
-    color: var(--text-primary);
     cursor: pointer;
+    color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 100;
-    pointer-events: auto;
-    box-shadow: 0 2px 8px rgba(var(--bg-primary-rgb), 0.4);
+    transition: all 0.2s ease;
 }
 
-.button:hover {
-    background: rgba(var(--bg-primary-rgb), 0.7);
+.container:hover {
+    background: rgba(0, 0, 0, 0.6);
     transform: scale(1.1);
+    box-shadow: 0 0 16px rgba(139, 92, 246, 0.2);
 }
 
-.button:active {
-    transform: scale(0.95);
+.container:active { transform: scale(0.9); }
+
+.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
 }
 
-/* Mobile */
-@media (max-width: 768px) {
-    .button {
-        bottom: 80px;
-        right: 60px;
-        width: 36px;
-        height: 36px;
-    }
-}
+.icon.muted { opacity: 0.6; }
+.icon.unmuted { opacity: 1; }

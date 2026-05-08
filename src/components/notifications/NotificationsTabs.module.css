@@ -1,63 +1,133 @@
 /* ==========================================================
-   NotificationsTabs — Focus App | Pill-style Premium
+   NotificationsTabs — Sovereign Ecosystem
+   Icon pills with sliding indicator
    ========================================================== */
 
+.tabsContainer {
+    position: relative;
+    border-bottom: 1px solid rgba(139, 92, 246, 0.08);
+}
+
 .tabs {
+    position: relative;
     display: flex;
-    gap: 6px;
-    padding: 12px 16px;
+    gap: 4px;
+    padding: 10px 16px 10px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     flex-shrink: 0;
-    border-bottom: 1px solid var(--border-subtle, rgba(var(--text-primary-rgb), 0.05));
 }
 .tabs::-webkit-scrollbar { display: none; }
 
+/* ── Sliding Indicator ───────────────────────────────────── */
+.indicator {
+    position: absolute;
+    bottom: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary, #8b5cf6), var(--primary-light, #a78bfa));
+    border-radius: 2px 2px 0 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
+    z-index: 2;
+}
+
+/* ── Tab Button ──────────────────────────────────────────── */
 .tab {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 14px;
+    padding: 7px 14px;
     border-radius: 20px;
     border: 1px solid transparent;
     background: none;
-    color: var(--text-muted, var(--glass-bg-solid));
-    font-size: 0.83rem;
+    color: var(--text-muted, #a78bfa);
+    font-size: 0.82rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.18s ease;
+    transition: all 0.2s ease;
     white-space: nowrap;
     flex-shrink: 0;
     font-family: inherit;
+    position: relative;
 }
 
 .tab:hover {
-    background: rgba(var(--text-primary-rgb), 0.05);
-    color: var(--text-secondary, var(--text-muted));
+    background: rgba(139, 92, 246, 0.06);
+    color: var(--text-secondary, #e2d9f3);
 }
 
 .tab.active {
-    background: rgba(124, 58, 237, 0.15);
-    border-color: rgba(124, 58, 237, 0.35);
-    color: var(--primary, var(--primary));
+    background: rgba(139, 92, 246, 0.12);
+    border-color: rgba(139, 92, 246, 0.25);
+    color: var(--primary, #8b5cf6);
     font-weight: 600;
 }
 
-/* Tab badge for unread count */
+.tabIcon {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+.tab.active .tabIcon {
+    transform: scale(1.1);
+}
+
+.tabLabel {
+    transition: color 0.2s ease;
+}
+
+/* ── Badge ───────────────────────────────────────────────── */
 .tabBadge {
-    background: var(--primary, var(--primary));
-    color: var(--text-primary);
-    font-size: 0.65rem;
+    background: var(--primary, #8b5cf6);
+    color: #fff;
+    font-size: 0.62rem;
     font-weight: 700;
-    padding: 1px 5px;
+    padding: 1px 6px;
     border-radius: 8px;
     min-width: 16px;
     text-align: center;
-    line-height: 1.4;
+    line-height: 1.5;
+    transition: all 0.2s ease;
 }
 
 .tab:not(.active) .tabBadge {
-    background: rgba(var(--text-primary-rgb), 0.12);
-    color: var(--text-muted, var(--text-muted));
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-muted, #a78bfa);
+}
+
+.securityBadge {
+    background: var(--error, #ef4444) !important;
+    color: #fff !important;
+    animation: secBadgePulse 2s ease-in-out infinite;
+}
+
+@keyframes secBadgePulse {
+    0%, 100% { box-shadow: 0 0 4px rgba(239, 68, 68, 0.3); }
+    50% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.6); }
+}
+
+/* ── Fade edges ──────────────────────────────────────────── */
+.fadeLeft, .fadeRight {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 24px;
+    pointer-events: none;
+    z-index: 3;
+}
+.fadeLeft {
+    left: 0;
+    background: linear-gradient(90deg, var(--bg-primary, #0f0a1e), transparent);
+    opacity: 0;
+}
+.fadeRight {
+    right: 0;
+    background: linear-gradient(270deg, var(--bg-primary, #0f0a1e), transparent);
+    opacity: 0.6;
+}
+
+@media (max-width: 480px) {
+    .tabs { padding: 8px 12px; gap: 3px; }
+    .tab { padding: 6px 10px; font-size: 0.78rem; }
+    .fadeRight { opacity: 1; }
 }

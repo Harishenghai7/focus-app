@@ -1,37 +1,37 @@
 /**
- * NotificationBell Styles - Sovereign Heartbeat Edition
- * Glassmorphism bell icon with Royal Lavender glow
+ * NotificationBell Styles — Sovereign Ecosystem
+ * Priority badges, mode indicators, preview dropdown
  */
+
+.bellWrap {
+    position: relative;
+}
 
 .bellContainer {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
-    background: var(--glass-surface, rgba(var(--text-primary-rgb), 0.05));
+    width: 42px;
+    height: 42px;
+    background: rgba(139, 92, 246, 0.05);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(var(--text-primary-rgb), 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.1);
     border-radius: 12px;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s ease;
     padding: 0;
     outline: none;
 }
-
 .bellContainer:hover {
-    background: var(--glass-surface-hover, rgba(var(--text-primary-rgb), 0.08));
-    border-color: rgba(var(--primary-rgb), 0.4);
-    box-shadow:
-        0 0 30px rgba(var(--primary-rgb), 0.2),
-        inset 0 1px 0 rgba(var(--text-primary-rgb), 0.15);
-    transform: translateY(-2px);
+    background: rgba(139, 92, 246, 0.12);
+    border-color: rgba(139, 92, 246, 0.25);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.15);
+    transform: translateY(-1px);
 }
-
 .bellContainer:focus-visible {
-    box-shadow: 0 0 0 2px var(--primary-lavender, var(--primary));
+    box-shadow: 0 0 0 2px var(--primary, #8b5cf6);
 }
 
 .iconWrapper {
@@ -42,183 +42,183 @@
 }
 
 .bellIcon {
-    color: var(--text-secondary, var(--text-muted));
-    transition: all 0.3s ease;
+    color: var(--text-secondary, #e2d9f3);
+    transition: all 0.25s ease;
 }
-
 .bellContainer:hover .bellIcon {
-    color: var(--primary-lavender, var(--primary-light));
-    transform: rotate(15deg);
+    color: var(--primary-light, #a78bfa);
+    transform: rotate(12deg);
 }
 
-/* Glassmorphism glow ring */
-.glowRing {
-    position: absolute;
-    inset: -4px;
-    border-radius: 50%;
-    background: conic-gradient(
-        from 0deg,
-        transparent 0deg,
-        rgba(var(--primary-rgb), 0.3) 60deg,
-        rgba(236, 72, 153, 0.3) 120deg,
-        rgba(var(--primary-rgb), 0.3) 180deg,
-        transparent 240deg,
-        transparent 360deg
-    );
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-}
-
-.bellContainer:hover .glowRing {
-    opacity: 0.5;
-    animation: rotateGlow 3s linear infinite;
-}
-
-@keyframes rotateGlow {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-/* Sovereign Pulse - Royal Lavender heartbeat */
+/* ── Sovereign Pulse ─────────────────────────────────────── */
 .sovereignPulse {
     position: absolute;
-    inset: -8px;
+    inset: -6px;
     border-radius: 50%;
-    background: radial-gradient(
-        circle,
-        rgba(var(--primary-rgb), 0.4) 0%,
-        rgba(var(--primary-rgb), 0.2) 40%,
-        transparent 70%
-    );
-    animation: sovereignHeartbeat 2s ease-in-out infinite;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);
+    animation: sovereignHeartbeat 2.5s ease-in-out infinite;
     pointer-events: none;
 }
-
 @keyframes sovereignHeartbeat {
-    0%, 100% {
-        transform: scale(1);
-        opacity: 0.6;
-    }
-    50% {
-        transform: scale(1.2);
-        opacity: 0.3;
-    }
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.15); opacity: 0.25; }
 }
 
-/* Animation for new notifications */
+/* ── Bell Ring Animation ─────────────────────────────────── */
 .animate .bellIcon {
     animation: bellRing 0.5s ease-in-out;
 }
-
 @keyframes bellRing {
     0%, 100% { transform: rotate(0); }
-    10% { transform: rotate(15deg); }
+    10% { transform: rotate(14deg); }
     20% { transform: rotate(-10deg); }
-    30% { transform: rotate(5deg); }
-    40% { transform: rotate(-5deg); }
+    30% { transform: rotate(6deg); }
+    40% { transform: rotate(-4deg); }
     50% { transform: rotate(2deg); }
-    60% { transform: rotate(-2deg); }
-    70% { transform: rotate(1deg); }
-    80% { transform: rotate(-1deg); }
 }
 
-/* Unread badge */
+/* ── Badge ───────────────────────────────────────────────── */
 .badge {
     position: absolute;
-    top: -4px;
-    right: -4px;
-    min-width: 20px;
-    height: 20px;
-    padding: 0 6px;
-    background: linear-gradient(135deg, var(--primary-lavender, var(--primary)), var(--primary-magenta, var(--error)));
-    border-radius: 10px;
+    top: -3px;
+    right: -3px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    background: linear-gradient(135deg, var(--primary, #8b5cf6), #7c3aed);
+    border-radius: 9px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid var(--bg-primary, var(--bg-primary));
-    box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.4);
-    animation: badgePulse 2s ease-in-out infinite;
+    border: 2px solid var(--bg-primary, #0f0a1e);
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+    animation: badgePulse 2.5s ease-in-out infinite;
 }
-
-@keyframes badgePulse {
-    0%, 100% {
-        box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.4);
-    }
-    50% {
-        box-shadow: 0 2px 16px rgba(var(--primary-rgb), 0.6);
-    }
-}
-
 .badgeText {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: #fff;
     line-height: 1;
 }
-
-/* Critical alert styling */
-.critical {
-    border-color: rgba(var(--error-rgb), 0.5);
-    animation: criticalPulse 1s ease-in-out infinite;
+@keyframes badgePulse {
+    0%, 100% { box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4); }
+    50% { box-shadow: 0 2px 14px rgba(139, 92, 246, 0.6); }
 }
 
-.critical .bellIcon {
-    color: var(--error);
-}
-
-@keyframes criticalPulse {
-    0%, 100% {
-        box-shadow: 0 0 20px rgba(var(--error-rgb), 0.3);
-    }
-    50% {
-        box-shadow: 0 0 40px rgba(var(--error-rgb), 0.5);
-    }
-}
-
+/* Priority badge colors */
 .criticalBadge {
-    background: linear-gradient(135deg, var(--error), var(--error)) !important;
-    animation: criticalBadgePulse 1s ease-in-out infinite !important;
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    animation: criticalPulse 1.2s ease-in-out infinite !important;
+}
+@keyframes criticalPulse {
+    0%, 100% { box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5); }
+    50% { box-shadow: 0 2px 16px rgba(239, 68, 68, 0.8); }
+}
+.highBadge {
+    background: linear-gradient(135deg, #8b5cf6, #a78bfa) !important;
 }
 
-@keyframes criticalBadgePulse {
-    0%, 100% {
-        box-shadow: 0 2px 8px rgba(var(--error-rgb), 0.5);
-    }
-    50% {
-        box-shadow: 0 2px 20px rgba(var(--error-rgb), 0.8);
-    }
+/* ── Critical Bell ───────────────────────────────────────── */
+.critical {
+    border-color: rgba(239, 68, 68, 0.3);
 }
+.critical .bellIcon { color: #f87171; }
 
-/* Critical alert indicator */
-.criticalAlert {
+/* ── Mode Indicators ─────────────────────────────────────── */
+.modeIndicator {
     position: absolute;
-    top: -6px;
-    left: -6px;
-    font-size: 14px;
-    animation: alertShake 0.5s ease-in-out infinite;
+    bottom: -2px;
+    left: -2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--bg-primary, #0f0a1e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    z-index: 3;
+}
+.focusIndicator {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+.quietIndicator {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
 }
 
-@keyframes alertShake {
-    0%, 100% { transform: rotate(0); }
-    25% { transform: rotate(-10deg); }
-    75% { transform: rotate(10deg); }
+/* ── Preview Dropdown ────────────────────────────────────── */
+.previewDropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 300px;
+    background: rgba(22, 13, 42, 0.95);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+    border-radius: 16px;
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 20px rgba(139, 92, 246, 0.1);
+    overflow: hidden;
+    animation: dropdownIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+}
+@keyframes dropdownIn {
+    from { opacity: 0; transform: translateY(-4px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Responsive */
+.previewHeader {
+    padding: 10px 14px 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-muted, #a78bfa);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+.previewItem {
+    padding: 10px 14px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    transition: background 0.15s ease;
+    border-bottom: 1px solid rgba(139, 92, 246, 0.05);
+}
+.previewItem:hover { background: rgba(139, 92, 246, 0.08); }
+.previewText {
+    font-size: 0.78rem;
+    color: var(--text-secondary, #e2d9f3);
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.previewText strong { color: var(--text-primary, #fff); font-weight: 600; }
+.previewTime {
+    font-size: 0.66rem;
+    color: var(--text-muted, #a78bfa);
+}
+.previewFooter {
+    padding: 8px 14px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary-light, #a78bfa);
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+.previewFooter:hover { background: rgba(139, 92, 246, 0.1); }
+
+/* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 640px) {
-    .bellContainer {
-        width: 40px;
-        height: 40px;
-    }
+    .bellContainer { width: 38px; height: 38px; }
+    .badge { min-width: 16px; height: 16px; }
+    .badgeText { font-size: 9px; }
+    .previewDropdown { display: none; }
+}
 
-    .badge {
-        min-width: 18px;
-        height: 18px;
-        padding: 0 5px;
-    }
-
-    .badgeText {
-        font-size: 10px;
-    }
+@media (prefers-reduced-motion: reduce) {
+    .bellContainer, .badge, .sovereignPulse { animation: none !important; }
 }

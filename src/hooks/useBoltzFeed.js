@@ -5,6 +5,7 @@ import { useRobustQuery } from './useRobustQuery';
 import { useRealtimeSubscription } from './useRealtimeSubscription';
 import { normalizeHydratedProfile } from '../utils/identityHydration';
 import { assertTrustShieldVerified } from '../utils/trustShieldAccess';
+import { rankBoltzFeed } from '../services/boltzRecommendationEngine';
 
 export const useBoltzFeed = (tab = 'foryou') => {
   const { user } = useFocusUser();
@@ -123,7 +124,9 @@ export const useBoltzFeed = (tab = 'foryou') => {
     retryDelay: 1500,
     timeout:    12000,
     onSuccess: (data) => {
-      setBoltz(data || []);
+      // Apply recommendation engine ranking for 'foryou' tab
+      const ranked = (tab === 'foryou' || tab === 'trending') ? rankBoltzFeed(data || []) : (data || []);
+      setBoltz(ranked);
       setPage(0);
       setHasMore((data || []).length >= ITEMS_PER_PAGE);
     },

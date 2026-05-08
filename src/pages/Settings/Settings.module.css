@@ -1,200 +1,604 @@
-/* ==========================================================
-   Settings Page — Sovereign Control Center
-   H2 Royal Lavender Glassmorphism Design
-   ========================================================== */
+/* ═══════════════════════════════════════════════════════════════
+   SOVEREIGN NEXUS — Settings Ecosystem
+   H2 Royal Lavender Glassmorphism · Premium Design System
+   
+   LAYOUT: The settings page lives inside MainLayout which 
+   already provides the app-level sidebar. Our "settings sidebar"
+   is a sticky panel inside the content flow, NOT fixed at left:0.
+   ═══════════════════════════════════════════════════════════════ */
 
-/* ── Mobile Header ────────────────────────────────────────── */
+/* ── Container ───────────────────────────────────────────────── */
+.nexusContainer {
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+/* ── Ambient Background Orbs ─────────────────────────────────── */
+.ambientOrb {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.06) 0%, transparent 70%);
+    top: -200px;
+    right: -200px;
+    pointer-events: none;
+    z-index: 0;
+    animation: orbFloat 20s ease-in-out infinite;
+}
+
+.ambientOrb2 {
+    position: fixed;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(236, 72, 153, 0.04) 0%, transparent 70%);
+    bottom: -200px;
+    left: -100px;
+    pointer-events: none;
+    z-index: 0;
+    animation: orbFloat 25s ease-in-out infinite reverse;
+}
+
+@keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -20px) scale(1.05); }
+    66% { transform: translate(-20px, 15px) scale(0.95); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SIDEBAR — Sticky within the content flow (NOT fixed left:0)
+   Sits next to content inside MainLayout's <main>
+   ═══════════════════════════════════════════════════════════════ */
+.sidebar {
+    width: 300px;
+    min-width: 300px;
+    height: 100vh;
+    position: fixed;
+    left: var(--sidebar-width, 280px);
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    background: rgba(var(--bg-secondary-rgb), 0.5);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border-right: 1px solid rgba(var(--primary-rgb), 0.08);
+    z-index: 10;
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+    flex-shrink: 0;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(var(--primary-rgb), 0.2);
+    border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--primary-rgb), 0.35);
+}
+
+/* ── Sidebar Header ──────────────────────────────────────────── */
+.sidebarHeader {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.06);
+}
+
+.sidebarTitle {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 0 0 2px;
+    background: linear-gradient(135deg, #c4b5fd, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.sidebarSubtitle {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin: 0;
+}
+
+/* ── Search ──────────────────────────────────────────────────── */
+.searchContainer {
+    margin: 16px 16px 8px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(var(--primary-rgb), 0.04);
+    border: 1px solid rgba(var(--primary-rgb), 0.08);
+    border-radius: var(--radius-lg);
+    transition: all 220ms ease;
+}
+
+.searchContainer.searchFocused {
+    border-color: rgba(var(--primary-rgb), 0.25);
+    background: rgba(var(--primary-rgb), 0.06);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.08);
+}
+
+.searchIcon {
+    position: absolute;
+    left: 12px;
+    color: var(--text-muted);
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 10px 32px 10px 36px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-family: var(--font-primary);
+}
+
+.searchInput::placeholder {
+    color: var(--text-muted);
+    opacity: 0.5;
+}
+
+.searchClear {
+    position: absolute;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(var(--primary-rgb), 0.15);
+    color: var(--text-secondary);
+    font-size: 0.65rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 200ms ease;
+}
+
+.searchClear:hover {
+    background: rgba(var(--primary-rgb), 0.25);
+}
+
+/* ── Province Navigation ─────────────────────────────────────── */
+.provinceNav {
+    flex: 1;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.provinceBtn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 200ms ease;
+    text-align: left;
+    position: relative;
+    font-family: var(--font-primary);
+    animation: fadeSlideIn 400ms ease both;
+}
+
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.provinceBtn:hover {
+    background: rgba(var(--primary-rgb), 0.05);
+    color: var(--text-primary);
+}
+
+.provinceBtnActive {
+    background: rgba(var(--primary-rgb), 0.08) !important;
+    border-color: rgba(var(--primary-rgb), 0.12);
+    color: var(--text-primary) !important;
+}
+
+.provinceDot {
+    width: 4px;
+    height: 28px;
+    border-radius: 4px;
+    transition: all 300ms ease;
+    flex-shrink: 0;
+}
+
+.provinceBtnActive .provinceDot {
+    box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.4);
+}
+
+.provinceIconWrap {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    background: rgba(var(--primary-rgb), 0.04);
+    transition: all 200ms ease;
+}
+
+.provinceBtnActive .provinceIconWrap {
+    background: rgba(var(--primary-rgb), 0.12);
+    transform: scale(1.08);
+}
+
+.provinceText {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.provinceLabel {
+    font-weight: 600;
+    font-size: 0.88rem;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.provinceDesc {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    opacity: 0.6;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.provinceBtnActive .provinceDesc {
+    opacity: 0.8;
+}
+
+.provinceChevron {
+    opacity: 0;
+    transition: all 200ms ease;
+    flex-shrink: 0;
+    color: var(--text-muted);
+}
+
+.provinceBtnActive .provinceChevron {
+    opacity: 0.6;
+    transform: translateX(2px);
+}
+
+.provinceBtn:hover .provinceChevron {
+    opacity: 0.4;
+}
+
+.noResults {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 32px 16px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.noResults span {
+    font-size: 1.6rem;
+    opacity: 0.5;
+}
+
+
+
+/* ── Mobile Overlay ──────────────────────────────────────────── */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 40;
+    animation: fadeIn 200ms ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONTENT AREA — Fills remaining space
+   ═══════════════════════════════════════════════════════════════ */
+.contentArea {
+    flex: 1;
+    min-height: 100vh;
+    min-width: 0;
+    position: relative;
+    z-index: 1;
+    margin-left: 300px;
+}
+
+.contentInner {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 32px 40px 120px;
+}
+
+/* ── Content Header ──────────────────────────────────────────── */
+.contentHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.06);
+}
+
+.headerLeft {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.headerIconWrap {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+}
+
+.headerEmoji {
+    font-size: 1.3rem;
+    filter: brightness(1.1);
+}
+
+.contentTitle {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 2px;
+    letter-spacing: -0.02em;
+}
+
+.contentDescription {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* ── Province Content ────────────────────────────────────────── */
+.provinceContent {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ── Saving Badge ────────────────────────────────────────────── */
+.savingBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary);
+    padding: 6px 14px;
+    background: rgba(var(--primary-rgb), 0.08);
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(var(--primary-rgb), 0.12);
+    animation: savePulse 1.5s ease-in-out infinite;
+}
+
+.savingDot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--primary);
+    animation: savePulse 1s ease-in-out infinite;
+}
+
+@keyframes savePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* ── Loading State ───────────────────────────────────────────── */
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    gap: 24px;
+}
+
+.loadingPulse {
+    width: 56px;
+    height: 56px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loadingRing {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 3px solid rgba(var(--primary-rgb), 0.1);
+    border-top-color: var(--primary);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loadingText {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* ── Mobile Header ───────────────────────────────────────────── */
 .mobileHeader {
     display: none;
-    position: fixed;
+    position: sticky;
     top: 0;
     left: 0;
     right: 0;
-    height: 60px;
-    background: rgba(10, 10, 15, 0.95);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(var(--text-primary-rgb), 0.08);
-    z-index: 100;
+    height: 56px;
+    background: rgba(var(--bg-primary-rgb), 0.92);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.06);
+    z-index: 30;
     padding: 0 16px;
     align-items: center;
     justify-content: space-between;
 }
 
-.menuButton {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: transparent;
+.menuToggle {
+    width: 36px;
+    height: 36px;
     border: none;
-    color: var(--text-primary, var(--text-primary));
-    font-size: 1rem;
-    font-weight: 600;
+    background: rgba(var(--primary-rgb), 0.06);
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    padding: 8px;
-}
-
-.provinceEmoji {
-    font-size: 1.3rem;
-}
-
-.provinceName {
-    color: var(--text-primary, var(--text-primary));
-}
-
-/* ── Sidebar Footer ───────────────────────────────────────── */
-.sidebarFooter {
-    margin-top: auto;
-    padding: 16px 8px;
-    border-top: 1px solid rgba(var(--text-primary-rgb), 0.08);
-}
-
-.logoutButton {
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
+    padding: 0;
+}
+
+.menuIcon {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 16px;
+}
+
+.menuIcon span {
+    display: block;
     width: 100%;
-    padding: 14px 16px;
-    background: rgba(244, 67, 54, 0.1);
-    border: 1px solid rgba(244, 67, 54, 0.2);
-    border-radius: 12px;
-    color: var(--error);
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
+    height: 2px;
+    background: var(--text-secondary);
+    border-radius: 2px;
     transition: all 200ms ease;
 }
 
-.logoutButton:hover {
-    background: rgba(244, 67, 54, 0.2);
-    transform: translateY(-1px);
+.menuIcon span:nth-child(2) {
+    width: 75%;
 }
 
-/* ── Sidebar Overlay ───────────────────────────────────────── */
-.sidebarOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(var(--bg-primary-rgb), 0.6);
-    backdrop-filter: blur(4px);
-    z-index: 90;
-}
-
-/* ── Header Icon ───────────────────────────────────────────── */
-.headerIcon {
-    color: var(--royal-lavender-light, var(--primary));
-    margin-right: 12px;
-}
-
-/* ── Province Content ─────────────────────────────────────── */
-.provinceContent {
-    padding-bottom: 100px;
-}
-
-/* ── Page wrapper ──────────────────────────────────────────── */
-.settingsPage {
+.mobileTitle {
     display: flex;
-    min-height: 100vh;
-    max-width: 1000px;
-    margin: 0 auto;
-    gap: 0;
-    background: transparent;
-}
-
-/* ── Loading & Error states ──────────────────────────────── */
-.loadingContainer,
-.errorContainer {
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    min-height: 60vh;
-    gap: 16px;
-    padding: 40px;
-}
-
-.loadingText {
-    color: var(--text-muted, var(--glass-bg-solid));
-    font-size: 0.9rem;
-}
-
-.errorContainer {
-    text-align: center;
-}
-.errorIcon { font-size: 2.5rem; }
-.errorTitle {
-    font-size: 1.1rem;
+    gap: 8px;
     font-weight: 600;
-    color: var(--text-primary, var(--text-primary));
-    margin: 0;
-}
-.errorMessage { font-size: 0.88rem; color: var(--text-muted, var(--glass-bg-solid)); margin: 0; }
-
-/* ── Settings Content ────────────────────────────────────── */
-.settingsContent {
-    flex: 1;
-    padding: 28px 24px 80px;
-    min-width: 0;
-    max-width: 680px;
+    font-size: 0.95rem;
+    color: var(--text-primary);
 }
 
-.header {
-    margin-bottom: 28px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border-subtle, rgba(var(--text-primary-rgb), 0.07));
+.mobileEmoji {
+    font-size: 1.1rem;
 }
 
-.title {
-    font-size: 1.8rem;
-    font-weight: 800;
-    background: var(--gradient-brand);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin: 0 0 6px;
-    letter-spacing: -0.02em;
-}
-
-.subtitle {
-    font-size: 0.875rem;
-    color: var(--text-muted, var(--glass-bg-solid));
-    margin: 0;
-}
-
-/* ── Sections container ──────────────────────────────────── */
-.sections {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-}
-
-/* ── Mobile responsive ───────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
 @media (max-width: 1024px) {
-    .settingsPage {
-        flex-direction: column;
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        z-index: 250;
+        transform: translateX(-100%);
     }
-    
+
+    .sidebarOpen {
+        transform: translateX(0);
+    }
+
+    .contentArea {
+        margin-left: 0;
+    }
+
+    .contentInner {
+        padding: 16px 20px 120px;
+        max-width: 100%;
+    }
+
     .mobileHeader {
         display: flex;
-    }
-    
-    .settingsContent {
-        padding: 80px 16px 100px;
-    }
-    
-    .title { 
-        font-size: 1.3rem; 
-    }
-    
-    /* Adjust main content for mobile header */
-    .provinceContent {
-        padding-top: 20px;
     }
 }
 
 @media (max-width: 640px) {
-    .settingsContent {
-        padding: 70px 12px 100px;
+    .contentInner {
+        padding: 12px 14px 120px;
+    }
+
+    .contentHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .contentTitle {
+        font-size: 1.3rem;
+    }
+
+    .headerIconWrap {
+        width: 38px;
+        height: 38px;
+    }
+}
+
+/* ── Reduced Motion ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    .ambientOrb,
+    .ambientOrb2 {
+        animation: none;
+    }
+
+    .provinceBtn {
+        animation: none;
     }
 }

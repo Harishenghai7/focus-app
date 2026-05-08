@@ -1,248 +1,256 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import styles from './Calls.module.css';
-import MainLayout from '../../components/layout/MainLayout';
-import Icon from '../../components/ui/Icon';
+// ═══════════════════════════════════════════════════════════════════════
+// 📞 SOVEREIGN FREQUENCY — Premium Call History & Management
+// ═══════════════════════════════════════════════════════════════════════
+
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
+import styles from './Calls.module.css';
+
+const Icons = {
+    phone: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>,
+    video: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>,
+    incoming: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/><path d="M3 5v14"/></svg>,
+    outgoing: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="8 7 3 12 8 17"/><line x1="3" y1="12" x2="15" y2="12"/><path d="M21 5v14"/></svg>,
+    missed: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/></svg>,
+    shield: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+};
 
 const TABS = [
-    { key: 'all', label: 'All', icon: 'Phone' },
-    { key: 'missed', label: 'Missed', icon: 'PhoneMissed' },
-    { key: 'incoming', label: 'Received', icon: 'PhoneIncoming' },
-    { key: 'outgoing', label: 'Dialed', icon: 'PhoneOutgoing' }
+    { key: 'all', label: 'All' },
+    { key: 'missed', label: 'Missed' },
+    { key: 'incoming', label: 'Incoming' },
+    { key: 'outgoing', label: 'Outgoing' }
 ];
 
-// "Sovereign Frequency" call-history page — wired to the calls table.
 const Calls = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
     const [calls, setCalls] = useState([]);
-    const [tab, setTab] = useState('all');
-    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('all');
 
-    const fetchCalls = useCallback(async () => {
+    useEffect(() => {
         if (!user?.id) return;
-        try {
-            setError(null);
-            const { data, error: dbError } = await supabase
-                .from('calls')
-                .select(`
-                    id, conversation_id, caller_id, receiver_id, call_type, status,
-                    started_at, ended_at, duration_seconds, created_at,
-                    caller:profiles!calls_caller_id_fkey(id, username, full_name, avatar_url, is_verified),
-                    receiver:profiles!calls_receiver_id_fkey(id, username, full_name, avatar_url, is_verified)
-                `)
-                .or(`caller_id.eq.${user.id},receiver_id.eq.${user.id}`)
-                .order('created_at', { ascending: false })
-                .limit(100);
-
-            if (dbError) throw dbError;
-            setCalls(data || []);
-        } catch (err) {
-            console.error('Failed to load call history:', err);
-            setError(err.message || 'Could not load call history');
-            setCalls([]);
-        } finally {
-            setLoading(false);
-        }
+        const fetchCalls = async () => {
+            setLoading(true);
+            try {
+                const { data } = await supabase
+                    .from('calls')
+                    .select('*, caller:caller_id(id, username, full_name, avatar_url), receiver:receiver_id(id, username, full_name, avatar_url)')
+                    .or(`caller_id.eq.${user.id},receiver_id.eq.${user.id}`)
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+                setCalls(data || []);
+            } catch (err) {
+                console.error('Failed to fetch calls:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchCalls();
     }, [user?.id]);
 
-    useEffect(() => {
-        fetchCalls();
-    }, [fetchCalls]);
+    const filteredCalls = useMemo(() => {
+        if (activeTab === 'all') return calls;
+        if (activeTab === 'missed') return calls.filter(c => c.status === 'missed' || c.status === 'no_answer');
+        if (activeTab === 'incoming') return calls.filter(c => c.receiver_id === user?.id);
+        if (activeTab === 'outgoing') return calls.filter(c => c.caller_id === user?.id);
+        return calls;
+    }, [calls, activeTab, user?.id]);
 
-    // Realtime: refresh log when call rows change
-    useEffect(() => {
-        if (!user?.id) return;
-        const ch = supabase
-            .channel(`calls-history-${user.id}`)
-            .on('postgres_changes',
-                { event: '*', schema: 'public', table: 'calls' },
-                () => fetchCalls()
-            )
-            .subscribe();
-        return () => { ch.unsubscribe(); };
-    }, [user?.id, fetchCalls]);
+    const getOtherUser = (call) => {
+        return call.caller_id === user?.id ? call.receiver : call.caller;
+    };
 
-    const enriched = useMemo(() => {
-        return (calls || []).map(c => {
-            const isOutgoing = c.caller_id === user?.id;
-            const other = isOutgoing ? c.receiver : c.caller;
-            let direction = 'outgoing';
-            if (!isOutgoing) direction = 'incoming';
-            if (c.status === 'missed' || (!isOutgoing && c.status === 'rejected')) direction = 'missed';
-            return { ...c, isOutgoing, other, direction };
-        });
-    }, [calls, user?.id]);
+    const getDirection = (call) => {
+        if (call.status === 'missed' || call.status === 'no_answer') return 'missed';
+        return call.caller_id === user?.id ? 'outgoing' : 'incoming';
+    };
 
-    const filtered = useMemo(() => {
-        if (tab === 'all') return enriched;
-        return enriched.filter(c => c.direction === tab);
-    }, [enriched, tab]);
+    const formatDuration = (seconds) => {
+        if (!seconds) return '0:00';
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${m}:${s.toString().padStart(2, '0')}`;
+    };
 
-    const formatTime = (iso) => {
-        if (!iso) return '';
-        const d = new Date(iso);
+    const formatTime = (timestamp) => {
+        if (!timestamp) return '';
+        const date = new Date(timestamp);
         const now = new Date();
-        const sameDay = d.toDateString() === now.toDateString();
-        if (sameDay) {
-            return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const diff = now - date;
+        if (diff < 86400000) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
-        const diffDays = Math.floor((now - d) / 86400000);
-        if (diffDays < 7) return d.toLocaleDateString([], { weekday: 'short' });
-        return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+        if (diff < 604800000) {
+            return date.toLocaleDateString([], { weekday: 'short' });
+        }
+        return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
     };
 
-    const formatDuration = (s) => {
-        if (!s || s <= 0) return null;
-        const m = Math.floor(s / 60);
-        const sec = s % 60;
-        return `${m}:${sec.toString().padStart(2, '0')}`;
+    const handleCallBack = (call) => {
+        const other = getOtherUser(call);
+        if (other?.id) {
+            navigate(`/messages/${other.id}?call=${call.type || 'audio'}`);
+        }
     };
 
-    const handleRedial = (call, callType) => {
-        if (!call.conversation_id) return;
-        // Hand off to ChatPane; it owns the call lifecycle via useCall.
-        // Pass intent through query params so the conversation auto-dials on mount.
-        navigate(`/messages/${call.conversation_id}?dial=${callType}&to=${call.other?.id || ''}`);
-    };
+    // Quick dial — top 6 unique recent contacts
+    const quickDial = useMemo(() => {
+        const seen = new Set();
+        const contacts = [];
+        for (const call of calls) {
+            const other = getOtherUser(call);
+            if (other && !seen.has(other.id)) {
+                seen.add(other.id);
+                contacts.push(other);
+                if (contacts.length >= 6) break;
+            }
+        }
+        return contacts;
+    }, [calls]);
 
     return (
-        <MainLayout>
-            <div className={styles.container}>
-                <div className={styles.header}>
-                    <h1 className={styles.title}>Sovereign Frequency</h1>
-                    <Link to="/messages" className={styles.messagesLink}>
-                        <Icon name="MessageCircle" size={16} />
-                        Messages
-                    </Link>
+        <div className={styles.container}>
+            {/* Header */}
+            <div className={styles.header}>
+                <h1 className={styles.title}>Calls</h1>
+                <div className={styles.headerRight}>
+                    <Icons.shield />
+                    <span className={styles.encLabel}>Encrypted</span>
                 </div>
+            </div>
 
-                <div className={styles.tabs} role="tablist" aria-label="Call history filter">
-                    {TABS.map(t => (
-                        <button
-                            key={t.key}
-                            role="tab"
-                            aria-selected={tab === t.key}
-                            className={`${styles.tab} ${tab === t.key ? styles.tabActive : ''}`}
-                            onClick={() => setTab(t.key)}
-                        >
-                            <Icon name={t.icon} size={14} />
-                            <span>{t.label}</span>
-                        </button>
-                    ))}
+            {/* Quick Dial */}
+            {quickDial.length > 0 && (
+                <div className={styles.quickDial}>
+                    <div className={styles.quickDialTitle}>Quick Dial</div>
+                    <div className={styles.quickDialScroll}>
+                        {quickDial.map(contact => (
+                            <button
+                                key={contact.id}
+                                className={styles.quickDialItem}
+                                onClick={() => navigate(`/messages/${contact.id}?call=audio`)}
+                            >
+                                {contact.avatar_url ? (
+                                    <img src={contact.avatar_url} alt="" className={styles.quickDialAvatar} />
+                                ) : (
+                                    <div className={styles.quickDialAvatarFallback}>
+                                        {(contact.username?.[0] || '?').toUpperCase()}
+                                    </div>
+                                )}
+                                <span className={styles.quickDialName}>{contact.username}</span>
+                            </button>
+                        ))}
+                    </div>
                 </div>
+            )}
 
+            {/* Tabs */}
+            <div className={styles.tabs}>
+                {TABS.map(tab => (
+                    <button
+                        key={tab.key}
+                        className={`${styles.tab} ${activeTab === tab.key ? styles.tabActive : ''}`}
+                        onClick={() => setActiveTab(tab.key)}
+                    >
+                        {tab.label}
+                        {tab.key === 'missed' && calls.filter(c => c.status === 'missed' || c.status === 'no_answer').length > 0 && (
+                            <span className={styles.missedBadge}>
+                                {calls.filter(c => c.status === 'missed' || c.status === 'no_answer').length}
+                            </span>
+                        )}
+                    </button>
+                ))}
+            </div>
+
+            {/* Call List */}
+            <div className={styles.callList}>
                 {loading ? (
-                    <div className={styles.loaderContainer}>
-                        <div className={styles.pulse} aria-hidden />
-                        <p className={styles.loaderText}>Tuning frequencies…</p>
+                    <div className={styles.loader}>
+                        <div className={styles.spinner} />
+                        <span>Loading calls...</span>
                     </div>
-                ) : error ? (
+                ) : filteredCalls.length === 0 ? (
                     <div className={styles.empty}>
-                        <div className={styles.emptyIcon} aria-hidden>
-                            <Icon name="AlertCircle" size={40} />
+                        <div className={styles.emptyRings}>
+                            <div className={styles.ring1} />
+                            <div className={styles.ring2} />
+                            <div className={styles.ring3} />
+                            <Icons.phone />
                         </div>
-                        <h2 className={styles.emptyTitle}>Frequency unavailable</h2>
-                        <p className={styles.emptyText}>{error}</p>
-                        <button className={styles.cta} onClick={fetchCalls} type="button">
-                            Retry
-                        </button>
-                    </div>
-                ) : filtered.length === 0 ? (
-                    <div className={styles.empty}>
-                        <div className={styles.emptyIcon} aria-hidden>
-                            <Icon name="Phone" size={40} />
-                        </div>
-                        <h2 className={styles.emptyTitle}>
-                            {tab === 'all' ? 'No call log yet' : `No ${tab} calls`}
-                        </h2>
-                        <p className={styles.emptyText}>
-                            Calls you make from Messages will land here. Try starting a Sovereign Whisper.
-                        </p>
-                        <Link to="/messages" className={styles.cta}>
-                            Open Messages
-                        </Link>
+                        <h3 className={styles.emptyTitle}>
+                            {activeTab === 'all' ? 'No calls yet' :
+                             activeTab === 'missed' ? 'No missed calls' :
+                             `No ${activeTab} calls`}
+                        </h3>
+                        <p className={styles.emptyText}>Your encrypted call history will appear here</p>
                     </div>
                 ) : (
-                    <div className={styles.list} role="list">
-                        {filtered.map((call) => {
-                            const directionLabel = call.direction === 'missed'
-                                ? 'Missed'
-                                : call.direction === 'incoming' ? 'Incoming' : 'Outgoing';
-                            const duration = formatDuration(call.duration_seconds);
-                            return (
-                                <div key={call.id} className={styles.item} role="listitem">
-                                    <div
-                                        className={styles.avatar}
-                                        onClick={() => call.conversation_id && navigate(`/messages/${call.conversation_id}`)}
-                                        role="button"
-                                        tabIndex={0}
-                                    >
-                                        {call.other?.avatar_url ? (
-                                            <img src={call.other.avatar_url} alt={call.other?.username || 'User'} />
-                                        ) : (
-                                            <span className={styles.avatarPlaceholder}>
-                                                {(call.other?.username || '?')[0]?.toUpperCase()}
-                                            </span>
-                                        )}
-                                        {call.other?.is_verified && (
-                                            <span className={styles.shieldDot} aria-label="Trust Shield verified">
-                                                <Icon name="ShieldCheck" size={12} />
-                                            </span>
-                                        )}
-                                    </div>
+                    filteredCalls.map(call => {
+                        const other = getOtherUser(call);
+                        const direction = getDirection(call);
+                        const isMissed = direction === 'missed';
 
-                                    <div className={styles.info}>
-                                        <span className={styles.username}>
-                                            {call.other?.full_name || call.other?.username || 'Unknown'}
-                                        </span>
-                                        <div className={styles.meta}>
-                                            <span className={`${styles.callTypeBadge} ${styles[call.direction]}`}>
-                                                <Icon
-                                                    name={
-                                                        call.direction === 'missed' ? 'PhoneMissed' :
-                                                        call.direction === 'incoming' ? 'PhoneIncoming' : 'PhoneOutgoing'
-                                                    }
-                                                    size={12}
-                                                />
-                                                {directionLabel}
-                                                {call.call_type === 'video' ? ' · Video' : ' · Audio'}
-                                            </span>
-                                            <span className={styles.time}>
-                                                {formatTime(call.created_at)}
-                                                {duration ? ` · ${duration}` : ''}
-                                            </span>
+                        return (
+                            <div
+                                key={call.id}
+                                className={`${styles.callItem} ${isMissed ? styles.callItemMissed : ''}`}
+                                onClick={() => handleCallBack(call)}
+                            >
+                                {/* Avatar */}
+                                <div className={styles.callAvatar}>
+                                    {other?.avatar_url ? (
+                                        <img src={other.avatar_url} alt="" className={styles.callAvatarImg} />
+                                    ) : (
+                                        <div className={styles.callAvatarFallback}>
+                                            {(other?.username?.[0] || '?').toUpperCase()}
                                         </div>
-                                    </div>
+                                    )}
+                                </div>
 
+                                {/* Info */}
+                                <div className={styles.callInfo}>
+                                    <div className={styles.callName}>
+                                        {other?.full_name || other?.username || 'Unknown'}
+                                    </div>
+                                    <div className={styles.callMeta}>
+                                        <span className={`${styles.callDirection} ${isMissed ? styles.missed : ''}`}>
+                                            {direction === 'incoming' ? <Icons.incoming /> :
+                                             direction === 'outgoing' ? <Icons.outgoing /> :
+                                             <Icons.missed />}
+                                            {direction === 'incoming' ? 'Incoming' :
+                                             direction === 'outgoing' ? 'Outgoing' : 'Missed'}
+                                        </span>
+                                        <span className={styles.callDot}>·</span>
+                                        <span>{call.type === 'video' ? 'Video' : 'Audio'}</span>
+                                        {call.duration > 0 && (
+                                            <>
+                                                <span className={styles.callDot}>·</span>
+                                                <span>{formatDuration(call.duration)}</span>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Time & Action */}
+                                <div className={styles.callRight}>
+                                    <span className={styles.callTime}>{formatTime(call.created_at)}</span>
                                     <button
-                                        className={styles.callActionBtn}
-                                        title="Redial audio"
-                                        type="button"
-                                        onClick={() => handleRedial(call, 'audio')}
-                                        aria-label="Redial audio"
+                                        className={styles.callAction}
+                                        onClick={(e) => { e.stopPropagation(); handleCallBack(call); }}
                                     >
-                                        <Icon name="Phone" size={18} />
-                                    </button>
-                                    <button
-                                        className={`${styles.callActionBtn} ${styles.video}`}
-                                        title="Redial video"
-                                        type="button"
-                                        onClick={() => handleRedial(call, 'video')}
-                                        aria-label="Redial video"
-                                    >
-                                        <Icon name="Video" size={18} />
+                                        {call.type === 'video' ? <Icons.video /> : <Icons.phone />}
                                     </button>
                                 </div>
-                            );
-                        })}
-                    </div>
+                            </div>
+                        );
+                    })
                 )}
             </div>
-        </MainLayout>
+        </div>
     );
 };
 

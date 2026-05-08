@@ -1,0 +1,125 @@
+.section {
+    display: flex; flex-direction: column; gap: 0.85rem;
+}
+
+.header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 0.25rem;
+}
+
+.headerLeft { display: flex; align-items: center; gap: 0.6rem; }
+.headerIcon { color: rgba(var(--primary-rgb), 0.8); font-size: 0.9rem; }
+.headerTitle {
+    color: var(--text-primary); font-size: 1rem; font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.seeAll {
+    background: none; border: none; color: rgba(var(--primary-rgb), 0.8);
+    font-size: 0.85rem; font-weight: 700; cursor: pointer;
+    transition: color 0.2s ease;
+}
+.seeAll:hover { color: var(--primary); }
+
+/* Carousel */
+.carousel {
+    display: flex; gap: 0.75rem; overflow-x: auto;
+    padding: 0.25rem 0.25rem 0.5rem; scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+}
+.carousel::-webkit-scrollbar { display: none; }
+
+/* Creator card */
+.card {
+    flex-shrink: 0; width: 160px; display: flex; flex-direction: column;
+    align-items: center; gap: 0.75rem; padding: 1.15rem 0.85rem 1rem;
+    border-radius: 24px;
+    background: linear-gradient(145deg, rgba(var(--text-primary-rgb), 0.045), rgba(var(--text-primary-rgb), 0.015));
+    border: 1px solid rgba(var(--text-primary-rgb), 0.06);
+    scroll-snap-align: start;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card:hover {
+    border-color: rgba(var(--primary-rgb), 0.18);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.18), 0 0 20px rgba(var(--primary-rgb), 0.06);
+}
+
+.cardTop {
+    display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+    cursor: pointer; text-align: center;
+}
+
+/* Avatar */
+.avatarRing {
+    position: relative; width: 60px; height: 60px;
+    border-radius: 50%; padding: 2.5px;
+    background: linear-gradient(135deg, var(--primary), #ec4899);
+    box-shadow: 0 0 16px rgba(var(--primary-rgb), 0.2);
+}
+
+.avatar {
+    width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+    border: 2.5px solid var(--bg-primary, #0a0614);
+}
+
+.avatarFallback {
+    width: 100%; height: 100%; border-radius: 50%;
+    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.25), rgba(59,130,246,0.15));
+    display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 1.2rem;
+    border: 2.5px solid var(--bg-primary, #0a0614);
+}
+
+.trustBadge {
+    position: absolute; bottom: -2px; right: -2px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #10b981; color: #fff; font-size: 0.55rem;
+    display: grid; place-items: center;
+    box-shadow: 0 0 0 2.5px var(--bg-primary, #0a0614), 0 0 8px rgba(16,185,129,0.4);
+}
+
+.name {
+    margin: 0; color: var(--text-primary); font-size: 0.88rem; font-weight: 700;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px;
+}
+
+.handle {
+    color: rgba(var(--primary-rgb), 0.65); font-size: 0.78rem; font-weight: 500;
+}
+
+.followers {
+    color: rgba(var(--text-primary-rgb), 0.45); font-size: 0.72rem; font-weight: 600;
+}
+
+/* Follow button */
+.followBtn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+    width: 100%; padding: 0.55rem 0.75rem; border-radius: 999px;
+    background: var(--text-primary, #fff); color: var(--bg-primary, #0a0614);
+    font-size: 0.8rem; font-weight: 700; border: none; cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.followBtn:hover { transform: scale(1.03); box-shadow: 0 4px 14px rgba(255,255,255,0.15); }
+
+.followingBtn {
+    background: rgba(var(--text-primary-rgb), 0.08);
+    color: var(--text-primary); border: 1px solid rgba(var(--text-primary-rgb), 0.12);
+}
+.followingBtn:hover { background: rgba(var(--text-primary-rgb), 0.12); box-shadow: none; }
+
+/* Skeleton */
+.skeletonCard {
+    flex-shrink: 0; width: 160px; height: 220px; border-radius: 24px;
+    background: linear-gradient(90deg, rgba(var(--text-primary-rgb), 0.03) 25%, rgba(var(--text-primary-rgb), 0.07) 50%, rgba(var(--text-primary-rgb), 0.03) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s linear infinite;
+}
+
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+@media (max-width: 640px) {
+    .card { width: 145px; padding: 1rem 0.75rem; }
+    .avatarRing { width: 52px; height: 52px; }
+}

@@ -1,0 +1,105 @@
+.badge {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.55rem 0.85rem;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(167, 139, 250, 0.12);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: border-color 0.3s ease, background 0.3s ease;
+    animation: badgeEnter 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
+}
+
+.badge:hover {
+    border-color: rgba(167, 139, 250, 0.22);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.badge.checking {
+    border-color: rgba(167, 139, 250, 0.08);
+}
+
+.indicator {
+    width: 28px;
+    height: 28px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+
+.recognized {
+    background: rgba(16, 185, 129, 0.15);
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+    color: #6ee7b7;
+}
+
+.newDevice {
+    background: rgba(245, 158, 11, 0.15);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+}
+
+.deviceIcon {
+    width: 16px;
+    height: 16px;
+}
+
+.spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(167, 139, 250, 0.2);
+    border-top-color: #a78bfa;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+}
+
+.deviceName {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.trustStatus {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+}
+
+.trustedText {
+    color: #6ee7b7;
+}
+
+.newText {
+    color: #fbbf24;
+}
+
+@keyframes badgeEnter {
+    from {
+        opacity: 0;
+        transform: translateX(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

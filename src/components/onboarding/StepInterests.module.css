@@ -1,68 +1,67 @@
-.container {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
+.container { display: flex; flex-direction: column; gap: 1.2rem; }
+.header { display: grid; gap: 0.5rem; }
+.title { margin: 0; font-family: var(--font-display, 'Space Grotesk', sans-serif); font-size: clamp(1.4rem, 2.8vw, 1.85rem); font-weight: 700; color: #fff; }
+.subtitle { margin: 0; color: rgba(255,255,255,0.6); font-size: 0.92rem; line-height: 1.55; }
+
+/* Category tabs */
+.categoryTabs { display: flex; gap: 0.4rem; overflow-x: auto; padding-bottom: 0.2rem; scrollbar-width: none; }
+.categoryTabs::-webkit-scrollbar { display: none; }
+.categoryTab {
+    padding: 0.55rem 1rem; border-radius: 999px; border: 1px solid rgba(196,181,253,0.1);
+    background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.6); font-size: 0.82rem;
+    font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.3s ease;
+}
+.categoryTab:hover { border-color: rgba(196,181,253,0.2); color: rgba(255,255,255,0.85); }
+.categoryTabActive {
+    border-color: var(--cat-color, #a78bfa); color: #fff;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--cat-color) 12%, transparent), transparent);
+    box-shadow: 0 0 16px color-mix(in srgb, var(--cat-color) 15%, transparent);
 }
 
-.header {
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-.title {
-    color: var(--primary);
-    font-size: 26px;
-    font-weight: 700;
-    margin-bottom: 8px;
-}
-
-.subtitle {
-    color: var(--text-muted);
-    font-size: 15px;
-}
-
+/* Interest grid */
 .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 12px;
-    margin: 20px 0;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.65rem;
+    animation: fadeUp 0.35s cubic-bezier(0.22,1,0.36,1) both;
 }
 
-.selectionCount {
-    text-align: center;
-    font-size: 15px;
-    color: var(--text-muted);
-    font-weight: 500;
-    margin: 10px 0;
+/* Selection counter */
+.selectionCount { display: flex; align-items: center; gap: 0.85rem; }
+.counterRing {
+    width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+    background: conic-gradient(#a78bfa var(--fill, 0%), rgba(255,255,255,0.06) var(--fill, 0%));
+    position: relative; flex-shrink: 0;
 }
-
-.hint {
-    color: var(--text-muted);
-    font-size: 14px;
-    font-weight: 400;
+.counterRing::before {
+    content: ''; position: absolute; inset: 3px; border-radius: 50%;
+    background: rgba(10,6,20,0.9);
 }
-
-.actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 8px;
+.counterNumber {
+    position: relative; z-index: 1; color: #fff; font-size: 0.95rem; font-weight: 800;
 }
+.counterLabel { color: rgba(255,255,255,0.6); font-size: 0.88rem; font-weight: 600; }
 
-.actions button {
-    flex: 1;
+/* Content preferences */
+.contentSection { display: flex; flex-direction: column; gap: 0.55rem; }
+.sectionLabel { color: rgba(255,255,255,0.75); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.contentGrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.55rem; }
+.contentCard {
+    display: flex; flex-direction: column; align-items: center; gap: 0.35rem;
+    padding: 0.85rem 0.5rem; border-radius: 16px; border: 1px solid rgba(196,181,253,0.08);
+    background: rgba(255,255,255,0.02); cursor: pointer; color: #fff; text-align: center;
+    transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
 }
+.contentCard:hover { border-color: rgba(196,181,253,0.18); transform: translateY(-2px); }
+.contentActive { border-color: rgba(139,92,246,0.35); background: rgba(139,92,246,0.06); box-shadow: 0 0 14px rgba(139,92,246,0.1); }
+.contentIcon { font-size: 1.1rem; color: rgba(255,255,255,0.6); }
+.contentActive .contentIcon { color: #a78bfa; }
+.contentCard strong { font-size: 0.78rem; }
+.contentDesc { color: rgba(255,255,255,0.4); font-size: 0.68rem; }
 
-.progressInfo {
-    display: none;
-}
+.actions { display: flex; justify-content: space-between; gap: 0.75rem; padding-top: 0.5rem; }
 
-@media (max-width: 768px) {
-    .grid {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 10px;
-    }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    .title {
-        font-size: 22px;
-    }
+@media (max-width: 640px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .contentGrid { grid-template-columns: repeat(2, 1fr); }
 }

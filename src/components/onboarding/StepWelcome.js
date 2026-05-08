@@ -10,11 +10,25 @@ import { useAuth } from '../../hooks/useAuth';
 
 const StepWelcome = ({ formData, updateFormData, onNext }) => {
     const { user } = useAuth();
-    const [status, setStatus] = useState('idle'); // 'idle', 'checking', 'available', 'taken', 'error'
+    const [status, setStatus] = useState('idle');
+    const [typedTitle, setTypedTitle] = useState('');
     const debouncedUsername = useDebounce(formData.username, 500);
+    const fullTitle = 'Welcome to Focus! ✨';
 
     const isFormValid = formData.username?.length >= 3 && formData.full_name?.length >= 2 && status === 'available';
 
+    // Typing animation for title
+    useEffect(() => {
+        let i = 0;
+        const interval = setInterval(() => {
+            setTypedTitle(fullTitle.slice(0, i + 1));
+            i++;
+            if (i >= fullTitle.length) clearInterval(interval);
+        }, 55);
+        return () => clearInterval(interval);
+    }, []);
+
+    // Username availability check
     useEffect(() => {
         const checkUsername = async () => {
             const username = debouncedUsername?.trim().toLowerCase();
@@ -48,13 +62,6 @@ const StepWelcome = ({ formData, updateFormData, onNext }) => {
         checkUsername();
     }, [debouncedUsername, user?.id]);
 
-    const handleSkip = () => {
-        // Skip to step 4 (notifications)
-        for (let i = 0; i < 3; i++) {
-            onNext();
-        }
-    };
-
     const StatusIcon = () => {
         if (status === 'checking') return <Loader2 size={16} className={styles.spinnerIcon} style={{ animation: 'spin 1s linear infinite', color: '#a78bfa' }} />;
         if (status === 'available') return <Check size={16} color="#10b981" />;
@@ -62,64 +69,113 @@ const StepWelcome = ({ formData, updateFormData, onNext }) => {
         return null;
     };
 
+    const bioLength = (formData.bio || '').length;
+    const bioPercentage = Math.round((bioLength / 150) * 100);
+
     return (
         <div className={styles.container}>
+            {/* Typing title */}
             <div className={styles.header}>
-                <h2 className={styles.title}>Welcome to Focus! 🎉</h2>
-                <p className={styles.subtitle}>Let's set up your profile</p>
+                <h2 className={styles.title}>
+                    {typedTitle}
+                    <span className={styles.cursor}>|</span>
+                </h2>
+                <p className={styles.subtitle}>Let's craft your digital identity — the real you, beautifully presented.</p>
             </div>
 
-            <ProfilePictureUpload
-                onFileSelect={(file) => updateFormData('avatarFile', file)}
-            />
-
-            <div className={styles.form}>
-                <Input
-                    name="username"
-                    placeholder="Choose a @handle"
-                    value={formData.username || ''}
-                    onChange={(e) => updateFormData('username', e.target.value)}
-                    icon="@"
-                    rightElement={<StatusIcon />}
-                    error={status === 'taken' ? 'This handle is already taken' : ''}
-                />
-
-                <Input
-                    name="full_name"
-                    placeholder="Full Name"
-                    value={formData.full_name || ''}
-                    onChange={(e) => updateFormData('full_name', e.target.value)}
-                />
-
-                <div className={styles.bioWrapper}>
-                    <textarea
-                        name="bio"
-                        placeholder="Write something about yourself..."
-                        value={formData.bio || ''}
-                        onChange={(e) => updateFormData('bio', e.target.value.slice(0, 150))}
-                        maxLength={150}
-                        rows={3}
-                        className={styles.bioTextarea}
+            <div className={styles.mainLayout}>
+                {/* Avatar upload */}
+                <div className={styles.avatarSection}>
+                    <ProfilePictureUpload
+                        onFileSelect={(file) => updateFormData('avatarFile', file)}
+                        preview={formData.avatarPreview}
                     />
-                    <span className={styles.charCount}>{(formData.bio || '').length}/150</span>
+                    <p className={styles.avatarHint}>Drag a photo or click to upload</p>
                 </div>
 
-                <Input
-                    name="website"
-                    placeholder="Website (Optional)"
-                    value={formData.website || ''}
-                    onChange={(e) => updateFormData('website', e.target.value)}
-                    type="url"
-                />
+                {/* Form fields */}
+                <div className={styles.form}>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.fieldLabel}>Username</label>
+                        <Input
+                            name="username"
+                            placeholder="Choose a unique @handle"
+                            value={formData.username || ''}
+                            onChange={(e) => updateFormData('username', e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                            icon="@"
+                            rightElement={<StatusIcon />}
+                            error={status === 'taken' ? 'This handle is already taken' : ''}
+                        />
+                        {status === 'available' && (
+                            <span className={styles.fieldSuccess}>✓ Available — great choice!</span>
+                        )}
+                    </div>
+
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.fieldLabel}>Display Name</label>
+                        <Input
+                            name="full_name"
+                            placeholder="Your visible name"
+                            value={formData.full_name || ''}
+                            onChange={(e) => updateFormData('full_name', e.target.value)}
+                        />
+                    </div>
+
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.fieldLabel}>
+                            Bio
+                            <span className={styles.charRing} style={{ '--bio-pct': `${bioPercentage}%` }}>
+                                {bioLength}/150
+                            </span>
+                        </label>
+                        <textarea
+                            name="bio"
+                            placeholder="A short intro about you — what drives you, what you love..."
+                            value={formData.bio || ''}
+                            onChange={(e) => updateFormData('bio', e.target.value.slice(0, 150))}
+                            maxLength={150}
+                            rows={3}
+                            className={styles.bioTextarea}
+                        />
+                    </div>
+
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.fieldLabel}>Website <span className={styles.optional}>(optional)</span></label>
+                        <Input
+                            name="website"
+                            placeholder="https://yoursite.com"
+                            value={formData.website || ''}
+                            onChange={(e) => updateFormData('website', e.target.value)}
+                            type="url"
+                        />
+                    </div>
+                </div>
             </div>
 
+            {/* Live preview card */}
+            {(formData.username || formData.full_name) && (
+                <div className={styles.previewCard}>
+                    <span className={styles.previewLabel}>Live Preview</span>
+                    <div className={styles.previewContent}>
+                        <div className={styles.previewAvatar}>
+                            {formData.avatarPreview ? (
+                                <img src={formData.avatarPreview} alt="" className={styles.previewAvatarImg} />
+                            ) : (
+                                <span className={styles.previewAvatarPlaceholder}>
+                                    {(formData.full_name || formData.username || '?')[0]?.toUpperCase()}
+                                </span>
+                            )}
+                        </div>
+                        <div>
+                            <p className={styles.previewName}>{formData.full_name || 'Your Name'}</p>
+                            <p className={styles.previewHandle}>@{formData.username || 'username'}</p>
+                            {formData.bio && <p className={styles.previewBio}>{formData.bio}</p>}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className={styles.actions}>
-                <Button
-                    variant="ghost"
-                    onClick={handleSkip}
-                >
-                    Skip
-                </Button>
                 <Button
                     variant="primary"
                     onClick={onNext}

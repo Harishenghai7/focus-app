@@ -1,29 +1,31 @@
-/* BoltzOverlay - Pro-Grade Gradient System */
-
+/* BoltzOverlay — Cinematic Gradient + Vignette */
 .overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg,
-            rgba(var(--bg-primary-rgb), 0.4) 0%,
-            rgba(var(--bg-primary-rgb), 0) 15%,
-            rgba(var(--bg-primary-rgb), 0) 70%,
-            rgba(var(--bg-primary-rgb), 0.3) 85%,
-            rgba(var(--bg-primary-rgb), 0.7) 100%);
+    z-index: 5;
     pointer-events: none;
-    z-index: 1;
 }
 
-/* Enhanced overlay for better text readability */
-.overlay::before {
-    content: '';
+.topGradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.2) 40%, transparent 100%);
+}
+
+.bottomGradient {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 200px;
-    background: linear-gradient(to top,
-            rgba(var(--bg-primary-rgb), 0.8) 0%,
-            rgba(var(--bg-primary-rgb), 0.4) 50%,
-            transparent 100%);
-    pointer-events: none;
+    height: 320px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.4) 30%, rgba(0, 0, 0, 0.1) 60%, transparent 100%);
+}
+
+.vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.35) 100%);
 }

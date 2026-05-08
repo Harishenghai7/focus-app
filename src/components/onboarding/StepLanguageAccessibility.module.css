@@ -1,0 +1,96 @@
+.container { display: flex; flex-direction: column; gap: 1.2rem; }
+.header { display: grid; gap: 0.5rem; }
+.title { margin: 0; font-family: var(--font-display, 'Space Grotesk', sans-serif); font-size: clamp(1.4rem, 2.8vw, 1.85rem); font-weight: 700; color: #fff; }
+.subtitle { margin: 0; color: rgba(255,255,255,0.6); font-size: 0.9rem; line-height: 1.55; }
+.section { display: flex; flex-direction: column; gap: 0.5rem; }
+.sectionLabel { display: flex; align-items: center; gap: 0.5rem; color: rgba(255,255,255,0.7); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+
+/* Language */
+.languageGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+.langCard {
+    display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 0.75rem; border-radius: 14px;
+    border: 1px solid rgba(196,181,253,0.08); background: rgba(255,255,255,0.02);
+    cursor: pointer; color: #fff; transition: all 0.25s ease;
+}
+.langCard:hover { border-color: rgba(196,181,253,0.18); }
+.langActive { border-color: rgba(139,92,246,0.35); background: rgba(139,92,246,0.06); box-shadow: 0 0 12px rgba(139,92,246,0.08); }
+.langFlag { font-size: 1.15rem; }
+.langName { font-size: 0.82rem; font-weight: 600; }
+
+/* Theme */
+.themeGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.65rem; }
+.themeCard {
+    display: flex; flex-direction: column; gap: 0.4rem; padding: 0.75rem; border-radius: 18px;
+    border: 1px solid rgba(196,181,253,0.08); background: rgba(255,255,255,0.02);
+    cursor: pointer; color: #fff; text-align: center; transition: all 0.3s ease;
+}
+.themeCard:hover { border-color: rgba(196,181,253,0.18); transform: translateY(-2px); }
+.themeActive { border-color: rgba(139,92,246,0.4); box-shadow: 0 0 20px rgba(139,92,246,0.1); }
+.themeCard strong { font-size: 0.88rem; }
+.themeCard span { color: rgba(255,255,255,0.45); font-size: 0.75rem; }
+
+.themePreview {
+    height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+.themeMiniUI { display: flex; flex-direction: column; gap: 3px; width: 60%; }
+.themeMiniBar { height: 4px; border-radius: 2px; background: rgba(167,139,250,0.3); width: 70%; }
+.themeMiniLine { height: 3px; border-radius: 2px; background: rgba(255,255,255,0.08); width: 100%; }
+.themeMiniLine2 { height: 3px; border-radius: 2px; background: rgba(255,255,255,0.05); width: 80%; }
+
+/* Density */
+.densityGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+.densityCard {
+    display: flex; flex-direction: column; gap: 0.2rem; padding: 0.8rem 0.7rem; border-radius: 16px;
+    border: 1px solid rgba(196,181,253,0.08); background: rgba(255,255,255,0.02);
+    cursor: pointer; color: #fff; text-align: center; transition: all 0.25s ease;
+}
+.densityCard:hover { border-color: rgba(196,181,253,0.18); }
+.densityActive { border-color: rgba(139,92,246,0.35); background: rgba(139,92,246,0.06); }
+.densityCard strong { font-size: 0.85rem; }
+.densityCard span { color: rgba(255,255,255,0.45); font-size: 0.72rem; }
+
+/* Font */
+.fontGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.55rem; }
+.fontCard {
+    display: flex; flex-direction: column; align-items: center; gap: 0.3rem; padding: 0.7rem 0.5rem;
+    border-radius: 14px; border: 1px solid rgba(196,181,253,0.08); background: rgba(255,255,255,0.02);
+    cursor: pointer; color: #fff; transition: all 0.25s ease;
+}
+.fontCard:hover { border-color: rgba(196,181,253,0.18); }
+.fontActive { border-color: rgba(139,92,246,0.35); background: rgba(139,92,246,0.06); }
+.fontLetter { font-weight: 800; color: rgba(255,255,255,0.8); }
+.fontCard span { color: rgba(255,255,255,0.5); font-size: 0.7rem; font-weight: 600; }
+
+/* Toggle list */
+.toggleList { display: grid; gap: 0.5rem; }
+.toggleRow {
+    display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 0.95rem; border-radius: 16px;
+    border: 1px solid rgba(196,181,253,0.08); background: rgba(255,255,255,0.02);
+    cursor: pointer; color: #fff; width: 100%; transition: border-color 0.25s ease;
+}
+.toggleRow:hover { border-color: rgba(196,181,253,0.16); }
+.toggleRowActive { border-color: rgba(16,185,129,0.2); }
+.toggleIcon { color: rgba(255,255,255,0.4); font-size: 0.95rem; flex-shrink: 0; }
+.toggleCopy { flex: 1; text-align: left; }
+.toggleCopy strong { display: block; font-size: 0.88rem; margin-bottom: 0.1rem; }
+.toggleCopy span { color: rgba(255,255,255,0.45); font-size: 0.78rem; }
+
+.toggle {
+    width: 40px; height: 22px; border-radius: 999px; background: rgba(255,255,255,0.1);
+    position: relative; flex-shrink: 0; transition: background 0.3s ease;
+}
+.toggleOn { background: #10b981; }
+.toggleDot {
+    position: absolute; top: 3px; left: 3px; width: 16px; height: 16px;
+    border-radius: 50%; background: #fff; transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+}
+.toggleOn .toggleDot { transform: translateX(18px); }
+
+.actions { display: flex; justify-content: space-between; gap: 0.75rem; padding-top: 0.5rem; }
+
+@media (max-width: 640px) {
+    .languageGrid { grid-template-columns: repeat(2, 1fr); }
+    .themeGrid, .densityGrid { grid-template-columns: 1fr; }
+    .fontGrid { grid-template-columns: repeat(2, 1fr); }
+}

@@ -1,5 +1,6 @@
 // src/services/boltzService.js — Unified RPC for consistent data format
 // 🛡️ PILLAR 2: shadow-moderation filter applied via visibility column
+// 🧠 Enhanced with reactions, not-interested, creator insights, trending
 import { supabase } from '../lib/supabase';
 
 const isHttpUrl = (v) => typeof v === 'string' && /^https?:\/\//i.test(v);
@@ -108,4 +109,140 @@ export const fetchBoltzPreview = async (limit = 12, viewerIdOrOffset = null, off
             _videoFallback: publicVideo,
         };
     });
+};
+
+// ═══════════════════════════════════════════════════════════════
+// SECURE FEED (Authenticated, with interaction states)
+// ═══════════════════════════════════════════════════════════════
+
+export const fetchBoltzSecureFeed = async (userId, limit = 10, offset = 0, tab = 'foryou') => {
+    try {
+        const rpcName = tab === 'following' ? 'get_boltz_following_feed' : 'get_boltz_feed_secure';
+        const { data, error } = await supabase.rpc(rpcName, {
+            p_user_id: userId,
+            p_limit: limit,
+            p_offset: offset,
+        });
+        if (!error && data) return data;
+    } catch (_) {}
+    return fetchBoltzPreview(limit, null, offset);
+};
+
+// ═══════════════════════════════════════════════════════════════
+// TRENDING BOLTZ
+// ═══════════════════════════════════════════════════════════════
+
+export const fetchTrendingBoltz = async (limit = 20, hours = 48) => {
+    try {
+        const { data, error } = await supabase.rpc('get_trending_boltz', {
+            p_limit: limit,
+            p_hours: hours,
+        });
+        if (!error && data) return data;
+    } catch (_) {}
+    const since = new Date(Date.now() - hours * 3600000).toISOString();
+    const { data: rows } = await supabase
+        .from('boltz')
+        .select('*')
+        .eq('visibility', 'public')
+        .gte('created_at', since)
+        .order('likes_count', { ascending: false })
+        .limit(limit);
+    return rows || [];
+};
+
+// ═══════════════════════════════════════════════════════════════
+// REACTIONS CRUD
+// ═══════════════════════════════════════════════════════════════
+
+export const fetchBoltzReactions = async (boltzId) => {
+    try {
+        const { data } = await supabase
+            .from('boltz_reactions')
+            .select('reaction_type, user_id')
+            .eq('boltz_id', boltzId);
+        return data || [];
+    } catch (_) { return []; }
+};
+
+export const sendBoltzReaction = async (boltzId, userId, reactionType) => {
+    try {
+        await supabase.from('boltz_reactions').upsert({
+            boltz_id: boltzId,
+            user_id: userId,
+            reaction_type: reactionType,
+            created_at: new Date().toISOString(),
+        }, { onConflict: 'boltz_id,user_id' });
+        return true;
+    } catch (_) { return false; }
+};
+
+export const removeBoltzReaction = async (boltzId, userId) => {
+    try {
+        await supabase.from('boltz_reactions')
+            .delete().eq('boltz_id', boltzId).eq('user_id', userId);
+        return true;
+    } catch (_) { return false; }
+};
+
+// ═══════════════════════════════════════════════════════════════
+// NOT INTERESTED TRACKING
+// ═══════════════════════════════════════════════════════════════
+
+export const trackNotInterested = async (boltzId, userId, reason = 'not_interested') => {
+    try {
+        await supabase.from('boltz_not_interested').insert({
+            boltz_id: boltzId, user_id: userId, reason,
+            created_at: new Date().toISOString(),
+        });
+        return true;
+    } catch (_) { return false; }
+};
+
+// ═══════════════════════════════════════════════════════════════
+// CREATOR INSIGHTS
+// ═══════════════════════════════════════════════════════════════
+
+export const fetchCreatorInsights = async (userId) => {
+    try {
+        const { data, error } = await supabase.rpc('get_boltz_creator_insights', {
+            p_user_id: userId,
+        });
+        if (!error && data) return data;
+    } catch (_) {}
+    try {
+        const { data: items } = await supabase
+            .from('boltz')
+            .select('id, likes_count, comments_count, views_count, shares_count, saves_count, created_at')
+            .eq('user_id', userId).eq('visibility', 'public')
+            .order('created_at', { ascending: false });
+        if (!items?.length) return null;
+        const sum = (k) => items.reduce((s, b) => s + (b[k] || 0), 0);
+        return {
+            total_boltz: items.length,
+            total_views: sum('views_count'),
+            total_likes: sum('likes_count'),
+            total_comments: sum('comments_count'),
+            total_shares: sum('shares_count'),
+            total_saves: sum('saves_count'),
+            avg_views: Math.round(sum('views_count') / items.length),
+            avg_likes: Math.round(sum('likes_count') / items.length),
+            top_boltz: items.slice(0, 5),
+        };
+    } catch (_) { return null; }
+};
+
+// ═══════════════════════════════════════════════════════════════
+// FETCH SINGLE BOLTZ BY ID (Deep-link support)
+// ═══════════════════════════════════════════════════════════════
+
+export const fetchBoltzById = async (boltzId) => {
+    try {
+        const { data, error } = await supabase
+            .from('boltz')
+            .select('*, profiles:user_id(id, username, full_name, avatar_url, is_verified)')
+            .eq('id', boltzId).single();
+        if (error) return null;
+        return data;
+    } catch (_) { return null; }
 };
